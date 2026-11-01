@@ -41,8 +41,28 @@ hour=${hour#0}
 [ -n "$minute" ] || minute=0
 [ -n "$hour" ] || hour=0
 
+for tool in pdftoppm pdfinfo; do
+  command -v "$tool" >/dev/null 2>&1 || { echo "$tool is required (install poppler-utils)" >&2; exit 1; }
+done
+
 dir="${HOME}/.local/share/dsh-daily-summary"
 mkdir -p "$dir"
+
+# The HTML -> PDF step uses WeasyPrint; keep it in a private virtualenv.
+if [ ! -x "${dir}/venv/bin/python" ]; then
+  python_bin=
+  for candidate in "${HOME}/miniconda3/bin/python" /usr/bin/python3; do
+    if [ -x "$candidate" ] && "$candidate" -c 'import venv, ensurepip' >/dev/null 2>&1; then python_bin=$candidate; break; fi
+  done
+  [ -n "$python_bin" ] || { echo "a python with venv/ensurepip is required" >&2; exit 1; }
+  echo "creating WeasyPrint virtualenv..."
+  "$python_bin" -m venv "${dir}/venv"
+fi
+if ! "${dir}/venv/bin/python" -c 'import weasyprint' >/dev/null 2>&1; then
+  echo "installing WeasyPrint (first run)..."
+  "${dir}/venv/bin/pip" install -q 'weasyprint==70.0'
+fi
+
 cp "${script_dir}/daily-summary.mjs" "${dir}/daily-summary.mjs"
 
 cat > "${dir}/run.sh" <<EOF
@@ -53,6 +73,7 @@ export DSH_DAILY_SUMMARY_CHAT='${chat}'
 export DSH_DAILY_SUMMARY_REPO='${repo}'
 export DSH_DAILY_SUMMARY_LARK_CLI='${lark}'
 export DSH_DAILY_SUMMARY_GH='${gh}'
+export DSH_DAILY_SUMMARY_WEASYPRINT='${dir}/venv/bin/weasyprint'
 exec '${node}' '${dir}/daily-summary.mjs' "\$@"
 EOF
 chmod +x "${dir}/run.sh"

@@ -1,18 +1,21 @@
 #!/usr/bin/env node
 /**
- * dsh-daily-summary: build a daily DeepSeek Harness work summary and post it to a Feishu chat.
+ * dsh-daily-summary: build a one-page daily work report image and post it to a Feishu chat.
+ *
+ * Pipeline: collect local state -> curate the brief -> render HTML -> WeasyPrint PDF -> PNG
+ * -> lark-cli image message. If the image pipeline fails, a short text fallback is sent.
  *
  * Data sources:
  *  - Context Insights session projections: <home>/.dsh/storages/session_projcache/sessions/*.json
- *    (the same per-day billed-token figures the dsh-context "Context Insights" page shows)
  *  - dsh-superagent tickets: <stateDir>/orchestrator.sqlite
  *  - Open pull requests of the configured repository (optional; skipped when gh fails)
  *
  * Usage:
- *   node daily-summary.mjs [--date YYYY-MM-DD] [--dry-run] [--chat-id oc_xxx]
+ *   node daily-summary.mjs [--date YYYY-MM-DD] [--dry-run] [--no-llm] [--chat-id oc_xxx]
  *
  * Environment overrides: DSH_DAILY_SUMMARY_CHAT, DSH_DAILY_SUMMARY_REPO,
- * DSH_DAILY_SUMMARY_LARK_CLI, DSH_DAILY_SUMMARY_GH, DSH_DAILY_SUMMARY_STATE_DIR.
+ * DSH_DAILY_SUMMARY_LARK_CLI, DSH_DAILY_SUMMARY_GH, DSH_DAILY_SUMMARY_STATE_DIR,
+ * DSH_DAILY_SUMMARY_WEASYPRINT, DSH_DAILY_SUMMARY_PDFTOPPM, DSH_DAILY_SUMMARY_API_KEY.
  */
 import fs from 'node:fs'
 import os from 'node:os'
@@ -22,18 +25,21 @@ import { DatabaseSync } from 'node:sqlite'
 
 const TZ = 'Asia/Shanghai'
 const HOME = os.homedir()
+const APP_DIR = path.join(HOME, '.local/share/dsh-daily-summary')
 
 function parseArgs(argv) {
-  const args = { dryRun: false }
+  const args = { dryRun: false, llm: true }
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]
     if (a === '--dry-run') args.dryRun = true
+    else if (a === '--no-llm') args.llm = false
     else if (a === '--date') args.date = argv[++i]
     else if (a === '--chat-id') args.chat = argv[++i]
     else if (a === '--repo') args.repo = argv[++i]
     else if (a === '--lark-cli') args.lark = argv[++i]
     else if (a === '--gh') args.gh = argv[++i]
     else if (a === '--state-dir') args.stateDir = argv[++i]
+    else if (a === '--content') args.content = argv[++i]
     else if (a === '--help' || a === '-h') { console.log(fs.readFileSync(process.argv[1], 'utf8').split('*/')[0]); process.exit(0) }
     else throw new Error(`unknown argument: ${a}`)
   }
@@ -46,6 +52,10 @@ const repo = args.repo || process.env.DSH_DAILY_SUMMARY_REPO || ''
 const larkCli = args.lark || process.env.DSH_DAILY_SUMMARY_LARK_CLI || path.join(HOME, '.local/bin/lark-bot')
 const ghCli = args.gh || process.env.DSH_DAILY_SUMMARY_GH || path.join(HOME, '.local/bin/gh-agent')
 const stateDir = args.stateDir || process.env.DSH_DAILY_SUMMARY_STATE_DIR || '/mnt/storage1/syk/.dsh-state/superagent'
+const weasyprint = process.env.DSH_DAILY_SUMMARY_WEASYPRINT || path.join(APP_DIR, 'venv/bin/weasyprint')
+const pdftoppm = process.env.DSH_DAILY_SUMMARY_PDFTOPPM || '/usr/bin/pdftoppm'
+const pdfinfo = process.env.DSH_DAILY_SUMMARY_PDFINFO || '/usr/bin/pdfinfo'
+const model = process.env.DSH_DAILY_SUMMARY_MODEL || 'deepseek-flash'
 const sessionsDir = path.join(HOME, '.dsh/storages/session_projcache/sessions')
 const ticketDb = path.join(stateDir, 'orchestrator.sqlite')
 
@@ -72,6 +82,9 @@ function fmtTokens(n) {
   return String(n)
 }
 function fmtInt(n) { return Number(n || 0).toLocaleString('en-US') }
+function esc(value) {
+  return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
 
 /** Sessions, with the per-day figures Context Insights computes. */
 function collectSessions(date) {
@@ -96,9 +109,7 @@ function collectSessions(date) {
     const rawTitle = clean(rows?.title?.val)
     let title = rawTitle || first || '未命名会话'
     // The UI truncates long first prompts to a short title; use the first sentence then.
-    if (rawTitle && rawTitle.length >= 18 && first.startsWith(rawTitle)) {
-      title = first.split(/[。\n]/)[0] || first
-    }
+    if (rawTitle && rawTitle.length >= 18 && first.startsWith(rawTitle)) title = first.split(/[。\n]/)[0] || first
     // Generic subagent/worker prompts are not useful work labels.
     if (/^You are working on\b/i.test(title)) title = ''
     sessions.push({
@@ -107,7 +118,6 @@ function collectSessions(date) {
       requests: Number(day.requests || 0),
       breakdown,
       title,
-      turns: Number(rows?.sessionStats?.val?.turns || 0),
       workspace: rows?.workingDirectory?.val || record?.identity?.cwd || '',
     })
   }
@@ -136,19 +146,19 @@ function readTickets(date) {
       const assignment = (ticket.assignments || []).at(-1)
       const report = assignment?.report
       const prs = new Set()
-      for (const match of String(report?.summary || '').matchAll(/https:\/\/github\.com\/[^\s)]+\/pull\/\d+/g)) prs.add(match[0])
+      for (const match of String(report?.summary || '').matchAll(/https:\/\/github\.com\/[^\s)]+\/pull\/\d+/g)) prs.add(match[0].split('/').pop())
       for (const follow of ticket.follows || []) {
         const m = /^github:(\d+)$/.exec(follow?.thread || '')
-        if (m && repo) prs.add(`https://github.com/${repo}/pull/${m[1]}`)
+        if (m) prs.add(m[1])
       }
       const item = {
         id: ticket.id,
-        title: clean(ticket.title, 80),
+        title: clean(ticket.title, 90),
         created,
         updated,
         ended: ticket.ended || null,
-        assignment: assignment?.state || '',
         reportState: report?.state || '',
+        result: clean(report?.summary, 260),
         prs: [...prs],
       }
       if (!Number.isFinite(updated)) continue
@@ -190,142 +200,386 @@ function openPullRequests() {
 
 function ticketStatus(ticket) {
   if (ticket.ended) {
-    if (ticket.ended.outcome === 'merged') return '✅ 已合并'
-    if (ticket.ended.outcome === 'closed') return '⛔ 已关闭'
-    return '✅ 已完成'
+    if (ticket.ended.outcome === 'merged') return '已合并'
+    if (ticket.ended.outcome === 'closed') return '已关闭'
+    return '已完成'
   }
-  if (ticket.reportState === 'blocked' || ticket.reportState === 'failed') return '⚠️ 受阻'
-  if (ticket.reportState === 'ready') return '🔍 待审'
-  return '🔄 进行中'
+  if (ticket.reportState === 'blocked' || ticket.reportState === 'failed') return '受阻'
+  if (ticket.reportState === 'ready') return '待审'
+  return '进行中'
 }
-function prNumbers(urls) { return urls.map(u => `#${u.split('/').pop()}`) }
-function prLinks(urls) { return urls.map(u => `[PR ${prNumbers([u])[0]}](${u})`).join('、') }
 
-function buildMessage(date, sessions, tickets, openPrs) {
-  const lines = []
-  const [, month, day] = date.split('-').map(Number)
-  lines.push(`📊 **今日工作总结 · ${month}月${day}日（${weekdayText(date)}）**`)
-  lines.push('')
+/** Normalized data handed to the curator and the renderer. */
+function buildReportData(date) {
+  const sessions = collectSessions(date)
+  const tickets = collectTickets(date)
+  const openPrs = openPullRequests()
 
   const groups = new Map()
   for (const s of sessions) {
     const label = workspaceLabel(s.workspace)
-    const g = groups.get(label) || { tokens: 0, requests: 0, sessions: [] }
-    g.tokens += s.tokens
+    const g = groups.get(label) || { name: label, sessions: 0, requests: 0, tokens: 0, titleEntries: [] }
+    g.sessions += 1
     g.requests += s.requests
-    g.sessions.push(s)
+    g.tokens += s.tokens
+    if (s.title) g.titleEntries.push({ title: s.title, tokens: s.tokens })
     groups.set(label, g)
   }
-  const total = { tokens: 0, requests: 0, uncached: 0, cacheRead: 0, cacheWrite: 0, output: 0, sessions: sessions.length }
+  const totals = { tokens: 0, requests: 0, sessions: sessions.length, uncached: 0, cacheRead: 0, cacheWrite: 0, output: 0 }
   for (const s of sessions) {
-    total.tokens += s.tokens
-    total.requests += s.requests
-    for (const key of ['uncached', 'cacheRead', 'cacheWrite', 'output']) total[key] += s.breakdown[key]
+    totals.tokens += s.tokens
+    totals.requests += s.requests
+    for (const key of ['uncached', 'cacheRead', 'cacheWrite', 'output']) totals[key] += s.breakdown[key]
   }
+  const denom = totals.uncached + totals.cacheRead + totals.cacheWrite
+  totals.cacheHit = denom > 0 ? Number(((totals.cacheRead / denom) * 100).toFixed(1)) : 0
 
-  lines.push('**一、今日工作**')
-  const workLines = []
-  for (const [label, group] of [...groups.entries()].filter(([label]) => label !== 'superagent 工作区').sort((a, b) => b[1].tokens - a[1].tokens)) {
-    workLines.push(`- **${label}**（${group.sessions.length} 个会话 / ${fmtInt(group.requests)} 次请求）`)
-    const shown = [...group.sessions].filter(s => s.title).sort((a, b) => b.tokens - a.tokens).slice(0, 5)
-    for (const s of shown) {
-      workLines.push(`  - ${clean(s.title, 48)}（${fmtTokens(s.tokens)} tokens）`)
-    }
-    if (group.sessions.length > shown.length) workLines.push(`  - 另有 ${group.sessions.length - shown.length} 个会话`)
+  return {
+    date,
+    weekday: weekdayText(date),
+    totals,
+    workspaces: [...groups.values()]
+      .filter(g => g.name !== 'superagent 工作区')
+      .sort((a, b) => b.tokens - a.tokens)
+      .map(g => {
+        const byTitle = new Map()
+        for (const entry of g.titleEntries) byTitle.set(entry.title, Math.max(entry.tokens, byTitle.get(entry.title) || 0))
+        const titles = [...byTitle.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([title]) => title)
+        return { name: g.name, sessions: g.sessions, requests: g.requests, tokens: g.tokens, titles }
+      }),
+    tickets: tickets.today.map(t => ({ title: t.title, status: ticketStatus(t), prs: t.prs, result: t.result })),
+    open: tickets.open.map(t => ({ title: t.title, status: ticketStatus(t), prs: t.prs, result: t.result })),
+    openPrs: openPrs.map(p => ({ number: p.number, title: clean(p.title, 60) })),
   }
-  if (tickets.today.length > 0) {
-    workLines.push('- **superagent 工作项**')
-    for (const t of tickets.today.slice(0, 8)) {
-      const pr = t.prs.length > 0 ? ` → ${prLinks(t.prs.slice(0, 2))}` : ''
-      workLines.push(`  - ${ticketStatus(t)} ${t.title}${pr}`)
-    }
-    if (tickets.today.length > 8) workLines.push(`  - 另有 ${tickets.today.length - 8} 个工作项`)
-  } else if (groups.has('superagent 工作区')) {
-    // The ticket database was unreadable: fall back to the workspace's sessions.
-    const group = groups.get('superagent 工作区')
-    workLines.push(`- **superagent 工作区**（${group.sessions.length} 个会话 / ${fmtInt(group.requests)} 次请求）`)
-    for (const s of [...group.sessions].filter(s => s.title).sort((a, b) => b.tokens - a.tokens).slice(0, 5)) {
-      workLines.push(`  - ${clean(s.title, 48)}（${fmtTokens(s.tokens)} tokens）`)
-    }
-  }
-  if (workLines.length === 0) workLines.push('- 今天没有记录到 DSH 活动。')
-  lines.push(...workLines)
-  lines.push('')
-
-  lines.push('**二、Token 用量**（Context Insights 口径）')
-  if (total.tokens > 0) {
-    const denom = total.uncached + total.cacheRead + total.cacheWrite
-    const hit = denom > 0 ? ((total.cacheRead / denom) * 100).toFixed(1) : '0.0'
-    lines.push(`- 总计 **${fmtInt(total.tokens)} tokens**（${fmtTokens(total.tokens)}），${fmtInt(total.requests)} 次请求，${total.sessions} 个会话`)
-    if (total.uncached + total.cacheRead + total.cacheWrite + total.output > 0) {
-      lines.push(`- 构成：缓存读取 ${fmtTokens(total.cacheRead)}（命中率 ${hit}%）、未缓存输入 ${fmtTokens(total.uncached)}、输出 ${fmtTokens(total.output)}`)
-    }
-    const ws = [...groups.entries()].sort((a, b) => b[1].tokens - a[1].tokens)
-    const shown = ws.slice(0, 4)
-    const rest = ws.slice(4).reduce((sum, [, g]) => sum + g.tokens, 0)
-    lines.push(`- 按工作区：${shown.map(([label, g]) => `${label} ${fmtTokens(g.tokens)}`).join('｜')}${rest > 0 ? `｜其他 ${fmtTokens(rest)}` : ''}`)
-    const busiest = [...sessions].sort((a, b) => b.tokens - a.tokens)[0]
-    if (busiest) lines.push(`- 单会话最高：${clean(busiest.title, 36) || '未命名会话'}（${fmtTokens(busiest.tokens)} tokens）`)
-  } else {
-    lines.push('- 今天没有记录到 token 用量。')
-  }
-  lines.push('')
-
-  lines.push('**三、明日规划**')
-  const plans = []
-  const mentionedPrs = new Set()
-  for (const t of tickets.open) {
-    for (const pr of t.prs) mentionedPrs.add(pr.split('/').pop())
-    if (t.reportState === 'ready' && t.prs.length > 0) plans.push(`审阅并处理 ${prLinks(t.prs.slice(0, 2))}（${t.title}）`)
-    else if (t.reportState === 'blocked' || t.reportState === 'failed') plans.push(`处理阻塞：${t.title}`)
-    else plans.push(`继续：${t.title}`)
-  }
-  for (const pr of openPrs) {
-    if (mentionedPrs.has(String(pr.number))) continue
-    plans.push(`审阅待审 ${prLinks([pr.url])}：${clean(pr.title, 50)}`)
-  }
-  if (plans.length === 0) plans.push('暂无进行中的工作项。')
-  lines.push(...plans.slice(0, 6).map((p, i) => `${i + 1}. ${p}`))
-  lines.push('')
-  lines.push(`—— 数据截至 ${localTime()} · DSH 自动生成`)
-
-  let message = lines.join('\n')
-  if (message.length > 8000) message = `${message.slice(0, 7980)}\n…（内容过长已截断）`
-  return message
 }
 
-function send(message, date) {
-  if (!chatId) throw new Error('missing chat id (pass --chat-id or set DSH_DAILY_SUMMARY_CHAT)')
-  const key = `dsh-daily-${date.replace(/-/g, '')}`
-  let lastError
-  for (let attempt = 1; attempt <= 3; attempt++) {
+function apiKey() {
+  if (process.env.DSH_DAILY_SUMMARY_API_KEY) return process.env.DSH_DAILY_SUMMARY_API_KEY
+  try {
+    const file = process.env.DSH_DAILY_SUMMARY_CREDENTIALS || path.join(HOME, '.dsh/.credentials.yaml')
+    const match = fs.readFileSync(file, 'utf8').match(/DEEPSEEK_API_KEY:\s*(\S+)/)
+    return match ? match[1].replace(/^["']|["']$/g, '') : ''
+  } catch { return '' }
+}
+
+/** Ask the model for a concise, result-first brief; return undefined on any failure. */
+async function curate(data) {
+  if (!args.llm) return undefined
+  const key = apiKey()
+  if (!key) return undefined
+  const system = [
+    '你是资深技术负责人，为团队写每日一页简报。遵循这些原则：',
+    '- 倒金字塔：先给结论，再给支撑细节；读者 10 秒能看懂今天最重要的事。',
+    '- 只写结果、影响和关键进展；合并同类项；不写过程流水账，不罗列所有会话。',
+    '- 亮点 3 条以内；每条主题不超过 10 个字，说明不超过 38 个字。',
+    '- 只使用输入数据中的事实；不编造数字或结论。',
+    '- 会话标题只代表今天在做的主题，不能据此写「已产出 / 已完成 / 已跑出 / 成功」；只有 todayTickets 中 status 为「已完成」或「已合并」的事项才能写完成。',
+    '- 进行中的事项用「推进 / 恢复 / 提交 / 排队 / 等待」等状态词。',
+    '- 不要自行推断风险、CI 缺失或流程问题。',
+    '- 中文，短句，避免术语堆砌和空话。',
+    '- 不需要输出风险或明日重点：系统会从工作项状态自动生成。',
+    '只返回 JSON：{"headline":"一句话结论，不超过40字","highlights":[{"title":"主题","detail":"结果或影响，不超过45字"}]}',
+  ].join('\n')
+  const payload = {
+    date: data.date,
+    weekday: data.weekday,
+    totals: { tokens: data.totals.tokens, requests: data.totals.requests, sessions: data.totals.sessions, cacheHitPercent: data.totals.cacheHit },
+    workspaces: data.workspaces.map(g => ({ name: g.name, sessions: g.sessions, requests: g.requests, tokens: g.tokens, titles: g.titles })),
+    todayTickets: data.tickets.map(t => ({ title: t.title, status: t.status, prs: t.prs, result: t.result })),
+    openItems: data.open.map(t => ({ title: t.title, status: t.status, prs: t.prs })),
+    openPullRequests: data.openPrs.map(p => `#${p.number} ${p.title}`),
+  }
+  let lastError = ''
+  for (let attempt = 1; attempt <= 2; attempt++) {
     try {
-      const output = execFileSync(larkCli, ['im', '+messages-send', '--chat-id', chatId, '--markdown', '-', '--idempotency-key', key], {
-        input: message, encoding: 'utf8', timeout: 90_000,
-        env: { ...process.env, PATH: [path.join(HOME, '.local/bin'), '/usr/local/bin', '/usr/bin', '/bin'].join(':') },
+      const response = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'system', content: system }, { role: 'user', content: JSON.stringify(payload) }],
+          temperature: 0.3,
+          max_tokens: 3000,
+          response_format: { type: 'json_object' },
+        }),
+        signal: AbortSignal.timeout(60_000),
       })
-      const parsed = JSON.parse(output)
-      if (parsed?.ok !== true) throw new Error(JSON.stringify(parsed?.error ?? parsed))
-      return parsed
+      if (!response.ok) { lastError = `HTTP ${response.status}`; throw new Error(lastError) }
+      const body = await response.json()
+      const text = body?.choices?.[0]?.message?.content ?? ''
+      const json = JSON.parse(String(text).replace(/^```(?:json)?\s*|\s*```$/g, ''))
+      if (!validContent(json)) { lastError = 'invalid content'; throw new Error(lastError) }
+      return normalizeContent(json)
     } catch (error) {
-      lastError = error
-      if (attempt < 3) execFileSync('/bin/sleep', [attempt === 1 ? '5' : '15'])
+      lastError = error instanceof Error ? error.message : String(error)
+      if (attempt === 1) await new Promise(resolve => setTimeout(resolve, 3000))
     }
   }
-  throw lastError
+  console.error(`curation failed: ${lastError}`)
+  return undefined
 }
 
-const date = args.date || localDate()
-if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error(`invalid date: ${date}`)
-const sessions = collectSessions(date)
-const tickets = collectTickets(date)
-const openPrs = openPullRequests()
-const message = buildMessage(date, sessions, tickets, openPrs)
-
-if (args.dryRun) {
-  console.log(message)
-  console.log(`\n[dry-run] date=${date} sessions=${sessions.length} tickets=${tickets.today.length} openPrs=${openPrs.length} chat=${chatId || '(unset)'}`)
-} else {
-  const sent = send(message, date)
-  console.log(`[${new Date().toISOString()}] sent daily summary for ${date}: ${JSON.stringify(sent?.data ?? sent)}`)
+function validContent(c) {
+  return c && typeof c === 'object'
+    && typeof c.headline === 'string' && c.headline.trim().length > 0
+    && Array.isArray(c.highlights) && c.highlights.length >= 1 && c.highlights.length <= 4
+    && c.highlights.every(h => h && typeof h.title === 'string' && typeof h.detail === 'string')
+    && (c.risk === undefined || c.risk === null || typeof c.risk === 'string')
 }
+
+function normalizeContent(c) {
+  return {
+    headline: clean(c.headline, 60),
+    highlights: c.highlights.slice(0, 3).map(h => ({ title: clean(h.title, 14), detail: clean(h.detail, 58) })),
+    risk: clean(c.risk || '', 46),
+  }
+}
+
+/** Deterministic fallback when the model is unavailable or answers badly. */
+function localContent(data) {
+  const completed = data.tickets.filter(t => t.status === '已完成' || t.status === '已合并').length
+  const waiting = data.tickets.filter(t => t.status === '待审')
+  const blocked = data.tickets.find(t => t.status === '受阻')
+  const top = data.workspaces[0]
+  const headline = [
+    `${data.totals.sessions} 个会话、${fmtInt(data.totals.requests)} 次请求`,
+    top ? `主要精力在 ${top.name.replace(/^~\//, '')}` : '',
+    `superagent 完成 ${completed} 项${waiting.length ? `，PR ${waiting.flatMap(t => t.prs).slice(0, 2).map(p => `#${p}`).join('、')} 待审` : ''}`,
+  ].filter(Boolean).join('；') + '。'
+  const highlights = data.workspaces.slice(0, 2).map(g => ({
+    title: g.name.replace(/^~\//, '').replace(/^labs\//, ''),
+    detail: `${g.sessions} 个会话 / ${fmtInt(g.requests)} 次请求：${g.titles.slice(0, 2).map(t => clean(t, 16)).join('、')}${g.titles.length > 2 ? ' 等' : ''}`,
+  }))
+  if (data.tickets.length > 0) {
+    highlights.push({
+      title: 'superagent',
+      detail: [
+        completed ? `${completed} 项已完成` : '',
+        waiting.length ? `PR ${waiting.flatMap(t => t.prs).slice(0, 2).map(p => `#${p}`).join('、')} 待审` : '',
+        data.open.filter(t => t.status === '进行中').length ? `${data.open.filter(t => t.status === '进行中').length} 项进行中` : '',
+      ].filter(Boolean).join('；') || '进行中',
+    })
+  }
+  return {
+    headline: clean(headline, 60),
+    highlights: highlights.slice(0, 3),
+    risk: blocked ? `受阻：${blocked.title}` : '',
+  }
+}
+
+function planItems(data) {
+  const items = []
+  const add = (text) => {
+    if (!text || items.length >= 3 || items.includes(text)) return
+    items.push(text)
+  }
+  for (const t of data.open) {
+    if (t.status === '待审' && t.prs.length > 0) add(`审阅并合并 PR ${t.prs.slice(0, 2).map(p => `#${p}`).join('、')}`)
+  }
+  for (const p of data.openPrs) {
+    if (data.open.some(t => t.prs.includes(String(p.number)))) continue
+    add(`审阅 PR #${p.number}：${clean(p.title, 26)}`)
+  }
+  for (const t of data.open) {
+    if (/定时(整理|生成).{0,4}总结|定时总结/.test(t.title)) continue
+    if (t.status === '受阻') add(`处理阻塞：${clean(t.title, 24)}`)
+    else if (t.status === '进行中') add(`继续：${clean(t.title, 24)}`)
+  }
+  if (items.length === 0) items.push('暂无进行中的工作项。')
+  return items.slice(0, 3)
+}
+
+function riskFromData(data) {
+  const all = [...data.open, ...data.tickets]
+  const blocked = all.find(t => t.status === '受阻')
+  if (blocked) return clean(`受阻：${blocked.title}`, 52)
+  const pattern = /拍板|需要(你|用户|人工)|等待(你|用户)|待(你|用户)确认|需要决策/
+  for (const item of all) {
+    for (const sentence of String(item.result || '').split(/[。\n]/)) {
+      if (pattern.test(sentence)) return clean(sentence.replace(/\*\*/g, ''), 52)
+    }
+  }
+  return ''
+}
+
+function reportHtml(data, content) {
+  const t = data.totals
+  const kpis = [
+    { value: fmtTokens(t.tokens), label: 'Token 用量' },
+    { value: fmtInt(t.requests), label: '模型请求' },
+    { value: String(t.sessions), label: '会话数' },
+    { value: `${t.cacheHit.toFixed(1)}%`, label: '缓存命中' },
+  ]
+  const highlightRows = content.highlights.map((h, i) => `
+      <div class="hl">
+        <div class="num">${String(i + 1).padStart(2, '0')}</div>
+        <div class="body"><div class="hl-title">${esc(h.title)}</div><div class="hl-detail">${esc(h.detail)}</div></div>
+      </div>`).join('')
+  const nextItems = content.next.map((item, i) => `
+      <div class="next-item"><span class="next-num">${i + 1}</span><span>${esc(item)}</span></div>`).join('')
+  const risk = content.risk
+    ? `<div class="section"><div class="risk"><span class="risk-label">风险 / 阻塞</span><span>${esc(content.risk)}</span></div></div>`
+    : ''
+  const parts = [
+    { key: 'cache', label: '缓存读取', value: t.cacheRead, color: '#4d6bfe' },
+    { key: 'uncached', label: '未缓存输入', value: t.uncached, color: '#f59e0b' },
+    { key: 'output', label: '输出', value: t.output, color: '#94a3b8' },
+  ].filter(p => p.value > 0)
+  const partTotal = parts.reduce((sum, p) => sum + p.value, 0) || 1
+  const tokenBar = parts.map(p => `<span class="seg" style="width:${((p.value / partTotal) * 100).toFixed(2)}%;background:${p.color}"></span>`).join('')
+  const legend = parts.map(p => `<span class="legend-item"><i style="background:${p.color}"></i>${esc(p.label)} ${fmtTokens(p.value)}</span>`).join('')
+
+  return `<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><style>
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Noto Sans CJK SC', 'Noto Sans CJK SC Medium', sans-serif; color: #0f172a; -weasy-hyphens: none; }
+.page { position: relative; width: 210mm; height: 297mm; padding: 15mm 16mm 13mm; background: #f7f8fb; overflow: hidden; }
+.eyebrow { display: flex; justify-content: space-between; align-items: baseline; font-size: 8pt; letter-spacing: 1.4pt; color: #64748b; }
+.eyebrow .brand { color: #4d6bfe; font-weight: 700; letter-spacing: 1.8pt; }
+h1 { font-size: 29pt; line-height: 1.16; letter-spacing: -0.6pt; margin: 8mm 0 4.5mm; font-weight: 700; }
+.headline { font-size: 12pt; line-height: 1.65; color: #334155; margin: 0 0 9mm; max-width: 174mm; }
+.kpis { display: flex; gap: 3mm; margin-bottom: 5mm; }
+.kpi { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 5mm 4.5mm 4.4mm; }
+.kpi .value { font-size: 19pt; font-weight: 700; letter-spacing: -0.3pt; white-space: nowrap; }
+.kpi .label { font-size: 8pt; color: #64748b; margin-top: 1.4mm; }
+.token-block { background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 4.4mm 4.5mm; margin-bottom: 10mm; }
+.token-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 8pt; color: #475569; margin-bottom: 3mm; }
+.token-note { color: #94a3b8; font-size: 7.5pt; }
+.token-bar { display: flex; height: 3.2mm; border-radius: 1.6mm; overflow: hidden; background: #eef2f8; }
+.token-bar .seg { display: block; height: 3.2mm; }
+.legend { display: flex; gap: 5mm; margin-top: 2.6mm; font-size: 8pt; color: #64748b; }
+.legend-item i { display: inline-block; width: 2.2mm; height: 2.2mm; border-radius: 0.6mm; margin-right: 1.2mm; }
+.section { margin-top: 10mm; }
+.section-head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 2mm; }
+.section-head .bar { width: 3mm; height: 3mm; border-radius: 1mm; background: #4d6bfe; }
+.section-head .title { font-size: 9pt; font-weight: 700; letter-spacing: 1pt; color: #4d6bfe; }
+.hl { display: flex; gap: 4mm; padding: 5mm 0; border-bottom: 1px solid #e9edf5; }
+.hl:last-child { border-bottom: none; }
+.hl .num { width: 7mm; font-size: 9pt; font-weight: 700; color: #94a3b8; padding-top: 0.6mm; }
+.hl .body { flex: 1; }
+.hl-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.8mm; }
+.hl-detail { font-size: 9.5pt; line-height: 1.55; color: #475569; }
+.risk { display: flex; gap: 4mm; align-items: baseline; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 2.5mm; padding: 4.5mm 5mm; font-size: 9.5pt; color: #9a3412; line-height: 1.5; }
+.risk-label { font-size: 8pt; letter-spacing: 1pt; font-weight: 700; white-space: nowrap; opacity: 0.8; }
+.next { display: flex; gap: 3mm; }
+.next-item { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 2.5mm; padding: 5.4mm 4.5mm; font-size: 9.5pt; line-height: 1.55; color: #1e293b; }
+.next-num { display: inline-block; color: #4d6bfe; font-weight: 700; margin-right: 1.5mm; }
+.footer { position: absolute; left: 16mm; right: 16mm; bottom: 11mm; display: flex; justify-content: space-between; font-size: 7.5pt; color: #94a3b8; border-top: 1px solid #e6eaf2; padding-top: 2.5mm; }
+</style></head>
+<body><div class="page">
+  <div class="eyebrow"><span class="brand">DSH DAILY BRIEF</span><span>${esc(data.date)} · ${esc(data.weekday)}</span></div>
+  <h1>今日工作总结</h1>
+  <p class="headline">${esc(content.headline)}</p>
+  <div class="kpis">${kpis.map(k => `<div class="kpi"><div class="value">${esc(k.value)}</div><div class="label">${esc(k.label)}</div></div>`).join('')}</div>
+  <div class="token-block">
+    <div class="token-head"><span>Token 构成</span><span class="token-note">Context Insights 计费口径</span></div>
+    <div class="token-bar">${tokenBar}</div>
+    <div class="legend">${legend}</div>
+  </div>
+  <div>
+    <div class="section-head"><span class="bar"></span><span class="title">今日重点</span></div>
+    ${highlightRows}
+  </div>
+  ${risk}
+  <div class="section">
+    <div class="section-head"><span class="bar"></span><span class="title">明日重点</span></div>
+    <div class="next">${nextItems}</div>
+  </div>
+  <div class="footer"><span>数据：Context Insights（DSH 会话投影）</span><span>数据截至 ${localTime()} · DSH 自动生成</span></div>
+</div></body></html>`
+}
+
+function renderImage(html, date) {
+  const dir = path.join(APP_DIR, 'last')
+  fs.mkdirSync(dir, { recursive: true })
+  const base = `daily-summary-${date}`
+  const htmlPath = path.join(dir, `${base}.html`)
+  const pdfPath = path.join(dir, `${base}.pdf`)
+  const pngPrefix = path.join(dir, base)
+  const pngPath = `${pngPrefix}.png`
+  fs.writeFileSync(htmlPath, html)
+  execFileSync(weasyprint, [htmlPath, pdfPath], { timeout: 120_000, stdio: ['ignore', 'pipe', 'pipe'] })
+  const info = execFileSync(pdfinfo, [pdfPath], { encoding: 'utf8', timeout: 20_000 })
+  const pages = Number((info.match(/^Pages:\s+(\d+)/m) || [])[1] || 0)
+  if (pages !== 1) throw new Error(`report rendered to ${pages} pages; expected 1`)
+  execFileSync(pdftoppm, ['-png', '-r', '150', '-singlefile', pdfPath, pngPrefix], { timeout: 60_000, stdio: ['ignore', 'pipe', 'pipe'] })
+  if (!fs.existsSync(pngPath)) throw new Error('pdftoppm produced no image')
+  return { pngPath, htmlPath, pdfPath }
+}
+
+function larkEnv() {
+  return { ...process.env, PATH: [path.join(HOME, '.local/bin'), '/usr/local/bin', '/usr/bin', '/bin'].join(':') }
+}
+
+function sendImage(imagePath, date) {
+  if (!chatId) throw new Error('missing chat id (pass --chat-id or set DSH_DAILY_SUMMARY_CHAT)')
+  const key = `dsh-daily-img-${date.replace(/-/g, '')}`
+  const output = execFileSync(larkCli, ['im', '+messages-send', '--chat-id', chatId, '--image', path.basename(imagePath), '--idempotency-key', key], {
+    cwd: path.dirname(imagePath), encoding: 'utf8', timeout: 120_000, env: larkEnv(),
+  })
+  const parsed = JSON.parse(output)
+  if (parsed?.ok !== true) throw new Error(JSON.stringify(parsed?.error ?? parsed))
+  return parsed
+}
+
+function sendTextFallback(data, content, date, reason) {
+  const lines = [
+    `📊 今日工作总结 · ${data.date}（${data.weekday}）`,
+    '',
+    content.headline,
+    '',
+    ...content.highlights.map((h, i) => `${i + 1}. **${h.title}** — ${h.detail}`),
+    '',
+    content.risk ? `⚠️ ${content.risk}` : '✅ 无阻塞。',
+    '',
+    '**明日重点**',
+    ...content.next.map((n, i) => `${i + 1}. ${n}`),
+    '',
+    `（图片版生成失败：${reason}）`,
+  ]
+  const key = `dsh-daily-text-${date.replace(/-/g, '')}`
+  const output = execFileSync(larkCli, ['im', '+messages-send', '--chat-id', chatId, '--markdown', '-', '--idempotency-key', key], {
+    input: lines.join('\n'), encoding: 'utf8', timeout: 120_000, env: larkEnv(),
+  })
+  const parsed = JSON.parse(output)
+  if (parsed?.ok !== true) throw new Error(JSON.stringify(parsed?.error ?? parsed))
+  return parsed
+}
+
+async function main() {
+  const date = args.date || localDate()
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error(`invalid date: ${date}`)
+  const data = buildReportData(date)
+  const curated = args.content ? JSON.parse(fs.readFileSync(args.content, 'utf8')) : await curate(data)
+  const content = validContent(curated) ? normalizeContent(curated) : localContent(data)
+  content.next = planItems(data)
+  content.risk = riskFromData(data)
+  fs.mkdirSync(path.join(APP_DIR, 'last'), { recursive: true })
+  fs.writeFileSync(path.join(APP_DIR, 'last', 'content.json'), JSON.stringify(content, null, 2))
+  const html = reportHtml(data, content)
+
+  if (args.dryRun) {
+    const rendered = renderImage(html, date)
+    console.log(JSON.stringify(content, null, 2))
+    console.log(`\n[dry-run] ${date} sessions=${data.totals.sessions} tickets=${data.tickets.length} open=${data.open.length} openPrs=${data.openPrs.length}`)
+    console.log(`image: ${rendered.pngPath}`)
+    return
+  }
+
+  try {
+    const rendered = renderImage(html, date)
+    const sent = sendImage(rendered.pngPath, date)
+    console.log(`[${new Date().toISOString()}] sent daily report for ${date}: ${JSON.stringify(sent?.data ?? sent)} image=${rendered.pngPath}`)
+  } catch (error) {
+    const reason = clean(error instanceof Error ? error.message : String(error), 80)
+    console.error(`[${new Date().toISOString()}] image report failed for ${date}: ${reason}`)
+    if (!chatId) throw error
+    const sent = sendTextFallback(data, content, date, reason)
+    console.error(`[${new Date().toISOString()}] text fallback sent: ${JSON.stringify(sent?.data ?? sent)}`)
+    process.exitCode = 1
+  }
+}
+
+await main()
