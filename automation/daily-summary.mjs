@@ -240,6 +240,13 @@ function buildMessage(date, sessions, tickets, openPrs) {
       workLines.push(`  - ${ticketStatus(t)} ${t.title}${pr}`)
     }
     if (tickets.today.length > 8) workLines.push(`  - 另有 ${tickets.today.length - 8} 个工作项`)
+  } else if (groups.has('superagent 工作区')) {
+    // The ticket database was unreadable: fall back to the workspace's sessions.
+    const group = groups.get('superagent 工作区')
+    workLines.push(`- **superagent 工作区**（${group.sessions.length} 个会话 / ${fmtInt(group.requests)} 次请求）`)
+    for (const s of [...group.sessions].filter(s => s.title).sort((a, b) => b.tokens - a.tokens).slice(0, 5)) {
+      workLines.push(`  - ${clean(s.title, 48)}（${fmtTokens(s.tokens)} tokens）`)
+    }
   }
   if (workLines.length === 0) workLines.push('- 今天没有记录到 DSH 活动。')
   lines.push(...workLines)
@@ -258,7 +265,7 @@ function buildMessage(date, sessions, tickets, openPrs) {
     const rest = ws.slice(4).reduce((sum, [, g]) => sum + g.tokens, 0)
     lines.push(`- 按工作区：${shown.map(([label, g]) => `${label} ${fmtTokens(g.tokens)}`).join('｜')}${rest > 0 ? `｜其他 ${fmtTokens(rest)}` : ''}`)
     const busiest = [...sessions].sort((a, b) => b.tokens - a.tokens)[0]
-    if (busiest) lines.push(`- 单会话最高：${clean(busiest.title, 36)}（${fmtTokens(busiest.tokens)} tokens）`)
+    if (busiest) lines.push(`- 单会话最高：${clean(busiest.title, 36) || '未命名会话'}（${fmtTokens(busiest.tokens)} tokens）`)
   } else {
     lines.push('- 今天没有记录到 token 用量。')
   }
