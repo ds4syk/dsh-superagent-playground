@@ -1,5 +1,5 @@
 {
-  "git": "a9d6f46",
+  "git": "6070081",
   "argv": [
     "/mnt/storage1/syk/.superagent-work/ppo-minecraft-f942b789b4ce/ppo-minecraft/mcppo/train.py",
     "--config",
@@ -8,6 +8,6 @@
     "/mnt/storage1/syk/dreamer/runs/mcppo/diamond_s0",
     "--resume"
   ],
-  "torch": "2.15.0+cpu",
-  "time": "2026-11-03 00:34:51"
+  "torch": "2.11.0+cu128",
+  "time": "2026-11-03 01:02:44"
 }

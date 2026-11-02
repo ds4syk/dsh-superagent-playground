@@ -71,7 +71,12 @@ python -m mcppo.evaluate --run <run_dir> --episodes 1 --record <run_dir>/eval.mp
 因此 v1 把死亡惩罚降到 -1、探索上限翻倍到 +4。完整曲线、吞吐和里程碑统计在
 `kb/04 训练系统与实验.md`，原始数据在 `results/` 与数据盘 run 目录。
 
+到 49,152 样本（8 次 update）：v0 最高 score 5（一个 episode 走通到木镐），随后连续 5 次 update
+里程碑事件归零；v1 最高 score 4（一个 episode 拿到工作台/原木/木板），7 个 episode 中 6 个是
+1–3k 步的早死，return 均值 -3.5。两者都还是"随机探索 + 少量里程碑"的水平，没有形成稳定任务策略。
+
 > 钻石未在本次算力内达成；到钻石的步数/时间估算与路线（BC + PPO、分层 PPO）见 `kb/05`。
+> v1 训练在交付后继续运行（12 小时作业，数据/曲线在 run 目录持续更新）。
 
 ## 奖励函数（摘要）
 

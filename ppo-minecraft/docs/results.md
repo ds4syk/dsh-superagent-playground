@@ -38,6 +38,16 @@ exploration potential cap to +4, and raises the step penalty to -0.0002.
 40.9 samples/s, 3 milestone events, exploration component 1.11 (vs 0.37 in v0),
 value loss 0.079, entropy 3.218. The run continues.
 
+## v0 vs v1 at ~49k samples
+
+| Run | updates | milestone events | episodes | max score | best episode |
+|-|-|-|-|-|-|
+| v0 (death -5) | 8 | 12 | 6 | 5 (wooden pickaxe) | return -1.0 |
+| v1 (death -1, explore +4) | 8 | 10 | 7 | 4 (crafting table) | return -0.9 |
+
+Both are still at "random exploration plus a few milestones"; v1's death penalty no longer
+dominates the return (short deaths cost -1, not -5). v1 kept training after delivery.
+
 ## Honest status
 
 Diamond is not reached. At ~40 samples/s, 71M steps (DreamerV3 median) is ~20 days;
