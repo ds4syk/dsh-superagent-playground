@@ -67,7 +67,8 @@ python -m mcppo.evaluate --run <run_dir> --episodes 1 --record <run_dir>/eval.mp
 
 真实训练：Slurm `cpu` 分区，6 个 Minecraft 实例 / 10 CPU，PPO 以 `repeat=1` 采集。
 首次更新（6,144 个样本）就用随机策略触发了 3 次里程碑（原木/木板/工作台），
-说明手写奖励的早期信号可被探索到。完整曲线、吞吐和里程碑统计在
+说明手写奖励的早期信号可被探索到。v0（death=-5）在 5 万样本后策略变保守、里程碑归零，
+因此 v1 把死亡惩罚降到 -1、探索上限翻倍到 +4。完整曲线、吞吐和里程碑统计在
 `kb/04 训练系统与实验.md`，原始数据在 `results/` 与数据盘 run 目录。
 
 > 钻石未在本次算力内达成；到钻石的步数/时间估算与路线（BC + PPO、分层 PPO）见 `kb/05`。
@@ -76,7 +77,7 @@ python -m mcppo.evaluate --run <run_dir> --episodes 1 --record <run_dir>/eval.mp
 
 ```
 r = β(γΦ(s')-Φ(s)) + Σ 里程碑 + 生存 + 探索/深度 + 时间惩罚
-Φ = Σ v_i log(1+max_inv_i) + 0.005·min(400, 新格子数) + 0.02·(64-min_y)
+Φ = Σ v_i log(1+max_inv_i) + 0.01·min(400, 新格子数) + 0.02·(64-min_y)
 ```
 
 完整公式、物品价值表（含 MC Wiki 依据）和反 reward-hacking 分析见
