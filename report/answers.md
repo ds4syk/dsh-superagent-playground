@@ -537,6 +537,10 @@ SDPRLayer 属于 (a) 的**可微版本**；QPEP 属于 (b)；它们都引用 (f)
 | 规模 | 50 次独立实验 × 每次 20 个 ground-truth 位姿 |
 | 对比 | SDPR-IS vs Theseus-GT（真值初始化）vs Theseus-RND（随机初始化） |
 
+> **口径说明**：这里把“相机参数标定”理解为 SDPRLayers §VI-B4 的 stereo baseline 标定——它是论文中
+> 唯一以相机参数为外层优化变量的仿真；QPEP 论文的 PnP/手眼实验是位姿/标定估计，不是 baseline
+> 标定，且需要 MATLAB/CSDP 环境，本次未复现（见 §5.6）。
+
 注意：论文正文的“相机参数标定”只标定 **baseline $b$** 一个参数（其余固定为 Table II 真值）。
 仓库 `_test/test_stereo_tune.py` 里另有“标定全部 5 个参数（$f_u,f_v,c_u,c_v,b$）”的测试代码，
 论文没有报告这组结果；本次复现不把它冒充论文结果。

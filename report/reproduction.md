@@ -21,6 +21,9 @@
 | 规模 | 50 次独立实验 × 20 个 ground-truth 位姿 |
 | 对比 | SDPR-IS / Theseus-GT（真值初始化）/ Theseus-RND（随机初始化） |
 
+> **口径说明**：这里的“相机参数标定”指 SDPRLayers §VI-B4 的 stereo baseline 标定；QPEP 论文的
+> PnP/手眼实验是位姿/标定估计，不是 baseline 标定，本次未复现。
+
 论文正文的“相机参数标定”只标定 baseline $b$ 一个参数；其余相机参数固定为 Table II 真值。
 仓库里另有“标定全部 5 个参数”的测试代码，但论文没有报告这组结果，本次不把它冒充论文结果。
 
