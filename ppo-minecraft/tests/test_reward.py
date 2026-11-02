@@ -67,7 +67,7 @@ def test_death_penalty():
     eng = make_engine()
     step(eng, {}, pos=(0, 64, 0))
     _, comp = step(eng, {}, health=0.0, pos=(0, 64, 0), done=True)
-    assert comp["death"] == -5.0
+    assert comp["death"] == -eng.cfg.get("death_penalty", 1.0)
 
 
 def test_health_damage_is_negative_heal_is_positive():

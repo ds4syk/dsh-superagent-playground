@@ -57,3 +57,9 @@ followed by PPO fine-tuning, or hierarchical PPO.
 The first episodes after the reward change: one reached log/planks/crafting_table
 (score 4, return -0.9) and a short death cost only -1 instead of -5. The policy is
 still close to random, but the reward is no longer dominated by death.
+
+## v1 milestone events
+
+Per-update milestone events: 3, 3, 0, 3 (updates 0-3). Unlike v0, the events do not
+disappear after the initial exploration, and one episode reached score 4. The run is
+still early (~30k samples).
