@@ -457,7 +457,7 @@ QPEP 的形式更窄但更“结构化”：四元数 $q$ + 平移 $t$ 的二次
 | **Robust CBF 验证/综合** | 多层 POP | Lasserre 矩松弛/SOS 下界 | 仅**渐近**全局收敛；只能低维 | CDC 2023（补充） | ❌ 层级 |
 | **凸优化运动规划（GCS）** | 图凸集（GCS），连续+离散 | MICP（**非 SDP 松弛**） | branch-and-bound over convex relaxations 的全局最优；无 SDP tightness | **Science Robotics 2023** | ❌ 形式不同（SR 侧对照） |
 
-### 4.4 紧性的类型学：五种强弱不同的“可信”
+### 4.4 紧性的类型学：六种强弱不同的“可信”
 
 文献中的“可信”并不等价，报告和选用方法时必须区分：
 
