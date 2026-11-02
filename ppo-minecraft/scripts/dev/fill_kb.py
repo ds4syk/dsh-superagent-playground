@@ -1,4 +1,4 @@
-"""Fill kb/00 and kb/04 placeholders from a run directory."""
+"""Fill kb/00 and kb/04 from templates using a run directory."""
 import json, os, sys
 from collections import Counter
 
@@ -33,7 +33,6 @@ half = max(1, len(m) // 2)
 first_half = sum(x.get('milestone_events', 0) for x in m[:half])
 second_half = sum(x.get('milestone_events', 0) for x in m[half:])
 loss_pol = last['loss_policy_loss']; loss_val = last['loss_value_loss']
-entropy = last['loss_entropy']; kl = last['loss_approx_kl']; clip = last['loss_clip_frac']
 
 ms_order = ['log','planks','stick','crafting_table','wooden_pickaxe','cobblestone',
             'stone_pickaxe','iron_ore','furnace','iron_ingot','iron_pickaxe','diamond']
@@ -43,8 +42,7 @@ k = f"{samples/10000:.1f} 万"
 diagnosis = (
     f"里程碑事件在前半程 {first_half} 次、后半程 {second_half} 次；"
     + ("后半程更多，说明策略在向里程碑靠拢。" if second_half > first_half else
-       "后半程没有增加，说明本次样本量内 PPO 还没有形成稳定的任务行为，"
-       "主要是在探索项上获得信号。")
+       "后半程没有增加，说明本次样本量内 PPO 还没有形成稳定的任务行为，主要是在探索项上获得信号。")
 )
 if ep_reached:
     milestone_summary = "episode 中到达 " + " / ".join(ep_reached)
@@ -52,28 +50,26 @@ elif ms_reached:
     milestone_summary = "在线出现过 " + " / ".join(ms_reached) + "（未在完整 episode 的里程碑里复现）"
 else:
     milestone_summary = "未到达任何里程碑"
-learning_note = (
-    f"episode 数 {len(e)}，最高 score {max_score}，最深里程碑 {milestone_summary}。"
-)
+learning_note = f"episode 数 {len(e)}，最高 score {max_score}，最深里程碑 {milestone_summary}。"
 
-files = {
-    'kb/00 总览：PPO × Minecraft 训练系统（2026-11）.md': {
+targets = [
+    ('kb/templates/00 总览.md', 'kb/00 总览：PPO × Minecraft 训练系统（2026-11）.md', {
         '{{samples}}': f"{samples:,}", '{{sps}}': f"{sps:.1f}",
         '{{episodes}}': str(len(e)), '{{milestones}}': milestone_summary,
         '{{learning_note}}': learning_note,
-    },
-    'kb/04 训练系统与实验.md': {
+    }),
+    ('kb/templates/04 实验.md', 'kb/04 训练系统与实验.md', {
         '{{k_samples}}': k, '{{samples}}': f"{samples:,}", '{{sps}}': f"{sps:.1f}",
         '{{updates}}': str(updates), '{{episodes}}': str(len(e)),
         '{{max_score}}': str(max_score), '{{milestones}}': milestone_summary,
         '{{ms_events}}': str(ms_events), '{{max_inv}}': str(dict(inv)),
         '{{losses}}': f"{loss_pol:.4f} / {loss_val:.4f}",
         '{{diagnosis}}': diagnosis, '{{milestone_summary}}': milestone_summary,
-    },
-}
-for path, mapping in files.items():
-    s = open(path).read()
+    }),
+]
+for tpl, out, mapping in targets:
+    s = open(tpl).read()
     for a, b in mapping.items():
         s = s.replace(a, b)
-    open(path, 'w').write(s)
+    open(out, 'w').write(s)
 print('filled kb from', run, 'samples', samples, 'episodes', len(e), 'max_score', max_score)

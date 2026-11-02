@@ -42,6 +42,10 @@ lark-cli docs +media-insert --as bot --doc https://yide4vukqxv.feishu.cn/docx/Bh
 
 lark-cli drive +member-add --as bot --token "$FOLDER" --type folder --member-type openid \
   --member-id "$OWNER" --perm full_access --yes || true
+for u in "$URL00" "$URL04"; do
+  lark-cli drive +member-add --as bot --token "$u" --type docx --member-type openid \
+    --member-id "$OWNER" --perm full_access --yes || true
+done
 
 for u in "$URL00" "$URL04" https://yide4vukqxv.feishu.cn/docx/RNEMdZJL6oAwRUx9sP3cjexBnYc \
          https://yide4vukqxv.feishu.cn/docx/XIeWdywp9ohI6MxE4sPcoqBMnrb \

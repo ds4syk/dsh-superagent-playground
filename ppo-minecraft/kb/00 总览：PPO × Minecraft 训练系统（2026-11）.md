@@ -23,7 +23,7 @@
 
 1. **训练系统已完整跑通**：真实 Minecraft 环境、25 动作、64×64 观测、6 路并行、循环 PPO、JSONL/TensorBoard 日志、checkpoint、评测录像、曲线脚本。
 2. **奖励函数是手写的且可解释**：12 个科技树里程碑 + `log(1+最大背包)` 势函数 + 速度倍率 + 生命/死亡 + 探索/深度；每项都有 MC Wiki 依据与单元测试。
-3. **本次实验**：{{samples}} 样本、{{sps}} 样本/s、{{episodes}} 个 episode；里程碑 {{milestones}}。随机策略在前 6,144 样本内就触发了 3 次里程碑，说明奖励信号可被探索到；{{learning_note}}
+3. **本次实验**：24,576 样本、35.4 样本/s、6 个 episode；里程碑 episode 中到达 log / planks / crafting_table。随机策略在前 6,144 样本内就触发了 3 次里程碑，说明奖励信号可被探索到；episode 数 6，最高 score 4，最深里程碑 episode 中到达 log / planks / crafting_table。
 4. **钻石未达成，且在本机单节点纯 PPO 条件下不可行**：Dreamer 官方中位 71M 步（14/20 成功）；本机 6 envs 约 40–45 样本/s，1 亿步约 26–38 天；PPO 无模型、样本效率更低。
 5. **推荐路线**：先用 BC（MineRL 人类示范）初始化，再用本仓库 PPO 微调；或分层 PPO（脚本技能 + 高层策略）。详见 05 页。
 
