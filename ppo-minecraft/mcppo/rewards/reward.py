@@ -97,7 +97,7 @@ class RewardEngine:
         if gain <= 0:
             return 1.0
         frac = 1.0 - min(1.0, self.t / self.episode_steps)
-        return min(1.0 + gain, max(floor, 1.0 + gain * frac))
+        return min(1.0 + gain, floor + (1.0 + gain - floor) * frac)
 
     def score(self) -> int:
         """Deepest milestone reached (MineRL ObtainDiamond-compatible score)."""
@@ -172,12 +172,14 @@ class RewardEngine:
         hunger_r = 0.0
         breath_r = 0.0
         # Those are called once when a threshold is first crossed.
-        for level in (6.0, 2.0):
+        h_thr = float(self.cfg.get("hunger_threshold", 6.0))
+        for level in (h_thr, max(2.0, h_thr - 4.0)):
             key = f"hunger_{level:g}"
             if hunger <= level and key not in self.hunger_levels:
                 self.hunger_levels.add(key)
                 hunger_r -= float(self.cfg.get("hunger_penalty", 0.0)) * (7.0 - level)
-        if breath <= float(self.cfg.get("breath_threshold", 0.3)) and not self.breath_warned:
+        breath_frac = float(breath) / 300.0
+        if breath_frac <= float(self.cfg.get("breath_threshold", 0.3)) and not self.breath_warned:
             self.breath_warned = True
             breath_r -= float(self.cfg.get("breath_penalty", 0.0)) * 20.0
 

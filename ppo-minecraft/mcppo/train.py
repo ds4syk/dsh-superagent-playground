@@ -125,7 +125,7 @@ def main(argv=None) -> int:
     chunk_len = int(cfg["ppo"]["chunk_len"])
     assert rollout_steps % chunk_len == 0, "rollout_steps must divide chunk_len"
     size = int(cfg["env"]["obs_size"])
-    frame_channels = int(cfg["ppo"]["frame_stack_channels"])
+    frame_channels = 3 * int(cfg["env"]["frame_stack"])
     reward_scale = float(cfg["ppo"].get("reward_scale", 5.0))
 
     writer = None
@@ -181,14 +181,12 @@ def main(argv=None) -> int:
 
     def lr_at(u: int) -> float:
         lo, hi = float(cfg["ppo"]["lr_final"]), float(cfg["ppo"]["lr"])
-        frac = min(1.0, max(0.0, (u - start_update) /
-                             max(1, total_updates - start_update)))
+        frac = min(1.0, max(0.0, u / max(1, total_updates)))
         return hi + (lo - hi) * frac
 
     def entropy_at(u: int) -> float:
         hi, lo = float(cfg["ppo"]["entropy_coef"]), float(cfg["ppo"]["entropy_final"])
-        frac = min(1.0, max(0.0, (u - start_update) /
-                             max(1, total_updates - start_update)))
+        frac = min(1.0, max(0.0, u / max(1, total_updates)))
         return hi + (lo - hi) * frac
 
     def save(update: int, step: int) -> None:
@@ -280,7 +278,7 @@ def main(argv=None) -> int:
         with torch.no_grad():
             last_feats, _ = obs_to_tensors(obs, frames, device)
             last_image = last_feats["image"].float().div_(255.0)
-            _, last_values, hidden = model(
+            _, last_values, _ = model(
                 last_image.unsqueeze(0), last_feats["inventory"].unsqueeze(0),
                 last_feats["scalars"].unsqueeze(0), last_feats["equipped"].unsqueeze(0),
                 hidden)
@@ -323,7 +321,7 @@ def main(argv=None) -> int:
             save(update, global_step)
             print(f"[mcppo] checkpoint saved at step {global_step}", flush=True)
 
-    if total_updates > 0:
+    if total_updates > start_update:
         save(total_updates - 1, global_step)
     vec.close()
     metrics_fh.close()

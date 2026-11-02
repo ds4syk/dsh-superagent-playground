@@ -121,3 +121,17 @@ def test_potential_shaping_is_zero_when_state_is_constant():
         _, comp = step(eng, {"log": 1}, pos=(0, 64, 0))
         total += comp["shape"]
     assert abs(total) < 1e-6
+
+
+def test_speed_reaches_floor_at_end():
+    eng = make_engine()
+    step(eng, {}, pos=(0, 64, 0))
+    eng.t = eng.episode_steps - 1
+    assert abs(eng._speed() - eng.cfg["speed_floor"]) < 0.01
+
+
+def test_breath_warning_uses_raw_air_scale():
+    eng = make_engine()
+    step(eng, {}, pos=(0, 64, 0))
+    _, comp = step(eng, {}, breath=60.0, pos=(0, 64, 0))  # 20% air
+    assert comp["breath"] < 0

@@ -109,6 +109,7 @@ def ppo_update(
             scal = rollout.scalars[idx, envs.view(1, -1)].contiguous()
             equ = rollout.equipped[idx, envs.view(1, -1)].contiguous()
             actions = rollout.actions[idx, envs.view(1, -1)].contiguous()
+            reset_mask = rollout.dones[idx, envs.view(1, -1)].contiguous()
             old_logp = rollout.logp[idx, envs.view(1, -1)].contiguous()
             adv = adv_flat[idx, envs.view(1, -1)].contiguous()
             ret = ret_flat[idx, envs.view(1, -1)].contiguous()
@@ -124,8 +125,10 @@ def ppo_update(
             adv = adv.to(device)
             ret = ret.to(device)
             h0, c0 = h0.to(device), c0.to(device)
+            reset_mask = reset_mask.to(device)
 
-            logits, values, _ = model(images, inv, scal, equ, (h0, c0))
+            logits, values, _ = model(images, inv, scal, equ, (h0, c0),
+                                      reset_mask=reset_mask)
             dist = Categorical(logits=logits)
             logp = dist.log_prob(actions)
             ratio = torch.exp(logp - old_logp)

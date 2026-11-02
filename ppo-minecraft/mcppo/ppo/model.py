@@ -91,6 +91,7 @@ class ActorCritic(nn.Module):
         scalars: torch.Tensor,
         equipped: torch.Tensor,
         hidden: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
+        reset_mask: Optional[torch.Tensor] = None,
     ):
         """Shapes: image (T,B,C,H,W); inventory (T,B,I); scalars (T,B,3);
         equipped (T,B,E).  Returns logits (T,B,A), value (T,B), hidden."""
@@ -102,5 +103,18 @@ class ActorCritic(nn.Module):
                        equipped.reshape(t * b, -1)], dim=-1)
         y = self.inv_fc(y)
         z = torch.cat([x, y], dim=-1).reshape(t, b, -1)
-        out, hidden = self.lstm(z, hidden)
+        if reset_mask is None:
+            out, hidden = self.lstm(z, hidden)
+        else:
+            # slow path used only for PPO updates: reset (h, c) after a done
+            h, c = hidden
+            outs = []
+            for i in range(t):
+                o, (h, c) = self.lstm(z[i:i + 1], (h, c))
+                outs.append(o)
+                m = reset_mask[i].view(1, b, 1).to(o.dtype)
+                h = h * (1.0 - m)
+                c = c * (1.0 - m)
+            out = torch.cat(outs, dim=0)
+            hidden = (h, c)
         return self.pi(out), self.v(out).squeeze(-1), hidden

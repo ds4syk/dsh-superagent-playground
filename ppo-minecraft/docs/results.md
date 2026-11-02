@@ -63,3 +63,20 @@ still close to random, but the reward is no longer dominated by death.
 Per-update milestone events: 3, 3, 0, 3, 0 (updates 0-4). Unlike v0, the events do not
 disappear after the initial exploration, and one episode reached score 4. The run is
 still early (~30k samples).
+
+## Review fixes (after the v1 run started)
+
+Fixed and covered by tests:
+- bootstrap value forward no longer overwrites the carried LSTM state;
+- chunked PPO replay resets the LSTM hidden state at internal episode boundaries
+  (new `reset_mask` path in the model);
+- breath warning compares normalized air; speed multiplier now actually reaches
+  its floor at the end of the episode; frame channels derive from `frame_stack`;
+  hunger thresholds read from config; resume LR/entropy schedule uses global progress.
+
+Known, documented limitations:
+- time-limit truncations are still treated as terminal in GAE (rare; episodes
+  usually end by death);
+- milestones re-arm each episode, so repeatedly reaching the early tech tree is a
+  legitimate if unexciting strategy (death -1 does not prevent it);
+- per-update reward components miss the terminal step (the episode JSONL is authoritative).

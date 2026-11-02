@@ -35,7 +35,7 @@ def main(argv=None) -> int:
         cfg = ckpt["cfg"]
     env = MinecraftDiamondEnv(cfg, seed=int(cfg["run"]["seed"]) + 1000)
     model = ActorCritic(env.n_actions, env.obs_dim, env.equipped_dim,
-                        frame_channels=int(cfg["ppo"]["frame_stack_channels"]),
+                        frame_channels=3 * int(cfg["env"]["frame_stack"]),
                         hidden_size=int(cfg["ppo"]["hidden_size"]),
                         feature_size=int(cfg["ppo"]["feature_size"])).to(device)
     model.load_state_dict(ckpt["model"])
