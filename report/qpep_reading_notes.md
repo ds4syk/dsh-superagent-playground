@@ -1,0 +1,213 @@
+# QPEP 精读笔记：二次位姿估计问题的全局解、可解性/可观测性与协方差
+
+> **论文**：J. Wu, Y. Zheng, Z. Gao, Y. Jiang, X. Hu, Y. Zhu, J. Jiao, M. Liu,
+> *Quadratic Pose Estimation Problems: Globally Optimal Solutions, Solvability/Observability
+> Analysis, and Uncertainty Description*, **IEEE Transactions on Robotics** 38(5):3314–3335, 2022.
+> DOI: [10.1109/TRO.2022.3155880](https://doi.org/10.1109/TRO.2022.3155880)。
+>
+> **阅读材料说明（重要）**：T-RO 正文在 IEEE Xplore 付费墙后，本次没能取得正文 PDF。
+> 本笔记依据三类一手材料写成：
+> 1. 论文摘要与 Crossref 元数据（标题、作者、卷期页）；
+> 2. 作者随官方代码发布的 **补充材料** `suppl.pdf`（含 QPEP 的符号推导、四元数/旋转/李代数
+>    协方差转换、Stewart 平台参数与工程例子）；
+> 3. 官方 **LibQPEP** 代码仓库（C++/MATLAB/Octave；含 Gröbner 基求解、协方差 SDP、
+>    PnP / hand-eye / point-to-plane / Stewart FK 例子）。
+>
+> 因此：**凡涉及正文定理编号、具体假设、页码的地方，本笔记不编造编号**，只标
+> `[Wu2022, Abstract]`、`[Wu2022, Suppl. §I.x]` 或 `[LibQPEP, 文件]`。可解性/可观测性部分
+> 只按摘要与代码结构描述，未逐条核对正文定理。
+
+---
+
+## 1. 问题定义：什么叫 QPEP
+
+QPEP 指一大类可以写成“**四元数 + 平移**的二次型 + 单位四元数约束”的位姿估计问题。
+其一般形式可概括为
+
+$$
+\min_{q\in\mathbb R^4,\;t\in\mathbb R^3}\; J(q,t)
+\quad\text{s.t.}\quad \|q\|_2^2=1,
+$$
+
+其中 $J(q,t)$ 对 $(q,t)$ 是二次的（数据只进入系数矩阵），$q$ 是单位四元数（旋转的全局参数化），
+$t$ 是平移。论文的核心观察是：PnP、PnL、PnPL、手眼标定、点到面配准、基于 conic 的相机位姿、
+多机器人距离相对位姿、Stewart 平台正运动学、多 GNSS 姿态确定等**看起来不同**的问题，都能写成
+上述同一形式 `[Wu2022, Abstract; LibQPEP README]`。
+
+这与 SDPRLayers 的“齐次 QCQP”形式不同：
+
+| | QPEP | SDPRLayers |
+|---|---|---|
+| 变量 | 四元数 $q\in\mathbb R^4$ + 平移 $t\in\mathbb R^3$ | 任意齐次向量 $x\in\mathbb R^n$（旋转用 9 个矩阵元素 + 二次约束） |
+| 目标 | 对 $(q,t)$ 二次 | 对 $x$ 二次 |
+| 约束 | 只有 $\|q\|=1$（其余由参数化吸收） | 一般二次等式 $x^\top A_i x=0$ + 齐次化 |
+| 求解 | 代数消元（Gröbner 基） | 凸松弛（Shor SDP） |
+| 可微性 | 论文不提供对参数的梯度/可微层 | 提供（隐式微分） |
+
+---
+
+## 2. 求解流程：消去 $t$ → 多项式系统 → Gröbner 基 → 选全局最优
+
+### 2.1 消去平移
+
+固定 $q$ 时，$J(q,t)$ 对 $t$ 是二次的；令 $\partial J/\partial t=0$ 得到一个线性方程
+（在问题良态、平移可解时），可解出
+
+$$
+t=t(q),
+$$
+
+代回目标后得到只含 $q$ 的多项式目标（官方代码中出现的是四次多项式；`syms_*` 脚本用符号推导
+生成 $W,Q$ 与 $D,G,c$ 等系数）`[Wu2022, Suppl. §I.A; LibQPEP, syms_pnp.m / syms_hand_eye.m /
+syms_pTop.m]`。
+
+### 2.2 一阶最优性条件
+
+对 $q$ 的拉格朗日函数
+
+$$
+L(q,\lambda)=J(q,t(q))-\tfrac{\lambda}{2}\big(q^\top q-1\big)
+$$
+
+求导，得到 KKT 系统
+
+$$
+\nabla_q J(q,t(q))-\lambda q=0,\qquad q^\top q-1=0 .
+$$
+
+这是一组以 $q$（4 个变量）和 $\lambda$ 为未知量的多项式方程；官方实现将其化为
+“四次多项式方程组 + 归一化约束”，再用 Gröbner 基消元 `[LibQPEP, src/QPEP_grobner.cpp]`。
+
+### 2.3 Gröbner 基与“一次拿到全部候选解”
+
+官方 C++ 实现（`solver_WQ` 路径）通过 Gröbner 基/作用矩阵一次返回 **至多 40 个候选复根**
+（`sols` 为 4×40 复矩阵，`solution_size=40`）；随后：
+
+1. 取每个根的实部，归一化为单位四元数；
+2. 用线性回代公式 $t=t(q)$ 得到平移；
+3. 代入原目标 $J(q,t)$；
+4. 按目标值排序，取最小者；
+5. 用 Levenberg–Marquardt（`QPEP_lm_single`）在最优根上做局部精化。
+
+这条链路在 `src/QPEP_grobner.cpp` 中可直接读到：`sols`（4×40 复矩阵）→ 归一化 →
+`t_func` 回代 → `J_func_wrapper` 计算目标 → `sort_indices` 排序。
+
+### 2.4 为什么这叫“全局最优”
+
+在**多项式系统有有限个复根、且数值消元没有漏根**的前提下，上述流程枚举了原问题的**全部
+一阶驻点**，再用目标值比较选出最小者；约束集 $\|q\|=1$ 是紧集，目标连续，所以全局最优一定
+是驻点之一。因此它是“**穷举式代数全局解**”（exhaustive algebraic global solve）。
+
+这与 SDPR 的“**凸松弛 + 对偶证书**”是两种不同的全局性：
+
+| | QPEP | SDPR / SE-Sync / TEASER |
+|---|---|---|
+| 全局性来源 | 枚举所有 KKT 根 + 比较目标 | 解凸松弛；rank-1 时松弛精确 |
+| 证书 | **没有** $H\succeq0$ 这样的对偶证书；要独立验证只能重解或穷举 | 有：$H(\lambda)\succeq0$、$Hx=0$ |
+| 失效模式 | 漏根、重根/退化、数值消元失败、$t(q)$ 奇异 | 松弛不 tight、corank>1、乘子不唯一 |
+| 计算复杂度 | 与 correspondence 数量关系不大（只进系数矩阵），但消元规模随变量数/次数增长 | SDP 规模随变量数 $n$ 增长（$O(n^2)$ 变量） |
+
+> **因此，严格按 SDPR 的定义，QPEP 的“globally optimal”不等于“certifiably optimal”**：
+> 它给出的是“在代数求解成功的条件下，枚举到的全局最优”，而不是一个可在多项式时间内独立
+> 检验的凸证书。论文摘要的措辞是“globally optimal solutions / both the solution and covariance
+> are guaranteed to be globally optimal” `[Wu2022, Abstract]`，并未使用 SDPR 意义上的
+> “certificate” 一词。这个区分是回答 Q1 的关键。
+
+### 2.5 可解性与可观测性
+
+论文的第二个贡献是给出 QPEP 的**可解性（solvability）与可观测性（observability）判别规则**
+`[Wu2022, Abstract]`。直观上：
+
+- 多项式系统的实根个数/重数、以及作用矩阵或雅可比的秩，决定了问题是有唯一解、多解、
+  还是退化（例如共线点、平面退化、纯旋转等）；
+- 这些结构同时决定了解是否“可观测”（数据能否唯一确定位姿）。
+
+官方代码中可以看到与退化/多解相关的分支（对候选根排序、检查残差、LM 精化），但**本文没有
+逐条复现正文的可解性/可观测性定理**；这里只把它作为论文的贡献记录，不展开未核对的细节。
+
+### 2.6 协方差：又一个 SDP，但用途不同
+
+QPEP 的协方差不是简单的 $(J^\top J)^{-1}$。论文把协方差估计写成一个**带 PSD 约束的凸优化
+（SDP）**，用 CSDP/SeDuMi 求解，因此协方差也是“全局最优”的 `[Wu2022, Abstract]`。官方
+`csdp_cov` 构造的是一个含 $4\times4$ 半正定块 + 12 维对角块的 SDP `[LibQPEP,
+src/CovEstimation.cpp]`。补充材料还给出了四元数协方差 $\Sigma_q$、旋转矩阵协方差 $\Sigma_R$、
+李代数协方差 $\Sigma_\xi$ 之间的无损/近似转换 `[Wu2022, Suppl. §I.B–I.C]`。
+
+注意：这里的 SDP 是**为了估计协方差**，不是像 SDPR 那样用 SDP 松弛求原始非凸问题的全局解。
+两篇论文都用了“SDP”，但目的和理论角色不同。
+
+---
+
+## 3. QPEP 能解哪些机器人问题
+
+官方 README 与补充材料列出的问题族 `[LibQPEP README; Wu2022, Suppl. §II]`：
+
+| # | 问题 | 机器人/视觉含义 | 是否估计 |
+|---|---|---|---|
+| 1 | PnP | 已知 3D 点 + 2D 像素，求相机位姿 | 是 |
+| 2 | PnL | 已知 3D 线 + 2D 线，求相机位姿 | 是 |
+| 3 | PnPL | 点 + 线混合的相机位姿 | 是 |
+| 4 | Hand-eye calibration | $AX=XB$，手眼/机器人-相机标定 | 标定 |
+| 5 | Point-to-plane registration | 点到面 ICP 的全局位姿 | 是 |
+| 6 | Conics-based camera pose | 基于二次曲线的相机位姿 | 是 |
+| 7 | Multi-robot relative pose from ranges | 多机器人测距相对位姿 | 是 |
+| 8 | **Forward kinematics of parallel robots** | **Stewart/六足平台正运动学** | **否（正运动学）** |
+| 9 | Multi-GNSS attitude determination | 多 GNSS 天线姿态确定 | 是（姿态） |
+
+第 8 项是回答 Q4 “不限于估计”的关键：Stewart 平台正运动学是**给定六条腿长求平台位姿**，
+是一个多解的非凸运动学问题，不是状态估计；QPEP 把它写成四元数二次型并用 Gröbner 基枚举
+全部装配模式。补充材料给出了平台几何参数与两组真值位姿 `[Wu2022, Suppl. §I.E]`，
+官方 `MATLAB/test_stewart.m` 是可直接运行的例子。
+
+第 4 项（手眼标定）与第 1/5 项（PnP、点到面配准）则直接对应“相机参数/位姿标定”这一类问题。
+这也说明：**QPEP 与 SDPRLayers 在问题层面是重叠的**（都覆盖 PnP/手眼/配准/标定），
+差别在求解与可微性。
+
+---
+
+## 4. QPEP 与 SDPRLayers 的关系：互补，而非替代
+
+| 维度 | QPEP (T-RO 2022) | SDPRLayers (T-RO 2025) |
+|---|---|---|
+| 目标 | 对一类四元数 QCQP 求**全局解 + 协方差** | 把非凸 POP 变成**可微层**，前向全局、反向可信 |
+| 全局机制 | Gröbner 基枚举全部 KKT 根 | Shor SDP 松弛 + 对偶证书 |
+| 是否要求 tight | **不要求**（不依赖 SDP 松弛） | **要求** rank-1 / corank=1 |
+| 是否可微 | 不提供（但可在选定的 KKT 根上做隐式微分） | 提供，且有 Thm.2 保证 |
+| 变量规模 | 固定小维数（四元数 4 + 平移 3），适合 correspondence 很多的问题 | 变量数 $n$ 可较大，但 SDP 规模随 $n$ 快速增长 |
+| 多解/退化 | 显式处理多根；可解性/可观测性分析 | 依赖 ACQ/SOSC/corank=1；多全局解不在保证内 |
+| 不确定性 | 协方差 SDP | 不建模 |
+| 典型强项 | PnP/PnL/手眼/点到面/Stewart FK/GNSS 等**低维、多模态**问题 | 矩阵加权位姿/标定、SLAM、配准等**需要梯度**的问题 |
+
+**一个自然的混合路线**：用 QPEP 求全局解，再在选定的 KKT 根上做隐式微分（等价于 SDPR-CIFT
+的思路），从而把 QPEP 的解嵌入可微 pipeline。但这条路线**没有 SDPR 的全局选择保证**：
+当参数变化使另一个根成为全局最优时，解映射会跳变，梯度不连续；SDPR 的 tight + corank=1
+条件正是为了避免这种跳变（至少在小扰动下稳定）。这是两篇论文放在一起读时最有价值的对比。
+
+---
+
+## 5. QPEP 的局限（结合代码与摘要）
+
+1. **只适用于固定小维数的四元数 QCQP**：变量是 $q,t$，不处理一般大规模 POP、不等式约束、
+   离散变量、层级松弛。
+2. **“全局”依赖代数消元的完整性**：漏根、重根、数值病态、$t(q)$ 奇异都会破坏全局性；
+   没有对偶证书可独立检验。
+3. **没有梯度/可微层**：不能直接端到端训练；需要额外的隐式微分与选择逻辑。
+4. **需要符号推导/代码生成**：每个问题族要生成 $W,Q,D,G,c$ 等系数（`syms_*.m`），
+   工程门槛高于“把矩阵丢给 SDP”。
+5. **协方差 SDP 仍需外部求解器**（CSDP/SeDuMi），且协方差转换涉及四元数/旋转/李代数的
+   参数化细节。
+6. **本文未复现 QPEP 的数值实验**：T-RO 正文不可得，LibQPEP 的 C++ 构建需要 Eigen/LAPACK/
+   CMake（本机缺 Eigen 头文件与 CMake），MATLAB 脚本也没有 MATLAB/Octave 环境。因此
+   QPEP 的数值结果（精度、协方差一致性、Stewart 例子）**未在本报告中独立验证**；本报告的
+   Q5 复现对象是 SDPRLayers §VI-B4 的 stereo baseline 标定（见 `report/reproduction.md`）。
+   这是明确的证据边界，不把“读过摘要/补充材料”说成“复现了 QPEP”。
+
+---
+
+## 6. 一句话总结
+
+> QPEP 用“四元数二次型 + Gröbner 基枚举全部 KKT 根”换取了**不依赖 SDP 紧性的全局解**，
+> 并把协方差也做成一个凸 SDP；它适合低维、多模态、correspondence 很多的几何问题（包括
+> Stewart 平台正运动学这种非估计问题），但**不提供可微层，也没有 SDPR 意义上的对偶证书**。
+> SDPRLayers 则用“SDP 松弛 + 对偶证书 + 隐式选择微分”换取了**可信梯度**，代价是 tight 假设
+> 与每步解 SDP。两者是“代数全局解”与“凸证书 + 可微”的两条互补路线。
