@@ -1,4 +1,9 @@
 # SDPRLayers 相机参数标定仿真复现报告（Section VI‑B4 / Fig. 4 / Table V）
+> **本仓库的分发说明**：完整逐 run pkl、`trajectories_all.csv` 与 113 MB 原始日志留在原实验机；
+> 本仓库保留汇总表（`results_upstream/final{,_adaptive}/`）、图（`results_upstream/figures/`）
+> 与可重建的驱动脚本。下文的绝对路径是原实验机路径，请按 `repro/README.md` 调整。
+
+
 
 **复现者**：repro‑up（faithful upstream 复现线）
 **工作区**：`/home/syk/labs/SDPR`
