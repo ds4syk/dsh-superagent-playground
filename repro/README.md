@@ -8,11 +8,11 @@
 | 路径 | 内容 |
 |---|---|
 | `cleanroom/` | 独立实现（不看上游），含相机模型、SDP、证书、隐式微分、局部求解器、bilevel 外层、自检 |
-| `results_clean/` | cleanroom 的 tables / figures / run_summary / trajectories / Jacobian / tightness |
+| `results_clean/` | cleanroom 的 tables / figures / run_summary / Jacobian / tightness（逐迭代轨迹 CSV 可由 `run_experiment.py` 重新生成，未入库） |
 | `upstream/` | 官方代码修复版的驱动、环境脚本、报告（上游 `sdprlayer` 仓库本身不内嵌） |
 | `patches/` | 对上游 `cb3aed2` 的修复 patch（0001–0009） |
 | `results_upstream/final/` | 官方代码 strict 配置的 Table V 与曲线（36/50） |
-| `results_upstream/final_adaptive/` | 自适应重试后的最终 Table V、曲线与 summary（49/50） |
+| `results_upstream/final_adaptive/` | 自适应重试后的最终 Table V 与 summary（49/50；逐迭代曲线可重新生成，未入库） |
 | `ENV.md` | 原始实验环境记录 |
 
 ## 最快验证：cleanroom 自检
