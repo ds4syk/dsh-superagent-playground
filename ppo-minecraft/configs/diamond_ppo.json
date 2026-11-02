@@ -13,7 +13,7 @@
     "frame_stack": 4
   },
   "ppo": {
-    "total_steps": 2500000,
+    "total_steps": 1200000,
     "rollout_steps": 1024,
     "chunk_len": 32,
     "epochs": 4,
@@ -22,7 +22,7 @@
     "reward_scale": 5.0
   },
   "logging": {
-    "save_every_updates": 100,
+    "save_every_updates": 20,
     "log_every_updates": 5,
     "keep_checkpoints": 3
   }

@@ -169,10 +169,12 @@ def main(argv=None) -> int:
             global_step = int(ckpt["step"])
             print(f"[mcppo] resumed from {ckpt_path} at step {global_step}", flush=True)
 
-    total_updates = int(cfg["ppo"]["total_steps"]) // rollout_steps
+    samples_per_update = rollout_steps * n_envs
+    total_updates = int(cfg["ppo"]["total_steps"]) // samples_per_update
     total_updates = max(total_updates, start_update)
     total_params = sum(p.numel() for p in model.parameters())
-    print(f"[mcppo] steps={total_updates * rollout_steps} updates={total_updates} "
+    print(f"[mcppo] samples={total_updates * samples_per_update} "
+          f"updates={total_updates} samples_per_update={samples_per_update} "
           f"params={total_params/1e6:.2f}M device={device} run_dir={run_dir}", flush=True)
 
     os.makedirs(os.path.join(run_dir, "ckpt"), exist_ok=True)
@@ -291,15 +293,15 @@ def main(argv=None) -> int:
         stats = ppo_update(model, optimizer, rollout, advantages, returns, cfg["ppo"],
                            device, entropy_at(update))
         learn_time = time.time() - t_learn
-        global_step += rollout_steps
+        global_step += samples_per_update
         elapsed = time.time() - t_start
         rec = {
             "step": global_step,
             "update": update,
             "lr": lr,
             "entropy_coef": entropy_at(update),
-            "sps": rollout_steps / max(1e-6, elapsed),
-            "ticks_per_s": rollout_steps * int(cfg["env"]["repeat"]) / max(1e-6, elapsed),
+            "sps": samples_per_update / max(1e-6, elapsed),
+            "ticks_per_s": samples_per_update * int(cfg["env"]["repeat"]) / max(1e-6, elapsed),
             "collect_s": collect_time,
             "learn_s": learn_time,
             "episode_return_mean": float(np.mean(ep_returns)) if ep_returns else None,

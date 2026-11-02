@@ -34,10 +34,14 @@ kb/                     # 中文知识库（设计、奖励、实验、可行性
 
 ```bash
 MC=/mnt/storage1/syk/dreamer/envs/mcppo
-source scripts/mc_env.sh          # Java 8 / MineRL / Xvfb 依赖
+bash scripts/prepare_mc.sh        # 一次性：把 0.7 GB 游戏树落到 NVMe（/tmp/mcppo）
+source scripts/mc_env.sh          # Java 8 / MineRL / Xvfb 依赖 + TMPDIR 指向 NVMe
 DISP=:90; $XP/root/usr/bin/Xvfb $DISP -screen 0 1024x768x24 +extension GLX +render &
 export DISPLAY=$DISP
 ```
+
+> 节点上的 `/mnt/storage1` 是繁忙 HDD，8 个实例各自复制 0.7 GB 游戏树会互相拖慢；
+> `prepare_mc.sh` 先把游戏树复制到 NVMe，训练时每个实例从 NVMe 复制到 `TMPDIR`。
 
 冒烟（2 envs，128 步，约 3 分钟）：
 
@@ -45,11 +49,11 @@ export DISPLAY=$DISP
 python -m mcppo.train --config configs/smoke.json --out-dir runs/smoke --steps 128
 ```
 
-正式训练（8 envs，200 万步，Slurm）：
+正式训练（6 envs，120 万样本，Slurm）：
 
 ```bash
 sbatch scripts/train_diamond.sbatch
-# 等 10-20 万步后画曲线：
+# 任意时刻画曲线：
 python -m mcppo.plot_curves --run /mnt/storage1/syk/dreamer/runs/mcppo/diamond_s0
 ```
 
