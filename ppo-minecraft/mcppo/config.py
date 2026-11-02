@@ -31,19 +31,19 @@ DEFAULTS: Dict[str, Any] = {
         # All weights live here so ablations are one config edit away.
         "gamma_shape": 1.0,         # undiscounted potential shaping (see 03_reward)
         "beta_shape": 1.0,          # weight on Phi-based item/exploration reward
-        "step_penalty": 0.00005,
+        "step_penalty": 0.0002,
         "speed_gain": 0.5,          # milestone multiplier at t=0 (1.5x)
         "speed_floor": 0.75,
         "health_heal": 0.05,
         "health_damage": 0.10,
-        "death_penalty": 5.0,
+        "death_penalty": 1.0,
         "hunger_threshold": 6.0,
         "hunger_penalty": 0.25,
         "breath_threshold": 0.30,
         "breath_penalty": 0.01,
         "explore_cell": 8,          # cell size in blocks for novelty potential
-        "explore_value": 0.005,
-        "explore_cap": 2.0,
+        "explore_value": 0.01,
+        "explore_cap": 4.0,
         "depth_value": 0.02,
         "depth_ref_y": 64.0,
         "depth_bonus": [              # one-time, at first reaching y <= threshold

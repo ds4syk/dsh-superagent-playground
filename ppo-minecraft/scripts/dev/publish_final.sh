@@ -13,6 +13,16 @@ $PY scripts/dev/fill_kb.py "$RUN"
 $PY -m mcppo.plot_curves --run "$RUN" --out "$RUN/curves"
 cp "$RUN/curves/curves.png" kb/assets/curves.png
 
+# refresh static pages from the latest local Markdown
+for pair in "01 环境与基准：Dreamer 的 MC 设置|https://yide4vukqxv.feishu.cn/docx/RNEMdZJL6oAwRUx9sP3cjexBnYc" \
+            "02 PPO 方案设计|https://yide4vukqxv.feishu.cn/docx/XIeWdywp9ohI6MxE4sPcoqBMnrb" \
+            "03 手写奖励函数|https://yide4vukqxv.feishu.cn/docx/BhmIdJ7P5omLGsxPNDWcZiALnid" \
+            "05 到钻石的可行性与路线|https://yide4vukqxv.feishu.cn/docx/ZKzidTQt9odL8fxfqvhcUWHBncc"; do
+  f="${pair%%|*}"; u="${pair##*|}"
+  lark-cli docs +update --as bot --doc "$u" --command overwrite --doc-format markdown \
+    --content "@./kb/$f.md" --format json >/dev/null
+done
+
 mk() { # title, file
   lark-cli docs +create --as bot --parent-token "$FOLDER" --doc-format markdown \
     --title "$1" --content "@./$2" --format json | \
