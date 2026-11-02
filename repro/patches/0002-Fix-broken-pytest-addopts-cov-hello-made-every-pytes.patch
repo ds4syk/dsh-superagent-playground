@@ -1,0 +1,28 @@
+From 26a67e1fbb35b33d767c765e25a77c8539cd4fde Mon Sep 17 00:00:00 2001
+From: repro-up <repro-up@local>
+Date: Sun, 25 Oct 2026 16:58:47 +0800
+Subject: [PATCH 2/4] Fix broken pytest addopts (--cov=hello made every pytest
+ run fail)
+
+pytest-cov is not a dependency and there is no 'hello' package; 'pytest' in a
+fresh environment aborted with 'unrecognized arguments: --cov=hello'.
+---
+ setup.cfg | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/setup.cfg b/setup.cfg
+index 17cee49..18eac33 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -31,7 +31,10 @@ packages=find:
+ where=src
+ 
+ [tool:pytest] # check how much of the codebase is covered/tested
+-addopts = --cov=hello 
++# NOTE: the previous `addopts = --cov=hello` made every `pytest` invocation fail
++# with "unrecognized arguments: --cov=hello" because pytest-cov is not a
++# dependency and there is no `hello` package to measure. Keep addopts empty.
++addopts = 
+ 
+ [flake8]
+ ignore = W292, W391, F541, F841, W503, E203

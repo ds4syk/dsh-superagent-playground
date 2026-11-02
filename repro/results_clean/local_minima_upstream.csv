@@ -1,0 +1,4 @@
+dataset,n_inits,n_local,n_global,n_failure,frac_local,frac_global,frac_failure,cost_global
+0,100,40,60,0,0.4,0.6,0.0,296.2010956977713
+1,100,67,33,0,0.67,0.33,0.0,245.928391714133
+2,100,70,30,0,0.7,0.3,0.0,187.89929339502777
