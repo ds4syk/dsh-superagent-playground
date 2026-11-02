@@ -1,0 +1,29 @@
+{
+  "run": {
+    "name": "diamond_ppo_s0",
+    "seed": 0,
+    "num_envs": 6,
+    "torch_threads": 2,
+    "device": "cpu"
+  },
+  "env": {
+    "obs_size": 64,
+    "repeat": 2,
+    "episode_steps": 18000,
+    "frame_stack": 4
+  },
+  "ppo": {
+    "total_steps": 2500000,
+    "rollout_steps": 1024,
+    "chunk_len": 32,
+    "epochs": 4,
+    "minibatch_chunks": 64,
+    "lr": 0.0003,
+    "reward_scale": 5.0
+  },
+  "logging": {
+    "save_every_updates": 100,
+    "log_every_updates": 5,
+    "keep_checkpoints": 3
+  }
+}
