@@ -60,6 +60,6 @@ still close to random, but the reward is no longer dominated by death.
 
 ## v1 milestone events
 
-Per-update milestone events: 3, 3, 0, 3 (updates 0-3). Unlike v0, the events do not
+Per-update milestone events: 3, 3, 0, 3, 0 (updates 0-4). Unlike v0, the events do not
 disappear after the initial exploration, and one episode reached score 4. The run is
 still early (~30k samples).
