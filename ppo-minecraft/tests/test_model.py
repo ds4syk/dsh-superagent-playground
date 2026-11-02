@@ -15,7 +15,7 @@ def test_model_forward_shapes():
     equ = torch.zeros(t, b, 50)
     hidden = model.initial_hidden(b, torch.device("cpu"))
     logits, values, (h, c) = model(image, inv, scal, equ, hidden)
-    assert logits.shape == (t, b, 24)
+    assert logits.shape == (t, b, 25)
     assert values.shape == (t, b)
     assert h.shape == (1, b, 32)
 

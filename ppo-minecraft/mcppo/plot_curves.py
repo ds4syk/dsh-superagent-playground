@@ -80,6 +80,13 @@ def main(argv=None) -> int:
         ax[1].set_yticks(range(0, 13))
         ax[1].set_yticklabels(["-"] + MILESTONE_ORDER[:12], fontsize=7)
         ax[1].legend(loc="best", fontsize=8)
+    if metrics and any(m.get("milestone_events") for m in metrics):
+        ax1b = ax[1].twinx()
+        ax1b.plot([m["step"] for m in metrics],
+                  [m.get("milestone_events", 0) for m in metrics],
+                  color="tab:orange", lw=1.0, alpha=0.7, label="milestone events/update")
+        ax1b.set_ylabel("events/update", color="tab:orange", fontsize=8)
+        ax1b.legend(loc="upper left", fontsize=7)
     ax[1].set_title("tech-tree score (first-reaching step)")
     ax[1].set_xlabel("env steps")
 

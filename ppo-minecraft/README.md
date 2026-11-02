@@ -63,6 +63,15 @@ python -m mcppo.plot_curves --run /mnt/storage1/syk/dreamer/runs/mcppo/diamond_s
 python -m mcppo.evaluate --run <run_dir> --episodes 1 --record <run_dir>/eval.mp4
 ```
 
+## 本次运行（见 `kb/04`）
+
+真实训练：Slurm `cpu` 分区，6 个 Minecraft 实例 / 10 CPU，PPO 以 `repeat=1` 采集。
+首次更新（6,144 个样本）就用随机策略触发了 3 次里程碑（原木/木板/工作台），
+说明手写奖励的早期信号可被探索到。完整曲线、吞吐和里程碑统计在
+`kb/04 训练系统与实验.md`，原始数据在 `results/` 与数据盘 run 目录。
+
+> 钻石未在本次算力内达成；到钻石的步数/时间估算与路线（BC + PPO、分层 PPO）见 `kb/05`。
+
 ## 奖励函数（摘要）
 
 ```

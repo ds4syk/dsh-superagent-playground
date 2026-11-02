@@ -34,5 +34,12 @@ if e:
     print(f"episodes={len(e)}")
     for x in e[-5:]:
         print({k: x.get(k) for k in ('step', 'return', 'score', 'milestones', 'length')})
+    best = max(e, key=lambda x: x.get('score', 0))
+    print('best_episode', {k: best.get(k) for k in ('step', 'return', 'score', 'milestones')})
+    reached = {}
+    for x in sorted(e, key=lambda r: r.get('step', 0)):
+        for m in x.get('milestones', []):
+            reached.setdefault(m, x.get('step'))
+    print('first_reached', reached)
 else:
     print('episodes=0 (no 18k-step episode finished yet)')
