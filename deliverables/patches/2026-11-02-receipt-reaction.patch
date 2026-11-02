@@ -1,0 +1,490 @@
+diff --git a/docs/001-domain.md b/docs/001-domain.md
+index fd53001..9c4337d 100644
+--- a/docs/001-domain.md
++++ b/docs/001-domain.md
+@@ -24,11 +24,11 @@ Source, Thread, Eval, Mandate and Subscription form the core domain; the rest su
+ 
+ | Concept | Definition | Rules it keeps | Why it exists |
+ | --- | --- | --- | --- |
+-| Source | A stream of events. A Source kind is a reusable implementation; a Source instance is one configuration of a kind: whether it runs and what it listens to | Holds its read position and its own bot identity. Defines what counts as an event, including conditions that only hold over time. Drops the bot's own messages and Triggers outside what it listens to before they enter the domain. Translates each Trigger into the Threads it belongs to and the Channel addresses to reply on | A restart must not replay events |
++| Source | A stream of events. A Source kind is a reusable implementation; a Source instance is one configuration of a kind: whether it runs and what it listens to | Holds its read position and its own bot identity. Defines what counts as an event, including conditions that only hold over time. Drops the bot's own messages and Triggers outside what it listens to before they enter the domain. Translates each Trigger into the Threads it belongs to and the Channel addresses to reply on. A Source that supports reactions adds a receipt reaction to a recent message it receives and admits | A restart must not replay events |
+ | Trigger | One immutable event with the Source's own metadata, such as its actor | Belongs to one or more Threads. Accepting a Trigger twice creates one Ticket | The unit of audit and of idempotence |
+ | Thread | Triggers in time order; the Source defines which Triggers form one Thread | At most one Eval runs on it at a time. It may have several Tickets. It holds its Subscriptions, the running Eval and its Decision history | Gives Eval a consistent view and its context |
+ | Correlation | The relation between Threads that one Trigger belongs to | Adds context; never routes | Lets Eval follow related evidence |
+-| Channel | The write side of a Thread; the Source defines its addresses | A Thread may have several Channels; a Ticket holds a set of them | Acknowledgements, replies, pull requests and resolved reviews are all writes |
++| Channel | The write side of a Thread; the Source defines its addresses | A Thread may have several Channels; a Ticket holds a set of them | Acknowledgements, replies, receipt reactions, pull requests and resolved reviews are all writes |
+ | Policy | The versioned assessment rules and each Source's part: who may originate work through that Source, in that Source's own identities, how the list is synchronized, and which bots may make candidates | The Policy version covers the rules, the accept mode and the Source parts. A change that bears on a live Ticket, such as a change to a rule it was accepted under, is delivered to its Assignment; it does not revoke Mandates. Identities on different Sources are never mapped to each other | When the rules change, a running Eval must be discarded |
+ | Eval | The judgement on a batch of Triggers, in two layers: gate and assessment | Input: the Trigger batch, a Thread snapshot, every Ticket on the Thread including ended ones, and the current Policy. Output: a Decision. Holds no state | Decides whether new work starts, goes on or stops |
+ | Mandate | What an accept grants: the Policy version, the scope, the strength, the matched rules, the sender's identity on that Source and how the Source received the Trigger | Immutable; wider scope means a new Ticket. A Ticket's end does not end it: only a person's stop withdraws it, and a Policy that no longer holds it revokes it. Revalidated against the current Policy before an ended Ticket resumes | States why the work may be done, and how far it may go |
+diff --git a/docs/006-deployment.md b/docs/006-deployment.md
+index d4e810f..f91469d 100644
+--- a/docs/006-deployment.md
++++ b/docs/006-deployment.md
+@@ -48,7 +48,7 @@ Both presets run with `danger-full-access` as the operator's OS user and read me
+ 
+ ### Feishu bot (optional)
+ 
+-1. Create a self-built app with the bot capability. Grant it the permissions to receive message events, read and send chat messages, and read chat members, then publish the app version.
++1. Create a self-built app with the bot capability. Grant it the permissions to receive message events, read and send chat messages, read chat members, and add message reactions (`im:message.reactions:write_only`, for the receipt reaction), then publish the app version.
+ 2. Give the bot its own `lark-cli` configuration, restricted to the bot identity, and a wrapper:
+ 
+    ```sh
+diff --git a/docs/007-architecture.md b/docs/007-architecture.md
+index 184ea54..ea07047 100644
+--- a/docs/007-architecture.md
++++ b/docs/007-architecture.md
+@@ -38,7 +38,7 @@ Shutdown cancels turns, waits for passes, effects and agents, restores the proce
+ | --- | --- | --- |
+ | Setup | `src/app/setup.ts` | Resolves the repository and the accounts by probing their CLIs the way worker shells run them, writes and applies the workers' environment and command shims, and keeps the setup problems; Settings checks a changed account through it, and restarts through it, which runs setup again |
+ | Passes | `src/app/passes.ts` | One pass at a time, every two seconds and whenever a command asks: the due effects, then `Engine.evaluateDue`; a Source's Trigger reaches the Engine through it |
+-| Outbox | `src/app/outbox.ts` | The Engine's `Outbox` port, and the only writer of the receipts: `send` keeps a message's receipt and queues its `reply` effect in one transaction, and the effect's handler sends it through `SourceRegistry.send`; a message waits while its Source is off, and is dropped when the conversation is gone or not listened to |
++| Outbox | `src/app/outbox.ts` | The Engine's `Outbox` port, and the only writer of the receipts: `send` keeps a message's receipt and queues its `reply` effect, or a receipt reaction's `receipt` effect, in one transaction. The handlers send a message through `SourceRegistry.send` or add a reaction through `SourceRegistry.react`; a message waits while its Source is off, and is dropped when the conversation is gone or not listened to; a receipt reaction is dropped when its Source cannot react or when it waited past its freshness window |
+ | Notices | `src/app/notices.ts` | Converts domain events and worker activity into main-Session messages. `eventNotice` handles domain notices; `reportRelay` forwards questions immediately, keeps ordinary progress on its Ticket, and relays other reports; `followupRelay` names the Tickets that own a human follow-up. Relays arriving during a turn are delivered together at its next step through the DeepSeek Harness inbox |
+ 
+ ### Engine
+@@ -177,12 +177,13 @@ Failures retry with exponential backoff. Throwing `Later` defers work without co
+ | `relay` | Sessions | Steers a worker's report or question, or a person's follow-up, into the main Session's turn | 1, in queue order | 2 s doubling to 60 s |
+ | `notice` | Sessions | Injects a notice into the main Session without waking it | 1, in queue order | 2 s doubling to 60 s |
+ | `reply` | Outbox | Sends a message for a Channel through its Source, after the earlier messages of its Ticket to its conversation that have not failed three times; withdrawing the message cancels it | 1, none while paused | 5 s doubling to 300 s; one whose Source is off, or behind an earlier message, tries again after 5 s |
++| `receipt` | Outbox | Adds the Source's receipt reaction to the message its receipt names, through `SourceRegistry.react`; a receipt that waited past the five-minute window is dropped rather than sent | 4, none while paused | 1 s doubling to 30 s; one whose Source is off tries again after 1 s |
+ 
+ Each kind has a health entry under its name. It reports an error once one of its effects failed three times in a row, except `delivery`, whose failures show on their Ticket instead. Relays keep their order, and so do notices; a failed one holds back the later ones of its kind.
+ 
+ ### Sources
+ 
+-Sources extend the host through `SourceKind`, defined in `src/sources/kind.ts`. A kind declares its identity, title, description, configuration `schema` and `fields`, derived `facts`, and `health` entries. Optional behavior includes `scope`, a `channel` (`allowed`, `send`, `link`), `threadContext`, `find`, `policy`, `environment` and `refreshLabels`.
++Sources extend the host through `SourceKind`, defined in `src/sources/kind.ts`. A kind declares its identity, title, description, configuration `schema` and `fields`, derived `facts`, and `health` entries. Optional behavior includes `scope`, a `channel` (`allowed`, `send`, `react`, `link`), `threadContext`, `find`, `policy`, `environment` and `refreshLabels`.
+ 
+ `SourceRegistry` (`registry.ts`) owns registered kinds and stored instances, and implements the Engine's `SourceScope`. Registration claims health entries on `HealthBoard`; duplicate claims and reserved `sync:` names are refused. A SourceContext writes only through its registration's claimed entries, so reports after unregistration do nothing.
+ 
+@@ -316,7 +317,7 @@ Some generic modules still refer directly to GitHub or Feishu:
+ | `src/app/runtime.ts` | The Runtime, the composition root, with its start and stop |
+ | `src/app/setup.ts` | Setup, and `setupChanged`, whether a save changes a field setup reads |
+ | `src/app/passes.ts` | Passes, the pass scheduler |
+-| `src/app/outbox.ts` | The Outbox: the Engine's `Outbox` port, the receipts and the `reply` effects that send them |
++| `src/app/outbox.ts` | The Outbox: the Engine's `Outbox` port, the receipts, the `reply` effects that send them, and the `receipt` effects that add receipt reactions |
+ | `src/app/notices.ts` | The main Session's notices and relays: `eventNotice`, `reportRelay`, `resultRelay` and `followupRelay` |
+ | `src/app/store.ts` | The Store, and `Receipt`, a message of the outbox |
+ | `src/app/store-read.ts` | `storeReads`: the Store's read queries for the views, the tools and the Sources' polls, which never write |
+@@ -416,7 +417,8 @@ Some generic modules still refer directly to GitHub or Feishu:
+ | `tests/bundle-patch.spec.ts` | The bundle's patch, read as DeepSeek Harness reads it, and the agent preset of Executor Sessions it defines |
+ | `tests/effects.spec.ts` | The effect queue: coalescing, limits, retries with backoff, health and shutdown |
+ | `tests/passes.spec.ts` | Passes: one at a time, the ones asked for during a pass run as one after it, and the runtime health a failed pass reports |
+-| `tests/outbox.spec.ts` | The Outbox on a running Runtime: messages wait while processing is paused or their Source is not installed |
++| `tests/outbox.spec.ts` | The Outbox on a running Runtime: messages wait while processing is paused or their Source is not installed; receipt reactions are sent fresh, dropped stale, and skipped for a Source that cannot react |
++| `tests/feishu-receipt.spec.ts` | The Feishu receipt reaction: the raw reaction API call, a withdrawn target, and a retryable failure |
+ | `tests/cache.spec.ts` | `TextCache` |
+ | `tests/queue.spec.ts` | The Runtime's work through the effect queue, and what earlier versions stored |
+ | `tests/followups.spec.ts` | A person's follow-up on a Ticket's Thread: its notice to the main Session, the tools that act on it, what a burst costs; a worker's hand-back and context follow, and the main Session's note |
+@@ -460,7 +462,7 @@ One SQLite file, `<stateDir>/orchestrator.sqlite`, which only the Store opens.
+ | `ticket` | Tickets with their Mandate, origin, execution, Assignments, Channels, Inputs and the Threads they follow; the generated columns `open`, set while it has not ended, and `active`, set while Inputs are undelivered or the latest Assignment is pending or running | Engine |
+ | `decision` | Decisions, by Thread | Engine |
+ | `effect` | The effect queue: per kind and key, the payload, its order, failed attempts with the last error, and when it is due | Effects; the schema 11 migration queues what earlier versions kept for the main Session |
+-| `outbox` | The receipt of each message for a Channel, by id, with the Ticket it is for and its `status`, `pending`, `sent` or `dropped`, kept so an id is never queued twice; for a dropped message, when and why, as the generated column `dropped`, its time, and a reason code. A message that waits has a `reply` effect, which holds its attempts | The Outbox |
++| `outbox` | The receipt of each message or receipt reaction for a Channel, by id, with the Ticket it is for, its source event time, and its `status`, `pending`, `sent` or `dropped`, kept so an id is never queued twice; for a dropped one, when and why, as the generated column `dropped`, its time, and a reason code. A message that waits has a `reply` effect, a receipt reaction a `receipt` effect, which hold its attempts | The Outbox |
+ | `kv` | Every other record, by key | The part that names it |
+ 
+ A generated column is computed from its row's JSON and is empty outside its set, and each has an index over its set, so a pass reads only active work. A database that predates a column gets it when the Store opens it.
+diff --git a/src/app/effects.ts b/src/app/effects.ts
+index 9255cda..c2618c9 100644
+--- a/src/app/effects.ts
++++ b/src/app/effects.ts
+@@ -21,6 +21,8 @@ export interface EffectPayloads {
+   notice: { value: Record<string, unknown>; summary: string }
+   /** Send a message for a Channel through its Source; the key is the message ID, whose receipt the Outbox keeps. */
+   reply: Record<string, never>
++  /** Add the Source's receipt reaction to a message; the key is the receipt ID the Outbox keeps. */
++  receipt: Record<string, never>
+ }
+ export type EffectKind = keyof EffectPayloads
+ interface Handler<K extends EffectKind> {
+diff --git a/src/app/outbox.ts b/src/app/outbox.ts
+index a5f64b5..95f0401 100644
+--- a/src/app/outbox.ts
++++ b/src/app/outbox.ts
+@@ -1,5 +1,5 @@
+ /** Reliable outbound message delivery backed by persistent receipts and retried reply effects. */
+-import type { OutboundMessage, Outbox as OutboxPort, ReplyStatus } from '../core/index.ts'
++import { RECEIPT_WINDOW_MS, type OutboundMessage, type Outbox as OutboxPort, type ReplyStatus } from '../core/index.ts'
+ import type { Commands } from '../infra/commands.ts'
+ import { checkedImText } from '../infra/text.ts'
+ import type { SourceRegistry } from '../sources/registry.ts'
+@@ -9,7 +9,7 @@ import type { Store } from './store.ts'
+ export interface OutboxHost {
+   readonly store: Pick<Store, 'atomic' | 'receipts'>
+   readonly effects: Pick<Effects, 'enqueue' | 'cancel' | 'handle' | 'idle'>
+-  readonly sources: Pick<SourceRegistry, 'instance' | 'channelAllowed' | 'send'>
++  readonly sources: Pick<SourceRegistry, 'instance' | 'channelAllowed' | 'send' | 'react' | 'kind'>
+   readonly commands: Commands
+   paused(): boolean
+ }
+@@ -22,31 +22,50 @@ export interface OutboxHost {
+ export class Outbox implements OutboxPort {
+   constructor(private readonly host: OutboxHost) {
+     host.effects.handle('reply', (_payload, id) => this.deliver(id), { limit: () => host.paused() ? 0 : 1, retry: [5000, 300_000] })
++    host.effects.handle('receipt', (_payload, id) => this.deliver(id), { limit: () => host.paused() ? 0 : 4, retry: [1000, 30_000] })
+   }
+   /** Record a message receipt and enqueue its delivery effect atomically; duplicate message IDs are ignored. */
+   send(message: OutboundMessage): void {
+     // Validate IM reply length here; acknowledgements are already validated when decided.
+     if (message.kind === 'reply' && message.channel.source === 'feishu') checkedImText(message.text)
++    // A reaction is a receipt only for a Source that can add one; the others, such as GitHub in v1, get no record.
++    if (message.kind === 'reaction' && !this.host.sources.kind(message.channel.source)?.channel?.react) return
+     const { store, effects } = this.host
+-    store.atomic(() => { if (store.receipts.add(message)) effects.enqueue('reply', message.id, {}) })
++    store.atomic(() => { if (store.receipts.add(message)) effects.enqueue(message.kind === 'reaction' ? 'receipt' : 'reply', message.id, {}) })
+   }
+   status(id: string): ReplyStatus | undefined { return this.host.store.receipts.get(id)?.status }
+   withdraw(id: string): void {
+     const { store, effects } = this.host
+     store.atomic(() => { if (store.receipts.withdraw(id)) effects.cancel('reply', id) })
+   }
+-  sent(): Promise<void> { return this.host.effects.idle('reply') }
++  /** Resolve once every outbound write, reply or receipt reaction, has been handed to its Channel. */
++  async sent(): Promise<void> {
++    await this.host.effects.idle('reply')
++    await this.host.effects.idle('receipt')
++  }
+   private async deliver(id: string): Promise<void> {
+     const { store, sources, commands } = this.host
+     const receipt = store.receipts.get(id)
+     if (receipt?.status !== 'pending') return
+     if (!sources.instance(receipt.channel.source)?.enabled) throw new Later('The Source is off or not installed')
++    if (!sources.channelAllowed(receipt.channel)) { store.receipts.settle(receipt, 'channelIgnored'); return }
++    if (receipt.kind === 'reaction') {
++      if (this.stale(receipt)) { store.receipts.settle(receipt, 'stale'); return }
++      const result = await sources.react(receipt, commands)
++      if (result === 'waiting') throw new Later('The Source is not installed')
++      store.receipts.settle(receipt, result === 'gone' ? 'channelGone' : 'sent')
++      return
++    }
+     // Hold later messages for the same ticket and conversation behind an earlier pending message until it exceeds the failure threshold.
+     if (store.receipts.behind(id, FAILURES_BEFORE_ERROR)) throw new Later('An earlier message of this ticket to this conversation waits')
+-    if (!sources.channelAllowed(receipt.channel)) { store.receipts.settle(receipt, 'channelIgnored'); return }
+     // A permanently unreachable target (such as a recalled message or deleted Issue) settles as `channelGone` so its receipt prevents retries.
+     const result = await sources.send(receipt, commands)
+     if (result === 'waiting') throw new Later('The Source is not installed')
+     store.receipts.settle(receipt, result === 'gone' ? 'channelGone' : 'sent')
+   }
++  /** True when a receipt reaction waited past its freshness window, such as through a long pause; it is dropped, not sent. */
++  private stale(receipt: OutboundMessage): boolean {
++    const at = receipt.at ? Date.parse(receipt.at) : NaN
++    return Number.isFinite(at) && Date.now() - at > RECEIPT_WINDOW_MS
++  }
+ }
+diff --git a/src/app/store.ts b/src/app/store.ts
+index 6dcb8b0..69b68e7 100644
+--- a/src/app/store.ts
++++ b/src/app/store.ts
+@@ -12,8 +12,8 @@ import { storeReads } from './store-read.ts'
+ 
+ /** A Trigger's position on its thread timeline, ordered by timestamp and then `id` as tie-breaker. */
+ export interface TimelinePlace { at: string; id: string }
+-/** Why a message was dropped: its conversation can never receive it (`channelGone`), or its Source no longer listens to it (`channelIgnored`). */
+-export type DropReason = 'channelGone' | 'channelIgnored'
++/** Why a message was dropped: its conversation can never receive it (`channelGone`), its Source no longer listens to it (`channelIgnored`), or a receipt reaction waited past its freshness window (`stale`). */
++export type DropReason = 'channelGone' | 'channelIgnored' | 'stale'
+ /** Outbound message receipt tracked in the outbox from the moment it is queued (`pending`, `sent`, or `dropped`); delivery attempt counts live on its `reply` effect. */
+ export interface Receipt extends OutboundMessage { status: ReplyStatus; dropped?: { at: string; reason: DropReason } }
+ /** A dropped outbound message receipt, with the timestamp and reason it was dropped. */
+@@ -273,11 +273,11 @@ export class Store implements Repositories {
+      */
+     settle: (message: OutboundMessage, outcome: 'sent' | DropReason): void => {
+       const settled = outcome === 'sent' ? { status: 'sent' } : { status: 'dropped', dropped: { at: new Date().toISOString(), reason: outcome } }
+-      const { id, channel, text, kind, ticketId } = message
++      const { id, channel, text, kind, ticketId, at } = message
+       const updated = this.db.prepare("UPDATE outbox SET value = json_patch(value, ?) WHERE id = ? AND value ->> '$.status' = 'pending'")
+         .run(JSON.stringify(settled), id)
+       if (!Number(updated.changes)) this.db.prepare('INSERT OR IGNORE INTO outbox (id, value) VALUES (?, ?)')
+-        .run(id, JSON.stringify({ id, channel, text, kind, ...ticketId ? { ticketId } : {}, ...settled }))
++        .run(id, JSON.stringify({ id, channel, text, kind, ...ticketId ? { ticketId } : {}, ...at ? { at } : {}, ...settled }))
+     },
+     /**
+      * Withdraws a pending message that has not yet been sent.
+diff --git a/src/client/locales.ts b/src/client/locales.ts
+index d81d0d4..a272e61 100644
+--- a/src/client/locales.ts
++++ b/src/client/locales.ts
+@@ -43,6 +43,7 @@ const TEXT = {
+   'health.relay': ['转达给主 Session 的消息', 'Relays to the main Session'],
+   'health.notice': ['给主 Session 的通知', 'Notices to the main Session'],
+   'health.reply': ['发往渠道的消息', 'Messages to Channels'],
++  'health.receipt': ['表情回执投递', 'Receipt reactions'],
+   'health.worker': ['执行器事件处理', 'Executor event handling'],
+   'health.evals': ['未完成的评估', 'Unavailable Evals'],
+   none: ['暂无。', 'None.'],
+@@ -597,6 +598,7 @@ const TEXT = {
+   'reason.legacyImport': ['从旧版工单记录导入', 'Imported from a legacy Ticket record'],
+   'reason.channelGone': ['对话已无法接收消息', 'The conversation can no longer receive messages'],
+   'reason.channelIgnored': ['来源已不再监听这个对话', 'The Source no longer listens to this conversation'],
++  'reason.stale': ['消息已超过回执时效', 'The message is past the receipt window'],
+   'reason.hostRestarted': ['dsh-superagent 重启', 'dsh-superagent restarted'],
+   'reason.retried': ['人工重试', 'Retried by a person'],
+   'reason.completed': ['已完成', 'Completed'],
+diff --git a/src/core/index.ts b/src/core/index.ts
+index 143058b..16a2014 100644
+--- a/src/core/index.ts
++++ b/src/core/index.ts
+@@ -4,6 +4,7 @@ export * from './ports.ts'
+ export { Engine, type EngineForExecutor, type EngineForMainSession, type EngineForPeople, type EngineForSettings, type EngineForSources,
+   type EngineOptions, type Outcome, type ReceiveResult, type Reply, type ReplyRequest, type WorkerReport } from './engine.ts'
+ export { UserError, USER_ERRORS, type UserErrorCode } from './errors.ts'
++export { RECEIPT_WINDOW_MS } from './intake.ts'
+ export { REASONS, reasonText, said, type Reason, type ReasonCode } from './reasons.ts'
+ export { MemoryRepositories } from './memory.ts'
+ export { canRetry, ticketStage, type TicketStage } from './stage.ts'
+diff --git a/src/core/intake.ts b/src/core/intake.ts
+index 145c721..0772c21 100644
+--- a/src/core/intake.ts
++++ b/src/core/intake.ts
+@@ -6,6 +6,8 @@ import { EnginePart, type EngineOptions } from './part.ts'
+ import type { Tickets } from './tickets.ts'
+ 
+ export type ReceiveResult = 'stored' | 'duplicate' | 'filtered'
++/** How recent a message must be to get a receipt reaction; older messages, such as history backfill, stay quiet. */
++export const RECEIPT_WINDOW_MS = 5 * 60 * 1000
+ 
+ /**
+  * Ingests incoming triggers from Sources, deduplicating and filtering them against SourceScope before recording thread correlations.
+@@ -57,7 +59,22 @@ export class Intake extends EnginePart {
+     // Thread for context, and every bot's, goes to Eval.
+     if (!this.owners(trigger).length) this.queueForEval(trigger)
+     for (const ticketId of fanout) this.tickets.wake(ticketId)
++    // A reaction tells the sender the message arrived, before the slower Eval and text acknowledgement. Only a recent,
++    // admitted human message that addressed the agent or reached a Ticket on its own Thread earns one; the Outbox skips a
++    // Source that cannot react, and drops a receipt that went stale while waiting.
++    if (trigger.human && trigger.channel && this.receiptable(trigger, at, reached)) {
++      this.options.outbox.send({ id: key('receipt', trigger.id), channel: trigger.channel, text: '', kind: 'reaction', at: trigger.at })
++    }
+     this.emit('trigger.received', { triggerId: trigger.id, threads: trigger.threads.map(threadKey) })
+     return 'stored'
+   }
++  /** Whether a stored Trigger earns a receipt reaction: fresh, admitted, and addressed or reaching a Ticket on a non-context Thread. */
++  private receiptable(trigger: Trigger, at: string, reached: ReadonlyMap<string, { ticket: Ticket; context: boolean }>): boolean {
++    const age = Date.parse(at) - Date.parse(trigger.at)
++    // A message far in the future is a clock problem, not something to acknowledge.
++    if (!Number.isFinite(age) || age > RECEIPT_WINDOW_MS || age < -60_000) return false
++    const primary = this.thread(trigger.threads[0]!)
++    if (!this.policy().gate(trigger, primary, this.ticketsOnThread(primary)).admissible) return false
++    return trigger.addressed !== undefined || [...reached.values()].some(item => !item.context)
++  }
+ }
+diff --git a/src/core/ports.ts b/src/core/ports.ts
+index 08c7a1c..5462086 100644
+--- a/src/core/ports.ts
++++ b/src/core/ports.ts
+@@ -68,8 +68,11 @@ export interface Executor {
+   stop(ticket: Ticket, assignment: Assignment, reason: string): void
+ }
+ 
+-/** A message for a Channel; `ticketId` names the Ticket it is for, when there is one. */
+-export interface OutboundMessage { id: string; channel: ChannelRef; text: string; kind: 'acknowledgement' | 'reply' | 'notice'; ticketId?: string }
++/**
++ * An outbound Channel write: `ticketId` names the Ticket it is for, when there is one, and `at` is the source event time, which
++ * lets a receipt reaction be dropped once the message is no longer fresh.
++ */
++export interface OutboundMessage { id: string; channel: ChannelRef; text: string; kind: 'acknowledgement' | 'reply' | 'notice' | 'reaction'; ticketId?: string; at?: string }
+ /** A queued message waits (`pending`), went out (`sent`), or was dropped because its conversation can never receive it (`dropped`). */
+ export type ReplyStatus = 'pending' | 'sent' | 'dropped'
+ /** The messages queued for Channels; the Engine queues them inside its commands, and a sender delivers them later. */
+diff --git a/src/sources/feishu-channel.ts b/src/sources/feishu-channel.ts
+index db2d33d..cc34a4b 100644
+--- a/src/sources/feishu-channel.ts
++++ b/src/sources/feishu-channel.ts
+@@ -28,6 +28,24 @@ export async function sendFeishu(host: Pick<SourceContext, 'commands'>, message:
+   }
+   return 'sent'
+ }
++/** The emoji a receipt reaction adds; fixed in v1, not a setting. */
++export const RECEIPT_EMOJI = 'OK'
++/**
++ * Adds the receipt reaction to a message through Feishu's raw reaction API, rather than the typed `im reactions` shortcut: on
++ * this host the shortcut intermittently returned transport EOF while the raw API path worked.
++ */
++export async function reactFeishu(host: Pick<SourceContext, 'commands'>, message: OutboundMessage): Promise<'sent' | 'gone'> {
++  const messageId = message.channel.address.messageId
++  if (!messageId) throw new Error('Missing Feishu reaction target')
++  const path = `/open-apis/im/v1/messages/${messageId}/reactions`
++  const data = JSON.stringify({ reaction_type: { emoji_type: RECEIPT_EMOJI } })
++  try { await host.commands.lark(['api', 'POST', path, '--data', data]) }
++  catch (error) {
++    if (gone(error)) return 'gone'
++    throw error
++  }
++  return 'sent'
++}
+ /** Fallback chat link on the bot's brand; the message's own deep link on its Trigger is preferred when available. */
+ export const feishuLink = (address: Record<string, string>, links: ChannelLinks): ChannelLink => ({
+   url: feishuChatLink(links.feishu?.brand ?? 'feishu', address.chatId ?? ''), label: { zh: '飞书消息', en: 'Feishu message' },
+diff --git a/src/sources/feishu.ts b/src/sources/feishu.ts
+index 075d559..ecbec6d 100644
+--- a/src/sources/feishu.ts
++++ b/src/sources/feishu.ts
+@@ -2,7 +2,7 @@
+ import type { Context } from '@deepseek-ai/cordis'
+ import { z } from 'zod'
+ import { FeishuBotSchema } from '../deployment.ts'
+-import { feishuLink, sendFeishu } from './feishu-channel.ts'
++import { feishuLink, reactFeishu, sendFeishu } from './feishu-channel.ts'
+ import { feishuThreadContext } from './feishu-read.ts'
+ import { refreshChatNames, runFeishu } from './feishu-loops.ts'
+ import { SOURCE, feishuTriggerId } from './feishu-trigger.ts'
+@@ -61,7 +61,7 @@ export const feishuKind: SourceKind<FeishuConfig> = {
+   channel: {
+     allowed: (address, config) =>
+       feishuKind.scope!({ meta: { chatId: address.chatId ?? '', direct: address.direct === 'true' } }, config).listened,
+-    send: sendFeishu, link: feishuLink,
++    send: sendFeishu, react: reactFeishu, link: feishuLink,
+   },
+   threadContext: feishuThreadContext,
+   find: query => ({ threads: [], terms: [...new Set(query.match(/om_[A-Za-z0-9_-]+/g) ?? [])] }),
+diff --git a/src/sources/kind.ts b/src/sources/kind.ts
+index 3a8b32e..1026c2c 100644
+--- a/src/sources/kind.ts
++++ b/src/sources/kind.ts
+@@ -51,6 +51,11 @@ export interface SourceChannel<C> {
+    * @throws when delivery failed but may succeed on a later retry.
+    */
+   send(host: Pick<SourceContext, 'commands'>, message: OutboundMessage): Promise<'sent' | 'gone'>
++  /**
++   * Adds the Source's receipt reaction to the message `message.channel.address` names; returns `'gone'` when the target can no
++   * longer receive it, and throws when delivery failed but may succeed on a later retry. A kind without it gets no reaction.
++   */
++  react?(host: Pick<SourceContext, 'commands'>, message: OutboundMessage): Promise<'sent' | 'gone'>
+   /** Returns the URL and label for `address`; `url` is empty when `links` lack the required deployment info. */
+   link(address: Record<string, string>, links: ChannelLinks): ChannelLink
+ }
+diff --git a/src/sources/registry.ts b/src/sources/registry.ts
+index a4e0e77..22a8058 100644
+--- a/src/sources/registry.ts
++++ b/src/sources/registry.ts
+@@ -97,6 +97,15 @@ export class SourceRegistry implements SourceScope {
+     if (!kind) return 'waiting'
+     return kind.channel ? kind.channel.send({ commands }, message) : 'gone'
+   }
++  /**
++   * Adds a receipt reaction through its Channel's kind; returns `'waiting'` while the kind is not installed, or `'gone'`
++   * when the kind cannot react to messages.
++   */
++  async react(message: OutboundMessage, commands: Commands): Promise<'sent' | 'gone' | 'waiting'> {
++    const kind = this.kinds.get(message.channel.source)
++    if (!kind) return 'waiting'
++    return kind.channel?.react ? kind.channel.react({ commands }, message) : 'gone'
++  }
+   link(channel: ChannelRef, links: ChannelLinks): ChannelLink {
+     const link = this.kinds.get(channel.source)?.channel?.link(channel.address, links)
+     return link ?? { url: '', label: { zh: channel.source, en: channel.source } }
+diff --git a/tests/core-engine.spec.ts b/tests/core-engine.spec.ts
+index 733d134..176d6c9 100644
+--- a/tests/core-engine.spec.ts
++++ b/tests/core-engine.spec.ts
+@@ -86,6 +86,27 @@ describe('intake', () => {
+     expect(h.repo.threads.get('gh:pr-7')).toMatchObject({ pending: ['1'], correlated: ['gh:run-9'] })
+     expect(h.repo.threads.get('gh:run-9')).toMatchObject({ pending: [], correlated: ['gh:pr-7'] })
+   })
++  it('queues a receipt reaction for a fresh message that addressed the agent', () => {
++    const h = harness()
++    h.engine.receive(trigger('1', { addressed: 'mention' }))
++    expect(h.outbox).toContainEqual({ id: key('receipt', '1'), channel: trigger('1').channel, text: '', kind: 'reaction',
++      at: '2026-09-23T00:00:01.000Z' })
++  })
++  it('keeps receipt reactions quiet for stale, unaddressed, filtered, bot, and unadmitted messages', () => {
++    const h = harness()
++    h.engine.receive(trigger('1', { addressed: 'mention', at: '2026-09-22T23:00:00.000Z' }))
++    h.engine.receive(trigger('2'))
++    h.engine.receive(trigger('3', { addressed: 'mention', meta: { blocked: true } }))
++    h.engine.receive(trigger('4', { addressed: 'mention', human: false }))
++    h.engine.receive(trigger('5', { addressed: 'mention', actor: guest }))
++    expect(h.outbox.filter(message => message.kind === 'reaction')).toEqual([])
++  })
++  it('queues a receipt reaction for a follow-up on a ticket own thread', () => {
++    const h = harness()
++    accepted(h)
++    h.engine.receive(trigger('2'))
++    expect(h.outbox.filter(message => message.kind === 'reaction').map(message => message.id)).toEqual([key('receipt', '2')])
++  })
+ })
+ describe('eval', () => {
+   it('ignores at the gate without an assessor when nothing is admissible', async () => {
+diff --git a/tests/feishu-receipt.spec.ts b/tests/feishu-receipt.spec.ts
+new file mode 100644
+index 0000000..de9cd3d
+--- /dev/null
++++ b/tests/feishu-receipt.spec.ts
+@@ -0,0 +1,27 @@
++/** Feishu receipt reaction: the raw reaction API call and how a permanently gone target is recognised. */
++import { describe, expect, it, vi } from 'vitest'
++import type { OutboundMessage } from '../src/core/index.ts'
++import { CliError } from '../src/infra/commands.ts'
++import type { SourceContext } from '../src/sources/host.ts'
++import { reactFeishu, RECEIPT_EMOJI } from '../src/sources/feishu-channel.ts'
++
++const message = (id = 'om_1'): OutboundMessage => ({ id: 'receipt', channel: { source: 'feishu', thread: 'feishu:oc_team',
++  address: { chatId: 'oc_team', messageId: id } }, text: '', kind: 'reaction' })
++const host = (lark: (args: string[]) => Promise<unknown>) => ({ commands: { lark } } as unknown as Pick<SourceContext, 'commands'>)
++
++describe('Feishu receipt reaction', () => {
++  it('adds the fixed emoji through the raw reaction API', async () => {
++    const lark = vi.fn(async (_args: string[]) => ({}))
++    await expect(reactFeishu(host(lark), message())).resolves.toBe('sent')
++    expect(lark.mock.calls[0]![0]).toEqual(['api', 'POST', '/open-apis/im/v1/messages/om_1/reactions', '--data',
++      JSON.stringify({ reaction_type: { emoji_type: RECEIPT_EMOJI } })])
++  })
++  it('treats a withdrawn target as gone', async () => {
++    const lark = async (): Promise<unknown> => { throw new CliError('message withdrawn', 230011) }
++    await expect(reactFeishu(host(lark), message())).resolves.toBe('gone')
++  })
++  it('propagates a retryable failure', async () => {
++    const lark = async (): Promise<unknown> => { throw new CliError('permission denied', 99991672) }
++    await expect(reactFeishu(host(lark), message())).rejects.toThrow('permission denied')
++  })
++})
+diff --git a/tests/locales.spec.ts b/tests/locales.spec.ts
+index 8938581..618e9e4 100644
+--- a/tests/locales.spec.ts
++++ b/tests/locales.spec.ts
+@@ -27,7 +27,7 @@ it('words a reason by its code with its values, each of a batch, and words a per
+ it('names every health entry of dsh-superagent itself, which the overview shows when it fails', () => {
+   // Each entry by its writer: dsh-superagent, the model budget retries, every kind of the effect queue, Channel messages, the
+   // Executor and the unavailable Evals of the last hour.
+-  const entries = { runtime: 0, models: 0, reply: 0, worker: 0, assessment: 0, launch: 0, delivery: 0, relay: 0,
++  const entries = { runtime: 0, models: 0, reply: 0, receipt: 0, worker: 0, assessment: 0, launch: 0, delivery: 0, relay: 0,
+     notice: 0, evals: 0 } satisfies Record<EffectKind | 'runtime' | 'models' | 'reply' | 'worker' | 'evals', 0>
+   expect(Object.keys(entries).filter(name => !(`health.${name}` in zh))).toEqual([])
+ })
+diff --git a/tests/outbox.spec.ts b/tests/outbox.spec.ts
+index bc00f93..13f1d56 100644
+--- a/tests/outbox.spec.ts
++++ b/tests/outbox.spec.ts
+@@ -40,3 +40,31 @@ it('keeps a message for a Source that is not installed waiting, and sends it onc
+   await at(5000)
+   expect([h.runtime.outbox.status('waiting'), sent.map(message => message.id)]).toEqual(['sent', ['waiting']])
+ })
++
++it('adds a fresh receipt reaction, drops a stale one, and skips a Source that cannot react', async () => {
++  const lark = vi.mocked(Commands.prototype.lark)
++  lark.mockClear()
++  const fresh = new Date().toISOString()
++  const stale = new Date(Date.now() - 10 * 60_000).toISOString()
++  h.runtime.outbox.send({ id: 'receipt-fresh', channel: feishu('1', 'x').channel!, text: '', kind: 'reaction', at: fresh })
++  h.runtime.outbox.send({ id: 'receipt-stale', channel: feishu('2', 'x').channel!, text: '', kind: 'reaction', at: stale })
++  h.runtime.outbox.send({ id: 'receipt-github', channel: { source: 'github', thread: 'github:1', address: {} }, text: '', kind: 'reaction', at: fresh })
++  await h.runtime.sendReplies()
++  expect([h.runtime.outbox.status('receipt-fresh'), h.runtime.outbox.status('receipt-stale'), h.runtime.outbox.status('receipt-github')])
++    .toEqual(['sent', 'dropped', undefined])
++  expect(h.runtime.store.receipts.get('receipt-stale')?.dropped?.reason).toBe('stale')
++  expect(JSON.stringify(lark.mock.calls)).toContain('/open-apis/im/v1/messages/om_1/reactions')
++  expect(JSON.stringify(lark.mock.calls)).not.toContain('/open-apis/im/v1/messages/om_2/reactions')
++})
++
++it('holds a receipt reaction while paused and sends it after resume', async () => {
++  const lark = vi.mocked(Commands.prototype.lark)
++  await h.runtime.settings.pause(true, 'panel')
++  lark.mockClear()
++  h.runtime.outbox.send({ id: 'receipt-paused', channel: feishu('3', 'x').channel!, text: '', kind: 'reaction', at: new Date().toISOString() })
++  await h.runtime.sendReplies()
++  expect([h.runtime.outbox.status('receipt-paused'), lark.mock.calls.length]).toEqual(['pending', 0])
++  await h.runtime.settings.pause(false, 'panel')
++  await h.runtime.pump(); await h.runtime.sendReplies()
++  expect(h.runtime.outbox.status('receipt-paused')).toBe('sent')
++})
