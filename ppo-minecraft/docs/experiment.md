@@ -16,7 +16,7 @@
 - First reset of 6 envs: ~2-3 min (0.7 GB game-tree copy per env + world generation).
 - Tick rate per env: 7-12/s; end-to-end 41-43 samples/s.
 - Per update (6,144 samples): collect ~120 s, learn ~28 s.
-- Reward walkthrough (ideal tech tree): 74.8 total; milestones 70.9, shaping 4.8, time -0.9.
+- Reward walkthrough (ideal tech tree): 72.1 total; milestones 70.9, shaping 4.8, time -3.6.
 - Random policy first two updates: 3-4 milestone events (log, planks, sticks, crafting table).
 
 ## Status

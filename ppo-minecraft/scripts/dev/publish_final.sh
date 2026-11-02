@@ -12,6 +12,7 @@ PY=/mnt/storage1/syk/dreamer/envs/mcppo/bin/python
 $PY scripts/dev/fill_kb.py "$RUN"
 $PY -m mcppo.plot_curves --run "$RUN" --out "$RUN/curves"
 cp "$RUN/curves/curves.png" kb/assets/curves.png
+cp results/v0/curves/curves.png kb/assets/v0_curves.png 2>/dev/null || true
 
 # refresh static pages from the latest local Markdown
 for pair in "01 环境与基准：Dreamer 的 MC 设置|https://yide4vukqxv.feishu.cn/docx/RNEMdZJL6oAwRUx9sP3cjexBnYc" \

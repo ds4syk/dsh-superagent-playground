@@ -33,9 +33,21 @@ milestone events after the initial random exploration. Episodes show frequent ea
 v1 lowers death to -1 (episode termination already costs future reward), doubles the
 exploration potential cap to +4, and raises the step penalty to -0.0002.
 
+## v1 first update
+
+40.9 samples/s, 3 milestone events, exploration component 1.11 (vs 0.37 in v0),
+value loss 0.079, entropy 3.218. The run continues.
+
 ## Honest status
 
 Diamond is not reached. At ~40 samples/s, 71M steps (DreamerV3 median) is ~20 days;
 100M steps is ~29 days. A pure-PPO diamond run is therefore not a single-session
 deliverable. The practical next step is BC pretraining on MineRL demonstrations
 followed by PPO fine-tuning, or hierarchical PPO.
+
+## Comparison
+
+| Run | death penalty | exploration cap | stop reason |
+|-|-|-|-|
+| v0 | -5 | +2 | milestone events -> 0 (conservative) |
+| v1 | -1 | +4 | running |

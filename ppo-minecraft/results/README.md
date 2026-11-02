@@ -12,4 +12,6 @@ TensorBoard event files stay on the data disk.
 | `episodes.jsonl` | one line per finished episode (return, score, milestones) |
 | `curves/curves.png`, `curves.pdf` | summary plots |
 
-Regenerate the plots with `python -m mcppo.plot_curves --run <run_dir>`.
+`v0/` is the first, conservative run (death penalty -5, 49k samples); it is kept as the
+ablation that motivated the v1 reward weights. Regenerate the plots with
+`python -m mcppo.plot_curves --run <run_dir>`.
