@@ -3,7 +3,7 @@ SDPR-CIFT, dual non-uniqueness, alternative row selections, and the
 parameterized-constraint block of N.
 
 Outputs: results/exp2_jacobian.json , figures/fig2_jacobian.png
-Run: /home/syk/miniconda3/envs/WM/bin/python exp2_jacobian.py
+Run: python exp2_jacobian.py
 """
 import itertools, json, os, warnings
 import numpy as np

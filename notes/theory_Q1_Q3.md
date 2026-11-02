@@ -285,7 +285,7 @@ Lemma 3（`L474-L486`）：若 $H̄\succeq0$ 且 $\operatorname{corank}H̄=1$，
 
 ### 4.0 环境、脚本、可复现命令
 
-- 环境：`/home/syk/miniconda3/envs/WM/bin/python`（numpy 2.2.6、scipy 1.15.3、cvxpy 1.7.5、matplotlib 3.10.9；**未向该环境安装任何包**）。SDP 求解器：SCS（主，`eps=1e-11~1e-12`，`max_iters=3e5`）与 Clarabel（对照）；**无 Mosek license**。
+- 环境：Python 3.10+（开发时用 numpy 2.2.6、scipy 1.15.3、cvxpy 1.7.5、matplotlib 3.10.9；**未额外安装包**）。SDP 求解器：SCS（主，`eps=1e-11~1e-12`，`max_iters=3e5`）与 Clarabel（对照）；**无 Mosek license**。
 - 数据来源：Q_θ 见 `paper/sdpr.txt:L706-L714`，A₀…A₃ 见 `L717-L733`（矩阵元素在原工作区用论文第 9 页图像逐项核对过；该图像因版权不随仓库分发），初值系数见 Table I（`L690-L692`）。约束为 $A_0$（齐次化）、$A_1=x_0x_2-x_1^2$、$A_2=x_0x_3-x_1x_2$、$A_3=x_1x_3-x_2^2$；其中 $A_3$ 在原 QCQP 中冗余（论文 `L736`），但在 SDP 中不冗余（正是它能收紧松弛）。
 - 脚本：`../analysis/theory/sdpr_poly.py`（核心库）、`exp1_certificate.py`、`exp2_jacobian.py`、`exp3_redundancy.py`、`run_all.sh`；输出：`../analysis/theory/results/*.json`、`../analysis/theory/figures/*.png`。
 - 复现：`cd ../analysis/theory && bash run_all.sh`（或逐个 `python expN_*.py`；每步几分钟内）。

@@ -2,7 +2,7 @@
 pseudo-inverse formula  J = -P Mr^+ N_r  (Thm.2 / Implicit Selections).
 
 Outputs: results/exp3_redundancy.json , figures/fig3_redundancy.png
-Run: /home/syk/miniconda3/envs/WM/bin/python exp3_redundancy.py
+Run: python exp3_redundancy.py
 """
 import itertools, json, os, warnings
 import numpy as np

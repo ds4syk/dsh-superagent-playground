@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-PY=/home/syk/miniconda3/envs/WM/bin/python
+PY=${PYTHON:-python}
 export OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8
 
 mkdir -p results figures

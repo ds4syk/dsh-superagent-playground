@@ -2,7 +2,7 @@
 Section VI-A sixth-order polynomial example.
 
 Outputs: results/exp1_certificate.json , figures/fig1_certificate.png
-Run: /home/syk/miniconda3/envs/WM/bin/python exp1_certificate.py
+Run: python exp1_certificate.py
 """
 import json, os, warnings
 import numpy as np
