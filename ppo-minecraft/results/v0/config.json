@@ -1,0 +1,114 @@
+{
+  "env": {
+    "break_speed": 100.0,
+    "episode_steps": 18000,
+    "frame_stack": 4,
+    "obs_size": 64,
+    "pitch_limit": 60,
+    "render": true,
+    "repeat": 1,
+    "sticky_attack": 0,
+    "sticky_jump": 10
+  },
+  "logging": {
+    "keep_checkpoints": 3,
+    "log_every_updates": 5,
+    "save_every_updates": 20
+  },
+  "ppo": {
+    "chunk_len": 32,
+    "clip": 0.2,
+    "entropy_coef": 0.01,
+    "entropy_final": 0.003,
+    "epochs": 4,
+    "feature_size": 256,
+    "frame_stack_channels": 12,
+    "gae_lambda": 0.95,
+    "gamma": 0.999,
+    "hidden_size": 256,
+    "lr": 0.0003,
+    "lr_final": 0.0001,
+    "max_grad_norm": 0.5,
+    "minibatch_chunks": 64,
+    "normalize_adv": true,
+    "reward_norm": true,
+    "reward_scale": 5.0,
+    "rollout_steps": 1024,
+    "target_kl": 0.03,
+    "total_steps": 1500000,
+    "value_coef": 0.5
+  },
+  "reward": {
+    "beta_shape": 1.0,
+    "breath_penalty": 0.01,
+    "breath_threshold": 0.3,
+    "clip": [
+      -10.0,
+      50.0
+    ],
+    "death_penalty": 5.0,
+    "depth_bonus": [
+      {
+        "bonus": 0.5,
+        "y": 32
+      },
+      {
+        "bonus": 1.0,
+        "y": 16
+      },
+      {
+        "bonus": 1.5,
+        "y": 11
+      }
+    ],
+    "depth_ref_y": 64.0,
+    "depth_value": 0.02,
+    "explore_cap": 2.0,
+    "explore_cell": 8,
+    "explore_value": 0.005,
+    "gamma_shape": 1.0,
+    "health_damage": 0.1,
+    "health_heal": 0.05,
+    "hunger_penalty": 0.25,
+    "hunger_threshold": 6.0,
+    "item_weights": {
+      "cobblestone": 0.01,
+      "crafting_table": 0.05,
+      "diamond": 4.0,
+      "furnace": 0.15,
+      "iron_ingot": 0.5,
+      "iron_ore": 0.3,
+      "iron_pickaxe": 0.7,
+      "log": 0.02,
+      "planks": 0.02,
+      "stick": 0.025,
+      "stone_pickaxe": 0.15,
+      "wooden_pickaxe": 0.1
+    },
+    "milestone_bonus": {
+      "cobblestone": 1.0,
+      "crafting_table": 1.0,
+      "diamond": 40.0,
+      "furnace": 2.5,
+      "iron_ingot": 4.0,
+      "iron_ore": 3.0,
+      "iron_pickaxe": 5.0,
+      "log": 0.5,
+      "planks": 0.5,
+      "stick": 0.6,
+      "stone_pickaxe": 2.0,
+      "wooden_pickaxe": 1.5
+    },
+    "speed_floor": 0.75,
+    "speed_gain": 0.5,
+    "step_penalty": 5e-05
+  },
+  "run": {
+    "device": "cpu",
+    "name": "diamond_ppo_s0",
+    "num_envs": 6,
+    "out_dir": "/mnt/storage1/syk/dreamer/runs/mcppo/diamond_s0",
+    "seed": 0,
+    "torch_threads": 2
+  }
+}

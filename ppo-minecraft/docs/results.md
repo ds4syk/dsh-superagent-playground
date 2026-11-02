@@ -25,6 +25,14 @@ the score panel is the number of milestone events per update.
 If the milestone-event curve stays flat at 3-4 while the score stays 0, the policy is
 still exploring; if it grows, the reward shaping is producing learning.
 
+## v0 ablation (49,152 samples, stopped)
+
+With `death_penalty=-5` the policy became conservative: five consecutive updates had zero
+milestone events after the initial random exploration. Episodes show frequent early deaths
+(drowning/falling) at 1-6k steps, so -5 dominated the return and "move less" won.
+v1 lowers death to -1 (episode termination already costs future reward), doubles the
+exploration potential cap to +4, and raises the step penalty to -0.0002.
+
 ## Honest status
 
 Diamond is not reached. At ~40 samples/s, 71M steps (DreamerV3 median) is ~20 days;
