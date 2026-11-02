@@ -1,6 +1,6 @@
 # 02 PPO 方案设计
 
-> **结论先行**：本方案不是"把 Dreamer 的 world model 换成 PPO"那么简单，而是围绕 PPO 的弱点做了四个工程决定：**沿用 Dreamer 的 25 动作抽象**、**用 4 帧堆叠 + LSTM 处理 POMDP**、**用手写稠密奖励替代 Dreamer 的 +1 稀疏里程碑**、**用 6 路并行环境 + 分块 BPTT 把 on-policy 采样做满**。目标是在本机 CPU 上每小时采集 15–20 万策略步，使 200 万步级实验可在十几小时内跑完。
+> **结论先行**：本方案不是"把 Dreamer 的 world model 换成 PPO"那么简单，而是围绕 PPO 的弱点做了四个工程决定：**沿用 Dreamer 的 25 动作抽象**、**用 4 帧堆叠 + LSTM 处理 POMDP**、**用手写稠密奖励替代 Dreamer 的 +1 稀疏里程碑**、**用 6 路并行环境 + 分块 BPTT 把 on-policy 采样做满**。目标是在本机 CPU 上每小时采集约 14.5 万样本，使 100 万样本级实验可在数小时内跑完。
 
 **如果只记三件事**：
 
@@ -64,7 +64,7 @@ L    = L_pi + c_v L_v - c_e H[pi]
 | GAE λ | 0.95 | |
 | clip ε | 0.2 | |
 | epochs | 4 | |
-| rollout | 1024 步 × 6 envs | 每次更新 6144 个样本 |
+| rollout | 1024 步 × 6 envs | 每次更新 6,144 个样本 |
 | chunk | 32 | LSTM 截断 BPTT 长度 |
 | minibatch | 64 chunks | 即 2048 步 |
 | lr | 3e-4 → 1e-4（线性退火） | |

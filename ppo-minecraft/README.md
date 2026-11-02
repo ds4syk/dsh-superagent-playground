@@ -14,7 +14,7 @@
 ```
 mcppo/                  # 训练系统
   envs/minecraft.py     # 真实 Minecraft env（MineRL EnvSpec + Dreamer 动作抽象）
-  envs/vec.py           # 8 路子进程并行 + 自动 reset
+  envs/vec.py           # 多路子进程并行（默认 6）+ 自动 reset
   rewards/items.py      # 物品价值表（MC Wiki 科技树）
   rewards/reward.py     # 手写奖励引擎（势函数 + 里程碑 + 生存 + 探索）
   ppo/model.py          # CNN + inventory MLP + LSTM actor-critic
