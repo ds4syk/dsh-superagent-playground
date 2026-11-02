@@ -8,12 +8,12 @@
   },
   "env": {
     "obs_size": 64,
-    "repeat": 2,
+    "repeat": 1,
     "episode_steps": 18000,
     "frame_stack": 4
   },
   "ppo": {
-    "total_steps": 1200000,
+    "total_steps": 1500000,
     "rollout_steps": 1024,
     "chunk_len": 32,
     "epochs": 4,

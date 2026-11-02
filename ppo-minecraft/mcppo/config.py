@@ -19,8 +19,8 @@ DEFAULTS: Dict[str, Any] = {
         # DreamerV3's Minecraft task settings (see docs/01_env.md).
         "obs_size": 64,
         "break_speed": 100.0,
-        "repeat": 2,              # env ticks per policy step
-        "episode_steps": 18000,   # policy steps; 18000 * repeat = 36000 ticks
+        "repeat": 1,              # env ticks per policy step (DreamerV3 uses 1)
+        "episode_steps": 18000,   # 15 min game time; DreamerV3 uses 36000
         "sticky_attack": 0,       # Dreamer sets this to 0 when break_speed != 1
         "sticky_jump": 10,
         "pitch_limit": 60,

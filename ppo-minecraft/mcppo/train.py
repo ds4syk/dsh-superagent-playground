@@ -259,18 +259,18 @@ def main(argv=None) -> int:
                         ep_returns.append(ep["return"])
                         ep_scores.append(ep["score"])
                         episode_count += 1
-                        record = {"step": global_step + t + 1, "update": update,
+                        record = {"step": global_step + (t + 1) * n_envs, "update": update,
                                   "wall": time.time(), **ep}
                         episodes_fh.write(json.dumps(record) + "\n")
                         if writer is not None:
                             writer.add_scalar("episode/return", ep["return"],
-                                              global_step + t + 1)
+                                              global_step + (t + 1) * n_envs)
                             writer.add_scalar("episode/score", ep["score"],
-                                              global_step + t + 1)
+                                              global_step + (t + 1) * n_envs)
                         for name, value in ep["components"].items():
                             if writer is not None:
                                 writer.add_scalar(f"episode/reward_{name}", value,
-                                                  global_step + t + 1)
+                                                  global_step + (t + 1) * n_envs)
                     frames.reset(i, next_obs[i]["image"])
                     hidden[0][:, i] = 0.0
                     hidden[1][:, i] = 0.0

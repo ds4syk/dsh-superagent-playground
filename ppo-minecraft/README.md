@@ -1,7 +1,7 @@
 # MC-PPO：在真实 Minecraft 上用 PPO 训练（DreamerV3 同款环境 + 手写稠密奖励）
 
 这是一个可运行的 PPO × Minecraft 训练系统：真实 Minecraft 1.11.2（MineRL/Malmo 驱动），
-沿用 DreamerV3 官方 Minecraft Diamond 任务的 64×64 观测与 24 复合动作，使用**手写稠密奖励**
+沿用 DreamerV3 官方 Minecraft Diamond 任务的 64×64 观测与 25 复合动作，使用**手写稠密奖励**
 （物品获取量/效率、合成里程碑、生命值、探索/深度）训练一个循环 PPO 策略，目标是在
 30 分钟 episode 内从零走到钻石。
 
@@ -88,7 +88,7 @@ r = β(γΦ(s')-Φ(s)) + Σ 里程碑 + 生存 + 探索/深度 + 时间惩罚
 
 ## 来源与致谢
 
-- 环境与 24 动作抽象改编自 **DreamerV3** 官方实现
+- 环境与 25 动作抽象改编自 **DreamerV3** 官方实现
   ([danijar/dreamerv3](https://github.com/danijar/dreamerv3)，MIT)，`embodied/envs/minecraft_flat.py`。
 - 运行时：MineRL 0.4.4（含 Malmo + Minecraft 1.11.2）+ Java 8 + Xvfb + Mesa llvmpipe。
 - PPO：Schulman et al., 2017；势函数塑形：Ng, Harada & Russell, 1999。

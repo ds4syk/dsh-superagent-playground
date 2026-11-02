@@ -6,7 +6,7 @@ from mcppo.ppo.ppo import Rollout, compute_gae
 
 
 def test_model_forward_shapes():
-    model = ActorCritic(n_actions=24, inv_dim=391, equipped_dim=50,
+    model = ActorCritic(n_actions=25, inv_dim=391, equipped_dim=50,
                         frame_channels=12, hidden_size=32, feature_size=64)
     t, b = 3, 2
     image = torch.zeros(t, b, 12, 64, 64)
