@@ -51,3 +51,9 @@ followed by PPO fine-tuning, or hierarchical PPO.
 |-|-|-|-|
 | v0 | -5 | +2 | milestone events -> 0 (conservative) |
 | v1 | -1 | +4 | running |
+
+## v1 episodes (early)
+
+The first episodes after the reward change: one reached log/planks/crafting_table
+(score 4, return -0.9) and a short death cost only -1 instead of -5. The policy is
+still close to random, but the reward is no longer dominated by death.
