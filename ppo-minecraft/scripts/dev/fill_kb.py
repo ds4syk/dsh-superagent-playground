@@ -38,6 +38,7 @@ entropy = last['loss_entropy']; kl = last['loss_approx_kl']; clip = last['loss_c
 ms_order = ['log','planks','stick','crafting_table','wooden_pickaxe','cobblestone',
             'stone_pickaxe','iron_ore','furnace','iron_ingot','iron_pickaxe','diamond']
 ms_reached = [x for x in ms_order if inv.get(x, 0) > 0]
+ep_reached = [x for x in ms_order if x in reached]
 k = f"{samples/10000:.1f} 万"
 diagnosis = (
     f"里程碑事件在前半程 {first_half} 次、后半程 {second_half} 次；"
@@ -45,7 +46,12 @@ diagnosis = (
        "后半程没有增加，说明本次样本量内 PPO 还没有形成稳定的任务行为，"
        "主要是在探索项上获得信号。")
 )
-milestone_summary = ("已拿到 " + " / ".join(ms_reached)) if ms_reached else "未到达任何里程碑"
+if ep_reached:
+    milestone_summary = "episode 中到达 " + " / ".join(ep_reached)
+elif ms_reached:
+    milestone_summary = "在线出现过 " + " / ".join(ms_reached) + "（未在完整 episode 的里程碑里复现）"
+else:
+    milestone_summary = "未到达任何里程碑"
 learning_note = (
     f"episode 数 {len(e)}，最高 score {max_score}，最深里程碑 {milestone_summary}。"
 )
