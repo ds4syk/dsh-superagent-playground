@@ -28,8 +28,9 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
 
 期望：`16/16 checks passed`（约束、目标、逆模型 Jacobian、SDP 紧性、证书 PSD、强对偶、
 隐式 Jacobian、外层梯度、反向计时）。
-本次交付前已在 `sdpr-clean` 环境复跑通过；一次 2-run 端到端复跑给出
-SDPR $2.66\times10^{-4}$ m、local-GT $2.67\times10^{-4}$ m、local-RND $0.392$ m。
+本次交付前已在 `sdpr-clean` 环境复跑通过；从交付目录做 1-run 端到端复跑给出
+SDPR $2.57\times10^{-4}$ m、local-GT $2.58\times10^{-4}$ m、local-RND $0.447$ m。
+全量 50-run 结果来自既有复现产物，本次未重跑（约 1.9 CPU·h）。
 
 ## 全量复现（cleanroom）
 
