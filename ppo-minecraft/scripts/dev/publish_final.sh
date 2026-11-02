@@ -33,10 +33,12 @@ URL00=$(mk "00 总览：PPO × Minecraft 训练系统（2026-11）" "kb/00 总�
 URL04=$(mk "04 训练系统与实验" "kb/04 训练系统与实验.md")
 echo "00=$URL00"; echo "04=$URL04"
 
+lark-cli docs +media-insert --as bot --doc "$URL04" --file ./kb/assets/v0_curves.png \
+  --type image --caption '图 1（v0）：death=-5 时前 8 次 update，里程碑事件归零' --width 900
 lark-cli docs +media-insert --as bot --doc "$URL04" --file ./kb/assets/curves.png \
-  --type image --caption '图 1：本次 PPO 训练曲线（返回 / score / 里程碑事件 / loss / 吞吐 / 奖励分量）' --width 900
+  --type image --caption '图 2（v1）：death=-1、探索上限 +4 后的训练曲线（交付时快照）' --width 900
 lark-cli docs +media-insert --as bot --doc https://yide4vukqxv.feishu.cn/docx/BhmIdJ7P5omLGsxPNDWcZiALnid --file ./kb/assets/reward_milestones.png \
-  --type image --caption '图 1：理想跑通的里程碑奖励（钻石 41.1，其余合计 29.8）' --width 900
+  --type image --caption '图 3：理想跑通的里程碑奖励（钻石 41.1，其余合计 29.8）' --width 900
 
 lark-cli drive +member-add --as bot --token "$FOLDER" --type folder --member-type openid \
   --member-id "$OWNER" --perm full_access --yes || true
