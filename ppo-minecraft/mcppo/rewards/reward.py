@@ -47,7 +47,10 @@ class RewardEngine:
         self.milestone_bonus = dict(cfg.get("milestone_bonus") or {})
         # Only reward keys that exist in the table; extra keys are ignored.
         self.items = [name for name in MILESTONE_ORDER if name in self.item_weights]
-        self.gamma = float(cfg.get("gamma", 0.999))
+        # Undiscounted potential shaping by default: with gamma<1 the term
+        # -(1-gamma)*Phi would accumulate into a large negative drift over
+        # 18k-step episodes (measured -24 for a full tech-tree run).
+        self.gamma = float(cfg.get("gamma_shape", 1.0))
         self.beta = float(cfg.get("beta_shape", 1.0))
         self.episode_steps = max(1, int(episode_steps))
         self.explore_value = float(cfg.get("explore_value", 0.0))

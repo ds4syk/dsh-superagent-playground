@@ -29,9 +29,9 @@ DEFAULTS: Dict[str, Any] = {
     },
     "reward": {
         # All weights live here so ablations are one config edit away.
-        "gamma": 0.999,             # discount used for potential-based shaping
+        "gamma_shape": 1.0,         # undiscounted potential shaping (see 03_reward)
         "beta_shape": 1.0,          # weight on Phi-based item/exploration reward
-        "step_penalty": 0.0002,
+        "step_penalty": 0.00005,
         "speed_gain": 0.5,          # milestone multiplier at t=0 (1.5x)
         "speed_floor": 0.75,
         "health_heal": 0.05,

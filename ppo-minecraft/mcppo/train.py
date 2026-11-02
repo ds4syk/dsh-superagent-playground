@@ -215,13 +215,17 @@ def main(argv=None) -> int:
         t_start = time.time()
         ep_returns: List[float] = []
         ep_scores: List[int] = []
+        comp_sums = collections.defaultdict(float)
+        milestone_events = 0
+        inv_max = collections.defaultdict(int)
         for t in range(rollout_steps):
             feats, images = obs_to_tensors(obs, frames, device)
             if t % chunk_len == 0:
                 rollout.store_hidden(t, hidden[0], hidden[1])
+            image = feats["image"].float().div_(255.0)
             with torch.no_grad():
                 logits, values, hidden = model(
-                    feats["image"].unsqueeze(0), feats["inventory"].unsqueeze(0),
+                    image.unsqueeze(0), feats["inventory"].unsqueeze(0),
                     feats["scalars"].unsqueeze(0), feats["equipped"].unsqueeze(0),
                     hidden)
                 logits = logits[0]
@@ -236,6 +240,16 @@ def main(argv=None) -> int:
                         torch.from_numpy(rewards / reward_scale),
                         torch.from_numpy(dones))
             for i in range(n_envs):
+                comp = next_obs[i].get("_reward_components", {})
+                for name, value in comp.items():
+                    comp_sums[name] += float(value)
+                if comp.get("milestone", 0.0) > 0:
+                    milestone_events += 1
+                for name in ("log", "planks", "stick", "crafting_table",
+                             "wooden_pickaxe", "cobblestone", "stone_pickaxe",
+                             "iron_ore", "iron_ingot", "diamond"):
+                    inv_max[name] = max(inv_max[name],
+                                        int(next_obs[i].get("_inventory", {}).get(name, 0)))
                 frames.push(i, next_obs[i]["image"])
                 if dones[i]:
                     ep = infos[i].get("episode")
@@ -263,8 +277,9 @@ def main(argv=None) -> int:
 
         with torch.no_grad():
             last_feats, _ = obs_to_tensors(obs, frames, device)
+            last_image = last_feats["image"].float().div_(255.0)
             _, last_values, hidden = model(
-                last_feats["image"].unsqueeze(0), last_feats["inventory"].unsqueeze(0),
+                last_image.unsqueeze(0), last_feats["inventory"].unsqueeze(0),
                 last_feats["scalars"].unsqueeze(0), last_feats["equipped"].unsqueeze(0),
                 hidden)
             last_values = last_values[0]
@@ -290,6 +305,9 @@ def main(argv=None) -> int:
             "episode_return_mean": float(np.mean(ep_returns)) if ep_returns else None,
             "episode_score_max": int(np.max(ep_scores)) if ep_scores else None,
             "episodes": episode_count,
+            "milestone_events": milestone_events,
+            "reward_components": {k: round(v, 3) for k, v in comp_sums.items()},
+            "max_inventory": dict(inv_max),
             **{f"loss_{k}": v for k, v in stats.items()},
         }
         metrics_fh.write(json.dumps(rec) + "\n")

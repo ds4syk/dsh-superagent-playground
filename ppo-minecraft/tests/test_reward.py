@@ -110,3 +110,14 @@ def test_config_merge():
     cfg = deep_update(DEFAULTS, {"ppo": {"lr": 1e-4}})
     assert cfg["ppo"]["lr"] == 1e-4
     assert cfg["ppo"]["gamma"] == DEFAULTS["ppo"]["gamma"]
+
+
+def test_potential_shaping_is_zero_when_state_is_constant():
+    """Undiscounted potential must not leak reward on repeated identical steps."""
+    eng = make_engine()
+    step(eng, {"log": 1}, pos=(0, 64, 0))
+    total = 0.0
+    for _ in range(50):
+        _, comp = step(eng, {"log": 1}, pos=(0, 64, 0))
+        total += comp["shape"]
+    assert abs(total) < 1e-6
