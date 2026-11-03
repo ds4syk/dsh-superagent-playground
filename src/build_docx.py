@@ -27,36 +27,25 @@ FONT = "Noto Sans CJK SC"
 
 
 def latex_simplify(s: str) -> str:
-    repl = [
-        (r"\\mathbb\{R\}", "R"),
-        (r"\\mathbb\{S\}", "S"),
-        (r"\\top", "ᵀ"),
-        (r"\\succeq", "⪰"),
-        (r"\\preceq", "⪯"),
-        (r"\\in", "∈"),
-        (r"\\times", "×"),
-        (r"\\cdot", "·"),
-        (r"\\lambda", "λ"),
-        (r"\\theta", "θ"),
-        (r"\\phi", "φ"),
-        (r"\\bar\{θ\}", "θ̄"),
-        (r"\\hat", ""),
-        (r"\\mathrm\{vec\}", "vec"),
-        (r"\\mathrm\{sg\}", "sg"),
-        (r"\\sum", "Σ"),
-        (r"\\min", "min"),
-        (r"\\max", "max"),
-        (r"\\quad", "  "),
-        (r"\\;", " "),
-        (r"\\,", " "),
-        (r"\\left", ""),
-        (r"\\right", ""),
-        (r"\\begin\{[a-z]+\}", ""),
-        (r"\\end\{[a-z]+\}", ""),
-        (r"\\", ""),
-        ("$", ""),
+    pairs = [
+        (r"\\sigma", "σ"), (r"\\circ", "°"), (r"^\\circ", "°"),
+        (r"\\mathrm{corank}", "corank"), (r"\\mathrm{vec}", "vec"),
+        (r"\sigma", "σ"), (r"\mathrm{corank}", "corank"),
+        (r"\\mathbb{R}", "R"), (r"\\mathbb{S}", "S"),
+        (r"\top", "ᵀ"), (r"\succeq", "⪰"), (r"\preceq", "⪯"),
+        (r"\in", "∈"), (r"\times", "×"), (r"\cdot", "·"),
+        (r"\circ", "°"), (r"\sim", "~"),
+        (r"\lambda", "λ"), (r"\theta", "θ"), (r"\phi", "φ"),
+        (r"\bar{θ}", "θ̄"), (r"\bar\theta", "θ̄"),
+        (r"\sum", "Σ"), (r"\min", "min"), (r"\max", "max"),
+        (r"\mathrm{vec}", "vec"), (r"\mathrm{sg}", "sg"),
+        (r"\begin{bmatrix}", "["), (r"\end{bmatrix}", "]"),
+        (r"\begin{matrix}", "["), (r"\end{matrix}", "]"),
+        (r"\quad", "  "), (r"\;", " "), (r"\,", " "),
+        (r"\left", ""), (r"\right", ""), (r"\hat", ""),
+        ("^°", "°"), ("\\", ""), ("$", ""),
     ]
-    for a, b in repl:
+    for a, b in pairs:
         s = s.replace(a, b)
     s = re.sub(r"\s{2,}", " ", s)
     return s
