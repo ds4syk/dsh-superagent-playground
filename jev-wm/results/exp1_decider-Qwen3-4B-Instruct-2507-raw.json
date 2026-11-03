@@ -1,0 +1,89 @@
+{
+ "n": 400,
+ "exact_match": 0.79,
+ "exec_accuracy": 0.7025,
+ "variable_accuracy": {
+  "player_room": 0.8975,
+  "key_location": 0.9725,
+  "apple_location": 1.0,
+  "mushroom_location": 0.995,
+  "door_mode": 0.9675,
+  "box_mode": 0.96,
+  "holding": 0.97
+ },
+ "macro_variable_accuracy": 0.9660714285714286,
+ "exact_by_exec": {
+  "true": 0.4805194805194805,
+  "false": 0.983739837398374
+ },
+ "count_by_exec": {
+  "true": 154,
+  "false": 246
+ },
+ "parse_fail_rate": 0.0,
+ "exact_by_action_kind": {
+  "observe": 1.0,
+  "simple": 0.6705882352941176,
+  "derive": 0.7910447761194029
+ },
+ "count_by_action_kind": {
+  "observe": 47,
+  "simple": 85,
+  "derive": 268
+ },
+ "mean_latency_s": 0.10783908164012246,
+ "decisions": 3200,
+ "wall_s": 43.135730337991845,
+ "backend": "decider-Qwen3-4B-Instruct-2507-raw",
+ "sample_per_s": 9.273055002564766,
+ "decisions_per_s": 74.18444002051812,
+ "est_input_tokens": 338768,
+ "est_usd_per_1k_transitions_jev_api": 0.03557064,
+ "rollout": {
+  "n": 40,
+  "exact_by_k": {
+   "1": 0.375,
+   "2": 0.3,
+   "3": 0.125,
+   "4": 0.15
+  },
+  "var_by_k": {
+   "1": {
+    "player_room": 0.65,
+    "key_location": 0.9,
+    "apple_location": 1.0,
+    "mushroom_location": 1.0,
+    "door_mode": 0.925,
+    "box_mode": 0.9,
+    "holding": 0.9
+   },
+   "2": {
+    "player_room": 0.75,
+    "key_location": 0.8,
+    "apple_location": 1.0,
+    "mushroom_location": 1.0,
+    "door_mode": 0.825,
+    "box_mode": 0.75,
+    "holding": 0.8
+   },
+   "3": {
+    "player_room": 0.575,
+    "key_location": 0.65,
+    "apple_location": 0.95,
+    "mushroom_location": 0.975,
+    "door_mode": 0.75,
+    "box_mode": 0.75,
+    "holding": 0.575
+   },
+   "4": {
+    "player_room": 0.55,
+    "key_location": 0.65,
+    "apple_location": 0.95,
+    "mushroom_location": 0.95,
+    "door_mode": 0.625,
+    "box_mode": 0.7,
+    "holding": 0.575
+   }
+  }
+ }
+}

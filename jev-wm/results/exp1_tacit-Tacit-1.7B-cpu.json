@@ -1,0 +1,17 @@
+{
+ "n": 6,
+ "exact_match": 0.5,
+ "exec_accuracy": 0.6666666666666666,
+ "variable_accuracy": {},
+ "macro_variable_accuracy": 0.9047619047619048,
+ "exact_by_exec": {},
+ "count_by_exec": {},
+ "exact_by_action_kind": {"observe": 1.0, "simple": 0.5, "derive": 0.3333333333333333},
+ "count_by_action_kind": {"observe": 1, "simple": 2, "derive": 3},
+ "parse_fail_rate": 0.0,
+ "mean_latency_s": 6.657,
+ "decisions": 48,
+ "wall_s": 39.94,
+ "backend": "tacit-Tacit-1.7B (CPU)",
+ "note": "CPU diagnostic on 6 transitions, one per action; not the main run"
+}

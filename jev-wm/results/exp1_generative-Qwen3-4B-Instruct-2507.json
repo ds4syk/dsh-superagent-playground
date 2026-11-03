@@ -1,0 +1,89 @@
+{
+ "n": 300,
+ "exact_match": 0.54,
+ "exec_accuracy": 0.74,
+ "variable_accuracy": {
+  "player_room": 0.8733333333333333,
+  "key_location": 0.8133333333333334,
+  "apple_location": 0.7,
+  "mushroom_location": 0.93,
+  "door_mode": 0.9533333333333334,
+  "box_mode": 0.9733333333333334,
+  "holding": 0.9233333333333333
+ },
+ "macro_variable_accuracy": 0.8809523809523809,
+ "exact_by_exec": {
+  "true": 0.2727272727272727,
+  "false": 0.7206703910614525
+ },
+ "count_by_exec": {
+  "true": 121,
+  "false": 179
+ },
+ "parse_fail_rate": 0.0,
+ "exact_by_action_kind": {
+  "observe": 0.4594594594594595,
+  "simple": 0.6197183098591549,
+  "derive": 0.5260416666666666
+ },
+ "count_by_action_kind": {
+  "observe": 37,
+  "simple": 71,
+  "derive": 192
+ },
+ "mean_latency_s": 0.33867060064648474,
+ "decisions": 300,
+ "wall_s": 101.60134919302072,
+ "backend": "generative-Qwen3-4B-Instruct-2507",
+ "sample_per_s": 2.9527166950319184,
+ "decisions_per_s": 2.9527166950319184,
+ "est_input_tokens": 255960,
+ "est_usd_per_1k_transitions_jev_api": 0.0358344,
+ "rollout": {
+  "n": 30,
+  "exact_by_k": {
+   "1": 0.5,
+   "2": 0.3333333333333333,
+   "3": 0.16666666666666666,
+   "4": 0.16666666666666666
+  },
+  "var_by_k": {
+   "1": {
+    "player_room": 0.7333333333333333,
+    "key_location": 0.9333333333333333,
+    "apple_location": 0.9666666666666667,
+    "mushroom_location": 1.0,
+    "door_mode": 0.8666666666666667,
+    "box_mode": 1.0,
+    "holding": 0.9333333333333333
+   },
+   "2": {
+    "player_room": 0.6666666666666666,
+    "key_location": 0.8,
+    "apple_location": 0.9333333333333333,
+    "mushroom_location": 0.9666666666666667,
+    "door_mode": 0.7666666666666667,
+    "box_mode": 0.9333333333333333,
+    "holding": 0.8
+   },
+   "3": {
+    "player_room": 0.5333333333333333,
+    "key_location": 0.8333333333333334,
+    "apple_location": 0.9333333333333333,
+    "mushroom_location": 0.9333333333333333,
+    "door_mode": 0.6666666666666666,
+    "box_mode": 0.8666666666666667,
+    "holding": 0.8
+   },
+   "4": {
+    "player_room": 0.6,
+    "key_location": 0.8,
+    "apple_location": 0.9333333333333333,
+    "mushroom_location": 0.8666666666666667,
+    "door_mode": 0.5666666666666667,
+    "box_mode": 0.8666666666666667,
+    "holding": 0.7666666666666667
+   }
+  }
+ }
+}

@@ -1,0 +1,418 @@
+{
+ "choice": {
+  "n_episodes": 24,
+  "success_by_start": {
+   "0": 0.8333333333333334
+  },
+  "success_rate": 0.8333333333333334,
+  "mean_steps": 5.333333333333333,
+  "mean_invalid": 0.0,
+  "invalid_rate": 0.0,
+  "decisions": 106,
+  "decisions_per_episode": 4.416666666666667,
+  "wall_s": 70.78281870600767,
+  "episodes_per_s": 0.3390653330673734,
+  "rows": [
+   {
+    "world_id": "testsame-000",
+    "start": 0,
+    "success": false,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 6
+   },
+   {
+    "world_id": "testsame-001",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 10
+   },
+   {
+    "world_id": "testsame-002",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 14
+   },
+   {
+    "world_id": "testsame-003",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 19
+   },
+   {
+    "world_id": "testsame-004",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 24
+   },
+   {
+    "world_id": "testsame-005",
+    "start": 0,
+    "success": true,
+    "steps": 4,
+    "invalid": 0,
+    "decisions": 27
+   },
+   {
+    "world_id": "testsame-006",
+    "start": 0,
+    "success": false,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 33
+   },
+   {
+    "world_id": "testsame-007",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 37
+   },
+   {
+    "world_id": "testsame-008",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 41
+   },
+   {
+    "world_id": "testsame-009",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 46
+   },
+   {
+    "world_id": "testsame-010",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 51
+   },
+   {
+    "world_id": "testsame-011",
+    "start": 0,
+    "success": true,
+    "steps": 4,
+    "invalid": 0,
+    "decisions": 54
+   },
+   {
+    "world_id": "testsame-012",
+    "start": 0,
+    "success": false,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 60
+   },
+   {
+    "world_id": "testsame-013",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 64
+   },
+   {
+    "world_id": "testsame-014",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 68
+   },
+   {
+    "world_id": "testsame-015",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 73
+   },
+   {
+    "world_id": "testsame-016",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 78
+   },
+   {
+    "world_id": "testsame-017",
+    "start": 0,
+    "success": true,
+    "steps": 4,
+    "invalid": 0,
+    "decisions": 81
+   },
+   {
+    "world_id": "testsame-018",
+    "start": 0,
+    "success": false,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 87
+   },
+   {
+    "world_id": "testsame-019",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 90
+   },
+   {
+    "world_id": "testsame-020",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 94
+   },
+   {
+    "world_id": "testsame-021",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 98
+   },
+   {
+    "world_id": "testsame-022",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 103
+   },
+   {
+    "world_id": "testsame-023",
+    "start": 0,
+    "success": true,
+    "steps": 4,
+    "invalid": 0,
+    "decisions": 106
+   }
+  ]
+ },
+ "score": {
+  "n_episodes": 24,
+  "success_by_start": {
+   "0": 0.875
+  },
+  "success_rate": 0.875,
+  "mean_steps": 5.333333333333333,
+  "mean_invalid": 0.0,
+  "invalid_rate": 0.0,
+  "decisions": 235,
+  "decisions_per_episode": 9.791666666666666,
+  "wall_s": 127.1684398270445,
+  "episodes_per_s": 0.18872607097044844,
+  "rows": [
+   {
+    "world_id": "testsame-000",
+    "start": 0,
+    "success": false,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 14
+   },
+   {
+    "world_id": "testsame-001",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 23
+   },
+   {
+    "world_id": "testsame-002",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 35
+   },
+   {
+    "world_id": "testsame-003",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 39
+   },
+   {
+    "world_id": "testsame-004",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 55
+   },
+   {
+    "world_id": "testsame-005",
+    "start": 0,
+    "success": true,
+    "steps": 4,
+    "invalid": 0,
+    "decisions": 63
+   },
+   {
+    "world_id": "testsame-006",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 76
+   },
+   {
+    "world_id": "testsame-007",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 85
+   },
+   {
+    "world_id": "testsame-008",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 97
+   },
+   {
+    "world_id": "testsame-009",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 99
+   },
+   {
+    "world_id": "testsame-010",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 113
+   },
+   {
+    "world_id": "testsame-011",
+    "start": 0,
+    "success": true,
+    "steps": 4,
+    "invalid": 0,
+    "decisions": 120
+   },
+   {
+    "world_id": "testsame-012",
+    "start": 0,
+    "success": false,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 133
+   },
+   {
+    "world_id": "testsame-013",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 142
+   },
+   {
+    "world_id": "testsame-014",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 154
+   },
+   {
+    "world_id": "testsame-015",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 156
+   },
+   {
+    "world_id": "testsame-016",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 171
+   },
+   {
+    "world_id": "testsame-017",
+    "start": 0,
+    "success": true,
+    "steps": 4,
+    "invalid": 0,
+    "decisions": 178
+   },
+   {
+    "world_id": "testsame-018",
+    "start": 0,
+    "success": false,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 191
+   },
+   {
+    "world_id": "testsame-019",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 200
+   },
+   {
+    "world_id": "testsame-020",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 212
+   },
+   {
+    "world_id": "testsame-021",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 214
+   },
+   {
+    "world_id": "testsame-022",
+    "start": 0,
+    "success": true,
+    "steps": 6,
+    "invalid": 0,
+    "decisions": 228
+   },
+   {
+    "world_id": "testsame-023",
+    "start": 0,
+    "success": true,
+    "steps": 4,
+    "invalid": 0,
+    "decisions": 235
+   }
+  ]
+ }
+}

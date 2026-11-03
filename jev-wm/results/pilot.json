@@ -1,0 +1,193 @@
+{
+ "tacit4b_pred": {
+  "n": 120,
+  "exact_match": 0.6833333333333333,
+  "exec_accuracy": 0.575,
+  "variable_accuracy": {
+   "player_room": 0.8583333333333333,
+   "key_location": 0.8916666666666667,
+   "apple_location": 0.975,
+   "mushroom_location": 1.0,
+   "door_mode": 0.9583333333333334,
+   "box_mode": 0.975,
+   "holding": 0.9083333333333333
+  },
+  "macro_variable_accuracy": 0.9380952380952381,
+  "exact_by_exec": {
+   "true": 0.43902439024390244,
+   "false": 0.810126582278481
+  },
+  "count_by_exec": {
+   "true": 41,
+   "false": 79
+  },
+  "parse_fail_rate": 0.0,
+  "exact_by_action_kind": {
+   "observe": 0.8888888888888888,
+   "simple": 0.8076923076923077,
+   "derive": 0.6235294117647059
+  },
+  "count_by_action_kind": {
+   "observe": 9,
+   "simple": 26,
+   "derive": 85
+  },
+  "mean_latency_s": 0.11069188336647744,
+  "decisions": 960,
+  "wall_s": 13.288758425973356
+ },
+ "tacit4b_probe9": {
+  "n": 9,
+  "exact_match": 0.7777777777777778,
+  "exec_accuracy": 0.7777777777777778,
+  "variable_accuracy": {
+   "player_room": 0.8888888888888888,
+   "key_location": 1.0,
+   "apple_location": 1.0,
+   "mushroom_location": 1.0,
+   "door_mode": 0.8888888888888888,
+   "box_mode": 0.8888888888888888,
+   "holding": 1.0
+  },
+  "macro_variable_accuracy": 0.9523809523809523,
+  "exact_by_exec": {
+   "true": 0.6666666666666666,
+   "false": 0.8333333333333334
+  },
+  "count_by_exec": {
+   "true": 3,
+   "false": 6
+  },
+  "parse_fail_rate": 0.0,
+  "exact_by_action_kind": {
+   "observe": 1.0,
+   "simple": 0.5,
+   "derive": 0.8333333333333334
+  },
+  "count_by_action_kind": {
+   "observe": 1,
+   "simple": 2,
+   "derive": 6
+  },
+  "mean_latency_s": 0.09623983711288829,
+  "decisions": 72,
+  "wall_s": 0.8666938450187445
+ },
+ "tacit4b_choice": {
+  "n_episodes": 3,
+  "success_by_start": {
+   "0": 1.0
+  },
+  "success_rate": 1.0,
+  "mean_steps": 5.666666666666667,
+  "mean_invalid": 0.0,
+  "invalid_rate": 0.0,
+  "decisions": 14,
+  "decisions_per_episode": 4.666666666666667,
+  "wall_s": 0.39464920200407505,
+  "episodes_per_s": 7.6016877387959925,
+  "rows": [
+   {
+    "world_id": "test-000",
+    "start": 0,
+    "success": true,
+    "steps": 7,
+    "invalid": 0,
+    "decisions": 6
+   },
+   {
+    "world_id": "test-001",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 10
+   },
+   {
+    "world_id": "test-002",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 14
+   }
+  ]
+ },
+ "tacit4b_score": {
+  "n_episodes": 3,
+  "success_by_start": {
+   "0": 1.0
+  },
+  "success_rate": 1.0,
+  "mean_steps": 5.0,
+  "mean_invalid": 0.0,
+  "invalid_rate": 0.0,
+  "decisions": 32,
+  "decisions_per_episode": 10.666666666666666,
+  "wall_s": 0.5669899829663336,
+  "episodes_per_s": 5.291098767397681,
+  "rows": [
+   {
+    "world_id": "test-000",
+    "start": 0,
+    "success": true,
+    "steps": 7,
+    "invalid": 0,
+    "decisions": 13
+   },
+   {
+    "world_id": "test-001",
+    "start": 0,
+    "success": true,
+    "steps": 5,
+    "invalid": 0,
+    "decisions": 22
+   },
+   {
+    "world_id": "test-002",
+    "start": 0,
+    "success": true,
+    "steps": 3,
+    "invalid": 0,
+    "decisions": 32
+   }
+  ]
+ },
+ "qwen_typed_pred": {
+  "n": 60,
+  "exact_match": 0.7333333333333333,
+  "exec_accuracy": 0.65,
+  "variable_accuracy": {
+   "player_room": 0.8666666666666667,
+   "key_location": 0.9333333333333333,
+   "apple_location": 1.0,
+   "mushroom_location": 1.0,
+   "door_mode": 0.9833333333333333,
+   "box_mode": 0.9666666666666667,
+   "holding": 0.95
+  },
+  "macro_variable_accuracy": 0.9571428571428572,
+  "exact_by_exec": {
+   "true": 0.36363636363636365,
+   "false": 0.9473684210526315
+  },
+  "count_by_exec": {
+   "true": 22,
+   "false": 38
+  },
+  "parse_fail_rate": 0.0,
+  "exact_by_action_kind": {
+   "observe": 1.0,
+   "simple": 0.5833333333333334,
+   "derive": 0.7441860465116279
+  },
+  "count_by_action_kind": {
+   "observe": 5,
+   "simple": 12,
+   "derive": 43
+  },
+  "mean_latency_s": 0.11087363979992597,
+  "decisions": 480,
+  "wall_s": 6.6527091360185295
+ }
+}
