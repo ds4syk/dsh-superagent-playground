@@ -1,0 +1,15 @@
+{
+ "n_labels": 303,
+ "val_acc": 0.8500000238418579,
+ "n_train": 243,
+ "label_counts": {
+  "open_box": 43,
+  "take_apple": 54,
+  "take_key": 36,
+  "unlock_door": 18,
+  "open_door": 45,
+  "go_east": 48,
+  "take_mushroom": 1,
+  "go_west": 58
+ }
+}
