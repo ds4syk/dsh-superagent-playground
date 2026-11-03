@@ -1,0 +1,222 @@
+From 6f473407ffdc96014cd28f607da17dc0bf974b51 Mon Sep 17 00:00:00 2001
+From: repro-up <repro-up@local>
+Date: Sun, 25 Oct 2026 16:58:47 +0800
+Subject: [PATCH 1/4] Make optional backends (mosek/theseus/sparseqr) optional
+ and add SCS backend
+
+Upstream commit cb3aed2 could not be run on a machine without a Mosek license:
+SDPPoseEstimator hard-coded SDPRLayerMosek and sdprlayers/__init__ eagerly
+imported cert_tools (module-scope 'import mosek') and theseus (module-scope
+import chain theseus -> torchlie -> sksparse/CHOLMOD).  Additionally the
+'solver' argument of tune_stereo_params_sdpr was accepted but silently ignored.
+
+Changes:
+* sdprlayers/__init__.py: import essential/fundamental-matrix layers and
+  LieOptPoseEstimator lazily via module __getattr__ (clear ImportError on use).
+* sdprlayers/layers/sdprlayer.py: 'import sparseqr' is optional; the module
+  never used sqr, but the import required SuiteSparseQR headers.
+* sdprlayers/layers/pose_est.py: SDPPoseEstimator(..., solver="MOSEK"|"SCS",
+  scs_eps=1e-9). MOSEK default preserves upstream behaviour; SCS goes through
+  diffcp/cvxpylayers (paper Sec. VI-B4 used SCS eps=1e-9).
+* sdprlayers/utils/stereo_tuner.py: forward 'solver' to SDPPoseEstimator and
+  import theseus lazily inside build_theseus_layer().
+---
+ src/sdprlayers/__init__.py           | 34 ++++++++++++++--
+ src/sdprlayers/layers/pose_est.py    | 60 ++++++++++++++++++++++------
+ src/sdprlayers/layers/sdprlayer.py   |  6 ++-
+ src/sdprlayers/utils/stereo_tuner.py | 11 ++++-
+ 4 files changed, 93 insertions(+), 18 deletions(-)
+
+diff --git a/src/sdprlayers/__init__.py b/src/sdprlayers/__init__.py
+index 51bb865..ff17863 100644
+--- a/src/sdprlayers/__init__.py
++++ b/src/sdprlayers/__init__.py
+@@ -1,8 +1,36 @@
+-from sdprlayers.layers.essential_est import SDPEssMatEst
+-from sdprlayers.layers.fundmat_est import FundMatSDPBlock
+-from sdprlayers.layers.lieopt_pose_est import LieOptPoseEstimator
+ from sdprlayers.layers.polyminlayer import PolyMinLayer, polyval
+ from sdprlayers.layers.pose_est import SDPPoseEstimator
+ from sdprlayers.layers.sdprlayer import SDPRLayer, SDPRLayerMosek
+ from sdprlayers.layers.svd_pose_est import SVDPoseEstimator
+ from sdprlayers.utils import stereo_tuner
++
++# Optional, heavyweight layers are imported lazily so that a plain
++# ``import sdprlayers`` works on a minimal installation:
++#  * ``SDPEssMatEst`` / ``FundMatSDPBlock`` need the ``cert_tools`` stack, which
++#    imports ``mosek`` (commercial license) and cvxopt/chompack/igraph at module
++#    scope;
++#  * ``LieOptPoseEstimator`` needs ``theseus``, whose import chain pulls in
++#    ``sksparse`` (SuiteSparse CHOLMOD), a native dependency that is not always
++#    present.
++_OPTIONAL_LAYERS = {
++    "SDPEssMatEst": "sdprlayers.layers.essential_est",
++    "FundMatSDPBlock": "sdprlayers.layers.fundmat_est",
++    "LieOptPoseEstimator": "sdprlayers.layers.lieopt_pose_est",
++}
++
++
++def __getattr__(name):
++    if name in _OPTIONAL_LAYERS:
++        import importlib
++
++        try:
++            module = importlib.import_module(_OPTIONAL_LAYERS[name])
++        except ImportError as exc:  # pragma: no cover - depends on env
++            raise ImportError(
++                f"sdprlayers.{name} requires an optional dependency stack "
++                f"(cert_tools/mosek or theseus/sksparse): {exc}"
++            ) from exc
++        value = getattr(module, name)
++        globals()[name] = value
++        return value
++    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+diff --git a/src/sdprlayers/layers/pose_est.py b/src/sdprlayers/layers/pose_est.py
+index 2a0f0f5..e8ca8e8 100644
+--- a/src/sdprlayers/layers/pose_est.py
++++ b/src/sdprlayers/layers/pose_est.py
+@@ -16,7 +16,13 @@ class SDPPoseEstimator(nn.Module):
+     """
+ 
+     def __init__(
+-        self, T_s_v, use_dual=True, diff_qcqp=False, compute_multipliers=False
++        self,
++        T_s_v,
++        use_dual=True,
++        diff_qcqp=False,
++        compute_multipliers=False,
++        solver="MOSEK",
++        scs_eps=1e-9,
+     ):
+         """
+         Initialize the PoseSDPBlock class.
+@@ -24,6 +30,11 @@ class SDPPoseEstimator(nn.Module):
+         Args:
+             T_s_v (torch.tensor): 4x4 transformation matrix providing the transform from the vehicle frame to the
+                                   sensor frame.
++            solver (str): conic solver used for the SDP. "MOSEK" (upstream default,
++                requires a commercial license) or any diffcp solver name, e.g. "SCS".
++                The paper's baseline-calibration experiment (Sec. VI-B4) used SCS
++                with eps=1e-9, so "SCS" is a drop-in licence-free substitute.
++            scs_eps (float): tolerance passed to SCS when solver="SCS".
+         """
+         super(SDPPoseEstimator, self).__init__()
+ 
+@@ -47,16 +58,30 @@ class SDPPoseEstimator(nn.Module):
+             "MSK_DPAR_INTPNT_CO_TOL_DFEAS": tol,
+         }
+ 
+-        # Initialize SDPRLayer
+-        self.sdprlayer = SDPRLayerMosek(
+-            n_vars=13,
+-            constraints=constraints,
+-            diff_qcqp=diff_qcqp,
+-            redun_list=redun_list,
+-            compute_multipliers=compute_multipliers,
+-            use_dual=use_dual,
+-            mosek_params=mosek_params,
+-        )
++        # Initialize SDPRLayer. Upstream unconditionally used the MOSEK backend,
++        # which makes the stereo-tuning example impossible to run without a
++        # Mosek license. Fall back to the generic (SCS) layer when requested.
++        self.solver = solver
++        self.scs_eps = scs_eps
++        if str(solver).upper() == "MOSEK":
++            self.sdprlayer = SDPRLayerMosek(
++                n_vars=13,
++                constraints=constraints,
++                diff_qcqp=diff_qcqp,
++                redun_list=redun_list,
++                compute_multipliers=compute_multipliers,
++                use_dual=use_dual,
++                mosek_params=mosek_params,
++            )
++        else:
++            self.sdprlayer = SDPRLayer(
++                n_vars=13,
++                constraints=constraints,
++                diff_qcqp=diff_qcqp,
++                redun_list=redun_list,
++                compute_multipliers=compute_multipliers,
++                use_dual=use_dual,
++            )
+ 
+         self.register_buffer("T_s_v", T_s_v)
+ 
+@@ -94,7 +119,18 @@ class SDPPoseEstimator(nn.Module):
+ 
+         # Run layer
+         with record_function("SDPR: Run Optimization"):
+-            Xs, xs = self.sdprlayer(Qs, verbose=verbose, mosek_params=mosek_params)
++            if str(self.solver).upper() == "MOSEK":
++                Xs, xs = self.sdprlayer(
++                    Qs, verbose=verbose, mosek_params=mosek_params
++                )
++            else:
++                solver_args = {
++                    "solve_method": str(self.solver).upper(),
++                    "eps": self.scs_eps,
++                }
++                Xs, xs = self.sdprlayer(
++                    Qs, verbose=verbose, solver_args=solver_args
++                )
+ 
+         # Extract solution
+         t_trg_src_intrg = xs[:, 10:]
+diff --git a/src/sdprlayers/layers/sdprlayer.py b/src/sdprlayers/layers/sdprlayer.py
+index 75735cf..e841806 100644
+--- a/src/sdprlayers/layers/sdprlayer.py
++++ b/src/sdprlayers/layers/sdprlayer.py
+@@ -5,11 +5,15 @@ import matplotlib.pyplot as plt
+ import numpy as np
+ import scipy.linalg as la
+ import scipy.sparse as sp
+-import sparseqr as sqr
+ import torch
+ from cvxpylayers.torch import CvxpyLayer
+ from diffcp import cones
+ 
++try:  # optional: this module never calls sparseqr, but the import used to be hard
++    import sparseqr as sqr
++except ImportError:  # pragma: no cover - depends on SuiteSparse availability
++    sqr = None
++
+ # GLOBAL PARAMETERS
+ mosek_params_dflt = {
+     "MSK_IPAR_INTPNT_MAX_ITERATIONS": 1000,
+diff --git a/src/sdprlayers/utils/stereo_tuner.py b/src/sdprlayers/utils/stereo_tuner.py
+index eff1864..04fc501 100644
+--- a/src/sdprlayers/utils/stereo_tuner.py
++++ b/src/sdprlayers/utils/stereo_tuner.py
+@@ -5,7 +5,6 @@ from time import time
+ import matplotlib.pyplot as plt
+ import numpy as np
+ import pandas as pd
+-import theseus as th
+ import torch
+ from poly_matrix import PolyMatrix
+ from pylgmath.so3.operations import vec2rot
+@@ -222,7 +221,12 @@ def tune_stereo_params_sdpr(
+ ):
+ 
+     # Build Layer
+-    estimator = SDPPoseEstimator(T_s_v=torch.eye(4), diff_qcqp=diff_qcqp)
++    # NOTE: `solver` was previously accepted but silently ignored, so this
++    # function always used the Mosek backend inside SDPPoseEstimator. Forward it
++    # so that the SCS backend (paper Sec. VI-B4: eps=1e-9) can be selected.
++    estimator = SDPPoseEstimator(
++        T_s_v=torch.eye(4), diff_qcqp=diff_qcqp, solver=solver
++    )
+ 
+     # define closure
+     def closure():
+@@ -296,6 +300,9 @@ def build_theseus_layer(N_map, N_batch=1, opt_kwargs_in={}):
+         r_l (_type_): _description_
+         pixel_meas (_type_): _description_
+     """
++    # Imported lazily: ``theseus`` pulls in scikit-sparse (CHOLMOD) at import
++    # time, so the SDPR part of the library must work without it.
++    import theseus as th
+     # Optimization variables
+     r_p0s = th.Point3(name="r_p0s")
+     C_p0s = th.SO3(name="C_p0s")

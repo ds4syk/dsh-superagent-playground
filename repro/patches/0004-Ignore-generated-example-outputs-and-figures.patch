@@ -1,0 +1,25 @@
+From 1959163ce5e6012ce2de43cda8839354e4ef377f Mon Sep 17 00:00:00 2001
+From: repro-up <repro-up@local>
+Date: Sun, 25 Oct 2026 17:31:38 +0800
+Subject: [PATCH 4/4] Ignore generated example outputs and figures
+
+_scripts/outputs/ (pkl/json/figures produced by stereo_cal.py, poly6_example.py,
+...) and figs/ (plot_tools.savefig default dir) are generated artifacts and
+should not be committed; '*.pkl' alone did not cover the json/png/nested dirs.
+---
+ .gitignore | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/.gitignore b/.gitignore
+index f59e255..e40f316 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -4,4 +4,6 @@ build/
+ src/*.egg-info/*
+ __pycache__
+ .coverage
+-spec-file.txt
+\ No newline at end of file
++spec-file.txt
++_scripts/outputs/
++figs/

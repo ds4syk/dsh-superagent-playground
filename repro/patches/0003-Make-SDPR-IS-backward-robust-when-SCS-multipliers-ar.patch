@@ -1,0 +1,207 @@
+From a030697e71ffdb180f48517f1e31f3be74eb8e27 Mon Sep 17 00:00:00 2001
+From: repro-up <repro-up@local>
+Date: Sun, 25 Oct 2026 17:21:31 +0800
+Subject: [PATCH 3/4] Make SDPR-IS backward robust when SCS multipliers are
+ inaccurate
+
+With a license-free SCS backend the implicit-selection (SDPR-IS) backward pass
+fails on the stereo-localization problem: the differential KKT system
+M^T z = [-grad; 0] is solved with the multipliers/certificate returned by the
+solver, but SCS at eps=1e-9 gives a dual solution whose KKT residual is large
+(M is a 20x27 operator with cond ~1e17; LSQR returns r1norm >> KKT_TOL=1e-5).
+The hard assertion then aborts the whole tuning run (reproduced at outer
+iteration 0/1 of Sec. VI-B4).
+
+Changes in _QCQPDiffFn.backward:
+* factor certificate reconstruction and differential-KKT solve into helpers;
+* if the solver (implicit-selection) certificate gives a residual above
+  KKT_TOL, recompute the multipliers and certificate from the first-order KKT
+  conditions (exactly the SDPR-CIFT variant) and solve again; in the tight
+  regime both variants give the same gradient (paper Table III/IV);
+* direct solve of the symmetric small system now falls back to a minimum-norm
+  least-squares solve when cond > 1e12 (the KKT Jacobian is structurally
+  singular at a rank-1 solution), avoiding NaN/garbage directions.
+
+Also in SDPPoseEstimator.forward: accept an optional solver_args dict and merge
+it with the SCS defaults (fixes tune_stereo_params_sdpr passing solver_args to
+the estimator, which previously raised TypeError with the SCS backend).
+---
+ src/sdprlayers/layers/pose_est.py  | 14 +++--
+ src/sdprlayers/layers/sdprlayer.py | 95 +++++++++++++++++-------------
+ 2 files changed, 62 insertions(+), 47 deletions(-)
+
+diff --git a/src/sdprlayers/layers/pose_est.py b/src/sdprlayers/layers/pose_est.py
+index e8ca8e8..02ccdb3 100644
+--- a/src/sdprlayers/layers/pose_est.py
++++ b/src/sdprlayers/layers/pose_est.py
+@@ -5,7 +5,7 @@ import torch.nn.functional as F
+ from poly_matrix import PolyMatrix
+ from torch.profiler import record_function
+ 
+-from sdprlayers.layers.sdprlayer import SDPRLayerMosek
++from sdprlayers.layers.sdprlayer import SDPRLayer, SDPRLayerMosek
+ from sdprlayers.utils.lie_algebra import se3_inv, se3_log
+ 
+ 
+@@ -94,6 +94,7 @@ class SDPPoseEstimator(nn.Module):
+         verbose=False,
+         mosek_params=None,
+         return_loss=False,
++        solver_args=None,
+     ):
+         """
+         Compute the pose, T_trg_src, from the source to the target frame.
+@@ -124,13 +125,16 @@ class SDPPoseEstimator(nn.Module):
+                     Qs, verbose=verbose, mosek_params=mosek_params
+                 )
+             else:
+-                solver_args = {
++                layer_solver_args = {
+                     "solve_method": str(self.solver).upper(),
+                     "eps": self.scs_eps,
+                 }
+-                Xs, xs = self.sdprlayer(
+-                    Qs, verbose=verbose, solver_args=solver_args
+-                )
++                if solver_args is not None:
++                    layer_solver_args.update(solver_args)
++                if verbose:
++                    # diffcp/SCS verbose flag lives in solver_args
++                    layer_solver_args["verbose"] = True
++                Xs, xs = self.sdprlayer(Qs, solver_args=layer_solver_args)
+ 
+         # Extract solution
+         t_trg_src_intrg = xs[:, 10:]
+diff --git a/src/sdprlayers/layers/sdprlayer.py b/src/sdprlayers/layers/sdprlayer.py
+index e841806..c964191 100644
+--- a/src/sdprlayers/layers/sdprlayer.py
++++ b/src/sdprlayers/layers/sdprlayer.py
+@@ -569,75 +569,86 @@ def _QCQPDiffFn(
+                 G = np.vstack(G)
+                 G_r = np.vstack(G_r)
+ 
+-                # Solve for multipliers
+-                if ctx.compute_multipliers or ctx.mults is None:
+-                    # Get Objective
++                # --- helpers: certificate reconstruction and differential-KKT solve
++                def _recompute_certificate():
++                    """Rebuild the certificate matrix from KKT multipliers (CIFT style)."""
+                     if len(ctx.objective.shape) > 2:
+                         Q = ctx.objective[b]
+                     else:
+                         Q = ctx.objective
+                     q_bar = Q @ x
+-
+-                    # Solve for Lagrange Multipliers using first order KKT condition
+-                    res = la.lstsq(G_r.T, -q_bar, cond=ctx.licq_tol)
+-                    mults = res[0]
+-                    rank = res[2]
+-                    residual = G_r.T @ mults + q_bar
++                    lstsq_res = la.lstsq(G_r.T, -q_bar, cond=ctx.licq_tol)
++                    mults_ = lstsq_res[0]
++                    residual = G_r.T @ mults_ + q_bar
+                     assert np.linalg.norm(residual) < ctx.kkt_tol, ValueError(
+                         "Failed to find adequate Lagrange multipliers"
+                     )
+-
+-                    # Construct Certificate matrix and set redundant Lagrange multipliers to zero
+                     H_list = [sp.csc_array(Q)]
+                     all_mults = []
+                     cnt = 0
+                     for i, A in enumerate(ctx.constraints):
+-                        # Only add non-redundant constraints
+                         if i not in ctx.redundant_inds:
+-                            all_mults.append(mults[cnt, 0])
++                            all_mults.append(mults_[cnt, 0])
+                             cnt += 1
+                         else:
+                             all_mults.append(0.0)
+                         if len(A.shape) > 2:
+                             A = A[b]
+                         H_list.append(A * all_mults[i])
+-                    H = sum(H_list).toarray()
++                    return sum(H_list).toarray(), all_mults
++
++                def _solve_diff_kkt(H_, G_, G_r_):
++                    """Solve M^T [dz, dmu] = [-grad, 0] for the differential KKT system."""
++                    M_ = make_jac_linop(H=H_, G=G_, G_r=G_r_)
++                    # number of multiplier slots is determined by G_ (all
++                    # constraints) even when the Jacobian only uses G_r_
++                    dz_ = np.vstack(
++                        [-grad_output[b], np.zeros((G_.shape[0], 1))]
++                    )
++                    if M_.shape[0] == M_.shape[1] and M_.shape[0] < 300:
++                        # Symmetric, small: try a direct solve.  The KKT Jacobian is
++                        # singular at a tight rank-1 solution (H x = 0 makes it
++                        # structurally rank deficient, cond ~ 1e17), so fall back to
++                        # the minimum-norm least-squares solution when ill-conditioned
++                        # (same convention as the LSQR branch).
++                        A_kkt = M_.T @ np.eye(M_.shape[0])
++                        if np.linalg.cond(A_kkt) > 1e12:
++                            sol_, *_ = np.linalg.lstsq(A_kkt, dz_, rcond=None)
++                            return sol_, np.linalg.norm(A_kkt @ sol_ - dz_)
++                        sol_ = np.linalg.solve(A_kkt, dz_)
++                        return sol_, np.linalg.norm(M_.T @ sol_ - dz_)
++                    if M_.shape[0] == M_.shape[1]:
++                        sol_, _info = sp.linalg.minres(M_.T, dz_, rtol=ctx.minres_tol)
++                        sol_ = sol_[:, None]
++                        return sol_, np.linalg.norm(M_.T @ sol_ - dz_)
++                    # Non-symmetric: LSQR (minimum-residual solve)
++                    ls_sol = sp.linalg.lsqr(
++                        M_.T, dz_, atol=ctx.lsqr_tol, btol=ctx.lsqr_tol
++                    )
++                    return ls_sol[0][:, None], ls_sol[3]
++
++                if ctx.compute_multipliers or ctx.mults is None:
++                    H, all_mults = _recompute_certificate()
+                     mult_list.append([all_mults])
+-                    # Construct Jacobian Matrix Function
+-                    M = make_jac_linop(H=H, G=G_r, G_r=G_r)
+-                    # Pad incoming gradient (derivative of loss wrt multipliers is zero)
+-                    dz_bar = np.vstack([-grad_output[b], np.zeros((G_r.shape[0], 1))])
++                    sol, res = _solve_diff_kkt(H, G_r, G_r)
+                 else:
+-                    # Get certificate
++                    # Trust the solver multipliers provided by the forward pass
++                    # (implicit selections, Thm. 2)
+                     H = Hs[b]
+-                    # Construct Jacobian Matrix Function
+-                    M = make_jac_linop(H=H, G=G, G_r=G_r)
+-                    # Pad incoming gradient (derivative of loss wrt multipliers is zero)
+-                    dz_bar = np.vstack([-grad_output[b], np.zeros((G.shape[0], 1))])
++                    sol, res = _solve_diff_kkt(H, G, G_r)
++                    if not res < ctx.kkt_tol:
++                        # The solver multipliers are inconsistent with the numerical
++                        # certificate (e.g. SCS dual solution at eps=1e-9).  Recompute
++                        # the multipliers and certificate from the KKT conditions,
++                        # which is exactly the (more expensive) SDPR-CIFT fallback;
++                        # in the tight regime both give the same gradient.
++                        H, all_mults = _recompute_certificate()
++                        sol, res = _solve_diff_kkt(H, G_r, G_r)
+ 
+                 # Check that certificate matrix satisfies the first order KKT conditions
+                 assert np.linalg.norm(H @ x) < ctx.kkt_tol, ValueError(
+                     "First-order KKT conditions cannot be satisfied! Check Certificate matrix."
+                 )
+-                # Solve Differential KKT System
+-                if M.shape[0] == M.shape[1]:
+-                    # Symmetric case
+-                    if M.shape[0] < 300:
+-                        # Small problem, use standard solver
+-                        sol = np.linalg.solve(M.T @ np.eye(M.shape[0]), dz_bar)
+-                        res = np.linalg.norm(M.T @ sol - dz_bar)
+-                    else:
+-                        # Large problem, use Minimum Residual Solver (since matrix is symmetric but may be indefinite)
+-                        sol, info = sp.linalg.minres(M.T, dz_bar, rtol=ctx.minres_tol)
+-                        sol = sol[:, None]
+-
+-                else:
+-                    # Assymmetric case, use LSQR
+-                    ls_sol = sp.linalg.lsqr(
+-                        M.T, dz_bar, atol=ctx.lsqr_tol, btol=ctx.lsqr_tol
+-                    )
+-                    sol = ls_sol[0][:, None]
+-                    res = ls_sol[3]
+                 # Check that we have actually solved the differential KKT system
+                 assert res < ctx.kkt_tol, ValueError(
+                     "Differential KKT system residual is high. Make sure that redundant constraints are actually redundant and that the certificate matrix is correct."

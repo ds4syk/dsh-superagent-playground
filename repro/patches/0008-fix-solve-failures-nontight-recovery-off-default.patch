@@ -1,0 +1,26 @@
+From 242a6b8b074bee4fd2c412f135316a154f1d16b0 Mon Sep 17 00:00:00 2001
+From: syk <syk@local>
+Date: Sat, 31 Oct 2026 14:51:23 +0800
+Subject: [PATCH 4/4] fix(solve-failures): keep non-tight recovery off by
+ default (only env-enabled)
+
+---
+ src/sdprlayers/layers/sdprlayer.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/sdprlayers/layers/sdprlayer.py b/src/sdprlayers/layers/sdprlayer.py
+index 4967b1f..9af2fd1 100644
+--- a/src/sdprlayers/layers/sdprlayer.py
++++ b/src/sdprlayers/layers/sdprlayer.py
+@@ -41,7 +41,7 @@ ER_MIN = float(os.environ.get("SDPR_ER_MIN", 1e5))  # env override (experiments
+ # When the strict rank-1 check fails, optionally still recover a rank-1 candidate
+ # if the solution is "almost" rank-1 (non-certified heuristic; used to avoid
+ # hard failures of the SCS backend on a few instances).
+-ER_MIN_RELAXED = float(os.environ.get("SDPR_ER_MIN_RELAXED", 1.0))
++ER_MIN_RELAXED = float(os.environ.get("SDPR_ER_MIN_RELAXED", ER_MIN))  # off by default; set for experiments
+ 
+ 
+ class SDPRLayer(CvxpyLayer):
+-- 
+2.34.1
+
