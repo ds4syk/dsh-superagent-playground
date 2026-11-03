@@ -23,6 +23,7 @@
 | [../references/INDEX.md](../references/INDEX.md) | 22 篇延伸文献索引（标题/作者/期刊/DOI/用途） |
 | [DOCX 知识库](../deliverables/README.md) | 00 总览 + 01–04 子页的 Word 版本（默认交付格式） |
 | [本科简明版 DOCX](../deliverables_simple/README.md) | 面向大四本科生的 6 页简明版（先读这个） |
+| [SDPR 复现图表集](../analysis/atlas/SDPR_复现图表集.docx) | 7 张清洗后的复现图 + 读图说明（DOCX/PDF） |
 | [知识库模板](../docs/KB_CONVENTION.md) | 00 总览 + NN 子页的结构、证据分级、Feishu 实现步骤 |
 
 ## 五个问题（速览）
