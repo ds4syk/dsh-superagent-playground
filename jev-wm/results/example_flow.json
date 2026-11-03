@@ -1,0 +1,123 @@
+{
+ "state": "You are in the rotunda. The rotunda contains a obsidian casket and a ebony console. The obsidian casket is closed. The onyx gate is locked. The jade token is inside the obsidian casket. The crimson fig is on the ebony console. The violet shroom is on the ebony console. You are holding nothing.",
+ "goal": "Get to the crypt while holding the crimson fig, with the onyx gate open.",
+ "candidates": [
+  "open the obsidian casket",
+  "take the crimson fig from the ebony console",
+  "take the violet shroom from the ebony console"
+ ],
+ "choice": {
+  "question": "Which command should the agent execute next to achieve the goal?",
+  "answer": "open the obsidian casket",
+  "probs": {
+   "open the obsidian casket": 0.9106257443464677,
+   "take the crimson fig from the ebony console": 0.05821435619583576,
+   "take the violet shroom from the ebony console": 0.03115989945769638
+  }
+ },
+ "scores": {
+  "open the obsidian casket": {
+   "question": "Would executing `open the obsidian casket` next make progress toward the goal?",
+   "probs": {
+    "Yes": 0.5621765008857985,
+    "No": 0.43782349911420226
+   }
+  },
+  "take the crimson fig from the ebony console": {
+   "question": "Would executing `take the crimson fig from the ebony console` next make progress toward the goal?",
+   "probs": {
+    "Yes": 0.8519528019683112,
+    "No": 0.1480471980316896
+   }
+  },
+  "take the violet shroom from the ebony console": {
+   "question": "Would executing `take the violet shroom from the ebony console` next make progress toward the goal?",
+   "probs": {
+    "Yes": 0.32082130082460647,
+    "No": 0.6791786991753918
+   }
+  }
+ },
+ "wm": {
+  "executes": {
+   "question": "Does the command `open the obsidian casket` execute successfully in this state?",
+   "answer": "Yes",
+   "probs": {
+    "Yes": 0.7057850278370121,
+    "No": 0.29421497216298914
+   }
+  },
+  "player_room": {
+   "question": "After the command `open the obsidian casket` is attempted, which room is the player in?",
+   "answer": "rotunda",
+   "probs": {
+    "rotunda": 0.9796676466573407,
+    "crypt": 0.020332353342658743
+   }
+  },
+  "key_location": {
+   "question": "After the command `open the obsidian casket` is attempted, where is the jade token?",
+   "answer": "inside the obsidian casket",
+   "probs": {
+    "inside the obsidian casket": 0.929753337861208,
+    "on the ebony console": 0.05245309401288054,
+    "on the floor of the rotunda": 0.009114980992795185,
+    "on the floor of the crypt": 0.0037996893859878166,
+    "in the player's inventory": 0.004878897747126995
+   }
+  },
+  "apple_location": {
+   "question": "After the command `open the obsidian casket` is attempted, where is the crimson fig?",
+   "answer": "on the ebony console",
+   "probs": {
+    "inside the obsidian casket": 0.036252433933915446,
+    "on the ebony console": 0.9349625939812638,
+    "on the floor of the rotunda": 0.021988212670126392,
+    "on the floor of the crypt": 0.0029757809895784313,
+    "in the player's inventory": 0.0038209784251149047
+   }
+  },
+  "mushroom_location": {
+   "question": "After the command `open the obsidian casket` is attempted, where is the violet shroom?",
+   "answer": "on the ebony console",
+   "probs": {
+    "inside the obsidian casket": 0.08208921072663433,
+    "on the ebony console": 0.8825421869566462,
+    "on the floor of the rotunda": 0.026650464805901344,
+    "on the floor of the crypt": 0.004086981146710933,
+    "in the player's inventory": 0.004631156364108778
+   }
+  },
+  "door_mode": {
+   "question": "After the command `open the obsidian casket` is attempted, what is the state of the onyx gate?",
+   "answer": "locked",
+   "probs": {
+    "locked": 0.7042046051774815,
+    "closed": 0.15712928633051323,
+    "open": 0.13866610849200595
+   }
+  },
+  "box_mode": {
+   "question": "After the command `open the obsidian casket` is attempted, what is the state of the obsidian casket?",
+   "answer": "closed",
+   "probs": {
+    "closed": 0.7057850278370121,
+    "open": 0.29421497216298914
+   }
+  },
+  "holding": {
+   "question": "After the command `open the obsidian casket` is attempted, what is the player holding?",
+   "answer": "the jade token",
+   "probs": {
+    "nothing": 0.16659275350996613,
+    "the jade token": 0.7466169226031385,
+    "the crimson fig": 0.005030665253120244,
+    "the violet shroom": 0.00829416480859139,
+    "the jade token and the crimson fig": 0.017558747037576233,
+    "the jade token and the violet shroom": 0.0289494797276948,
+    "the crimson fig and the violet shroom": 0.009398520022336643,
+    "the jade token and the crimson fig and the violet shroom": 0.017558747037576233
+   }
+  }
+ }
+}

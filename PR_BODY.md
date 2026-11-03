@@ -11,7 +11,7 @@ JEV 本体闭源、无 API key，因此实验使用开放 JEV 风格代理：Tac
 - **文献**：JEV 架构/价格/边界；KIIS 2026（JEV 当世界模型，TextWorld 93.4%）；REFLEX（JEV 选择性控制）；JEV-as-Q（RL 参考策略）；Good Judgment（负结果）；JevVLA（8 万参数动作评价头）；AnyJev/Kev；经典世界模型与动作蒸馏。42 条参考、44 个一手链接：`research/lit_notes.md`。
 - **Exp1（世界模型）**：自建确定性文本网格世界（两房间/门/箱子/钥匙/食物，9 动作，7 状态变量 + executes）。24 个未见词表测试世界、500 条测试转移；把下一状态拆成 8 个 typed MCQ，测一步/四步精度、按动作类型拆分、延迟与成本。
 - **Exp2（动作生成 + 蒸馏）**：三种教师（直接 choice、逐动作 score、世界模型一步前瞻）；48 个测试世界、6 步闭环；把教师标签蒸进约 1M 参数 transformer 学生；对照 teacher/student/oracle/random 与成本。
-- **交付**：DOCX 知识库（00–09，含图表）+ Feishu 阅读副本 + 可复现代码/Slurm/结果。
+- **交付**：DOCX 知识库（00–10，含图表）+ Feishu 阅读副本 + 可复现代码/Slurm/结果。
 
 ## 主要结果（本实验独立复现，非论文数字）
 
@@ -54,7 +54,7 @@ Slurm 作业与日志在 `/mnt/storage1/syk/jev-wm/logs/`；结果 JSON 在 `jev
 
 ## 交付
 
-- Word：`deliverables/JEV世界模型知识库_2026-11.docx`（38 页，含 4 张图）
+- Word：`deliverables/JEV世界模型知识库_2026-11.docx`（40 页，含 4 张图）
 - Feishu 知识库：https://yide4vukqxv.feishu.cn/drive/folder/B0xkfw6ZLlUmhBda8dUcI1VhnBh（已给 ticket owner full_access）
 - 详细限制：`kb/08.md`
 
