@@ -29,7 +29,7 @@ relative rotations + weights → SDPR solves rotation synchronization (8 nodes, 
 global rotations. Comparisons: direct MLP, two-stage (relative loss + frozen SDPR), end-to-end
 through SDPR, chordal spectral synchronization, oracle (GT measurements + SDPR).
 
-## Results (to be filled from `artifacts/results/metrics_*.json`)
+## Results
 
 | method | test_id | test_ood | rel meas. (id/ood) | cert |
 |---|---|---|---|---|
