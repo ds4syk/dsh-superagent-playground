@@ -54,7 +54,7 @@ Slurm 作业与日志在 `/mnt/storage1/syk/jev-wm/logs/`；结果 JSON 在 `jev
 
 ## 交付
 
-- Word：`deliverables/JEV世界模型知识库_2026-11.docx`（40 页，含 4 张图）
+- Word：`deliverables/JEV世界模型知识库_2026-11.docx`（40 页，含 5 张图）
 - Feishu 知识库：https://yide4vukqxv.feishu.cn/drive/folder/B0xkfw6ZLlUmhBda8dUcI1VhnBh（已给 ticket owner full_access）
 - 详细限制：`kb/08.md`
 
