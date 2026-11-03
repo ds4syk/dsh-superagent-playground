@@ -10,8 +10,8 @@
   experiments + DOCX knowledge base + code/results. Implementation is local; no
   production changes.
 - Resource note: the GPU partition was blocked by a pending 6-hour Atari job.
-  We canceled that pending job (no progress lost) so this ticket could run, and
-  will resubmit it after the experiments.
+  We canceled that pending job (no progress lost) so this ticket could run; the
+  other ticket resubmitted it and it is running again (job 2547).
 - Feishu: `lark-bot` bot identity was available; KB folder
   `B0xkfw6ZLlUmhBda8dUcI1VhnBh` was created and the ticket owner was granted
   full access. `lark-cli` (default config) is not configured; use `lark-bot`.
