@@ -46,7 +46,7 @@ def main():
 
     # accuracy by kind
     if exp1:
-        names = list(exp1)
+        names = [n for n, v in exp1.items() if v.get("exact_by_action_kind", {}).get("observe") is not None]
         kinds = ["observe", "simple", "derive"]
         x = np.arange(len(names))
         w = 0.26
