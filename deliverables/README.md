@@ -10,3 +10,5 @@
 | `04_相机标定仿真复现.docx` | §VI-B4 双路线、Table V、tightness、失败修复、局限 |
 
 源文件在 [`../kb/sdpr-qpep/`](../kb/sdpr-qpep/) 与 [`../kb/dreamer-v4-vs-v3/`](../kb/dreamer-v4-vs-v3/)；Feishu 知识库链接在交付消息中。
+
+> `DreamerV4_vs_V3_改动对比_2026-11.docx` 由 `kb/dreamer-v4-vs-v3/` 的 Markdown 源构建；飞书导出的 DOCX 会把列表项统一渲染成 `1.`，因此未采用飞书导出文件。
