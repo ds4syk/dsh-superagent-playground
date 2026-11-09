@@ -208,7 +208,7 @@ s.t.        C ∈ SO(3)
 3. 重新生成：`python -m data.build_train_test_dataset_loc --config config/data.json`，从 VT&R 位姿图
    采样图像对；`config/data.json` 里就是本文用到的 100k/20k 与 test runs 配置。
 
-### 4.3 仿真实实验的数据
+### 4.3 仿真实验的数据
 
 论文还有两组不依赖外部数据集的实验：
 
