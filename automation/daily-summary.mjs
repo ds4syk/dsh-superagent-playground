@@ -6,12 +6,15 @@
  * -> lark-cli image message. If the image pipeline fails, a short text fallback is sent.
  *
  * Data sources:
- *  - Context Insights session projections: <home>/.dsh/storages/session_projcache/sessions/*.json
+ *  - DSH session logs: <home>/.dsh/sessions/<workspace>/<session>/session.v4.jsonl.zstd
+ *    (the durable record that carries each step's provider-reported usage). The Context Insights
+ *    projection cache is only a fallback: it is refreshed on demand by the web UI, so a cron run
+ *    can see it stale or empty.
  *  - dsh-superagent tickets: <stateDir>/orchestrator.sqlite
  *  - Open pull requests of the configured repository (optional; skipped when gh fails)
  *
  * Usage:
- *   node daily-summary.mjs [--date YYYY-MM-DD] [--dry-run] [--no-llm] [--chat-id oc_xxx]
+ *   node daily-summary.mjs [--date YYYY-MM-DD] [--dry-run] [--no-llm] [--resend] [--chat-id oc_xxx]
  *
  * Environment overrides: DSH_DAILY_SUMMARY_CHAT, DSH_DAILY_SUMMARY_REPO,
  * DSH_DAILY_SUMMARY_LARK_CLI, DSH_DAILY_SUMMARY_GH, DSH_DAILY_SUMMARY_STATE_DIR,
@@ -20,7 +23,8 @@
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawn } from 'node:child_process'
+import readline from 'node:readline'
 import { DatabaseSync } from 'node:sqlite'
 
 const TZ = 'Asia/Shanghai'
@@ -32,6 +36,7 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]
     if (a === '--dry-run') args.dryRun = true
+    else if (a === '--resend') args.resend = true
     else if (a === '--no-llm') args.llm = false
     else if (a === '--date') args.date = argv[++i]
     else if (a === '--chat-id') args.chat = argv[++i]
@@ -59,11 +64,13 @@ const model = process.env.DSH_DAILY_SUMMARY_MODEL || 'deepseek-flash'
 const sessionsDir = path.join(HOME, '.dsh/storages/session_projcache/sessions')
 const ticketDb = path.join(stateDir, 'orchestrator.sqlite')
 
+const dateFormatter = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' })
+const timeFormatter = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false })
 function localDate(value = new Date()) {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(value)
+  return dateFormatter.format(value)
 }
 function localTime(value = new Date()) {
-  return new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false }).format(value)
+  return timeFormatter.format(value)
 }
 function weekdayText(date) {
   const [y, m, d] = date.split('-').map(Number)
@@ -86,8 +93,14 @@ function esc(value) {
   return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
-/** Sessions, with the per-day figures Context Insights computes. */
-function collectSessions(date) {
+const sessionsRoot = path.join(HOME, '.dsh/sessions')
+const zstdcat = process.env.DSH_DAILY_SUMMARY_ZSTD || (fs.existsSync('/usr/bin/zstdcat') ? '/usr/bin/zstdcat' : 'zstdcat')
+// Only these events carry what the report needs; the rest (mostly tool output) is skipped before
+// JSON.parse, which keeps the daily scan of the largest logs cheap.
+const trackedEvent = /"type":\s*"(?:assistant\/message|step\/start|session\/end-seed|session\/title|session)"/
+
+/** Sessions from the Context Insights projection cache; kept as a fallback for the durable logs. */
+function collectSessionsFromCache(date) {
   const sessions = []
   let files = []
   try { files = fs.readdirSync(sessionsDir).filter(f => f.endsWith('.json')) } catch { return sessions }
@@ -122,6 +135,140 @@ function collectSessions(date) {
     })
   }
   return sessions
+}
+
+/** Session logs that can hold the given day; a log's mtime is the time of its last appended event. */
+function sessionLogFiles(date) {
+  const since = Date.parse(`${date}T00:00:00+08:00`)
+  const files = []
+  for (const slug of fs.readdirSync(sessionsRoot)) {
+    const dir = path.join(sessionsRoot, slug)
+    let ids
+    try {
+      if (!fs.statSync(dir).isDirectory()) continue
+      ids = fs.readdirSync(dir)
+    } catch { continue }
+    for (const id of ids) {
+      const file = path.join(dir, id, 'session.v4.jsonl.zstd')
+      try {
+        if (fs.statSync(file).mtimeMs >= since) files.push({ id, file })
+      } catch { /* not a session directory */ }
+    }
+  }
+  return files
+}
+
+/**
+ * Fold one session log into the requested day.
+ *
+ * A step is billed to the day it started, like Context Insights. `session/end-seed` with
+ * `inherited: true` closes the copied parent history of a seeded side conversation: those events
+ * were already billed in the parent session, so only later events are counted.
+ */
+async function scanSessionLog({ id, file }, date) {
+  const child = spawn(zstdcat, [file], { stdio: ['ignore', 'pipe', 'ignore'] })
+  await new Promise((resolve, reject) => {
+    child.once('spawn', resolve)
+    child.once('error', reject)
+  })
+  const lines = readline.createInterface({ input: child.stdout, crlfDelay: Infinity })
+  let header = null
+  let title = ''
+  let inheritedThrough = -1
+  const stepStarts = new Map()
+  const usages = []
+  let readError = null
+  try {
+    for await (const line of lines) {
+      if (!trackedEvent.test(line)) continue
+      let event
+      try { event = JSON.parse(line) } catch { continue }
+      if (event.type === 'session') {
+        if (header === null) header = event
+        continue
+      }
+      if (event.type === 'session/title') {
+        title = clean(event.data?.title || title)
+        continue
+      }
+      if (event.type === 'session/end-seed') {
+        // The inherited marker closes the copied parent history; collect first, filter after.
+        if (event.data?.inherited === true && event.seq > inheritedThrough) inheritedThrough = event.seq
+        continue
+      }
+      if (event.type === 'step/start') {
+        stepStarts.set(`${event.data?.turn}:${event.data?.step}`, event.time)
+        continue
+      }
+      const usage = event.data?.usage
+      if (event.type !== 'assistant/message' || !usage || !Number.isFinite(event.time)) continue
+      usages.push({ seq: event.seq, time: event.time, turn: event.data.turn, step: event.data.step, usage })
+    }
+  } catch (error) {
+    readError = error
+  } finally {
+    lines.close()
+  }
+  const code = await new Promise(resolve => child.once('close', resolve))
+  if (code !== 0 && usages.length === 0) {
+    throw readError instanceof Error ? readError : new Error(`${path.basename(zstdcat)} exited ${code}`)
+  }
+  if (code !== 0) {
+    // A live session may be mid-frame; keep the steps that were fully read.
+    console.error(`session log ${id} ended early (${path.basename(zstdcat)} exited ${code}); using ${usages.length} step(s)`)
+  }
+  const day = { tokens: 0, requests: 0, breakdown: { uncached: 0, cacheRead: 0, cacheWrite: 0, output: 0 } }
+  for (const item of usages) {
+    if (item.seq <= inheritedThrough) continue
+    const started = stepStarts.get(`${item.turn}:${item.step}`) ?? item.time
+    if (localDate(new Date(started)) !== date) continue
+    const usage = item.usage
+    const uncached = Number(usage.inputTokens || 0)
+    const cacheRead = Number(usage.cacheReadTokens || 0)
+    const cacheWrite = Number(usage.cacheWriteTokens || 0)
+    const output = Number(usage.outputTokens || 0)
+    day.requests += 1
+    day.breakdown.uncached += uncached
+    day.breakdown.cacheRead += cacheRead
+    day.breakdown.cacheWrite += cacheWrite
+    day.breakdown.output += output
+    day.tokens += uncached + cacheRead + cacheWrite + output
+  }
+  if (day.tokens <= 0) return null
+  if (/^You are working on\b/i.test(title)) title = ''
+  return { id, tokens: day.tokens, requests: day.requests, breakdown: day.breakdown, title, workspace: header?.cwd || '' }
+}
+
+/** Sessions with the per-day figures, read from the durable session logs. */
+async function collectSessions(date) {
+  try {
+    execFileSync(zstdcat, ['--version'], { stdio: 'ignore', timeout: 10_000 })
+    const sessions = []
+    let failures = 0
+    for (const entry of sessionLogFiles(date)) {
+      try {
+        const session = await scanSessionLog(entry, date)
+        if (session) sessions.push(session)
+      } catch (error) {
+        failures += 1
+        console.error(`session log ${entry.id} skipped: ${clean(error instanceof Error ? error.message : String(error), 120)}`)
+      }
+    }
+    if (failures > 0 && sessions.length === 0) throw new Error(`all ${failures} candidate session log(s) failed`)
+    if (sessions.length === 0) {
+      // A log-format change would also look empty; the cache is the only other source then.
+      const cached = collectSessionsFromCache(date)
+      if (cached.length > 0) {
+        console.error(`no usage found in session logs for ${date}; using the Context Insights projection cache`)
+        return cached
+      }
+    }
+    return sessions
+  } catch (error) {
+    const reason = clean(error instanceof Error ? error.message : String(error), 120)
+    console.error(`session log scan failed (${reason}); falling back to the Context Insights projection cache`)
+    return collectSessionsFromCache(date)
+  }
 }
 
 function workspaceLabel(dir) {
@@ -210,8 +357,8 @@ function ticketStatus(ticket) {
 }
 
 /** Normalized data handed to the curator and the renderer. */
-function buildReportData(date) {
-  const sessions = collectSessions(date)
+async function buildReportData(date) {
+  const sessions = await collectSessions(date)
   const tickets = collectTickets(date)
   const openPrs = openPullRequests()
 
@@ -474,7 +621,7 @@ h1 { font-size: 29pt; line-height: 1.16; letter-spacing: -0.6pt; margin: 8mm 0 4
   <p class="headline">${esc(content.headline)}</p>
   <div class="kpis">${kpis.map(k => `<div class="kpi"><div class="value">${esc(k.value)}</div><div class="label">${esc(k.label)}</div></div>`).join('')}</div>
   <div class="token-block">
-    <div class="token-head"><span>Token 构成</span><span class="token-note">Context Insights 计费口径</span></div>
+    <div class="token-head"><span>Token 构成</span><span class="token-note">provider 计费口径（同 Context Insights）</span></div>
     <div class="token-bar">${tokenBar}</div>
     <div class="legend">${legend}</div>
   </div>
@@ -487,7 +634,7 @@ h1 { font-size: 29pt; line-height: 1.16; letter-spacing: -0.6pt; margin: 8mm 0 4
     <div class="section-head"><span class="bar"></span><span class="title">明日重点</span></div>
     <div class="next">${nextItems}</div>
   </div>
-  <div class="footer"><span>数据：Context Insights（DSH 会话投影）</span><span>数据截至 ${localTime()} · DSH 自动生成</span></div>
+  <div class="footer"><span>数据：DSH 会话日志（provider usage）</span><span>数据截至 ${localTime()} · DSH 自动生成</span></div>
 </div></body></html>`
 }
 
@@ -515,7 +662,7 @@ function larkEnv() {
 
 function sendImage(imagePath, date) {
   if (!chatId) throw new Error('missing chat id (pass --chat-id or set DSH_DAILY_SUMMARY_CHAT)')
-  const key = `dsh-daily-img-${date.replace(/-/g, '')}`
+  const key = `dsh-daily-img-${date.replace(/-/g, '')}${args.resend ? `-${Date.now()}` : ''}`
   const output = execFileSync(larkCli, ['im', '+messages-send', '--chat-id', chatId, '--image', path.basename(imagePath), '--idempotency-key', key], {
     cwd: path.dirname(imagePath), encoding: 'utf8', timeout: 120_000, env: larkEnv(),
   })
@@ -539,7 +686,7 @@ function sendTextFallback(data, content, date, reason) {
     '',
     `（图片版生成失败：${reason}）`,
   ]
-  const key = `dsh-daily-text-${date.replace(/-/g, '')}`
+  const key = `dsh-daily-text-${date.replace(/-/g, '')}${args.resend ? `-${Date.now()}` : ''}`
   const output = execFileSync(larkCli, ['im', '+messages-send', '--chat-id', chatId, '--markdown', '-', '--idempotency-key', key], {
     input: lines.join('\n'), encoding: 'utf8', timeout: 120_000, env: larkEnv(),
   })
@@ -551,7 +698,7 @@ function sendTextFallback(data, content, date, reason) {
 async function main() {
   const date = args.date || localDate()
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error(`invalid date: ${date}`)
-  const data = buildReportData(date)
+  const data = await buildReportData(date)
   const curated = args.content ? JSON.parse(fs.readFileSync(args.content, 'utf8')) : await curate(data)
   const content = validContent(curated) ? normalizeContent(curated) : localContent(data)
   content.next = planItems(data)
@@ -563,7 +710,7 @@ async function main() {
   if (args.dryRun) {
     const rendered = renderImage(html, date)
     console.log(JSON.stringify(content, null, 2))
-    console.log(`\n[dry-run] ${date} sessions=${data.totals.sessions} tickets=${data.tickets.length} open=${data.open.length} openPrs=${data.openPrs.length}`)
+    console.log(`\n[dry-run] ${date} tokens=${data.totals.tokens} requests=${data.totals.requests} sessions=${data.totals.sessions} tickets=${data.tickets.length} open=${data.open.length} openPrs=${data.openPrs.length}`)
     console.log(`image: ${rendered.pngPath}`)
     return
   }

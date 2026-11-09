@@ -5,9 +5,12 @@ image:
 
 - **今日重点** — a short, result-first brief of the day: the main threads of work, completed
   outcomes and open pull requests.
-- **Token 用量** — per-day billed tokens from the dsh-context *Context Insights* projection
-  cache (`~/.dsh/storages/session_projcache/sessions/*.json`): total, cache reads/cache-hit
-  rate, uncached input and output.
+- **Token 用量** — per-day billed tokens folded from the DSH session logs
+  (`~/.dsh/sessions/<workspace>/<session>/session.v4.jsonl.zstd`): total, cache
+  reads/cache-hit rate, uncached input and output. A step is billed to the day it started, and
+  inherited side-conversation history is not counted twice. The dsh-context *Context Insights*
+  projection cache (`~/.dsh/storages/session_projcache/sessions/*.json`) is only a fallback:
+  the web UI refreshes it on demand, so a cron run can read it stale or empty.
 - **风险 / 阻塞** — taken from blocked work items, or a sentence in a report that asks for a
   decision.
 - **明日重点** — generated from the open superagent tickets and open pull requests.
@@ -21,6 +24,7 @@ the day's summary.
 ## Requirements
 
 - Node.js 22+ (uses `node:sqlite` and the built-in `fetch`)
+- `zstdcat` (zstd) to read the durable session logs
 - Python 3.10+ with `venv` (the installer creates a private virtualenv with WeasyPrint 70)
 - `pdftoppm` and `pdfinfo` (poppler-utils)
 - Noto Sans CJK SC fonts
@@ -47,6 +51,7 @@ crontab. It is idempotent; re-run it after changing the script.
 ~/.local/share/dsh-daily-summary/run.sh              # render and send now
 ~/.local/share/dsh-daily-summary/run.sh --date 2026-11-01 --dry-run
 ~/.local/share/dsh-daily-summary/run.sh --no-llm     # deterministic brief, no API call
+~/.local/share/dsh-daily-summary/run.sh --date 2026-11-09 --resend  # re-send a corrected report
 ```
 
 The last HTML, PDF and PNG are kept in `~/.local/share/dsh-daily-summary/last/` for inspection;

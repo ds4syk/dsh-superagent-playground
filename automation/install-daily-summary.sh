@@ -41,8 +41,8 @@ hour=${hour#0}
 [ -n "$minute" ] || minute=0
 [ -n "$hour" ] || hour=0
 
-for tool in pdftoppm pdfinfo; do
-  command -v "$tool" >/dev/null 2>&1 || { echo "$tool is required (install poppler-utils)" >&2; exit 1; }
+for tool in pdftoppm pdfinfo zstdcat; do
+  command -v "$tool" >/dev/null 2>&1 || { echo "$tool is required (poppler-utils / zstd)" >&2; exit 1; }
 done
 
 dir="${HOME}/.local/share/dsh-daily-summary"
