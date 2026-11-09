@@ -22,3 +22,7 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
+- **基于 SDPR 的新方法：主表实验设计**（2026-11）：数据集、baseline 三层、六张主表模板与文献范式：
+  [知识库](kb/sdpr-main-table/00.md) ·
+  [DOCX](deliverables/SDPR新方法主表实验设计知识库_2026-11.docx) ·
+  [一页图](docs/visuals/2026-11-09-sdpr-main-table-design.png)
