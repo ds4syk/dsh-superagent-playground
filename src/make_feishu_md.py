@@ -13,7 +13,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent
 SRC = HERE / "report" / "sdpr_forward_network_dataset.md"
-OUT = HERE / "kb" / "01_feishu.md"
+OUT = HERE / "kb" / "sdpr-forward-net" / "01_feishu.md"
 
 CJK = re.compile(r"[\u3400-\u9fff\uf900-\ufaff]")
 
