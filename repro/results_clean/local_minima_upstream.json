@@ -1,0 +1,92 @@
+{
+  "datasets": [
+    {
+      "dataset": 0,
+      "n_inits": 100,
+      "cost_global": 296.2010956977713,
+      "cost_min": 296.2010956977713,
+      "n_local": 40,
+      "n_global": 60,
+      "n_failure": 0,
+      "frac_local": 0.4,
+      "frac_global": 0.6,
+      "frac_failure": 0.0,
+      "cost_local_min": 296.20109494155565,
+      "cost_local_max": 944624.2437541259
+    },
+    {
+      "dataset": 1,
+      "n_inits": 100,
+      "cost_global": 245.928391714133,
+      "cost_min": 245.928391714133,
+      "n_local": 67,
+      "n_global": 33,
+      "n_failure": 0,
+      "frac_local": 0.67,
+      "frac_global": 0.33,
+      "frac_failure": 0.0,
+      "cost_local_min": 245.9283911233846,
+      "cost_local_max": 683817.6335752626
+    },
+    {
+      "dataset": 2,
+      "n_inits": 100,
+      "cost_global": 187.89929339502777,
+      "cost_min": 187.89929396078452,
+      "n_local": 70,
+      "n_global": 30,
+      "n_failure": 0,
+      "frac_local": 0.7,
+      "frac_global": 0.3,
+      "frac_failure": 0.0,
+      "cost_local_min": 187.89929396078452,
+      "cost_local_max": 623653.3593745194
+    }
+  ],
+  "n_inits_total": 300,
+  "frac_local_mean": 0.59,
+  "frac_global_mean": 0.41,
+  "frac_failure_mean": 0.0,
+  "n_local_total": 177,
+  "n_global_total": 123,
+  "n_failure_total": 0,
+  "noise_mode": "upstream",
+  "config": {
+    "n_batch": 1,
+    "n_runs": 50,
+    "radius": 3.0,
+    "board_dims": [
+      1.0,
+      1.0
+    ],
+    "n_squares": [
+      8,
+      8
+    ],
+    "alpha": 0.7853981633974483,
+    "beta": 0.7853981633974483,
+    "sigma_u": 0.5,
+    "sigma_v": 0.5,
+    "noise_mode": "upstream",
+    "fu": 484.5,
+    "fv": 484.5,
+    "b_true": 0.24,
+    "b_offset": 0.003,
+    "lr": 0.0001,
+    "max_iter": 150,
+    "tol_grad_sq": 1e-05,
+    "tol_loss": 1e-10,
+    "diverge_tol": 1.0,
+    "sdp_solver": "SCS",
+    "sdp_eps": 1e-09,
+    "sdp_max_iters": 100000,
+    "gn_max_iter": 500,
+    "gn_step_size": 0.2,
+    "gn_abs_tol": 1e-10,
+    "gn_rel_tol": 1e-06,
+    "gn_polish": true,
+    "gn_polish_iter": 100,
+    "seed0": 0,
+    "record_diagnostics": true
+  }
+}
