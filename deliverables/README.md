@@ -7,5 +7,6 @@
 | `02_SDPR精读.docx` | 对偶证书、Thm.2 证明链、紧性、文献 |
 | `03_QPEP精读.docx` | 四元数 QCQP、Gröbner 全局解、协方差 SDP、问题族 |
 | `04_相机标定仿真复现.docx` | §VI-B4 双路线、Table V、tightness、失败修复、局限 |
+| `SDPR_GPU并行实现_2026-11.docx` | CPU-only 检索、batch-parallel GPU 层、P6 精度/证书/速度、局限（源：`report/sdpr_gpu.md`） |
 
 源文件在 [`../kb/sdpr-qpep/`](../kb/)；Feishu 知识库链接在交付消息中。

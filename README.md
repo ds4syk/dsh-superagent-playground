@@ -22,3 +22,7 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
+- **SDPR 的 GPU 并行实现**（2026-11）：
+  [report](report/README-sdpr-gpu.md) · [主报告](report/sdpr_gpu.md) ·
+  [一页图](docs/visuals/2026-11-09-sdpr-gpu.png) ·
+  [DOCX](deliverables/SDPR_GPU并行实现_2026-11.docx)
