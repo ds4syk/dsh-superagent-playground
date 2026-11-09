@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>Reach 的可见上下文与交付约定</title><style>
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Noto Sans CJK SC', 'Noto Sans CJK SC Medium', sans-serif; color: #0f172a; -weasy-hyphens: none; }
+.page { position: relative; width: 210mm; height: 297mm; padding: 13mm 15mm 12mm; background: #f7f8fb; overflow: hidden; }
+.eyebrow { display: flex; justify-content: space-between; align-items: baseline; font-size: 7.6pt; letter-spacing: 1.4pt; color: #64748b; }
+.eyebrow .brand { color: #4d6bfe; font-weight: 700; letter-spacing: 1.8pt; }
+h1 { font-size: 25pt; line-height: 1.18; letter-spacing: -0.5pt; margin: 5mm 0 3mm; font-weight: 700; }
+h1 em { font-style: normal; color: #4d6bfe; }
+.headline { font-size: 10.5pt; line-height: 1.62; color: #334155; margin: 0 0 6mm; max-width: 178mm; }
+.section { margin-top: 6.5mm; }
+.section-head { display: flex; align-items: center; gap: 2.2mm; margin-bottom: 2.4mm; }
+.section-head .num { font-size: 7.4pt; font-weight: 700; color: #4d6bfe; letter-spacing: 0.8pt; }
+.section-head .title { font-size: 9.4pt; font-weight: 700; letter-spacing: 0.8pt; color: #4d6bfe; }
+.section-head .line { flex: 1; height: 1px; background: #e2e8f0; margin-left: 1.5mm; }
+.topic-strip { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 3mm; }
+.topic-strip .label { font-size: 7.6pt; color: #64748b; letter-spacing: 0.6pt; white-space: nowrap; }
+.topic { border: 1px solid #dbe3f0; background: #fff; color: #94a3b8; border-radius: 2mm; padding: 1.6mm 2.6mm; font-size: 8pt; white-space: nowrap; }
+.topic.current { border-color: #4d6bfe; background: #eef2ff; color: #3450d8; font-weight: 700; }
+.topic-arrow { color: #cbd5e1; font-size: 10pt; }
+.topic-note { font-size: 7.6pt; color: #64748b; margin-left: auto; white-space: nowrap; }
+.cards { display: flex; gap: 3mm; }
+.card { flex: 1; background: #fff; border: 1px solid #e6eaf2; border-radius: 2.6mm; padding: 3.6mm 4mm 3.2mm; }
+.card .cap { display: flex; align-items: center; gap: 1.6mm; font-size: 8.4pt; font-weight: 700; margin-bottom: 2mm; }
+.card .dot { width: 2.4mm; height: 2.4mm; border-radius: 50%; }
+.card ul { margin: 0; padding: 0; list-style: none; }
+.card li { position: relative; padding-left: 3.2mm; font-size: 8.3pt; line-height: 1.5; color: #475569; margin-bottom: 1.1mm; }
+.card li:last-child { margin-bottom: 0; }
+.card li:before { content: ''; position: absolute; left: 0.8mm; top: 1.9mm; width: 1mm; height: 1mm; border-radius: 50%; background: #cbd5e1; }
+.card.green { border-top: 2mm solid #10b981; }
+.card.green .dot { background: #10b981; }
+.card.amber { border-top: 2mm solid #f59e0b; }
+.card.amber .dot { background: #f59e0b; }
+.card.red { border-top: 2mm solid #ef4444; }
+.card.red .dot { background: #ef4444; }
+.callout { display: flex; gap: 3mm; align-items: baseline; margin-top: 3mm; background: #eef2ff; border-left: 2.4mm solid #4d6bfe; border-radius: 1.6mm; padding: 2.6mm 3.4mm; font-size: 8.5pt; line-height: 1.55; color: #334155; }
+.callout b { color: #3450d8; }
+.rows { background: #fff; border: 1px solid #e6eaf2; border-radius: 2.6mm; overflow: hidden; }
+.note { margin-top: 1.8mm; font-size: 7.5pt; color: #64748b; line-height: 1.5; }
+.note b { color: #475569; }
+.row { display: flex; align-items: center; gap: 3mm; padding: 2.5mm 4mm; border-bottom: 1px solid #eef2f8; }
+.row:last-child { border-bottom: none; }
+.row .way { width: 89mm; font-size: 8.6pt; font-weight: 700; color: #1e293b; }
+.row .way small { display: block; font-weight: 400; color: #64748b; font-size: 7.6pt; margin-top: 0.5mm; }
+.row .scope { flex: 1; font-size: 8.3pt; color: #475569; }
+.chip { font-size: 7.4pt; font-weight: 700; border-radius: 8mm; padding: 1.1mm 2.6mm; white-space: nowrap; }
+.chip.ok { background: #dcfce7; color: #15803d; }
+.chip.now { background: #fef3c7; color: #b45309; }
+.chip.blue { background: #e0e7ff; color: #3450d8; }
+.rules { display: flex; gap: 3mm; }
+.rule { flex: 1; background: #fff; border: 1px solid #e6eaf2; border-radius: 2.6mm; padding: 3.4mm 4mm; }
+.rule .h { display: flex; align-items: baseline; gap: 1.8mm; margin-bottom: 1.4mm; }
+.rule .no { font-size: 8pt; font-weight: 700; color: #4d6bfe; }
+.rule .name { font-size: 9pt; font-weight: 700; }
+.rule .desc { font-size: 8.2pt; line-height: 1.55; color: #475569; }
+.example { margin-top: 3mm; display: flex; gap: 3mm; align-items: baseline; background: #0f172a; color: #e2e8f0; border-radius: 2.6mm; padding: 3mm 4mm; font-size: 8.4pt; line-height: 1.5; }
+.example .tag { color: #93c5fd; font-size: 7.2pt; font-weight: 700; letter-spacing: 1pt; white-space: nowrap; }
+.example b { color: #fff; }
+.howto { margin-top: 3mm; display: flex; gap: 3mm; align-items: baseline; background: #fff; border: 1px dashed #c7d2fe; border-radius: 2.6mm; padding: 2.8mm 4mm; font-size: 8.4pt; line-height: 1.5; color: #334155; }
+.howto b { color: #3450d8; }
+.howto .tag { color: #4d6bfe; font-size: 7.2pt; font-weight: 700; letter-spacing: 1pt; white-space: nowrap; }
+.footer { position: absolute; left: 15mm; right: 15mm; bottom: 8mm; display: flex; justify-content: space-between; align-items: baseline; font-size: 7.2pt; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 2.2mm; }
+.footer .brand { color: #4d6bfe; font-weight: 700; letter-spacing: 0.8pt; }
+</style></head>
+<body><div class="page">
+  <div class="eyebrow"><span class="brand">REACH · 交付约定</span><span>2026-11-02 · 星期一</span></div>
+  <h1>我看得见什么，<br>以及怎么跟我<em>定规矩</em></h1>
+  <p class="headline">群里每条新消息只把<strong>这一条</strong>和它所在的 topic 送进工单；之前的 topic 需要我主动去读。交付默认：<strong>一页图 + 一句话</strong>。</p>
+
+  <div class="section">
+    <div class="section-head"><span class="num">01</span><span class="title">可见上下文范围</span><span class="line"></span></div>
+    <div class="topic-strip">
+      <span class="label">群里的 topic</span>
+      <span class="topic">架构 / 模型</span>
+      <span class="topic">研读报告</span>
+      <span class="topic current">交付约定（本条）</span>
+      <span class="topic-arrow">→</span>
+      <span class="topic-note">只有当前 topic 自动进入工单</span>
+    </div>
+    <div class="cards">
+      <div class="card green">
+        <div class="cap"><span class="dot"></span>自动收到</div>
+        <ul>
+          <li>触发消息全文</li>
+          <li>同一 topic 的后续消息</li>
+          <li>工单的权限与历史</li>
+        </ul>
+      </div>
+      <div class="card amber">
+        <div class="cap"><span class="dot"></span>需要时主动读</div>
+        <ul>
+          <li>同群其他 topic 与历史</li>
+          <li>仓库文件、PR、CI</li>
+          <li>消息里的图片和附件</li>
+        </ul>
+      </div>
+      <div class="card red">
+        <div class="cap"><span class="dot"></span>不会自动看到</div>
+        <ul>
+          <li>你电脑 / 手机上的文件</li>
+          <li>其他群与私聊</li>
+          <li>未共享的文档、你的屏幕</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout"><span><b>想让我接着上文：</b>在同一个 topic 里回复，或把上下文引用 / 转发进来；也可以直接说“先读上面那条”。我会去读，但不会自动带进新工单。</span></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="num">02</span><span class="title">怎么约定交付规范</span><span class="line"></span></div>
+    <div class="rows">
+      <div class="row"><div class="way">在这个 topic 里直接说<small>说明你想要什么格式、多长</small></div><div class="scope">当前工单</div><span class="chip now">立即生效</span></div>
+      <div class="row"><div class="way">写进仓库 AGENTS.md<small>每个执行 Session 开工前都会读</small></div><div class="scope">本仓库的后续工单</div><span class="chip ok">本次已写入</span></div>
+      <div class="row"><div class="way">Web 面板 → Prompts → Delivery requirements / Communication<small>团队级提示词，保存即生效</small></div><div class="scope">整个 superagent（含主 Session）</div><span class="chip blue">保存即生效</span></div>
+    </div>
+    <div class="note">全局文件 <b>~/.dsh/AGENTS.md</b> 影响所有 DSH 会话（新会话生效）；仓库文件只影响本仓库执行 Session。</div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="num">03</span><span class="title">本次约定</span><span class="line"></span></div>
+    <div class="rules">
+      <div class="rule"><div class="h"><span class="no">1</span><span class="name">可视化</span></div><div class="desc">每个交付附一页图 / PDF（图、表、流程优先），放 <b>docs/visuals/</b>，PR 内嵌。</div></div>
+      <div class="rule"><div class="h"><span class="no">2</span><span class="name">简洁</span></div><div class="desc">先给一句话结论和链接，不超过 100 词；细节、验证记录放 PR。</div></div>
+      <div class="rule"><div class="h"><span class="no">3</span><span class="name">可直接看</span></div><div class="desc">不只给 GitHub 链接；同时给图片本身（飞书内嵌或 raw PNG）。</div></div>
+    </div>
+    <div class="example"><span class="tag">以后你会先看到</span><span><b>一张这样的说明图</b> + 一句“已完成 / 待你合并”的结论；代码细节留在 PR 里。</span></div>
+    <div class="howto"><span class="tag">想改约定</span><span>直接说“以后交付都按这张图来”，或“把这条写进 Delivery requirements”。我会照做并记录。</span></div>
+  </div>
+
+  <div class="footer"><span class="brand">DSH SUPERAGENT</span><span>本页即第一个示例 · ds4syk/dsh-superagent-playground</span></div>
+</div></body></html>
