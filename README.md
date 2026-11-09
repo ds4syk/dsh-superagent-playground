@@ -22,3 +22,6 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
+- **DreamerV4 相对 DreamerV3 的改动对比**（2026-11）：
+  [知识库](kb/dreamer-v4-vs-v3/00.md) · [一页图](docs/visuals/2026-11-09-dreamer-v4-vs-v3.png) ·
+  [DOCX](deliverables/DreamerV4_vs_V3_改动对比_2026-11.docx)
