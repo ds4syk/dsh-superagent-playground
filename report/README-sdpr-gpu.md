@@ -5,6 +5,7 @@
 | 文档 | 内容 |
 |---|---|
 | [sdpr_gpu.md](sdpr_gpu.md) | **主报告**：原文 CPU-only 引用、公开实现检索、batch-parallel GPU 层、P6 验证、速度、局限 |
+| [sdpr_gpu_math.md](sdpr_gpu_math.md) | **数学解析**：SDP 对偶、log-det barrier 的 `X(μ)=μH⁻¹` 与 `gap=nμ`、Theorem 2 隐式微分、复杂度与条件数 |
 | [../docs/visuals/2026-11-09-sdpr-gpu.png](../docs/visuals/2026-11-09-sdpr-gpu.png) | 一页速览图 |
 | [../deliverables/SDPR_GPU并行实现_2026-11.docx](../deliverables/SDPR_GPU并行实现_2026-11.docx) | Word 版（默认交付格式） |
 | [../src/gpu_sdpr/](../src/gpu_sdpr/) | 实现：`BarrierSolver`、`SDPRLayer`、(P6) 构造 |
