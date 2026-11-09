@@ -1,0 +1,79 @@
+{
+ "n": 200,
+ "exact_match": 0.745,
+ "exec_accuracy": 0.62,
+ "variable_accuracy": {
+  "player_room": 0.91,
+  "key_location": 0.975,
+  "apple_location": 0.97,
+  "mushroom_location": 0.96,
+  "door_mode": 0.97,
+  "box_mode": 0.96,
+  "holding": 0.905
+ },
+ "macro_variable_accuracy": 0.95,
+ "exact_by_exec": {
+  "true": 0.32894736842105265,
+  "false": 1.0
+ },
+ "count_by_exec": {
+  "true": 76,
+  "false": 124
+ },
+ "parse_fail_rate": 0.0,
+ "mean_latency_s": 0.0,
+ "decisions": 0,
+ "wall_s": 0.0032375549781136215,
+ "backend": "persistence",
+ "sample_per_s": 61775.01273400184,
+ "decisions_per_s": 0.0,
+ "est_input_tokens": 169960,
+ "est_usd_per_1k_transitions_jev_api": 0.035691600000000004,
+ "rollout": {
+  "n": 20,
+  "exact_by_k": {
+   "1": 0.4,
+   "2": 0.2,
+   "3": 0.15,
+   "4": 0.2
+  },
+  "var_by_k": {
+   "1": {
+    "player_room": 0.8,
+    "key_location": 0.95,
+    "apple_location": 0.95,
+    "mushroom_location": 1.0,
+    "door_mode": 0.85,
+    "box_mode": 0.85,
+    "holding": 0.9
+   },
+   "2": {
+    "player_room": 0.65,
+    "key_location": 0.85,
+    "apple_location": 0.9,
+    "mushroom_location": 0.95,
+    "door_mode": 0.8,
+    "box_mode": 0.8,
+    "holding": 0.8
+   },
+   "3": {
+    "player_room": 0.5,
+    "key_location": 0.7,
+    "apple_location": 0.9,
+    "mushroom_location": 0.9,
+    "door_mode": 0.7,
+    "box_mode": 0.8,
+    "holding": 0.6
+   },
+   "4": {
+    "player_room": 0.8,
+    "key_location": 0.65,
+    "apple_location": 0.9,
+    "mushroom_location": 0.85,
+    "door_mode": 0.65,
+    "box_mode": 0.75,
+    "holding": 0.6
+   }
+  }
+ }
+}

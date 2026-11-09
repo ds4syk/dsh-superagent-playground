@@ -1,17 +1,24 @@
 # dsh-superagent-playground
-dsh-superagent 的测试沙箱仓库
+Sandbox repo for dsh-superagent
 
-## 说明
+## Hello
 
-这是 dsh-superagent 的测试沙箱仓库，可以随意试用，不必担心破坏内容。
+Hello! This is a sandbox repository for dsh-superagent testing. Feel free to poke around here without worrying about breaking anything.
 
-## 实验室
+## Lab
 
-这个沙箱也用于测试运行在实验室服务器上的 agent。
+This sandbox is also used to test the agent running on the lab server.
 
-## 研究报告
+## Research reports
 
-- **SDPR 前向网络与数据集**（2026-11）：SDPR 可微优化层的前向网络接法、VGG16 + UNet 前端、
-  13 维 QCQP 与 UTIAS In-The-Dark 数据集来源：
+- **SDPR & QPEP 研读与复现**（五个问题的回答 + 相机 baseline 标定复现）：
+  [report](report/README-sdpr-qpep.md) · [answers](report/answers.md) ·
+  [QPEP notes](report/qpep_reading_notes.md) · [reproduction](report/reproduction.md) ·
+  [DOCX 知识库](deliverables/README.md) · [本科简明版](deliverables_simple/README.md) ·
+  [SDPR 复现图表集](analysis/atlas/SDPR_复现图表集.docx) · [KB 约定](docs/KB_CONVENTION.md)
+- **SDPR 能否作为 V-JEPA 2 的桥接输出层？** 机制分析 + 受控实验（旋转同步）：
+  [report](report/README-sdpr-vjepa2.md) · [主报告](report/sdpr_vjepa2_bridge.md) ·
+  [DOCX](deliverables/SDPR_VJEPA2_桥接输出层_2026-11.docx)
+- **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)

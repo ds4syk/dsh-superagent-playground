@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcppo"
+version = "0.1.0"
+description = "PPO on real Minecraft (DreamerV3 diamond task) with a hand-written dense reward"
+requires-python = ">=3.10"
+dependencies = ["numpy<2", "torch>=2.5", "matplotlib", "imageio"]
+
+[tool.setuptools.packages.find]
+include = ["mcppo*"]

@@ -1,0 +1,31 @@
+From 62d8ac66ca816c5d3303f7943ab88f86f5cb2fe8 Mon Sep 17 00:00:00 2001
+From: syk <syk@local>
+Date: Sat, 31 Oct 2026 15:26:35 +0800
+Subject: [PATCH] fix(solve-failures): restore strict kkt_tol default; adaptive
+ retry handled in driver
+
+---
+ src/sdprlayers/layers/pose_est.py | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/src/sdprlayers/layers/pose_est.py b/src/sdprlayers/layers/pose_est.py
+index 1b8c64b..9c49d69 100644
+--- a/src/sdprlayers/layers/pose_est.py
++++ b/src/sdprlayers/layers/pose_est.py
+@@ -53,10 +53,9 @@ class SDPPoseEstimator(nn.Module):
+         # ~28% of instances with the SCS backend at its 1e-9 accuracy; 1e-3 is
+         # the validated fallback (FD gradient error ~0.2-1.7%, see report).
+         _kkt_env = os.environ.get("SDPR_KKT_TOL")
+-        if _kkt_env is not None:
+-            kkt_tol = float(_kkt_env)
+-        else:
+-            kkt_tol = 1e-5 if str(solver).upper() == "MOSEK" else 1e-3
++        # Upstream/faithful default stays strict (1e-5); the reproduction driver
++        # retries failed runs with 1e-3 (validated fallback, see report §5.6).
++        kkt_tol = float(_kkt_env) if _kkt_env is not None else 1e-5
+         self.kkt_tol = kkt_tol
+ 
+         # Generate constraints
+-- 
+2.34.1
+

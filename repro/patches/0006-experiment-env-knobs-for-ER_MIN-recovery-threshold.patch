@@ -1,0 +1,46 @@
+From 8e7610de9ce950fc124b2fe14240cc938dbe1362 Mon Sep 17 00:00:00 2001
+From: syk <syk@local>
+Date: Sat, 31 Oct 2026 14:04:16 +0800
+Subject: [PATCH 2/4] experiment: env knobs for ER_MIN recovery threshold and
+ SCS max_iters/scale
+
+---
+ src/sdprlayers/layers/pose_est.py  | 8 ++++++++
+ src/sdprlayers/layers/sdprlayer.py | 2 +-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/sdprlayers/layers/pose_est.py b/src/sdprlayers/layers/pose_est.py
+index 296c3ef..4cf3986 100644
+--- a/src/sdprlayers/layers/pose_est.py
++++ b/src/sdprlayers/layers/pose_est.py
+@@ -143,6 +143,14 @@ class SDPPoseEstimator(nn.Module):
+                 }
+                 if solver_args is not None:
+                     layer_solver_args.update(solver_args)
++                # optional SCS tuning knobs for the solve-failure study
++                for env_key, scs_key, cast in (
++                    ("SDPR_SCS_MAX_ITERS", "max_iters", int),
++                    ("SDPR_SCS_SCALE", "scale", float),
++                ):
++                    _v = os.environ.get(env_key)
++                    if _v is not None:
++                        layer_solver_args[scs_key] = cast(_v)
+                 if verbose:
+                     # diffcp/SCS verbose flag lives in solver_args
+                     layer_solver_args["verbose"] = True
+diff --git a/src/sdprlayers/layers/sdprlayer.py b/src/sdprlayers/layers/sdprlayer.py
+index af290e7..848b3c9 100644
+--- a/src/sdprlayers/layers/sdprlayer.py
++++ b/src/sdprlayers/layers/sdprlayer.py
+@@ -37,7 +37,7 @@ LSQR_TOL = 1e-12
+ MINRES_TOL = 1e-20
+ 
+ # Minimum Eigenvalue Ratio for Tightness Check.
+-ER_MIN = 1e5
++ER_MIN = float(os.environ.get("SDPR_ER_MIN", 1e5))  # env override (experiments only)
+ 
+ 
+ class SDPRLayer(CvxpyLayer):
+-- 
+2.34.1
+
