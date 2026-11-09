@@ -4,6 +4,8 @@ This is by an automated agent, not a human.
 
 回答 Feishu 问题：**SDPR 论文/代码里，可微分优化层的前向网络是怎么接的、是什么网络？数据集是从哪里来的？**
 
+![一页速览](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/sdpr-layer-network-data-8747769c51c8/docs/visuals/2026-11-09-sdpr-forward-net.png?raw=true)
+
 简短结论：
 
 - **`SDPRLayer` 本身没有可学习参数，也不是一个网络。** 论文真实实验里，它位于可微管线末端。
@@ -19,6 +21,7 @@ This is by an automated agent, not a human.
 
 - `report/sdpr_forward_network_dataset.md` — 主报告（中文），含逐段链路、张量形状、代码位置与数据集表。
 - `report/figures/pipeline.png` — 前向管线图。
+- `docs/visuals/2026-11-09-sdpr-forward-net.png` — 一页速览（上方内嵌；源码 `src/make_onepager.py`）。
 - `deliverables/SDPR_前向网络与数据集_2026-11.docx` — Word 版（默认交付，9 页）。
 - `kb/sdpr-forward-net/00.md`、`kb/sdpr-forward-net/01.md` — Feishu 知识库源页。
 - `src/` — 图与 DOCX 构建脚本。

@@ -5,6 +5,7 @@
 | 材料 | 位置 |
 |-|-|
 | 主报告（Markdown） | [sdpr_forward_network_dataset.md](sdpr_forward_network_dataset.md) |
+| 一页速览（PNG） | [../docs/visuals/2026-11-09-sdpr-forward-net.png](../docs/visuals/2026-11-09-sdpr-forward-net.png) |
 | 前向管线图 | [figures/pipeline.png](figures/pipeline.png) |
 | Word 版（默认交付） | [../deliverables/SDPR_前向网络与数据集_2026-11.docx](../deliverables/SDPR_前向网络与数据集_2026-11.docx) |
 | DOCX 构建脚本 | [../src/build_docx_sdpr_forward_net.py](../src/build_docx_sdpr_forward_net.py)、[../src/md2docx.py](../src/md2docx.py) |
