@@ -7,7 +7,7 @@
 |---|---|
 | [**sdpr_vjepa2_bridge.md**](sdpr_vjepa2_bridge.md) | **主报告**：两篇论文事实、接口判定、实验、边界、下一步 |
 | [repro.md](repro.md) | 环境、资产、Slurm 命令、产物 |
-| [../kb/00.md](../kb/00.md) | DOCX 知识库总览 |
+| [../kb/sdpr-vjepa2/00.md](../kb/sdpr-vjepa2/00.md) | DOCX 知识库总览 |
 | [../deliverables/](../deliverables/) | Word 版（默认交付） |
 | [figures/](figures/) | 架构/样本/误差/证书/梯度图 |
 

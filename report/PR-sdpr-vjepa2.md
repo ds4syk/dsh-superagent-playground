@@ -14,7 +14,7 @@ readings and tests the only one that is actually well-posed.
 
 - `report/sdpr_vjepa2_bridge.md` — main technical report (Chinese).
 - `deliverables/SDPR_VJEPA2_桥接输出层_2026-11.docx` — DOCX knowledge base (default delivery).
-- `kb/00.md` … `kb/04.md` — KB source pages.
+- `kb/sdpr-vjepa2/00.md` … `kb/sdpr-vjepa2/04.md` — KB source pages.
 - `src/` — panorama/data generation, V-JEPA 2 ViT-L feature extraction, SDPR rotation
   synchronization (QCQP + Shor SDP + certificate + implicit-diff backward), adapter/training,
   bridge gradient check, figures/analysis, DOCX builder.

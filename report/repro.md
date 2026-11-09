@@ -97,7 +97,7 @@ sbatch --job-name=sdpr-jepa-e2e --cpus-per-task=8 --mem=32G --time=02:00:00 \
 ```bash
 ~/miniconda3/envs/jepa/bin/python src/analyze.py --tag v1
 ~/miniconda3/envs/jepa/bin/python src/make_figures.py --which arch,samples
-~/miniconda3/envs/sdpr-clean/bin/python src/build_docx.py
+~/miniconda3/envs/sdpr-clean/bin/python src/build_docx_sdpr_vjepa2.py
 ```
 
 ## 4. 产物

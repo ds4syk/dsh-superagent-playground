@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Build the DOCX knowledge base from kb/*.md.
+"""Build the DOCX knowledge base from kb/sdpr-vjepa2/*.md.
 
 Run with the env that has python-docx::
 
-    ~/miniconda3/envs/sdpr-clean/bin/python src/build_docx.py
+    ~/miniconda3/envs/sdpr-clean/bin/python src/build_docx_sdpr_vjepa2.py
 """
 
 import os
@@ -20,7 +20,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-FILES = [os.path.join(ROOT, "kb", f"{i:02d}.md") for i in range(5)]
+FILES = [os.path.join(ROOT, "kb", "sdpr-vjepa2", f"{i:02d}.md") for i in range(5)]
 FIG_DIR = os.path.join(ROOT, "report", "figures")
 OUT = os.path.join(ROOT, "deliverables", "SDPR_VJEPA2_桥接输出层_2026-11.docx")
 FONT = "Noto Sans CJK SC"
