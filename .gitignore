@@ -3,3 +3,7 @@ __pycache__/
 .pytest_cache/
 # upstream repo is cloned on demand, not vendored
 code/
+# internal Feishu index variants
+kb/**/00_feishu*.md
+kb/**/01_feishu.md
+artifacts/

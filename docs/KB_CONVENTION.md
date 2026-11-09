@@ -67,11 +67,11 @@ lark-cli drive +create-folder --as bot --name '<主题>（YYYY-MM）'
 # 2) 建子页（Markdown 中的 $...$ 会转成 <latex> 公式）
 cd <repo>
 lark-cli docs +create --as bot --parent-token <folder_token> \
-  --doc-format markdown --content @./kb/01.md
+  --doc-format markdown --content @./kb/sdpr-qpep/01.md
 
 # 3) 追加图片（先跑完文字页，再按顺序追加；图片进入文末“图集”）
 lark-cli docs +media-insert --as bot --doc <doc_url> \
-  --file ./kb/assets/fig1.png --type image --caption '图 1：...' --width 900
+  --file ./kb/sdpr-qpep/assets/fig1.png --type image --caption '图 1：...' --width 900
 
 # 4) 授权用户（子文档通常继承文件夹权限，仍建议抽查）
 lark-cli drive +member-add --as bot --token <folder_token> --type folder \
@@ -99,4 +99,4 @@ lark-cli drive +export --as bot --url <doc_url> --file-extension docx \
 - `03 QPEP 精读`
 - `04 相机标定仿真复现`
 
-本地源文件：`kb/00.md`–`kb/04.md`、`kb/assets/`；可读副本：Feishu docx 链接 + `deliverables/*.docx`。
+本地源文件：`kb/sdpr-qpep/00.md`–`kb/sdpr-qpep/04.md`、`kb/sdpr-qpep/assets/`；可读副本：Feishu docx 链接 + `deliverables/*.docx`。

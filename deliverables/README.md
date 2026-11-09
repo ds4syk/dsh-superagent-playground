@@ -8,4 +8,4 @@
 | `03_QPEP精读.docx` | 四元数 QCQP、Gröbner 全局解、协方差 SDP、问题族 |
 | `04_相机标定仿真复现.docx` | §VI-B4 双路线、Table V、tightness、失败修复、局限 |
 
-源文件在 [`../kb/`](../kb/)；Feishu 知识库链接在交付消息中。
+源文件在 [`../kb/sdpr-qpep/`](../kb/)；Feishu 知识库链接在交付消息中。
