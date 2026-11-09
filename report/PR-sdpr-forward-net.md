@@ -28,7 +28,7 @@ The short answer:
   per-stage code references, dataset table, and reproduction caveats.
 - `report/figures/pipeline.png` — original pipeline diagram.
 - `deliverables/SDPR_前向网络与数据集_2026-11.docx` — Word version (default delivery).
-- `kb/00.md`, `kb/01.md` — knowledge-base source pages for the Feishu reading copy.
+- `kb/sdpr-forward-net/00.md`, `kb/sdpr-forward-net/01.md` — knowledge-base source pages for the Feishu reading copy.
 - `src/` — diagram and DOCX build scripts.
 
 ## Verification

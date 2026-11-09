@@ -7,7 +7,7 @@
 | 主报告（Markdown） | [sdpr_forward_network_dataset.md](sdpr_forward_network_dataset.md) |
 | 前向管线图 | [figures/pipeline.png](figures/pipeline.png) |
 | Word 版（默认交付） | [../deliverables/SDPR_前向网络与数据集_2026-11.docx](../deliverables/SDPR_前向网络与数据集_2026-11.docx) |
-| DOCX 构建脚本 | [../src/build_docx.py](../src/build_docx.py)、[../src/md2docx.py](../src/md2docx.py) |
+| DOCX 构建脚本 | [../src/build_docx_sdpr_forward_net.py](../src/build_docx_sdpr_forward_net.py)、[../src/md2docx.py](../src/md2docx.py) |
 | 管线图脚本 | [../src/make_pipeline_figure.py](../src/make_pipeline_figure.py) |
 
 ## 一句话结论
@@ -27,7 +27,7 @@ SDPR 层本身无可学习参数；论文真实实验里接在它前面的是 **
 python src/make_pipeline_figure.py
 
 # DOCX
-python src/build_docx.py
+python src/build_docx_sdpr_forward_net.py
 ```
 
 依赖：`matplotlib`、`python-docx`；中文字体用 Noto Sans/Serif CJK SC。
