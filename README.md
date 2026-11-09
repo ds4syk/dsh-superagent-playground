@@ -22,3 +22,12 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
+
+## Notebooks
+
+- **SDPR × Dreamer 训练全过程**：两本可执行 notebook（SDPR 的 QCQP/隐式微分/标定训练；
+  Dreamer 的世界模型/想象/actor-critic/真跑 3000 步）：
+  [SDPR notebook](notebooks/sdpr/sdpr_training_walkthrough.ipynb) ·
+  [Dreamer notebook](notebooks/dreamer/dreamer_training_walkthrough.ipynb) ·
+  [索引与运行方法](notebooks/README.md) ·
+  [一页速览](docs/visuals/2026-11-09-sdpr-dreamer-notebooks.png)

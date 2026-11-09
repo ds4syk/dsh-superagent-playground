@@ -7,3 +7,5 @@ code/
 kb/**/00_feishu*.md
 kb/**/01_feishu.md
 artifacts/
+.ipynb_checkpoints/
+notebooks/**/*.nbconvert.ipynb
