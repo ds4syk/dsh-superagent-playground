@@ -87,6 +87,6 @@ arrow(4.9, 1.75, 4.1, 1.35)
 box(8.3, 0.35, 7.2, 1.0, "关键：JEV 的选项必须预先枚举；\n候选从哪来是工程问题，不是 JEV 自己“想”出来的。", C_WARN, 11)
 
 plt.tight_layout()
-out = "kb/assets/fig5_jev_action_flow.png"
+out = "kb/jev-wm/assets/fig5_jev_action_flow.png"
 plt.savefig(out, dpi=170, bbox_inches="tight", facecolor=fig.get_facecolor())
 print("wrote", out)

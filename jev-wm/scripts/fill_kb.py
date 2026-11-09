@@ -3,7 +3,7 @@
 from __future__ import annotations
 import glob, json, os, re
 
-KB = "../kb"
+KB = "../kb/jev-wm"
 SHORT = {
     "persistence": "persistence",
     "tacit-Tacit-4B": "Tacit-4B (typed)",

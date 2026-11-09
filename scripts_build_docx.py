@@ -2,7 +2,7 @@ import glob, os, subprocess, sys
 import pypandoc
 
 root = os.path.dirname(os.path.abspath(__file__))
-kb = os.path.join(root, "kb")
+kb = os.path.join(root, "kb", "jev-wm")
 out = os.path.join(root, "deliverables", "JEV世界模型知识库_2026-11.docx")
 os.makedirs(os.path.dirname(out), exist_ok=True)
 files = sorted(glob.glob(os.path.join(kb, "*.md")))

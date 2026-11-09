@@ -2,7 +2,7 @@
 
 > 2026-11-03. All model numbers here are **our measurements** with open JEV-style
 > proxies (Tacit-4B/1.7B, Qwen3-4B typed readout), not the hosted JEV API.
-> Literature numbers (KIIS 2026 etc.) are cited separately in `kb/`.
+> Literature numbers (KIIS 2026 etc.) are cited separately in `kb/jev-wm/`.
 
 ## Setup
 
@@ -134,4 +134,4 @@ trained on WM labels exactly matches its teacher (83.3%).
   generalization is isolated in Exp1.
 - Invalid actions are masked in Exp2 (an action interface is assumed); the
   underlying transitions still contain invalid commands for Exp1.
-- See `kb/08.md` for the full list.
+- See `kb/jev-wm/08.md` for the full list.

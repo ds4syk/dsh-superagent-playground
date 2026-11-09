@@ -2,7 +2,7 @@ This is by an automated agent, not a human.
 
 ## 背景与更正
 
-用户原消息写「Jamba（不是 ZEV）」，随后更正为 **JEV**（TypeSafe AI 的 System One 决策模型）。本 PR 按 JEV 执行；`kb/08.md` 附录 A 说明若确实指 Jamba，结论会怎样不同。
+用户原消息写「Jamba（不是 ZEV）」，随后更正为 **JEV**（TypeSafe AI 的 System One 决策模型）。本 PR 按 JEV 执行；`kb/jev-wm/08.md` 附录 A 说明若确实指 Jamba，结论会怎样不同。
 
 JEV 本体闭源、无 API key，因此实验使用开放 JEV 风格代理：Tacit-4B（AnyJev 自蒸馏）与 Qwen3-4B-Instruct-2507 typed readout（AnyJev `Decider`）。
 
@@ -55,8 +55,8 @@ Slurm 作业与日志在 `/mnt/storage1/syk/jev-wm/logs/`；结果 JSON 在 `jev
 ## 交付
 
 - Word：`deliverables/JEV世界模型知识库_2026-11.docx`（40 页，含 5 张图）
-- Feishu 知识库：https://yide4vukqxv.feishu.cn/drive/folder/B0xkfw6ZLlUmhBda8dUcI1VhnBh（已给 ticket owner full_access）
-- 详细限制：`kb/08.md`
+- 飞书知识库阅读副本链接在交付消息中（不写入仓库）。
+- 详细限制：`kb/jev-wm/08.md`
 
 ## 限制
 

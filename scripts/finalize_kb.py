@@ -1,9 +1,9 @@
-"""Refresh figures/tables in kb/ and rebuild the DOCX."""
+"""Refresh figures/tables in kb/jev-wm/ and rebuild the DOCX."""
 import os, shutil, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 JEV = os.path.join(ROOT, "jev-wm")
-KB = os.path.join(ROOT, "kb")
+KB = os.path.join(ROOT, "kb", "jev-wm")
 ASSETS = os.path.join(KB, "assets")
 os.makedirs(ASSETS, exist_ok=True)
 
