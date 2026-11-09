@@ -312,7 +312,8 @@ def parse_table(lines, i):
     return rows, i
 
 
-def render(md_path: Path, out_path: Path, title: str, subtitle: str, meta: str):
+def render(md_path: Path, out_path: Path, title: str, subtitle: str, meta: str,
+           footer: str = "SDPR 前向网络与数据集 · 2026-11-09"):
     text = md_path.read_text(encoding="utf-8")
     lines = text.splitlines()
     md_dir = md_path.parent
@@ -353,7 +354,7 @@ def render(md_path: Path, out_path: Path, title: str, subtitle: str, meta: str):
     p.paragraph_format.space_after = Pt(4)
     para_border(p, color="2E6B3A", size=8, side="bottom")
 
-    add_footer(section, "SDPR 前向网络与数据集 · 2026-11-09")
+    add_footer(section, footer)
 
     i = 0
     skip_title = True
