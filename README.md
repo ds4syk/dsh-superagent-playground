@@ -9,6 +9,11 @@ Hello! This is a sandbox repository for dsh-superagent testing. Feel free to pok
 
 This sandbox is also used to test the agent running on the lab server.
 
+## 交互场景
+
+- **清晨海边灯塔小渔港**（Three.js 程序化生成的 360° 离线全景场景，双击 `index.html` 即可打开）：
+  [项目说明](灯塔小渔港/README.md) · [一页速览](docs/visuals/2026-11-10-lighthouse-harbor.png)
+
 ## Research reports
 
 - **SDPR & QPEP 研读与复现**（五个问题的回答 + 相机 baseline 标定复现）：
