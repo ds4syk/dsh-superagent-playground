@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>清晨海边灯塔小渔港</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0a1218;
+  }
+  #scene {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    touch-action: none;
+    cursor: grab;
+    outline: none;
+  }
+  #scene:active { cursor: grabbing; }
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+
+<!-- ===== 本地依赖（离线可用，经典 script，无 ES module） ===== -->
+<script src="js/vendor/three.min.js"></script>
+<script src="js/vendor/geometries/RoundedBoxGeometry.js"></script>
+
+<script src="js/vendor/postprocessing/EffectComposer.js"></script>
+<script src="js/vendor/math/SimplexNoise.js"></script>
+<script src="js/vendor/shaders/CopyShader.js"></script>
+<script src="js/vendor/shaders/LuminosityHighPassShader.js"></script>
+<script src="js/vendor/shaders/FilmShader.js"></script>
+<script src="js/vendor/shaders/BokehShader.js"></script>
+<script src="js/vendor/shaders/SSAOShader.js"></script>
+<script src="js/vendor/shaders/GammaCorrectionShader.js"></script>
+<script src="js/vendor/postprocessing/RenderPass.js"></script>
+<script src="js/vendor/postprocessing/ShaderPass.js"></script>
+<script src="js/vendor/postprocessing/MaskPass.js"></script>
+<script src="js/vendor/postprocessing/UnrealBloomPass.js"></script>
+<script src="js/vendor/postprocessing/FilmPass.js"></script>
+<script src="js/vendor/postprocessing/BokehPass.js"></script>
+<script src="js/vendor/postprocessing/SSAOPass.js"></script>
+
+<!-- ===== 场景模块（按依赖顺序加载） ===== -->
+<script src="js/00-utils.js"></script>
+<script src="js/10-textures.js"></script>
+<script src="js/20-sky.js"></script>
+<script src="js/30-water.js"></script>
+<script src="js/40-terrain.js"></script>
+<script src="js/50-rocks.js"></script>
+<script src="js/55-lighthouse.js"></script>
+<script src="js/60-harbor.js"></script>
+<script src="js/70-village.js"></script>
+<script src="js/75-boats.js"></script>
+<script src="js/80-mist.js"></script>
+<script src="js/90-controls.js"></script>
+<script src="js/95-postfx.js"></script>
+<script src="js/99-main.js"></script>
+</body>
+</html>
