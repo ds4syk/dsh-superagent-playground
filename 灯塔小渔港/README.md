@@ -104,6 +104,10 @@
 - 四方向截图见 `shots/`（由 `?auto=0` 固定视角采集，仅用于验收，不进入页面）。
 - 离线验证：全部脚本与依赖都在本地目录内，页面不发起任何外部请求。
 
+## 第三方依赖
+
+- **three.js r128**（MIT License）及其 `examples/js` 下的后期处理插件（EffectComposer、UnrealBloomPass、BokehPass、SSAOPass 等），已本地化到 `js/vendor/`，保留原始版权声明；不引入任何外部图片或模型素材。
+
 ## 已知限制
 
 - 需要支持 WebGL 的现代浏览器；极老设备可能无法开启后期链。

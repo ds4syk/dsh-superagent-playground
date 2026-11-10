@@ -114,9 +114,13 @@
     // ---------- 每帧
     var fwd = new THREE.Vector3();
     var right = new THREE.Vector3();
+    var lastNow = performance.now();
 
     function update(dt) {
-      var t = performance.now() / 1000;
+      var nowMs = performance.now();
+      var realDt = Math.min(0.5, (nowMs - lastNow) / 1000);
+      lastNow = nowMs;
+      var t = nowMs / 1000;
       var k = state.keys;
       var ix = (k['d'] || k['arrowright'] ? 1 : 0) - (k['a'] || k['arrowleft'] ? 1 : 0);
       var iz = (k['w'] || k['arrowup'] ? 1 : 0) - (k['s'] || k['arrowdown'] ? 1 : 0);
@@ -151,11 +155,11 @@
       var bobY = moving ? Math.sin(state.bob) * 0.022 : 0;
       camera.position.set(state.pos.x, state.eyeY + bobY, state.pos.z);
 
-      // 静止自动环视
-      state.idle += dt;
+      // 静止自动环视（按真实时间累计，低帧率设备也能在约 5 秒后开始）
+      state.idle += realDt;
       if (AUTO_PAN && state.idle > 5.0 && !state.dragging) {
         var autoT = Math.min(1, (state.idle - 5.0) / 2.0);
-        state.yaw += dt * 0.040 * autoT;
+        state.yaw += realDt * 0.040 * autoT;
         state.pitch = LH.damp(state.pitch, -0.02 + Math.sin(t * 0.11) * 0.03, 0.8, dt);
       }
 
