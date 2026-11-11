@@ -42,7 +42,7 @@ for i, (name, items, col) in enumerate(cols):
         axA.text(x + 0.15, 5.9 - j * 0.75, "· " + it, fontsize=8.6, color=INK)
 axA.add_patch(FancyBboxPatch((0.3, 0.15), 9.4, 1.35, boxstyle="round,pad=0.1", fc="#e9f2f7", ec=ACC, lw=1.2))
 axA.text(5.0, 1.12, "合流：视频生成式世界模型 + 动作条件（世界-动作模型）", ha="center", fontsize=11.5, color=ACC, fontweight="bold")
-axA.text(5.0, 0.58, "机器人 12 篇 + 视频生成 20 篇 = 主表的 74% 引用量", ha="center", fontsize=9, color=MUTED)
+axA.text(5.0, 0.58, "32/46 篇 · 约 74% 的引用量", ha="center", fontsize=9, color=MUTED)
 for x in (1.55, 4.8, 8.05):
     axA.add_patch(FancyArrowPatch((x, 2.05), (x, 1.62), arrowstyle="-|>", mutation_scale=14, color=ACC, lw=1.4))
 
