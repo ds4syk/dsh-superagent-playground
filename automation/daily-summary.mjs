@@ -120,6 +120,51 @@ function esc(value) {
   return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
+// DeepSeek API list prices in CNY per 1M tokens (api-docs.deepseek.com/zh-cn/quick_start/pricing,
+// checked 2026-11-11). Peak is Beijing-time Mon-Fri 09:00-12:00 / 14:00-18:00; off-peak is half.
+const MODEL_PRICES = {
+  'deepseek-flash': {
+    hit: { peak: 0.04, off: 0.02 },
+    miss: { peak: 2, off: 1 },
+    out: { peak: 8, off: 4 },
+  },
+  'deepseek-v4-pro': {
+    hit: { peak: 0.3, off: 0.15 },
+    miss: { peak: 9, off: 4.5 },
+    out: { peak: 27, off: 13.5 },
+  },
+}
+const DEFAULT_MODEL_PRICE = MODEL_PRICES['deepseek-flash']
+function modelPrice(model) {
+  return MODEL_PRICES[model] || DEFAULT_MODEL_PRICE
+}
+function isPeakTime(value) {
+  const weekday = weekdayText(localDate(value))
+  if (weekday === '周六' || weekday === '周日') return false
+  const [hour, minute] = localTime(value).split(':').map(Number)
+  const minutes = hour * 60 + minute
+  return (minutes >= 540 && minutes < 720) || (minutes >= 840 && minutes < 1080)
+}
+/** Estimated CNY list-price cost for one usage record. cacheWrite has no price row; bill it as miss. */
+function costOfUsage({ uncached = 0, cacheRead = 0, cacheWrite = 0, output = 0 }, model, band) {
+  const price = modelPrice(model)
+  const key = band === 'peak' ? 'peak' : 'off'
+  return ((Number(uncached) + Number(cacheWrite)) / 1e6) * price.miss[key]
+    + (Number(cacheRead) / 1e6) * price.hit[key]
+    + (Number(output) / 1e6) * price.out[key]
+}
+function fmtCost(value) {
+  const n = Number(value || 0)
+  return `¥${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+function fmtCostShort(value) {
+  const n = Number(value || 0)
+  return `¥${n >= 100 ? Math.round(n).toLocaleString('en-US') : n.toFixed(2)}`
+}
+function emptyModelUsage(provider, model) {
+  return { provider, model, requests: 0, tokens: 0, cost: 0, peakRequests: 0, offRequests: 0 }
+}
+
 const sessionsRoot = path.join(HOME, '.dsh/sessions')
 const zstdcat = process.env.DSH_DAILY_SUMMARY_ZSTD || (fs.existsSync('/usr/bin/zstdcat') ? '/usr/bin/zstdcat' : 'zstdcat')
 // Only these events carry what the report needs; the rest (mostly tool output) is skipped before
@@ -138,16 +183,28 @@ function collectSessionsFromCache(dates) {
     let tokens = 0
     let requests = 0
     const breakdown = { uncached: 0, cacheRead: 0, cacheWrite: 0, output: 0 }
+    const models = new Map()
     for (const date of dates) {
       const day = rows?.contextActivity?.val?.days?.[date]
       if (!day || !Number.isFinite(day.tokens) || day.tokens <= 0) continue
       tokens += day.tokens
       requests += Number(day.requests || 0)
-      for (const models of Object.values(day.cost ?? {})) {
-        for (const buckets of Object.values(models ?? {})) {
-          for (const bucket of Object.values(buckets ?? {})) {
-            for (const key of Object.keys(breakdown)) breakdown[key] += Number(bucket?.[key] || 0)
+      for (const [provider, providerModels] of Object.entries(day.cost ?? {})) {
+        for (const [model, bands] of Object.entries(providerModels ?? {})) {
+          const key = `${provider}/${model}`
+          const aggregate = models.get(key) || emptyModelUsage(provider, model)
+          for (const [band, bucket] of Object.entries(bands ?? {})) {
+            const usage = {
+              uncached: Number(bucket?.uncached || 0),
+              cacheRead: Number(bucket?.cacheRead || 0),
+              cacheWrite: Number(bucket?.cacheWrite || 0),
+              output: Number(bucket?.output || 0),
+            }
+            for (const name of Object.keys(breakdown)) breakdown[name] += usage[name]
+            aggregate.tokens += usage.uncached + usage.cacheRead + usage.cacheWrite + usage.output
+            aggregate.cost += costOfUsage(usage, model, band)
           }
+          models.set(key, aggregate)
         }
       }
     }
@@ -164,6 +221,7 @@ function collectSessionsFromCache(dates) {
       tokens,
       requests,
       breakdown,
+      models: [...models.values()],
       title,
       workspace: rows?.workingDirectory?.val || record?.identity?.cwd || '',
     })
@@ -236,7 +294,16 @@ async function scanSessionLog({ id, file }, start, end) {
       }
       const usage = event.data?.usage
       if (event.type !== 'assistant/message' || !usage || !Number.isFinite(event.time)) continue
-      usages.push({ seq: event.seq, time: event.time, turn: event.data.turn, step: event.data.step, usage })
+      const source = event.data.message?.source
+      usages.push({
+        seq: event.seq,
+        time: event.time,
+        turn: event.data.turn,
+        step: event.data.step,
+        usage,
+        model: source?.model || 'unknown',
+        provider: source?.provider || '',
+      })
     }
   } catch (error) {
     readError = error
@@ -252,6 +319,7 @@ async function scanSessionLog({ id, file }, start, end) {
     console.error(`session log ${id} ended early (${path.basename(zstdcat)} exited ${code}); using ${usages.length} step(s)`)
   }
   const day = { tokens: 0, requests: 0, breakdown: { uncached: 0, cacheRead: 0, cacheWrite: 0, output: 0 } }
+  const models = new Map()
   for (const item of usages) {
     if (item.seq <= inheritedThrough) continue
     const started = stepStarts.get(`${item.turn}:${item.step}`) ?? item.time
@@ -267,11 +335,22 @@ async function scanSessionLog({ id, file }, start, end) {
     day.breakdown.cacheRead += cacheRead
     day.breakdown.cacheWrite += cacheWrite
     day.breakdown.output += output
-    day.tokens += uncached + cacheRead + cacheWrite + output
+    const stepTokens = uncached + cacheRead + cacheWrite + output
+    day.tokens += stepTokens
+
+    const band = isPeakTime(started) ? 'peak' : 'off'
+    const key = `${item.provider}/${item.model}`
+    const aggregate = models.get(key) || emptyModelUsage(item.provider, item.model)
+    aggregate.requests += 1
+    aggregate.tokens += stepTokens
+    aggregate.cost += costOfUsage({ uncached, cacheRead, cacheWrite, output }, item.model, band)
+    if (band === 'peak') aggregate.peakRequests += 1
+    else aggregate.offRequests += 1
+    models.set(key, aggregate)
   }
   if (day.tokens <= 0) return null
   if (/^You are working on\b/i.test(title)) title = ''
-  return { id, tokens: day.tokens, requests: day.requests, breakdown: day.breakdown, title, workspace: header?.cwd || '' }
+  return { id, tokens: day.tokens, requests: day.requests, breakdown: day.breakdown, models: [...models.values()], title, workspace: header?.cwd || '' }
 }
 
 /** Sessions with the window's per-day figures, read from the durable session logs. */
@@ -432,6 +511,25 @@ async function buildReportData(range) {
   }
   const denom = totals.uncached + totals.cacheRead + totals.cacheWrite
   totals.cacheHit = denom > 0 ? Number(((totals.cacheRead / denom) * 100).toFixed(1)) : 0
+
+  const modelMap = new Map()
+  for (const s of sessions) {
+    for (const usage of s.models || []) {
+      const key = `${usage.provider}/${usage.model}`
+      const aggregate = modelMap.get(key) || emptyModelUsage(usage.provider, usage.model)
+      aggregate.requests += usage.requests
+      aggregate.tokens += usage.tokens
+      aggregate.cost += usage.cost
+      aggregate.peakRequests += usage.peakRequests || 0
+      aggregate.offRequests += usage.offRequests || 0
+      modelMap.set(key, aggregate)
+    }
+  }
+  const models = [...modelMap.values()].sort((a, b) => b.tokens - a.tokens)
+  totals.cost = models.reduce((sum, model) => sum + model.cost, 0)
+  totals.peakRequests = models.reduce((sum, model) => sum + model.peakRequests, 0)
+  totals.offRequests = models.reduce((sum, model) => sum + model.offRequests, 0)
+
   const tasks = [...taskMap.values()].sort((a, b) => b.tokens - a.tokens)
   for (const task of tasks) task.share = totals.tokens > 0 ? Number(((task.tokens / totals.tokens) * 100).toFixed(1)) : 0
 
@@ -442,6 +540,7 @@ async function buildReportData(range) {
     weekday: weekdayText(range.end),
     totals,
     tasks,
+    models,
     other,
     tickets: tickets.week.map(t => ({ title: t.title, status: ticketStatus(t), prs: t.prs, result: t.result })),
     open: tickets.open.map(t => ({ title: t.title, status: ticketStatus(t), prs: t.prs, result: t.result })),
@@ -468,7 +567,7 @@ async function curate(data) {
     '- 倒金字塔：先给结论，再给支撑细节；读者 10 秒能看懂本周最重要的事。',
     '- 只写结果、影响和关键进展；合并同类项；不写过程流水账，不罗列所有会话。',
     '- 亮点 3 条以内；每条主题不超过 14 个字，说明不超过 45 个字。',
-    '- 只使用输入数据中的事实；不编造数字或结论。',
+    '- 只使用输入数据中的事实；不编造数字或结论。API 费用只能引用 totals.costCNY，不要自行按价格表计算。',
     '- 任务标题只代表本周在做的主题，不能据此写「已产出 / 已完成 / 已跑出 / 成功 / 已交付」；只有 weekTickets 中 status 为「已完成」或「已合并」的事项才能写完成。',
     '- 「待审」表示 PR/交付物还没合并或验收，不能写成已交付；「进行中」只能写推进、提交、排队或等待。',
     '- 进行中的事项用「推进 / 恢复 / 提交 / 排队 / 等待」等状态词。',
@@ -479,7 +578,8 @@ async function curate(data) {
   ].join('\n')
   const payload = {
     period: { start: data.start, end: data.end, days: data.days },
-    totals: { tokens: data.totals.tokens, requests: data.totals.requests, sessions: data.totals.sessions, cacheHitPercent: data.totals.cacheHit },
+    totals: { tokens: data.totals.tokens, requests: data.totals.requests, sessions: data.totals.sessions, cacheHitPercent: data.totals.cacheHit, costCNY: Number(data.totals.cost.toFixed(2)) },
+    models: data.models.map(m => ({ model: m.model, tokens: m.tokens, requests: m.requests, costCNY: Number(m.cost.toFixed(2)) })),
     tasks: data.tasks.slice(0, 12).map(t => ({ title: t.title, tokens: t.tokens, sharePercent: t.share, sessions: t.sessions, requests: t.requests, status: t.status, prs: t.prs })),
     nonTaskSessions: { tokens: data.other.tokens, sessions: data.other.sessions },
     weekTickets: data.tickets.map(t => ({ title: t.title, status: t.status, prs: t.prs })),
@@ -537,14 +637,9 @@ function localContent(data) {
   const completed = data.tickets.filter(t => t.status === '已完成' || t.status === '已合并').length
   const waiting = data.tickets.filter(t => t.status === '待审')
   const blocked = data.tickets.find(t => t.status === '受阻')
-  const top = data.tasks[0]
-  const headline = [
-    `${data.days} 天 ${data.totals.sessions} 个会话、${fmtInt(data.totals.requests)} 次请求`,
-    top ? `token 主要花在「${top.title}」` : '',
-    `superagent 完成 ${completed} 项${waiting.length ? `，PR ${waiting.flatMap(t => t.prs).slice(0, 2).map(p => `#${p}`).join('、')} 待审` : ''}`,
-  ].filter(Boolean).join('；') + '。'
+  const headline = `${data.days} 天 ${data.totals.sessions} 个会话、${fmtInt(data.totals.requests)} 次请求；API 费用约 ${fmtCost(data.totals.cost)}。`
   const highlights = data.tasks.slice(0, 2).map(t => ({
-    title: t.title,
+    title: clean(t.title, 14),
     detail: `${t.share}% token · ${t.sessions} 个会话 · ${fmtInt(t.requests)} 次请求`,
   }))
   if (data.tickets.length > 0) {
@@ -587,12 +682,16 @@ function planItems(data) {
 }
 
 function riskFromData(data) {
-  const all = [...data.open, ...data.tickets]
+  // Only active (open) work adds a current risk; a merged ticket's old blocker is history.
+  const all = data.open
   const blocked = all.find(t => t.status === '受阻')
   if (blocked) return clean(`受阻：${blocked.title}`, 72)
   const pattern = /拍板|需要(你|用户|人工)|等待(你|用户)|待(你|用户)确认|需要决策/
+  // Deployment tooling notes (merge CLI / auto-merge rules) are not a per-week task risk.
+  const tooling = /merge CLI|auto-merge|自动合并|审批规则/
   for (const item of all) {
     for (const sentence of String(item.result || '').split(/[。\n]/)) {
+      if (tooling.test(sentence)) continue
       if (pattern.test(sentence)) return clean(sentence.replace(/\*\*/g, ''), 72)
     }
   }
@@ -629,7 +728,7 @@ function arcPath(cx, cy, r, start, end) {
 
 function pieSvg(items, total) {
   if (items.length === 0 || total <= 0) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="50mm" height="50mm"><circle cx="50" cy="50" r="48" fill="#eef2f8"/></svg>`
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48mm" height="48mm"><circle cx="50" cy="50" r="48" fill="#eef2f8"/></svg>`
   }
   let angle = 0
   const slices = items.map(item => {
@@ -640,13 +739,14 @@ function pieSvg(items, total) {
       ? `<circle cx="50" cy="50" r="48" fill="${item.color}" stroke="#ffffff" stroke-width="0.6"/>`
       : `<path d="${arcPath(50, 50, 48, start, angle)}" fill="${item.color}" stroke="#ffffff" stroke-width="0.6"/>`
   }).join('')
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="50mm" height="50mm" role="img" aria-label="任务 token 占比">${slices}<circle cx="50" cy="50" r="48" fill="none" stroke="#e6eaf2" stroke-width="0.6"/></svg>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48mm" height="48mm" role="img" aria-label="任务 token 占比">${slices}<circle cx="50" cy="50" r="48" fill="none" stroke="#e6eaf2" stroke-width="0.6"/></svg>`
 }
 
 function reportHtml(data, content) {
   const t = data.totals
   const kpis = [
     { value: fmtTokens(t.tokens), label: 'Token 用量' },
+    { value: fmtCostShort(t.cost), label: 'API 费用' },
     { value: fmtInt(t.requests), label: '模型请求' },
     { value: String(t.sessions), label: '会话数' },
     { value: `${t.cacheHit.toFixed(1)}%`, label: '缓存命中' },
@@ -674,6 +774,11 @@ function reportHtml(data, content) {
     : otherParts.length > 0
       ? `其他 = ${otherParts.join(' + ')} · 共 ${data.tasks.length} 个任务${data.other.tokens > 0 ? ` / ${fmtInt(data.other.sessions)} 个非任务会话` : ''}`
       : `${data.tasks.length} 个任务 · 总 ${fmtTokens(pie.total)} token`
+  const modelChips = data.models.map(model => `<span class="model-chip"><b>${esc(model.model)}</b>${model.requests > 0 ? ` · ${fmtInt(model.requests)} 请求` : ''} · ${fmtTokens(model.tokens)} token · <b>${fmtCost(model.cost)}</b></span>`).join('')
+  const modelStrip = data.models.length > 0
+    ? `<div class="model-strip"><span class="model-label">模型</span>${modelChips}</div>`
+    : ''
+  const costNote = '费用按 DeepSeek 官方 CNY 价目估算（工作日 9–12 / 14–18 为高峰，空闲价减半）；未计法定节假日与 Search/Fetch。'
 
   return `<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><style>
@@ -686,33 +791,37 @@ body { font-family: 'Noto Sans CJK SC', 'Noto Sans CJK SC Medium', sans-serif; c
 .eyebrow .brand { color: #4d6bfe; font-weight: 700; letter-spacing: 1.8pt; }
 h1 { font-size: 26pt; line-height: 1.15; letter-spacing: -0.6pt; margin: 5mm 0 3mm; font-weight: 700; }
 .headline { font-size: 11.5pt; line-height: 1.55; color: #334155; margin: 0 0 5.5mm; max-width: 174mm; }
-.kpis { display: flex; gap: 3mm; margin-bottom: 4mm; }
-.kpi { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 4.2mm 4.5mm 3.8mm; }
-.kpi .value { font-size: 18pt; font-weight: 700; letter-spacing: -0.3pt; white-space: nowrap; }
+.kpis { display: flex; gap: 2.5mm; margin-bottom: 4mm; }
+.kpi { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 4.2mm 3.6mm 3.8mm; }
+.kpi .value { font-size: 17pt; font-weight: 700; letter-spacing: -0.3pt; white-space: nowrap; }
 .kpi .label { font-size: 8pt; color: #64748b; margin-top: 1.4mm; }
 .token-block { background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 3.8mm 4.5mm 3.4mm; margin-bottom: 5.5mm; }
 .token-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 8pt; color: #475569; margin-bottom: 2.6mm; }
 .token-note { color: #94a3b8; font-size: 7.5pt; }
-.token-grid { display: flex; gap: 6mm; align-items: center; }
-.pie { flex: none; width: 50mm; }
+.token-grid { display: flex; gap: 5mm; align-items: flex-start; }
+.pie { flex: none; width: 48mm; padding-top: 1mm; }
 .pie svg { display: block; }
-.pie-legend { flex: 1; display: flex; flex-direction: column; gap: 1.35mm; font-size: 8.2pt; color: #334155; }
-.pie-row { display: flex; align-items: center; gap: 2mm; line-height: 1.35; }
+.token-side { flex: 1; min-width: 0; }
+.pie-legend { display: flex; flex-direction: column; gap: 1.2mm; font-size: 8pt; color: #334155; }
+.pie-row { display: flex; align-items: center; gap: 1.8mm; line-height: 1.35; }
 .pie-row i { flex: none; width: 2.4mm; height: 2.4mm; border-radius: 0.7mm; }
 .pie-name { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #1e293b; }
-.pie-pct { width: 10mm; text-align: right; font-weight: 700; }
-.pie-amt { width: 15mm; text-align: right; color: #94a3b8; font-size: 7.5pt; }
-.pie-foot { margin-top: 2.8mm; font-size: 7.5pt; color: #94a3b8; }
-.section { margin-top: 5.5mm; }
+.pie-pct { width: 9mm; text-align: right; font-weight: 700; }
+.pie-amt { width: 14mm; text-align: right; color: #94a3b8; font-size: 7.5pt; }
+.pie-foot { margin-top: 2.6mm; font-size: 7.2pt; line-height: 1.4; color: #94a3b8; }
+.model-strip { margin-top: 2mm; padding-top: 1.8mm; border-top: 1px solid #e9edf5; display: flex; flex-wrap: wrap; align-items: baseline; gap: 1mm 4mm; font-size: 7.6pt; color: #334155; }
+.model-label { color: #94a3b8; }
+.model-chip b { color: #0f172a; }
+.section { margin-top: 5mm; }
 .section-head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1.6mm; }
 .section-head .bar { width: 3mm; height: 3mm; border-radius: 1mm; background: #4d6bfe; }
 .section-head .title { font-size: 9pt; font-weight: 700; letter-spacing: 1pt; color: #4d6bfe; }
-.hl { display: flex; gap: 4mm; padding: 3.6mm 0; border-bottom: 1px solid #e9edf5; }
+.hl { display: flex; gap: 4mm; padding: 3.1mm 0; border-bottom: 1px solid #e9edf5; }
 .hl:last-child { border-bottom: none; }
 .hl .num { width: 7mm; font-size: 9pt; font-weight: 700; color: #94a3b8; padding-top: 0.6mm; }
 .hl .body { flex: 1; }
-.hl-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.8mm; }
-.hl-detail { font-size: 9.5pt; line-height: 1.5; color: #475569; }
+.hl-title { font-size: 10.5pt; font-weight: 700; margin-bottom: 0.7mm; }
+.hl-detail { font-size: 9.2pt; line-height: 1.45; color: #475569; }
 .risk { display: flex; gap: 4mm; align-items: baseline; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 2.5mm; padding: 4mm 5mm; font-size: 9.5pt; color: #9a3412; line-height: 1.45; }
 .risk-label { font-size: 8pt; letter-spacing: 1pt; font-weight: 700; white-space: nowrap; opacity: 0.8; }
 .next { display: flex; gap: 3mm; }
@@ -729,9 +838,12 @@ h1 { font-size: 26pt; line-height: 1.15; letter-spacing: -0.6pt; margin: 5mm 0 3
     <div class="token-head"><span>任务 Token 占比</span><span class="token-note">总 ${fmtTokens(pie.total)} token · 按任务归并</span></div>
     <div class="token-grid">
       <div class="pie">${pieSvg(pie.items, pie.total)}</div>
-      <div class="pie-legend">${pieRows}</div>
+      <div class="token-side">
+        <div class="pie-legend">${pieRows}</div>
+      </div>
     </div>
-    <div class="pie-foot">${esc(pieFoot)}</div>
+    ${modelStrip}
+    <div class="pie-foot">${esc(pieFoot)}<br>${esc(costNote)}</div>
   </div>
   <div>
     <div class="section-head"><span class="bar"></span><span class="title">本周重点</span></div>
@@ -788,6 +900,8 @@ function sendTextFallback(data, content, end, reason) {
     '',
     content.risk ? `⚠️ ${content.risk}` : '✅ 无阻塞。',
     '',
+    `Token ${fmtTokens(data.totals.tokens)} · API 费用约 ${fmtCost(data.totals.cost)}`,
+    '',
     '**下周重点**',
     ...content.next.map((n, i) => `${i + 1}. ${n}`),
     '',
@@ -821,7 +935,8 @@ async function main() {
   if (args.dryRun) {
     const rendered = renderImage(html, base)
     console.log(JSON.stringify(content, null, 2))
-    console.log(`\n[dry-run] ${range.start}..${range.end} tokens=${data.totals.tokens} requests=${data.totals.requests} sessions=${data.totals.sessions} tasks=${data.tasks.length} otherSessions=${data.other.sessions} tickets=${data.tickets.length} open=${data.open.length} openPrs=${data.openPrs.length}`)
+    console.log(`\n[dry-run] ${range.start}..${range.end} tokens=${data.totals.tokens} cost=${data.totals.cost.toFixed(2)} requests=${data.totals.requests} sessions=${data.totals.sessions} tasks=${data.tasks.length} otherSessions=${data.other.sessions} tickets=${data.tickets.length} open=${data.open.length} openPrs=${data.openPrs.length}`)
+    console.log(`models: ${data.models.map(m => `${m.model} ${m.requests}req ${m.tokens}tok ¥${m.cost.toFixed(2)}`).join(' | ')}`)
     console.log(`image: ${rendered.pngPath}`)
     return
   }

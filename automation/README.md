@@ -17,8 +17,13 @@ existing crontab marker keeps working.
   inherited side-conversation history is not counted twice. The dsh-context *Context Insights*
   projection cache (`~/.dsh/storages/session_projcache/sessions/*.json`) is only a fallback:
   the web UI refreshes it on demand, so a cron run can read it stale or empty.
-- **风险 / 阻塞** — taken from blocked work items, or a sentence in a report that asks for a
-  decision.
+- **模型与费用** — the token block lists each model's requests, tokens and estimated CNY cost.
+  Prices come from the official DeepSeek CNY list (`deepseek-flash` / `deepseek-v4-pro`: cache
+  hit, cache miss, output), with peak/off-peak bands (Beijing-time weekdays 09:00–12:00 and
+  14:00–18:00 are peak). Cache writes are billed as misses; public holidays, Search and Fetch
+  are not modeled, so the figure is a list-price estimate.
+- **风险 / 阻塞** — taken from blocked open work items, or a sentence in an open item that asks
+  for a decision.
 - **下周重点** — generated from the open superagent tickets and open pull requests.
 
 The report is rendered as HTML, converted to a one-page A4 PDF with WeasyPrint, rasterized with
