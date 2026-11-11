@@ -6,24 +6,26 @@ existing crontab marker keeps working.
 
 - **本周重点** — a short, result-first brief of the week: the main threads of work, completed
   outcomes and open pull requests.
-- **任务 Token 占比** — a pie chart of the week's billed tokens grouped by superagent task. A
-  task is a ticket; sessions are attributed to it through the ticket's execution directory
-  (`~/.dsh-state/superagent/orchestrator.sqlite`). The top 7 tasks are drawn separately and the
-  rest is folded into **其他** together with non-task sessions (main session, project
-  workspaces). The legend shows each slice's share and token count.
-- **Token 用量** — billed tokens folded from the DSH session logs
-  (`~/.dsh/sessions/<workspace>/<session>/session.v4.jsonl.zstd`) over the window: total, cache
-  reads/cache-hit rate, uncached input and output. A step is billed to the day it started, and
-  inherited side-conversation history is not counted twice. The dsh-context *Context Insights*
-  projection cache (`~/.dsh/storages/session_projcache/sessions/*.json`) is only a fallback:
-  the web UI refreshes it on demand, so a cron run can read it stale or empty.
-- **模型与费用** — the token block lists each model's requests, tokens and estimated CNY cost.
-  Prices come from the official DeepSeek CNY list (`deepseek-flash` / `deepseek-v4-pro`: cache
-  hit, cache miss, output), with peak/off-peak bands (Beijing-time weekdays 09:00–12:00 and
-  14:00–18:00 are peak). Cache writes are billed as misses; public holidays, Search and Fetch
-  are not modeled, so the figure is a list-price estimate.
-- **风险 / 阻塞** — taken from blocked open work items, or a sentence in an open item that asks
-  for a decision.
+- **Token 构成** — the left token card shows the provider billing split (cache read / uncached
+  input / output) plus the week's total, requests and session count.
+- **任务 Token 占比** — the right token card is a donut of the week's billed tokens grouped by
+  superagent task. A task is a ticket; sessions are attributed to it through the ticket's
+  execution directory (`~/.dsh-state/superagent/orchestrator.sqlite`). The top 6 tasks are drawn
+  separately, followed by **其他任务** and **非任务会话**; the center shows the task share and
+  the legend shows each slice's percentage.
+- **模型与费用** — a full-width table lists each model's Token, requests and estimated CNY cost,
+  then a total. Prices come from the official DeepSeek CNY list (`deepseek-flash` /
+  `deepseek-v4-pro`: cache hit, cache miss, output), with peak/off-peak bands (Beijing-time
+  weekdays 09:00–12:00 and 14:00–18:00 are peak). Cache writes are billed as misses; public
+  holidays, Search and Fetch are not modeled, so the figure is a list-price estimate.
+- **数据口径** — billed tokens folded from the DSH session logs
+  (`~/.dsh/sessions/<workspace>/<session>/session.v4.jsonl.zstd`) over the window. A step is
+  billed to the day it started, and inherited side-conversation history is not counted twice.
+  The dsh-context *Context Insights* projection cache
+  (`~/.dsh/storages/session_projcache/sessions/*.json`) is only a fallback: the web UI refreshes
+  it on demand, so a cron run can read it stale or empty.
+- **风险 / 阻塞** — taken from blocked open work items, a sentence in an open item that asks for
+  a decision, or the open PRs still waiting for a human review/merge.
 - **下周重点** — generated from the open superagent tickets and open pull requests.
 
 The report is rendered as HTML, converted to a one-page A4 PDF with WeasyPrint, rasterized with

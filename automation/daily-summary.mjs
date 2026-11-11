@@ -103,6 +103,10 @@ function shortDate(date) {
 function rangeText(start, end) {
   return start === end ? shortDate(end) : `${shortDate(start)} – ${shortDate(end)}`
 }
+function hyphenDate(date) {
+  const [, month, day] = date.split('-')
+  return `${month}-${day}`
+}
 function clean(value, max = 0) {
   if (typeof value !== 'string') return ''
   let text = value.replace(/\r?\n+/g, ' ').replace(/\s+/g, ' ').trim()
@@ -572,12 +576,16 @@ async function curate(data) {
     '- 「待审」表示 PR/交付物还没合并或验收，不能写成已交付；「进行中」只能写推进、提交、排队或等待。',
     '- 进行中的事项用「推进 / 恢复 / 提交 / 排队 / 等待」等状态词。',
     '- 不要自行推断风险、CI 缺失或流程问题。',
-    '- 中文，短句，避免术语堆砌和空话。',
+    '- 中文，短句，避免术语堆砌和空话；正文不要出现输入 JSON 的字段名（如 weekTickets、totals、openItems、openPullRequests），用中文表述。',
+    '- 完成/已合并数量以 completedTasks 为准，待审 PR 数以 openPrCount 为准，不要自行清点 weekTickets。',
     '- 不需要输出风险或下周重点：系统会从工作项状态自动生成。',
     '只返回 JSON：{"headline":"一句话结论，不超过40字","highlights":[{"title":"主题","detail":"结果或影响，不超过45字"}]}',
   ].join('\n')
   const payload = {
     period: { start: data.start, end: data.end, days: data.days },
+    taskCount: data.tickets.length,
+    completedTasks: data.tickets.filter(t => t.status === '已完成' || t.status === '已合并').length,
+    openPrCount: data.openPrs.length,
     totals: { tokens: data.totals.tokens, requests: data.totals.requests, sessions: data.totals.sessions, cacheHitPercent: data.totals.cacheHit, costCNY: Number(data.totals.cost.toFixed(2)) },
     models: data.models.map(m => ({ model: m.model, tokens: m.tokens, requests: m.requests, costCNY: Number(m.cost.toFixed(2)) })),
     tasks: data.tasks.slice(0, 12).map(t => ({ title: t.title, tokens: t.tokens, sharePercent: t.share, sessions: t.sessions, requests: t.requests, status: t.status, prs: t.prs })),
@@ -624,11 +632,20 @@ function validContent(c) {
     && (c.risk === undefined || c.risk === null || typeof c.risk === 'string')
 }
 
+function scrubFields(value) {
+  return String(value ?? '')
+    .replace(/weekTickets\s*中/g, '本周工单中')
+    .replace(/\bweekTickets\b/g, '本周工单')
+    .replace(/\bopenItems\b/g, '进行中事项')
+    .replace(/\bopenPullRequests\b/g, '开放 PR')
+    .replace(/\btotals\b/g, '总计')
+}
 function normalizeContent(c) {
+  const text = (value, max) => clean(scrubFields(value), max)
   return {
-    headline: clean(c.headline, 60),
-    highlights: c.highlights.slice(0, 3).map(h => ({ title: clean(h.title, 14), detail: clean(h.detail, 58) })),
-    risk: clean(c.risk || '', 46),
+    headline: text(c.headline, 60),
+    highlights: c.highlights.slice(0, 3).map(h => ({ title: text(h.title, 14), detail: text(h.detail, 58) })),
+    risk: text(c.risk || '', 46),
   }
 }
 
@@ -700,18 +717,20 @@ function riskFromData(data) {
 
 const PIE_COLORS = ['#4d6bfe', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316']
 const PIE_OTHER_COLOR = '#94a3b8'
-const PIE_MAX_TASKS = 7
+const PIE_NON_TASK_COLOR = '#cbd5e1'
+const PIE_MAX_TASKS = 6
 
-/** Slices for the per-task token pie: the top tasks plus one "other" bucket. */
+/** Slices for the per-task token donut: top tasks, other tasks and non-task sessions. */
 function pieData(data) {
   const total = data.totals.tokens
-  if (!(total > 0)) return { items: [], total: 0 }
+  if (!(total > 0)) return { items: [], total: 0, taskShare: 0 }
   const top = data.tasks.slice(0, PIE_MAX_TASKS)
   const restTokens = data.tasks.slice(PIE_MAX_TASKS).reduce((sum, task) => sum + task.tokens, 0)
-  const otherTokens = restTokens + data.other.tokens
   const items = top.map((task, i) => ({ label: task.title, tokens: task.tokens, color: PIE_COLORS[i] }))
-  if (otherTokens > 0) items.push({ label: '其他', tokens: otherTokens, color: PIE_OTHER_COLOR })
-  return { items, total }
+  if (restTokens > 0) items.push({ label: '其他任务', tokens: restTokens, color: PIE_OTHER_COLOR })
+  if (data.other.tokens > 0) items.push({ label: '非任务会话', tokens: data.other.tokens, color: PIE_NON_TASK_COLOR })
+  const taskShare = total > 0 ? ((total - data.other.tokens) / total) * 100 : 0
+  return { items, total, taskShare }
 }
 
 function polar(cx, cy, r, degrees) {
@@ -719,37 +738,50 @@ function polar(cx, cy, r, degrees) {
   return [cx + r * Math.cos(radians), cy + r * Math.sin(radians)]
 }
 
-function arcPath(cx, cy, r, start, end) {
-  const [x1, y1] = polar(cx, cy, r, start)
-  const [x2, y2] = polar(cx, cy, r, end)
+function annulusPath(cx, cy, outer, inner, start, end) {
+  const [x1, y1] = polar(cx, cy, outer, start)
+  const [x2, y2] = polar(cx, cy, outer, end)
+  const [x3, y3] = polar(cx, cy, inner, end)
+  const [x4, y4] = polar(cx, cy, inner, start)
   const large = end - start > 180 ? 1 : 0
-  return `M${cx.toFixed(2)},${cy.toFixed(2)} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${large} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`
+  return `M${x1.toFixed(2)},${y1.toFixed(2)} A${outer},${outer} 0 ${large} 1 ${x2.toFixed(2)},${y2.toFixed(2)} L${x3.toFixed(2)},${y3.toFixed(2)} A${inner},${inner} 0 ${large} 0 ${x4.toFixed(2)},${y4.toFixed(2)} Z`
 }
 
-function pieSvg(items, total) {
+function donutSvg(items, total, taskShare) {
   if (items.length === 0 || total <= 0) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48mm" height="48mm"><circle cx="50" cy="50" r="48" fill="#eef2f8"/></svg>`
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40mm" height="40mm"><circle cx="50" cy="50" r="48" fill="#eef2f8"/><circle cx="50" cy="50" r="25" fill="#ffffff"/><text x="50" y="52" text-anchor="middle" font-size="10" fill="#94a3b8">无数据</text></svg>`
   }
   let angle = 0
   const slices = items.map(item => {
     const sweep = (item.tokens / total) * 360
     const start = angle
     angle += sweep
-    return sweep >= 359.999
-      ? `<circle cx="50" cy="50" r="48" fill="${item.color}" stroke="#ffffff" stroke-width="0.6"/>`
-      : `<path d="${arcPath(50, 50, 48, start, angle)}" fill="${item.color}" stroke="#ffffff" stroke-width="0.6"/>`
+    if (sweep >= 359.999) {
+      return `<circle cx="50" cy="50" r="48" fill="${item.color}"/><circle cx="50" cy="50" r="25" fill="#ffffff"/>`
+    }
+    return `<path d="${annulusPath(50, 50, 48, 25, start, angle)}" fill="${item.color}" stroke="#ffffff" stroke-width="0.5"/>`
   }).join('')
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48mm" height="48mm" role="img" aria-label="任务 token 占比">${slices}<circle cx="50" cy="50" r="48" fill="none" stroke="#e6eaf2" stroke-width="0.6"/></svg>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40mm" height="40mm" role="img" aria-label="任务 token 占比">${slices}<text x="50" y="49" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">${taskShare.toFixed(1)}%</text><text x="50" y="60" text-anchor="middle" font-size="7" fill="#64748b">任务占比</text></svg>`
+}
+
+/** Open PRs still need a human review/merge; this is the reference report's risk strip. */
+function prRisk(data) {
+  const numbers = [...new Set(data.openPrs.map(p => String(p.number)))]
+  if (numbers.length === 0) return ''
+  const shown = numbers.slice(0, 3).map(n => `#${n}`).join('、')
+  return `${numbers.length} 个 PR 待人工评审/合并（${shown}${numbers.length > 3 ? ' 等' : ''}）`
 }
 
 function reportHtml(data, content) {
   const t = data.totals
+  const completed = data.tickets.filter(item => item.status === '已完成' || item.status === '已合并').length
+  const subtitle = `本周 DSH 处理 ${data.tickets.length} 项任务，${completed} 项完成`
   const kpis = [
     { value: fmtTokens(t.tokens), label: 'Token 用量' },
-    { value: fmtCostShort(t.cost), label: 'API 费用' },
     { value: fmtInt(t.requests), label: '模型请求' },
     { value: String(t.sessions), label: '会话数' },
     { value: `${t.cacheHit.toFixed(1)}%`, label: '缓存命中' },
+    { value: fmtCostShort(t.cost), label: 'API 费用' },
   ]
   const highlightRows = content.highlights.map((h, i) => `
       <div class="hl">
@@ -757,28 +789,27 @@ function reportHtml(data, content) {
         <div class="body"><div class="hl-title">${esc(h.title)}</div><div class="hl-detail">${esc(h.detail)}</div></div>
       </div>`).join('')
   const nextItems = content.next.map((item, i) => `
-      <div class="next-item"><span class="next-num">${i + 1}</span><span>${esc(item)}</span></div>`).join('')
-  const risk = content.risk
-    ? `<div class="section"><div class="risk"><span class="risk-label">风险 / 阻塞</span><span>${esc(content.risk)}</span></div></div>`
+      <div class="next-item"><span class="next-num">${String(i + 1).padStart(2, '0')}</span><span>${esc(item)}</span></div>`).join('')
+  const riskText = content.risk || prRisk(data)
+  const risk = riskText
+    ? `<div class="section"><div class="risk"><span class="risk-label">风险 / 阻塞</span><span>${esc(riskText)}</span></div></div>`
     : ''
   const pie = pieData(data)
   const pieRows = pie.items.map(item => {
     const share = pie.total > 0 ? (item.tokens / pie.total) * 100 : 0
     const percent = share >= 10 ? share.toFixed(0) : share.toFixed(1)
-    return `<div class="pie-row"><i style="background:${item.color}"></i><span class="pie-name">${esc(clean(item.label, 26))}</span><span class="pie-pct">${percent}%</span><span class="pie-amt">${fmtTokens(item.tokens)}</span></div>`
+    return `<div class="task-row"><i style="background:${item.color}"></i><span class="task-name">${esc(clean(item.label, 12))}</span><span class="task-pct">${percent}%</span></div>`
   }).join('')
-  const truncatedTasks = data.tasks.length > PIE_MAX_TASKS
-  const otherParts = [truncatedTasks ? '其余任务' : '', data.other.tokens > 0 ? '非任务会话' : ''].filter(Boolean)
-  const pieFoot = data.tasks.length === 0 && data.other.tokens === 0
-    ? '本周暂无用量数据'
-    : otherParts.length > 0
-      ? `其他 = ${otherParts.join(' + ')} · 共 ${data.tasks.length} 个任务${data.other.tokens > 0 ? ` / ${fmtInt(data.other.sessions)} 个非任务会话` : ''}`
-      : `${data.tasks.length} 个任务 · 总 ${fmtTokens(pie.total)} token`
-  const modelChips = data.models.map(model => `<span class="model-chip"><b>${esc(model.model)}</b>${model.requests > 0 ? ` · ${fmtInt(model.requests)} 请求` : ''} · ${fmtTokens(model.tokens)} token · <b>${fmtCost(model.cost)}</b></span>`).join('')
-  const modelStrip = data.models.length > 0
-    ? `<div class="model-strip"><span class="model-label">模型</span>${modelChips}</div>`
-    : ''
-  const costNote = '费用按 DeepSeek 官方 CNY 价目估算（工作日 9–12 / 14–18 为高峰，空闲价减半）；未计法定节假日与 Search/Fetch。'
+  const parts = [
+    { key: 'cache', label: '缓存读取', value: t.cacheRead, color: '#4d6bfe' },
+    { key: 'uncached', label: '未缓存输入', value: t.uncached, color: '#f59e0b' },
+    { key: 'output', label: '输出', value: t.output, color: '#94a3b8' },
+  ].filter(p => p.value > 0)
+  const partTotal = parts.reduce((sum, p) => sum + p.value, 0) || 1
+  const tokenBar = parts.map(p => `<span class="seg" style="width:${((p.value / partTotal) * 100).toFixed(2)}%;background:${p.color}"></span>`).join('')
+  const tokenLegend = parts.map(p => `<span class="legend-item"><i style="background:${p.color}"></i>${esc(p.label)} ${fmtTokens(p.value)}</span>`).join('')
+  const modelRows = data.models.map(model => `<div class="model-row"><span class="model-name">${esc(model.model)}</span><span>${fmtTokens(model.tokens)}</span><span>${model.requests > 0 ? fmtInt(model.requests) : '—'}</span><span>${fmtCost(model.cost)}</span></div>`).join('')
+  const costNote = '按 DeepSeek 官方 CNY 价目（2026-11 核对）估算：工作日 9–12 / 14–18 为高峰，空闲价减半；缓存写入并入未命中输入；未计法定节假日与 Search/Fetch，以实际账单为准。'
 
   return `<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><style>
@@ -786,64 +817,88 @@ function reportHtml(data, content) {
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body { font-family: 'Noto Sans CJK SC', 'Noto Sans CJK SC Medium', sans-serif; color: #0f172a; -weasy-hyphens: none; }
-.page { position: relative; width: 210mm; height: 297mm; padding: 15mm 16mm 13mm; background: #f7f8fb; overflow: hidden; }
-.eyebrow { display: flex; justify-content: space-between; align-items: baseline; font-size: 8pt; letter-spacing: 1.4pt; color: #64748b; }
+.page { position: relative; width: 210mm; height: 297mm; padding: 14mm 16mm 13mm; background: #f7f8fb; overflow: hidden; }
+.eyebrow { display: flex; justify-content: space-between; align-items: baseline; font-size: 8pt; letter-spacing: 1.2pt; color: #64748b; }
 .eyebrow .brand { color: #4d6bfe; font-weight: 700; letter-spacing: 1.8pt; }
-h1 { font-size: 26pt; line-height: 1.15; letter-spacing: -0.6pt; margin: 5mm 0 3mm; font-weight: 700; }
-.headline { font-size: 11.5pt; line-height: 1.55; color: #334155; margin: 0 0 5.5mm; max-width: 174mm; }
+h1 { font-size: 26pt; line-height: 1.15; letter-spacing: -0.6pt; margin: 4mm 0 2mm; font-weight: 700; }
+.subtitle { font-size: 11.5pt; line-height: 1.5; color: #475569; margin: 0 0 4.5mm; }
 .kpis { display: flex; gap: 2.5mm; margin-bottom: 4mm; }
-.kpi { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 4.2mm 3.6mm 3.8mm; }
-.kpi .value { font-size: 17pt; font-weight: 700; letter-spacing: -0.3pt; white-space: nowrap; }
-.kpi .label { font-size: 8pt; color: #64748b; margin-top: 1.4mm; }
-.token-block { background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 3.8mm 4.5mm 3.4mm; margin-bottom: 5.5mm; }
-.token-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 8pt; color: #475569; margin-bottom: 2.6mm; }
-.token-note { color: #94a3b8; font-size: 7.5pt; }
-.token-grid { display: flex; gap: 5mm; align-items: flex-start; }
-.pie { flex: none; width: 48mm; padding-top: 1mm; }
-.pie svg { display: block; }
-.token-side { flex: 1; min-width: 0; }
-.pie-legend { display: flex; flex-direction: column; gap: 1.2mm; font-size: 8pt; color: #334155; }
-.pie-row { display: flex; align-items: center; gap: 1.8mm; line-height: 1.35; }
-.pie-row i { flex: none; width: 2.4mm; height: 2.4mm; border-radius: 0.7mm; }
-.pie-name { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #1e293b; }
-.pie-pct { width: 9mm; text-align: right; font-weight: 700; }
-.pie-amt { width: 14mm; text-align: right; color: #94a3b8; font-size: 7.5pt; }
-.pie-foot { margin-top: 2.6mm; font-size: 7.2pt; line-height: 1.4; color: #94a3b8; }
-.model-strip { margin-top: 2mm; padding-top: 1.8mm; border-top: 1px solid #e9edf5; display: flex; flex-wrap: wrap; align-items: baseline; gap: 1mm 4mm; font-size: 7.6pt; color: #334155; }
-.model-label { color: #94a3b8; }
-.model-chip b { color: #0f172a; }
-.section { margin-top: 5mm; }
-.section-head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1.6mm; }
+.kpi { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 3.9mm 3.4mm 3.5mm; }
+.kpi .value { font-size: 16.5pt; font-weight: 700; letter-spacing: -0.3pt; white-space: nowrap; }
+.kpi .label { font-size: 8pt; color: #64748b; margin-top: 1.2mm; }
+.token-cards { display: flex; gap: 4mm; margin-bottom: 3.4mm; }
+.token-card { flex: 1; min-width: 0; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 3.5mm 4mm 3.2mm; display: flex; flex-direction: column; }
+.token-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 8pt; color: #475569; margin-bottom: 2.3mm; }
+.token-note { color: #94a3b8; font-size: 7.1pt; }
+.token-bar { display: flex; height: 3.2mm; border-radius: 1.6mm; overflow: hidden; background: #eef2f8; }
+.token-bar .seg { display: block; height: 3.2mm; }
+.token-legend { display: flex; flex-wrap: wrap; gap: 1mm 4mm; margin-top: 2.1mm; font-size: 7.3pt; color: #64748b; }
+.legend-item i { display: inline-block; width: 2.2mm; height: 2.2mm; border-radius: 0.6mm; margin-right: 1.2mm; }
+.token-summary { margin-top: auto; padding-top: 3mm; font-size: 7.3pt; color: #94a3b8; }
+.task-pie-row { display: flex; gap: 3.4mm; align-items: center; }
+.donut { flex: none; width: 40mm; }
+.donut svg { display: block; }
+.task-legend { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1.2mm; font-size: 7.7pt; color: #334155; }
+.task-row { display: flex; align-items: center; gap: 1.6mm; line-height: 1.35; }
+.task-row i { flex: none; width: 2.2mm; height: 2.2mm; border-radius: 0.6mm; }
+.task-name { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #1e293b; }
+.task-pct { width: 10mm; text-align: right; font-weight: 700; }
+.model-card { background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 3.2mm 4mm 3mm; margin-bottom: 4.6mm; }
+.model-table { margin-top: 0.4mm; }
+.model-row { display: flex; align-items: baseline; font-size: 8.1pt; line-height: 1.6; color: #334155; border-top: 1px solid #f1f5f9; }
+.model-row > span:nth-child(1) { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.model-row > span:nth-child(2) { width: 30mm; text-align: right; }
+.model-row > span:nth-child(3) { width: 20mm; text-align: right; }
+.model-row > span:nth-child(4) { width: 22mm; text-align: right; }
+.model-head { font-size: 6.9pt; color: #94a3b8; line-height: 1.4; border-top: none; }
+.model-head > span { font-weight: 400; }
+.model-total { font-weight: 700; border-top: 1px solid #e2e8f0; }
+.model-note { margin-top: 1.4mm; font-size: 6.7pt; line-height: 1.4; color: #94a3b8; }
+.section { margin-top: 4.6mm; }
+.section-head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1.4mm; }
 .section-head .bar { width: 3mm; height: 3mm; border-radius: 1mm; background: #4d6bfe; }
 .section-head .title { font-size: 9pt; font-weight: 700; letter-spacing: 1pt; color: #4d6bfe; }
-.hl { display: flex; gap: 4mm; padding: 3.1mm 0; border-bottom: 1px solid #e9edf5; }
+.hl { display: flex; gap: 4mm; padding: 3mm 0; border-bottom: 1px solid #e9edf5; }
 .hl:last-child { border-bottom: none; }
 .hl .num { width: 7mm; font-size: 9pt; font-weight: 700; color: #94a3b8; padding-top: 0.6mm; }
 .hl .body { flex: 1; }
-.hl-title { font-size: 10.5pt; font-weight: 700; margin-bottom: 0.7mm; }
-.hl-detail { font-size: 9.2pt; line-height: 1.45; color: #475569; }
-.risk { display: flex; gap: 4mm; align-items: baseline; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 2.5mm; padding: 4mm 5mm; font-size: 9.5pt; color: #9a3412; line-height: 1.45; }
+.hl-title { font-size: 11.5pt; font-weight: 700; margin-bottom: 0.7mm; }
+.hl-detail { font-size: 9.4pt; line-height: 1.5; color: #475569; }
+.risk { display: flex; gap: 4mm; align-items: baseline; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 2.5mm; padding: 3.6mm 5mm; font-size: 9.4pt; color: #9a3412; line-height: 1.4; }
 .risk-label { font-size: 8pt; letter-spacing: 1pt; font-weight: 700; white-space: nowrap; opacity: 0.8; }
 .next { display: flex; gap: 3mm; }
-.next-item { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 2.5mm; padding: 4.2mm 4.5mm; font-size: 9.5pt; line-height: 1.5; color: #1e293b; }
-.next-num { display: inline-block; color: #4d6bfe; font-weight: 700; margin-right: 1.5mm; }
-.footer { position: absolute; left: 16mm; right: 16mm; bottom: 11mm; display: flex; justify-content: space-between; font-size: 7.5pt; color: #94a3b8; border-top: 1px solid #e6eaf2; padding-top: 2.5mm; }
+.next-item { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 2.5mm; padding: 4mm 4.4mm; font-size: 9.4pt; line-height: 1.5; color: #1e293b; }
+.next-num { display: inline-block; color: #4d6bfe; font-weight: 700; margin-right: 1.6mm; }
+.footer { position: absolute; left: 16mm; right: 16mm; bottom: 11mm; display: flex; justify-content: space-between; font-size: 7.3pt; color: #94a3b8; border-top: 1px solid #e6eaf2; padding-top: 2.4mm; }
 </style></head>
 <body><div class="page">
-  <div class="eyebrow"><span class="brand">DSH WEEKLY BRIEF</span><span>${esc(rangeText(data.start, data.end))} · ${data.days} 天</span></div>
+  <div class="eyebrow"><span class="brand">DSH WEEKLY BRIEF</span><span>${esc(data.start)} ~ ${esc(hyphenDate(data.end))} · 周报</span></div>
   <h1>本周工作总结</h1>
-  <p class="headline">${esc(content.headline)}</p>
+  <p class="subtitle">${esc(subtitle)}</p>
   <div class="kpis">${kpis.map(k => `<div class="kpi"><div class="value">${esc(k.value)}</div><div class="label">${esc(k.label)}</div></div>`).join('')}</div>
-  <div class="token-block">
-    <div class="token-head"><span>任务 Token 占比</span><span class="token-note">总 ${fmtTokens(pie.total)} token · 按任务归并</span></div>
-    <div class="token-grid">
-      <div class="pie">${pieSvg(pie.items, pie.total)}</div>
-      <div class="token-side">
-        <div class="pie-legend">${pieRows}</div>
+  <div class="token-cards">
+    <div class="token-card">
+      <div class="token-head"><span>Token 构成</span><span class="token-note">provider 计费口径</span></div>
+      <div class="token-bar">${tokenBar}</div>
+      <div class="token-legend">${tokenLegend}</div>
+      <div class="token-summary">总 ${fmtTokens(t.tokens)} token · ${fmtInt(t.requests)} 次请求 · ${t.sessions} 个会话</div>
+    </div>
+    <div class="token-card">
+      <div class="token-head"><span>任务 Token 占比</span><span class="token-note">任务合计 ${pie.taskShare.toFixed(1)}%</span></div>
+      <div class="task-pie-row">
+        <div class="donut">${donutSvg(pie.items, pie.total, pie.taskShare)}</div>
+        <div class="task-legend">${pieRows}</div>
       </div>
     </div>
-    ${modelStrip}
-    <div class="pie-foot">${esc(pieFoot)}<br>${esc(costNote)}</div>
+  </div>
+  <div class="model-card">
+    <div class="token-head"><span>模型 Token / 费用</span><span class="token-note">API 费用 ≈ ${fmtCost(t.cost)}</span></div>
+    <div class="model-table">
+      <div class="model-row model-head"><span>模型</span><span>Token</span><span>请求</span><span>费用</span></div>
+      ${modelRows}
+      <div class="model-row model-total"><span>合计</span><span>${fmtTokens(t.tokens)}</span><span>${fmtInt(t.requests)}</span><span>${fmtCost(t.cost)}</span></div>
+    </div>
+    <div class="model-note">${esc(costNote)}</div>
   </div>
   <div>
     <div class="section-head"><span class="bar"></span><span class="title">本周重点</span></div>
@@ -854,7 +909,7 @@ h1 { font-size: 26pt; line-height: 1.15; letter-spacing: -0.6pt; margin: 5mm 0 3
     <div class="section-head"><span class="bar"></span><span class="title">下周重点</span></div>
     <div class="next">${nextItems}</div>
   </div>
-  <div class="footer"><span>数据：DSH 会话日志（provider usage）</span><span>数据截至 ${localTime()} · DSH 自动生成</span></div>
+  <div class="footer"><span>数据：DSH 会话日志（provider usage）· superagent 工单</span><span>本周 ${esc(hyphenDate(data.start))} ~ ${esc(hyphenDate(data.end))} · 数据截至 ${localTime()} · DSH 自动生成</span></div>
 </div></body></html>`
 }
 
@@ -926,7 +981,7 @@ async function main() {
   const curated = args.content ? JSON.parse(fs.readFileSync(args.content, 'utf8')) : await curate(data)
   const content = validContent(curated) ? normalizeContent(curated) : localContent(data)
   content.next = planItems(data)
-  content.risk = riskFromData(data)
+  content.risk = riskFromData(data) || prRisk(data)
   fs.mkdirSync(path.join(APP_DIR, 'last'), { recursive: true })
   fs.writeFileSync(path.join(APP_DIR, 'last', 'content.json'), JSON.stringify(content, null, 2))
   const html = reportHtml(data, content)
