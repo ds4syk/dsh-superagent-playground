@@ -7,7 +7,7 @@ def lineage(s):
     s=s.replace('DreamerV3','D3').replace('DreamerV2','D2').replace('Dreamer','D')
     s=s.replace('WorldModels','R').replace('RWM','R').replace('PlaNet','P').replace('JEPA','J')
     s=re.sub(r'(?<![A-Za-z0-9])V3(?![0-9])','D3',s); s=re.sub(r'(?<![A-Za-z0-9])V2(?![0-9])','D2',s)
-    parts=[p.strip() for p in s.replace('，',',').split(',') if p.strip()]
+    parts=[p.strip() for p in s.replace('，',',').replace('/',',').split(',') if p.strip()]
     out=[]
     for p in parts:
         if p not in out: out.append(p)
