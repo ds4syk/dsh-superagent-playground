@@ -1,0 +1,196 @@
+
+### Training Agents Inside of Scalable World Models
+  - With 64 sampling steps per frame, the baseline falls short of real-time generations with only 0.8 FPS on one H100 GPU, while 4 sampling steps achieve 9.1 FPS but result in poor quality.
+  - We measure the inference speed of each model on a single H100 GPU, and translate the inference speed for the proprietary large Oasis model based on public information.
+  - Inference speed We measure the inference speed of each model on a single H100 GPU.
+  - The large model is hosted on multiple H100s for interaction online and we estimate its inference speed on a single H100 around 5 FPS based on public information.
+
+### HumanoidBench: Simulated Humanoid Benchmark for Whole-Body Locomotion and Manipulatio
+  - Reaching Policy Implementation Details We train the low-level reaching policies described in Section V-D using PPO, largely parallelized on GPU using MuJoCo MJX.
+
+### LeWorldModel: Stable End-to-End Joint-Embedding Predictive Architecture from Pixels
+  - With 15M parameters trainable on a single GPU in a few hours, LeWM plans up to 48× faster than foundation-model-based world models while remaining competitive across diverse 2D and 3D control tasks.
+
+### V-JEPA 2.1: Unlocking Dense Features in Video Self-Supervised Learning
+
+### VLA-JEPA: Enhancing Vision-Language-Action Model with Latent World Model
+  - During training, we use a batch size of 32 and train on 8 GPUs in parallel, resulting in a global batch size of 256.
+
+### DINO-WM: World Models on Pre-trained Visual Features enable Zero-shot Planning
+
+### FLARE: Robot Learning with Implicit World Modeling
+  - For the multitask experiments of FLARE conducted in Sections 4.1 and 4.2, we use 32 NVIDIA H100 GPUS with batch size 1024 for 80,000 gradient steps, while keeping the rest of the hyperparameter setups exactly the same.
+
+### Learning and Leveraging World Models in Visual Representation Learning
+
+### Large Concept Models: Language Modeling in a Sentence Representation Space
+  - All models are configured to have approximately 1.6B trainable parameters and are pre-trained on Meta’s Research Super Cluster (RSC, Lee and Sengupta (2022)) for 250k optimization steps spanning 32 A100 GPUs with a total batch size of 229k concepts.
+  - We pre-trained this model on Meta’s RSC for 124k optimization steps spanning 256 A100 GPUs with a total batch size of 1M concepts.
+  - Typically, with on single GPU we can produce around 300-400 SONAR sentence embeddings per second whereas by loading precomputed data (potentially from remote storage) we can load over 20 thousand embeddings per second per GPU (with around 15 CPU per GPU).
+  - This allows for faster iteration on the same data mix, trading expensive GPU compute against storage capacity.
+
+### The Platonic Representation Hypothesis
+
+### Cosmos World Foundation Model Platform for Physical AI
+  - Method GPU CPU Codec Batch NVDEC (#accelerator) NVENC (#accelerator) Throughput (videos/s) ffmpeg ffmpeg H100 L40S 28 1 libx264 h264_nvenc 1 1 7 3 0 3 0.0574 0.0674 ffmpeg pynvc+ffmpeg L40S L40S 1 1 h264_nvenc h264_nvenc 16 1 3 3 3 3 0.1026 0.3702 8 Cosmos Wor
+  - L40S has about 17% higher throughput than H100 (0.0674 vs.
+  - We train all of the WFM models reported in the paper using a cluster of 10,000 NVIDIA H100 GPUs in a time span of three months.
+  - We reuse the InternVideo2 embeddings computed during filtering and cluster the embeddings using a multi-node GPU-accelerated implementation of k-means (RAPIDS, 2023) with 𝑘 = 10, 000.
+
+### Cosmos 3: Omnimodal World Models for Physical AI
+  - In the pre-training stage, Cosmos3-Nano was trained on 31.05T tokens using 1024 NVIDIA GB200 GPUs, while Cosmos3-Super was trained on 17.86T tokens using 2048 NVIDIA GB200 GPUs.
+  - In the mid-training stage, Cosmos3-Nano model was trained on 2.4T tokens using 1024 NVIDIA GB200 GPUs, while Cosmos3-Super model was trained on 1.9T tokens using 2048 NVIDIA GB200 GPUs.
+  - On Hopper-class GPUs (H100, H200), we use FlashAttention-3 (Shah et al., 2024), which exploits the WGMMA instructions and TMA-based asynchronous data movement of the Hopper architecture to deliver near-peak attention throughput.
+  - Together, these features allow Cosmos 3 Generator to scale from memory-constrained single-GPU deployments to high-throughput multi-GPU serving.
+
+### World Simulation with Video Foundation Models for Physical AI
+  - Due to the GPU memory constraint, the probability of each trajectory is computed by decomposing it into the sum of conditional probabilities at each step, and in practice, we compute the gradient of every two conditional probabilities based on the advantages a
+  - To address out-of-memory issues during training and inference, we employ context parallelism across multiple GPUs.
+  - Compared with the ring-attention strategy used in the diffusion world model of [Cosmos-Predict1], this method is both simpler and more communication-efficient, leveraging intra-node all-to-all collectives on NVIDIA GPUs.
+
+### Cosmos Policy: Fine-Tuning Video Models for Visuomotor Control and Planning
+  - 16 A.2.2 LIBERO T RAINING D ETAILS We train Cosmos Policy for 40K gradient steps using 64 H100 GPUs with global batch size 1920 (taking 48 hours total).
+  - A.2.3 ROBO C ASA T RAINING D ETAILS We train Cosmos Policy for 45K gradient steps using 32 H100 GPUs with global batch size 800 (taking 48 hours total).
+  - Cosmos Policy is trained for 50K gradient steps using 8 H100 GPUs with a global batch size of 200, taking 48 hours total.
+  - Finally, for the significantly smaller Diffusion Policy, which only contains approximately 150M parameters (as opposed to 2-7B for the other methods), we train from scratch on 1 H100 GPU for 48 hours, resulting in 190 epochs, equivalent to 72K gradient steps (
+
+### Diffusion Models Are Real-Time Game Engines
+  - On our hardware configuration (a single TPU-v5), a single denoiser step and an evaluation of the auto-encoder both takes 10ms.
+  - We train using 128 TPU-v5e devices with data parallelization.
+  - Experimenting with further expanding the memory effectively could be critical for more complex games/software; GameNGen runs at 20 or 50 FPS2 on a TPUv5.
+  - While film productions uses computationally intensive ray tracing (Shirley & Morley, 2008), game engines prioritize speed (30-60 FPS) with optimized polygon rasterization via GPUs.
+
+### World Model on Million-Length Video And Language With Blockwise RingAttention
+  - We trained our models using TPUv4-1024, which is approximately equivalent to 450 A100s, with a batch size of 8M using FSDP (Facebook, 2023) and BlockwiseRingAttention (Liu et al., 2024) for large contexts.
+  - Fully Sharded Data Parallel: faster AI training with fewer GPUs — engineering.fb.com.
+
+### Advancing Open-source World Models
+  - FSDP2 employs a fully sharded scheme where each GPU holds only a fraction of the model parameters, gradients, and optimizer states, enabling the training of large-scale models that would otherwise exceed single-GPU memory limits.
+  - Building upon this, we further analyze LingBot-World-Fast, our real-time variant, which achieves 16 fps throughput when processing 480p videos on a system with one GPU node.
+  - Third, as training the fundamental world model is computationally intensive, we implement a parallelism infrastructure that enables efficient training while keeping GPU memory consumption within practical limits (Sec.
+  - This design preserves inference-time computation and GPU memory consumption comparable to a dense 14B model.
+
+### Matrix-Game 3.0: Real-Time and Streaming Interactive World Model with Long-Horizon Me
+  - 9 our asynchronous deployment, 8 GPUs are used for DiT inference and 1 GPU is dedicated to VAE decoding, enabling the overall pipeline to achieve a inference speed of up to 40 FPS.
+  - Unless otherwise specified, all experiments are performed under an asynchronous 8+1 setup, with 8 GPUs for DiT inference and 1 GPU for VAE decoding.
+  - More broadly, H-series GPUs also consistently deliver higher throughput than A-series GPUs under the same parallel setting.
+  - 3.4 Real-Time Inference Building upon the distilled model, we further adopt several strategies to accelerate inference4 , including INT8 quantization for the DiT model, VAE pruning, and GPU-based memory retrieval.
+
+### MineWorld: a Real-Time and Open-Source Interactive World Model on Minecraft
+  - The training is conducted on 32 NVIDIA 40G A100 GPUs with PyTorch (Paszke et al., 2019) for 200k steps.
+
+### WorldMem: Long-term Consistent World Simulation with Memory
+  - The model is trained for approximately 500K steps using 4 GPUs, with a batch size of 4 per GPU.
+  - The model is trained for approximately 50K steps using 4 GPUs, with a batch size of 8 per GPU.
+  - We compare our method with a baseline model (without memory), under consistent settings: 8 context frames, 8 memory frames, 20 denoising steps, and no acceleration techniques, on single H200.
+
+### Video World Models with Long-term Spatial Memory
+  - We trained for 6,000 iterations with a learning rate of 2 × 10−5 , using a mini-batch size of 8 and are conducted on eight NVIDIA-A100 GPUs.
+
+### RELIC: Interactive Video World Model with Long-Horizon Memory
+  - Overall, our architectural design enables both efficient training and inference: RELIC achieves 16 FPS generation throughput on 4 H100 GPUs while maintaining precise action and text following, as well as long-horizon spatial consistency.
+  - To deal with this, we use a combination of existing techniques in both bidirectional long-horizon training and auto-regressive distillation stages: (i) employ Fully Sharded Data Parallel (FSDP) (Zhao et al., 2023) to shard training batch, model parameters, gra
+  - Our final model is trained on 32 H100 GPUs, each with 80GB of memory.
+  - Since inference latency and throughput are largely bounded by GPU memory bandwidth and CPU speed, we tailor our optimizations accordingly.
+
+### Pandora: Towards General World Model with Natural Language Actions and Video States
+
+### Navigation World Models
+  - XL sized model are trained on 8 H100 machines, each with 8 GPUs.
+
+### Yume: An Interactive World Generation Model
+  - Training was conducted across NVIDIA A800 GPUs over 7,000 iterations.
+
+### WorldDreamer: Towards General World Models for Video Generation via Predicting Masked
+
+### GameGen-X: Interactive Open-world Game Video Generation
+  - C.3 C OMPUTATION R ESOURCES AND C OSTS Regarding computational resources, our training infrastructure consisted of 24 NVIDIA H800 GPUs distributed across three servers, with each server hosting 8 GPUs equipped with 80GB of memory per unit.
+  - Specifically, we conducted 30 open-domain generation inferences on a single A800 and a single H800 GPU, with the CUDA environment set to 12.1.
+  - At this resolution and number of sampling steps, the model can achieve 20 FPS on a single H800 GPU.
+
+### WorldSimBench: Towards Video Generation Models as World Simulators
+  - The training is conducted on 4 A100 80 GPUs.
+
+### How Far is Video Generation from World Model: A Physical Law Perspective
+  - Given the compressed latent representation of the VAE model, we flatten it into a sequence of 3 How Far is Video Generation from World Model: A Physical Law Perspective uni motion collision steps using 32 Nvidia A100 GPUs with a batch size of 256, which was su
+  - All models were trained for 1000K gradient steps on 64 Nvidia A100 GPUs with a batch size of 256, ensuring convergence.
+
+### DriveDreamer-2: LLM-Enhanced World Models for Diverse Driving Video Generation
+
+### Vista: A Generalizable Driving World Model with High Fidelity and Versatile Controlla
+  - C.3 Training At the first training phase, we train all UNet parameters at 576×1024 resolution on 128 A100 GPUs for 20K iterations, which takes about 8 days in total.
+  - The whole training process for action controllability takes around 10 days on 8 A100 GPUs, with roughly 8 days at the low resolution and 2 days at the high resolution.
+  - All ablations, including the additional ablations in Appendix D, are initialized by loading the pretrained checkpoint of SVD [5] and conducted with 8 A100 GPUs.
+
+### Driving Into the Future: Multiview Visual Forecasting and Planning with World Model f
+
+### OccWorld: Learning a 3D Occupancy World Model for Autonomous Driving
+  - We use a batch size of 1 per GPU on 8 NVIDIA GeForce RTX 4090 GPUs.
+
+### World Action Models are Zero-shot Policies
+  - A naive implementation of DreamZero on a single GPU requires approximately 5.7 seconds per action chunk due to three bottlenecks: (1) iterative denoising across 16 diffusion steps required for smooth actions, (2) the computational cost of a 14B parameter DiT b
+  - We distribute these across two GPUs, reducing per-step latency by 47%.
+
+### WorldVLA: Towards Autoregressive Action World Model
+
+### GR-2: A Generative Video-Language-Action Model with Web-Scale Knowledge for Robot Man
+
+### UniVLA: Learning to Act Anywhere with Task-centric Latent Actions
+  - I), we employ a global batch size of 258 distributed across 8 GPUs, totaling approximately 200 A100 GPU-hours.
+  - Our approach achieves competitive results with only 960 A100-hours of pretraining, a substantial reduction compared to the 21,500 A100-hours required for OpenVLA pretraining.
+  - Empirical results indicate that 20,000 optimization steps are sufficient to achieve robust downstream performance, requiring approximately 30 hours of computation on a cluster equipped with 32 NVIDIA A100 GPUs.
+  - In addition, our method achieves a real-time, closed-loop inference frequency of 10Hz on an NVIDIA RTX 4090 GPU by planning in a compact latent action space, and allowing efficient action chunk prediction (we use a chunk size of 12 Group A.
+
+### DreamDojo: A Generalist Robot World Model from Large-Scale Human Videos
+  - Both models are pretrained for 140k steps with an effective batch size of 1024 using 256 NVIDIA H100 GPUs.
+  - By default, post-training is conducted with 128 NVIDIA H100 GPUs for 50k steps with a batch size of 512.
+  - All distillation is conducted on 64 NVIDIA H100 GPUs, using a batch size of 256 for the warmup stage and 64 for the distillation stage.
+  - 6, our student model, despite being few-step and autoregressive, achieves performance close to that of the teacher while running nearly 4× faster on a single NVIDIA H100 GPU.
+
+### mimic-video: Video-Action Models for Generalizable Robot Control Beyond VLAs
+
+### Ctrl-World: A Controllable Generative World Model for Robot Manipulation
+  - We train the model on 2×8 H100 GPUs, with a total batch size of 64.
+  - We train the model on 2×8 H100 GPUs with a total batch size of 64.
+  - We finetune the pretrained checkpoint on our synthetic dataset for 2k steps on 4 H100 GPUs.
+  - To reduce GPU memory consumption, we transform these 15 actions in the Cartesian space (see Section B) and temporally downsample them to 5 steps before feeding them into the model.
+
+### IRASim: A Fine-Grained World Model for Robot Manipulation
+
+### Unified Vision-Language-Action Model
+  - Training is conducted on A100 GPUs with a batch size of 192 for 8k steps.
+  - We perform full-parameter training for 50k steps using 32 A100 GPUs (40GB), which takes approximately 4–5 days.
+
+### StarVLA: A Lego-like Codebase for Vision-Language-Action Model Developing
+  - Per-GPU batch Global batch Time / 100K steps Seconds / step Samples / s GPU util 2 4 8 16 24 16 32 64 128 192 19:32:17 24:35:59 31:25:38 49:15:53 66:47:02 0.703 0.886 1.131 1.774 2.404 22.7 36.1 56.6 72.2 79.9 74% 89% 92% 91% 96% 2.40 80 Seconds / Step 1.77 1.
+  - Right: training throughput and GPU utilization on 8×A100 across batch sizes.
+  - Second, on a single node, a moderate per-GPU batch (e.g., 8) often provides the best balance between step latency and GPU utilization; very large batches (e.g., 24) maximize utilization (96%) but inflate step latency by 3.4×.
+  - We train the LIBERO baseline using distributed training with 8 A100 GPUs (via accelerate + DeepSpeed ZeRO-2).
+
+### ReCogDrive: A Reinforced Cognitive Framework for End-to-End Autonomous Driving
+  - We implement ReCogDrive on Debian with PyTorch, training across four nodes—each equipped with an Intel® Xeon® Platinum 8457C CPU and eight NVIDIA H20 GPUs (32 GPUs in total).
+
+### Unleashing Large-Scale Video Generative Pre-training for Visual Robot Manipulation
+
+### Understanding World or Predicting Future? A Comprehensive Survey of World Models
+
+### World Models for Autonomous Driving: An Initial Survey
+
+### A survey on model-based reinforcement learning
+
+### TD-MPC2: Scalable, Robust World Models for Continuous Control
+  - Approposed improvements facilitate scaling of world models, we proximate TD-MPC2 training cost evaluate the performance of 5 multitask models ranging from on the 80-task dataset, reported in 1M to 317M parameters on a collection of 80 diverse tasks that GPU da
+  - single-task TD-MPC2 agents, and thus contain a wide variety Params (M) GPU days Score of behaviors ranging from random to expert policies.
+
+### Learning Interactive Real-World Simulators
+  - UniSim model has 5.6B parameters and requires 512 TPU-v3 and 20 days to train on all data.
+  - The VLM is finetuned on either the original short horizon data or the long horizon simulated data using 64 TPUv3 chips for 1 day.
+
+### Learning Universal Policies via Text-Guided Video Generation
+
+### Language-Driven Representation Learning for Robotics
+  - We refer to our reproductions as “R-MVP,” “R-R3M (ViT-S),” and “R-R3M (RN-50).” We pretrain all models in this work on TPU v3-8 compute, generously granted to us by the TPU Research Cloud program (TRC).
+
+### Structured World Models from Human Videos
+  - We first train a model on the human data for about 6000 such iterations with a batch size of 80, which takes about 96 hours on a single RTX 3090 GPU (using 24GB of VRAM).
+  - We use only one cell per block instead of two, due to GPU memory restrictions and to train with larger batch sizes.
