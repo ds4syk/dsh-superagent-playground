@@ -9,3 +9,9 @@
 | `04_相机标定仿真复现.docx` | §VI-B4 双路线、Table V、tightness、失败修复、局限 |
 
 源文件在 [`../kb/sdpr-qpep/`](../kb/)；Feishu 知识库链接在交付消息中。
+
+## 部署方案
+
+| 文件 | 内容 |
+|---|---|
+| `merge-cli-setup-2026-11.docx` | merge CLI（`gh-merge`）+ 合并审批规则的具体方案；正文 `docs/merge-cli-and-approval.md` |
