@@ -7,3 +7,9 @@ code/
 kb/**/00_feishu*.md
 kb/**/01_feishu.md
 artifacts/
+
+# world-model citation survey: large local caches (regenerable via analysis/wm-citation/*.py)
+analysis/wm-citation/pdfs/
+analysis/wm-citation/txt/
+analysis/wm-citation/raw/*.json
+analysis/wm-citation/__pycache__/
