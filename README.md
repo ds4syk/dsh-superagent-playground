@@ -19,6 +19,10 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 能否作为 V-JEPA 2 的桥接输出层？** 机制分析 + 受控实验（旋转同步）：
   [report](report/README-sdpr-vjepa2.md) · [主报告](report/sdpr_vjepa2_bridge.md) ·
   [DOCX](deliverables/SDPR_VJEPA2_桥接输出层_2026-11.docx)
+- **QPEP 的两种模式、复杂度与可微优化层**（2026-11）：
+  [DOCX 知识库](deliverables/QPEP_可微优化层_2026-11.docx) ·
+  [一页图](docs/visuals/2026-11-11-qpep-diff-layer.png) ·
+  [结构实验与 LibQPEP 实测](analysis/qpep/) · [KB 源文件](kb/qpep-layer/)
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
