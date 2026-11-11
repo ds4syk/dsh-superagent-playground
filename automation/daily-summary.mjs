@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 /**
- * dsh-daily-summary: build a one-page daily work report image and post it to a Feishu chat.
+ * dsh-daily-summary: build a one-page weekly work report image and post it to a Feishu chat.
+ *
+ * The file keeps its historical name so the installed launcher and the crontab marker keep
+ * working; the report itself is a weekly summary with a per-task token pie chart.
  *
  * Pipeline: collect local state -> curate the brief -> render HTML -> WeasyPrint PDF -> PNG
  * -> lark-cli image message. If the image pipeline fails, a short text fallback is sent.
@@ -10,11 +13,14 @@
  *    (the durable record that carries each step's provider-reported usage). The Context Insights
  *    projection cache is only a fallback: it is refreshed on demand by the web UI, so a cron run
  *    can see it stale or empty.
- *  - dsh-superagent tickets: <stateDir>/orchestrator.sqlite
+ *  - dsh-superagent tickets: <stateDir>/orchestrator.sqlite. Each ticket's execution directory is
+ *    matched against the session workspace to attribute the week's tokens to a task.
  *  - Open pull requests of the configured repository (optional; skipped when gh fails)
  *
  * Usage:
- *   node daily-summary.mjs [--date YYYY-MM-DD] [--dry-run] [--no-llm] [--resend] [--chat-id oc_xxx]
+ *   node daily-summary.mjs [--date YYYY-MM-DD] [--days 7] [--dry-run] [--no-llm] [--resend]
+ *
+ * --date is the last day of the report window; --days is its length (default 7).
  *
  * Environment overrides: DSH_DAILY_SUMMARY_CHAT, DSH_DAILY_SUMMARY_REPO,
  * DSH_DAILY_SUMMARY_LARK_CLI, DSH_DAILY_SUMMARY_GH, DSH_DAILY_SUMMARY_STATE_DIR,
@@ -32,13 +38,14 @@ const HOME = os.homedir()
 const APP_DIR = path.join(HOME, '.local/share/dsh-daily-summary')
 
 function parseArgs(argv) {
-  const args = { dryRun: false, llm: true }
+  const args = { dryRun: false, llm: true, days: 7 }
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]
     if (a === '--dry-run') args.dryRun = true
     else if (a === '--resend') args.resend = true
     else if (a === '--no-llm') args.llm = false
     else if (a === '--date') args.date = argv[++i]
+    else if (a === '--days') args.days = Number(argv[++i])
     else if (a === '--chat-id') args.chat = argv[++i]
     else if (a === '--repo') args.repo = argv[++i]
     else if (a === '--lark-cli') args.lark = argv[++i]
@@ -76,6 +83,26 @@ function weekdayText(date) {
   const [y, m, d] = date.split('-').map(Number)
   return new Intl.DateTimeFormat('zh-CN', { timeZone: TZ, weekday: 'short' }).format(new Date(Date.UTC(y, m - 1, d, 4)))
 }
+/** Add days to a YYYY-MM-DD string in the report timezone (noon UTC+8 avoids DST edges). */
+function addDays(date, days) {
+  const [y, m, d] = date.split('-').map(Number)
+  const value = new Date(Date.UTC(y, m - 1, d, 4))
+  value.setUTCDate(value.getUTCDate() + days)
+  return localDate(value)
+}
+/** The inclusive window ending at `end`, newest last. */
+function reportWindow(end, days) {
+  const dates = []
+  for (let i = days - 1; i >= 0; i--) dates.push(addDays(end, -i))
+  return { start: dates[0], end, days: dates.length, dates }
+}
+function shortDate(date) {
+  const [, month, day] = date.split('-')
+  return `${Number(month)}.${String(day).padStart(2, '0')}`
+}
+function rangeText(start, end) {
+  return start === end ? shortDate(end) : `${shortDate(start)} – ${shortDate(end)}`
+}
 function clean(value, max = 0) {
   if (typeof value !== 'string') return ''
   let text = value.replace(/\r?\n+/g, ' ').replace(/\s+/g, ' ').trim()
@@ -96,11 +123,11 @@ function esc(value) {
 const sessionsRoot = path.join(HOME, '.dsh/sessions')
 const zstdcat = process.env.DSH_DAILY_SUMMARY_ZSTD || (fs.existsSync('/usr/bin/zstdcat') ? '/usr/bin/zstdcat' : 'zstdcat')
 // Only these events carry what the report needs; the rest (mostly tool output) is skipped before
-// JSON.parse, which keeps the daily scan of the largest logs cheap.
+// JSON.parse, which keeps the window scan of the largest logs cheap.
 const trackedEvent = /"type":\s*"(?:assistant\/message|step\/start|session\/end-seed|session\/title|session)"/
 
-/** Sessions from the Context Insights projection cache; kept as a fallback for the durable logs. */
-function collectSessionsFromCache(date) {
+/** Sessions with the per-day figures Context Insights computes, summed over the window. */
+function collectSessionsFromCache(dates) {
   const sessions = []
   let files = []
   try { files = fs.readdirSync(sessionsDir).filter(f => f.endsWith('.json')) } catch { return sessions }
@@ -108,16 +135,23 @@ function collectSessionsFromCache(date) {
     let record
     try { record = JSON.parse(fs.readFileSync(path.join(sessionsDir, file), 'utf8')).record } catch { continue }
     const rows = record?.rows ?? {}
-    const day = rows?.contextActivity?.val?.days?.[date]
-    if (!day || !Number.isFinite(day.tokens) || day.tokens <= 0) continue
+    let tokens = 0
+    let requests = 0
     const breakdown = { uncached: 0, cacheRead: 0, cacheWrite: 0, output: 0 }
-    for (const models of Object.values(day.cost ?? {})) {
-      for (const buckets of Object.values(models ?? {})) {
-        for (const bucket of Object.values(buckets ?? {})) {
-          for (const key of Object.keys(breakdown)) breakdown[key] += Number(bucket?.[key] || 0)
+    for (const date of dates) {
+      const day = rows?.contextActivity?.val?.days?.[date]
+      if (!day || !Number.isFinite(day.tokens) || day.tokens <= 0) continue
+      tokens += day.tokens
+      requests += Number(day.requests || 0)
+      for (const models of Object.values(day.cost ?? {})) {
+        for (const buckets of Object.values(models ?? {})) {
+          for (const bucket of Object.values(buckets ?? {})) {
+            for (const key of Object.keys(breakdown)) breakdown[key] += Number(bucket?.[key] || 0)
+          }
         }
       }
     }
+    if (tokens <= 0) continue
     const first = clean(rows?.titleInput?.val?.first?.text)
     const rawTitle = clean(rows?.title?.val)
     let title = rawTitle || first || '未命名会话'
@@ -127,8 +161,8 @@ function collectSessionsFromCache(date) {
     if (/^You are working on\b/i.test(title)) title = ''
     sessions.push({
       id: file.replace(/\.json$/, ''),
-      tokens: day.tokens,
-      requests: Number(day.requests || 0),
+      tokens,
+      requests,
       breakdown,
       title,
       workspace: rows?.workingDirectory?.val || record?.identity?.cwd || '',
@@ -137,9 +171,9 @@ function collectSessionsFromCache(date) {
   return sessions
 }
 
-/** Session logs that can hold the given day; a log's mtime is the time of its last appended event. */
-function sessionLogFiles(date) {
-  const since = Date.parse(`${date}T00:00:00+08:00`)
+/** Session logs that can hold events in the window; a log's mtime is its last appended event. */
+function sessionLogFiles(startDate) {
+  const since = Date.parse(`${startDate}T00:00:00+08:00`)
   const files = []
   for (const slug of fs.readdirSync(sessionsRoot)) {
     const dir = path.join(sessionsRoot, slug)
@@ -159,13 +193,13 @@ function sessionLogFiles(date) {
 }
 
 /**
- * Fold one session log into the requested day.
+ * Fold one session log into the requested window.
  *
  * A step is billed to the day it started, like Context Insights. `session/end-seed` with
  * `inherited: true` closes the copied parent history of a seeded side conversation: those events
  * were already billed in the parent session, so only later events are counted.
  */
-async function scanSessionLog({ id, file }, date) {
+async function scanSessionLog({ id, file }, start, end) {
   const child = spawn(zstdcat, [file], { stdio: ['ignore', 'pipe', 'ignore'] })
   await new Promise((resolve, reject) => {
     child.once('spawn', resolve)
@@ -221,7 +255,8 @@ async function scanSessionLog({ id, file }, date) {
   for (const item of usages) {
     if (item.seq <= inheritedThrough) continue
     const started = stepStarts.get(`${item.turn}:${item.step}`) ?? item.time
-    if (localDate(new Date(started)) !== date) continue
+    const startedDate = localDate(new Date(started))
+    if (startedDate < start || startedDate > end) continue
     const usage = item.usage
     const uncached = Number(usage.inputTokens || 0)
     const cacheRead = Number(usage.cacheReadTokens || 0)
@@ -239,15 +274,15 @@ async function scanSessionLog({ id, file }, date) {
   return { id, tokens: day.tokens, requests: day.requests, breakdown: day.breakdown, title, workspace: header?.cwd || '' }
 }
 
-/** Sessions with the per-day figures, read from the durable session logs. */
-async function collectSessions(date) {
+/** Sessions with the window's per-day figures, read from the durable session logs. */
+async function collectSessions(dates, start, end) {
   try {
     execFileSync(zstdcat, ['--version'], { stdio: 'ignore', timeout: 10_000 })
     const sessions = []
     let failures = 0
-    for (const entry of sessionLogFiles(date)) {
+    for (const entry of sessionLogFiles(start)) {
       try {
-        const session = await scanSessionLog(entry, date)
+        const session = await scanSessionLog(entry, start, end)
         if (session) sessions.push(session)
       } catch (error) {
         failures += 1
@@ -257,9 +292,9 @@ async function collectSessions(date) {
     if (failures > 0 && sessions.length === 0) throw new Error(`all ${failures} candidate session log(s) failed`)
     if (sessions.length === 0) {
       // A log-format change would also look empty; the cache is the only other source then.
-      const cached = collectSessionsFromCache(date)
+      const cached = collectSessionsFromCache(dates)
       if (cached.length > 0) {
-        console.error(`no usage found in session logs for ${date}; using the Context Insights projection cache`)
+        console.error(`no usage found in session logs for ${start}..${end}; using the Context Insights projection cache`)
         return cached
       }
     }
@@ -267,22 +302,22 @@ async function collectSessions(date) {
   } catch (error) {
     const reason = clean(error instanceof Error ? error.message : String(error), 120)
     console.error(`session log scan failed (${reason}); falling back to the Context Insights projection cache`)
-    return collectSessionsFromCache(date)
+    return collectSessionsFromCache(dates)
   }
 }
 
-function workspaceLabel(dir) {
-  if (!dir) return '未知工作区'
-  if (dir.includes('/.superagent-work/')) return 'superagent 工作区'
-  return dir.replace(/^\/home\/syk\//, '~/').replace(/^\/mnt\/storage1\/syk\//, '~/')
-}
-
-/** Tickets the superagent touched today, plus the ones still open. */
-function readTickets(date) {
-  if (!fs.existsSync(ticketDb)) return { today: [], open: [] }
+/** Tickets the superagent touched in the window, plus the ones still open. */
+function readTickets(start, end) {
+  if (!fs.existsSync(ticketDb)) return { week: [], open: [], byDir: new Map() }
   const db = new DatabaseSync(ticketDb, { readOnly: true })
-  const today = []
+  const week = []
   const open = []
+  const byDir = new Map()
+  const inWindow = (ms) => {
+    if (!Number.isFinite(ms)) return false
+    const day = localDate(new Date(ms))
+    return day >= start && day <= end
+  }
   try {
     for (const row of db.prepare('select value from ticket').all()) {
       let ticket
@@ -307,26 +342,29 @@ function readTickets(date) {
         reportState: report?.state || '',
         result: clean(report?.summary, 260),
         prs: [...prs],
+        directory: typeof ticket.execution?.directory === 'string' ? ticket.execution.directory : '',
       }
+      // A ticket's execution directory is the worker session's cwd, i.e. the task key.
+      if (item.directory) byDir.set(item.directory, item)
       if (!Number.isFinite(updated)) continue
-      if (localDate(new Date(updated)) === date || localDate(new Date(created || updated)) === date) today.push(item)
+      if (inWindow(updated) || inWindow(created)) week.push(item)
       if (!item.ended) open.push(item)
     }
   } finally { db.close() }
-  today.sort((a, b) => a.updated - b.updated)
+  week.sort((a, b) => a.updated - b.updated)
   open.sort((a, b) => a.updated - b.updated)
-  return { today, open }
+  return { week, open, byDir }
 }
 
-function collectTickets(date) {
+function collectTickets(start, end) {
   // The host writes this SQLite database continuously; a busy read gets retried.
   for (let attempt = 1; attempt <= 3; attempt++) {
-    try { return readTickets(date) } catch {
-      if (attempt === 3) return { today: [], open: [] }
+    try { return readTickets(start, end) } catch {
+      if (attempt === 3) return { week: [], open: [], byDir: new Map() }
       execFileSync('/bin/sleep', ['1'])
     }
   }
-  return { today: [], open: [] }
+  return { week: [], open: [], byDir: new Map() }
 }
 
 function openPullRequests() {
@@ -357,20 +395,34 @@ function ticketStatus(ticket) {
 }
 
 /** Normalized data handed to the curator and the renderer. */
-async function buildReportData(date) {
-  const sessions = await collectSessions(date)
-  const tickets = collectTickets(date)
+async function buildReportData(range) {
+  const sessions = await collectSessions(range.dates, range.start, range.end)
+  const tickets = collectTickets(range.start, range.end)
   const openPrs = openPullRequests()
 
-  const groups = new Map()
+  const taskMap = new Map()
+  const other = { tokens: 0, requests: 0, sessions: 0 }
   for (const s of sessions) {
-    const label = workspaceLabel(s.workspace)
-    const g = groups.get(label) || { name: label, sessions: 0, requests: 0, tokens: 0, titleEntries: [] }
-    g.sessions += 1
-    g.requests += s.requests
-    g.tokens += s.tokens
-    if (s.title) g.titleEntries.push({ title: s.title, tokens: s.tokens })
-    groups.set(label, g)
+    const ticket = tickets.byDir.get(s.workspace)
+    if (ticket) {
+      const task = taskMap.get(ticket.id) || {
+        id: ticket.id,
+        title: clean(ticket.title, 70),
+        status: ticketStatus(ticket),
+        prs: ticket.prs,
+        tokens: 0,
+        requests: 0,
+        sessions: 0,
+      }
+      task.tokens += s.tokens
+      task.requests += s.requests
+      task.sessions += 1
+      taskMap.set(ticket.id, task)
+    } else {
+      other.tokens += s.tokens
+      other.requests += s.requests
+      other.sessions += 1
+    }
   }
   const totals = { tokens: 0, requests: 0, sessions: sessions.length, uncached: 0, cacheRead: 0, cacheWrite: 0, output: 0 }
   for (const s of sessions) {
@@ -380,21 +432,18 @@ async function buildReportData(date) {
   }
   const denom = totals.uncached + totals.cacheRead + totals.cacheWrite
   totals.cacheHit = denom > 0 ? Number(((totals.cacheRead / denom) * 100).toFixed(1)) : 0
+  const tasks = [...taskMap.values()].sort((a, b) => b.tokens - a.tokens)
+  for (const task of tasks) task.share = totals.tokens > 0 ? Number(((task.tokens / totals.tokens) * 100).toFixed(1)) : 0
 
   return {
-    date,
-    weekday: weekdayText(date),
+    start: range.start,
+    end: range.end,
+    days: range.days,
+    weekday: weekdayText(range.end),
     totals,
-    workspaces: [...groups.values()]
-      .filter(g => g.name !== 'superagent 工作区')
-      .sort((a, b) => b.tokens - a.tokens)
-      .map(g => {
-        const byTitle = new Map()
-        for (const entry of g.titleEntries) byTitle.set(entry.title, Math.max(entry.tokens, byTitle.get(entry.title) || 0))
-        const titles = [...byTitle.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([title]) => title)
-        return { name: g.name, sessions: g.sessions, requests: g.requests, tokens: g.tokens, titles }
-      }),
-    tickets: tickets.today.map(t => ({ title: t.title, status: ticketStatus(t), prs: t.prs, result: t.result })),
+    tasks,
+    other,
+    tickets: tickets.week.map(t => ({ title: t.title, status: ticketStatus(t), prs: t.prs, result: t.result })),
     open: tickets.open.map(t => ({ title: t.title, status: ticketStatus(t), prs: t.prs, result: t.result })),
     openPrs: openPrs.map(p => ({ number: p.number, title: clean(p.title, 60) })),
   }
@@ -409,30 +458,31 @@ function apiKey() {
   } catch { return '' }
 }
 
-/** Ask the model for a concise, result-first brief; return undefined on any failure. */
+/** Ask the model for a concise, result-first weekly brief; return undefined on any failure. */
 async function curate(data) {
   if (!args.llm) return undefined
   const key = apiKey()
   if (!key) return undefined
   const system = [
-    '你是资深技术负责人，为团队写每日一页简报。遵循这些原则：',
-    '- 倒金字塔：先给结论，再给支撑细节；读者 10 秒能看懂今天最重要的事。',
+    '你是资深技术负责人，为团队写每周一页简报。遵循这些原则：',
+    '- 倒金字塔：先给结论，再给支撑细节；读者 10 秒能看懂本周最重要的事。',
     '- 只写结果、影响和关键进展；合并同类项；不写过程流水账，不罗列所有会话。',
-    '- 亮点 3 条以内；每条主题不超过 10 个字，说明不超过 38 个字。',
+    '- 亮点 3 条以内；每条主题不超过 14 个字，说明不超过 45 个字。',
     '- 只使用输入数据中的事实；不编造数字或结论。',
-    '- 会话标题只代表今天在做的主题，不能据此写「已产出 / 已完成 / 已跑出 / 成功」；只有 todayTickets 中 status 为「已完成」或「已合并」的事项才能写完成。',
+    '- 任务标题只代表本周在做的主题，不能据此写「已产出 / 已完成 / 已跑出 / 成功 / 已交付」；只有 weekTickets 中 status 为「已完成」或「已合并」的事项才能写完成。',
+    '- 「待审」表示 PR/交付物还没合并或验收，不能写成已交付；「进行中」只能写推进、提交、排队或等待。',
     '- 进行中的事项用「推进 / 恢复 / 提交 / 排队 / 等待」等状态词。',
     '- 不要自行推断风险、CI 缺失或流程问题。',
     '- 中文，短句，避免术语堆砌和空话。',
-    '- 不需要输出风险或明日重点：系统会从工作项状态自动生成。',
+    '- 不需要输出风险或下周重点：系统会从工作项状态自动生成。',
     '只返回 JSON：{"headline":"一句话结论，不超过40字","highlights":[{"title":"主题","detail":"结果或影响，不超过45字"}]}',
   ].join('\n')
   const payload = {
-    date: data.date,
-    weekday: data.weekday,
+    period: { start: data.start, end: data.end, days: data.days },
     totals: { tokens: data.totals.tokens, requests: data.totals.requests, sessions: data.totals.sessions, cacheHitPercent: data.totals.cacheHit },
-    workspaces: data.workspaces.map(g => ({ name: g.name, sessions: g.sessions, requests: g.requests, tokens: g.tokens, titles: g.titles })),
-    todayTickets: data.tickets.map(t => ({ title: t.title, status: t.status, prs: t.prs, result: t.result })),
+    tasks: data.tasks.slice(0, 12).map(t => ({ title: t.title, tokens: t.tokens, sharePercent: t.share, sessions: t.sessions, requests: t.requests, status: t.status, prs: t.prs })),
+    nonTaskSessions: { tokens: data.other.tokens, sessions: data.other.sessions },
+    weekTickets: data.tickets.map(t => ({ title: t.title, status: t.status, prs: t.prs })),
     openItems: data.open.map(t => ({ title: t.title, status: t.status, prs: t.prs })),
     openPullRequests: data.openPrs.map(p => `#${p.number} ${p.title}`),
   }
@@ -487,15 +537,15 @@ function localContent(data) {
   const completed = data.tickets.filter(t => t.status === '已完成' || t.status === '已合并').length
   const waiting = data.tickets.filter(t => t.status === '待审')
   const blocked = data.tickets.find(t => t.status === '受阻')
-  const top = data.workspaces[0]
+  const top = data.tasks[0]
   const headline = [
-    `${data.totals.sessions} 个会话、${fmtInt(data.totals.requests)} 次请求`,
-    top ? `主要精力在 ${top.name.replace(/^~\//, '')}` : '',
+    `${data.days} 天 ${data.totals.sessions} 个会话、${fmtInt(data.totals.requests)} 次请求`,
+    top ? `token 主要花在「${top.title}」` : '',
     `superagent 完成 ${completed} 项${waiting.length ? `，PR ${waiting.flatMap(t => t.prs).slice(0, 2).map(p => `#${p}`).join('、')} 待审` : ''}`,
   ].filter(Boolean).join('；') + '。'
-  const highlights = data.workspaces.slice(0, 2).map(g => ({
-    title: g.name.replace(/^~\//, '').replace(/^labs\//, ''),
-    detail: `${g.sessions} 个会话 / ${fmtInt(g.requests)} 次请求：${g.titles.slice(0, 2).map(t => clean(t, 16)).join('、')}${g.titles.length > 2 ? ' 等' : ''}`,
+  const highlights = data.tasks.slice(0, 2).map(t => ({
+    title: t.title,
+    detail: `${t.share}% token · ${t.sessions} 个会话 · ${fmtInt(t.requests)} 次请求`,
   }))
   if (data.tickets.length > 0) {
     highlights.push({
@@ -539,14 +589,58 @@ function planItems(data) {
 function riskFromData(data) {
   const all = [...data.open, ...data.tickets]
   const blocked = all.find(t => t.status === '受阻')
-  if (blocked) return clean(`受阻：${blocked.title}`, 52)
+  if (blocked) return clean(`受阻：${blocked.title}`, 72)
   const pattern = /拍板|需要(你|用户|人工)|等待(你|用户)|待(你|用户)确认|需要决策/
   for (const item of all) {
     for (const sentence of String(item.result || '').split(/[。\n]/)) {
-      if (pattern.test(sentence)) return clean(sentence.replace(/\*\*/g, ''), 52)
+      if (pattern.test(sentence)) return clean(sentence.replace(/\*\*/g, ''), 72)
     }
   }
   return ''
+}
+
+const PIE_COLORS = ['#4d6bfe', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316']
+const PIE_OTHER_COLOR = '#94a3b8'
+const PIE_MAX_TASKS = 7
+
+/** Slices for the per-task token pie: the top tasks plus one "other" bucket. */
+function pieData(data) {
+  const total = data.totals.tokens
+  if (!(total > 0)) return { items: [], total: 0 }
+  const top = data.tasks.slice(0, PIE_MAX_TASKS)
+  const restTokens = data.tasks.slice(PIE_MAX_TASKS).reduce((sum, task) => sum + task.tokens, 0)
+  const otherTokens = restTokens + data.other.tokens
+  const items = top.map((task, i) => ({ label: task.title, tokens: task.tokens, color: PIE_COLORS[i] }))
+  if (otherTokens > 0) items.push({ label: '其他', tokens: otherTokens, color: PIE_OTHER_COLOR })
+  return { items, total }
+}
+
+function polar(cx, cy, r, degrees) {
+  const radians = ((degrees - 90) * Math.PI) / 180
+  return [cx + r * Math.cos(radians), cy + r * Math.sin(radians)]
+}
+
+function arcPath(cx, cy, r, start, end) {
+  const [x1, y1] = polar(cx, cy, r, start)
+  const [x2, y2] = polar(cx, cy, r, end)
+  const large = end - start > 180 ? 1 : 0
+  return `M${cx.toFixed(2)},${cy.toFixed(2)} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${large} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`
+}
+
+function pieSvg(items, total) {
+  if (items.length === 0 || total <= 0) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="50mm" height="50mm"><circle cx="50" cy="50" r="48" fill="#eef2f8"/></svg>`
+  }
+  let angle = 0
+  const slices = items.map(item => {
+    const sweep = (item.tokens / total) * 360
+    const start = angle
+    angle += sweep
+    return sweep >= 359.999
+      ? `<circle cx="50" cy="50" r="48" fill="${item.color}" stroke="#ffffff" stroke-width="0.6"/>`
+      : `<path d="${arcPath(50, 50, 48, start, angle)}" fill="${item.color}" stroke="#ffffff" stroke-width="0.6"/>`
+  }).join('')
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="50mm" height="50mm" role="img" aria-label="任务 token 占比">${slices}<circle cx="50" cy="50" r="48" fill="none" stroke="#e6eaf2" stroke-width="0.6"/></svg>`
 }
 
 function reportHtml(data, content) {
@@ -567,14 +661,19 @@ function reportHtml(data, content) {
   const risk = content.risk
     ? `<div class="section"><div class="risk"><span class="risk-label">风险 / 阻塞</span><span>${esc(content.risk)}</span></div></div>`
     : ''
-  const parts = [
-    { key: 'cache', label: '缓存读取', value: t.cacheRead, color: '#4d6bfe' },
-    { key: 'uncached', label: '未缓存输入', value: t.uncached, color: '#f59e0b' },
-    { key: 'output', label: '输出', value: t.output, color: '#94a3b8' },
-  ].filter(p => p.value > 0)
-  const partTotal = parts.reduce((sum, p) => sum + p.value, 0) || 1
-  const tokenBar = parts.map(p => `<span class="seg" style="width:${((p.value / partTotal) * 100).toFixed(2)}%;background:${p.color}"></span>`).join('')
-  const legend = parts.map(p => `<span class="legend-item"><i style="background:${p.color}"></i>${esc(p.label)} ${fmtTokens(p.value)}</span>`).join('')
+  const pie = pieData(data)
+  const pieRows = pie.items.map(item => {
+    const share = pie.total > 0 ? (item.tokens / pie.total) * 100 : 0
+    const percent = share >= 10 ? share.toFixed(0) : share.toFixed(1)
+    return `<div class="pie-row"><i style="background:${item.color}"></i><span class="pie-name">${esc(clean(item.label, 26))}</span><span class="pie-pct">${percent}%</span><span class="pie-amt">${fmtTokens(item.tokens)}</span></div>`
+  }).join('')
+  const truncatedTasks = data.tasks.length > PIE_MAX_TASKS
+  const otherParts = [truncatedTasks ? '其余任务' : '', data.other.tokens > 0 ? '非任务会话' : ''].filter(Boolean)
+  const pieFoot = data.tasks.length === 0 && data.other.tokens === 0
+    ? '本周暂无用量数据'
+    : otherParts.length > 0
+      ? `其他 = ${otherParts.join(' + ')} · 共 ${data.tasks.length} 个任务${data.other.tokens > 0 ? ` / ${fmtInt(data.other.sessions)} 个非任务会话` : ''}`
+      : `${data.tasks.length} 个任务 · 总 ${fmtTokens(pie.total)} token`
 
   return `<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><style>
@@ -585,63 +684,71 @@ body { font-family: 'Noto Sans CJK SC', 'Noto Sans CJK SC Medium', sans-serif; c
 .page { position: relative; width: 210mm; height: 297mm; padding: 15mm 16mm 13mm; background: #f7f8fb; overflow: hidden; }
 .eyebrow { display: flex; justify-content: space-between; align-items: baseline; font-size: 8pt; letter-spacing: 1.4pt; color: #64748b; }
 .eyebrow .brand { color: #4d6bfe; font-weight: 700; letter-spacing: 1.8pt; }
-h1 { font-size: 29pt; line-height: 1.16; letter-spacing: -0.6pt; margin: 8mm 0 4.5mm; font-weight: 700; }
-.headline { font-size: 12pt; line-height: 1.65; color: #334155; margin: 0 0 9mm; max-width: 174mm; }
-.kpis { display: flex; gap: 3mm; margin-bottom: 5mm; }
-.kpi { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 5mm 4.5mm 4.4mm; }
-.kpi .value { font-size: 19pt; font-weight: 700; letter-spacing: -0.3pt; white-space: nowrap; }
+h1 { font-size: 26pt; line-height: 1.15; letter-spacing: -0.6pt; margin: 5mm 0 3mm; font-weight: 700; }
+.headline { font-size: 11.5pt; line-height: 1.55; color: #334155; margin: 0 0 5.5mm; max-width: 174mm; }
+.kpis { display: flex; gap: 3mm; margin-bottom: 4mm; }
+.kpi { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 4.2mm 4.5mm 3.8mm; }
+.kpi .value { font-size: 18pt; font-weight: 700; letter-spacing: -0.3pt; white-space: nowrap; }
 .kpi .label { font-size: 8pt; color: #64748b; margin-top: 1.4mm; }
-.token-block { background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 4.4mm 4.5mm; margin-bottom: 10mm; }
-.token-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 8pt; color: #475569; margin-bottom: 3mm; }
+.token-block { background: #ffffff; border: 1px solid #e6eaf2; border-radius: 3mm; padding: 3.8mm 4.5mm 3.4mm; margin-bottom: 5.5mm; }
+.token-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 8pt; color: #475569; margin-bottom: 2.6mm; }
 .token-note { color: #94a3b8; font-size: 7.5pt; }
-.token-bar { display: flex; height: 3.2mm; border-radius: 1.6mm; overflow: hidden; background: #eef2f8; }
-.token-bar .seg { display: block; height: 3.2mm; }
-.legend { display: flex; gap: 5mm; margin-top: 2.6mm; font-size: 8pt; color: #64748b; }
-.legend-item i { display: inline-block; width: 2.2mm; height: 2.2mm; border-radius: 0.6mm; margin-right: 1.2mm; }
-.section { margin-top: 10mm; }
-.section-head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 2mm; }
+.token-grid { display: flex; gap: 6mm; align-items: center; }
+.pie { flex: none; width: 50mm; }
+.pie svg { display: block; }
+.pie-legend { flex: 1; display: flex; flex-direction: column; gap: 1.35mm; font-size: 8.2pt; color: #334155; }
+.pie-row { display: flex; align-items: center; gap: 2mm; line-height: 1.35; }
+.pie-row i { flex: none; width: 2.4mm; height: 2.4mm; border-radius: 0.7mm; }
+.pie-name { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #1e293b; }
+.pie-pct { width: 10mm; text-align: right; font-weight: 700; }
+.pie-amt { width: 15mm; text-align: right; color: #94a3b8; font-size: 7.5pt; }
+.pie-foot { margin-top: 2.8mm; font-size: 7.5pt; color: #94a3b8; }
+.section { margin-top: 5.5mm; }
+.section-head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1.6mm; }
 .section-head .bar { width: 3mm; height: 3mm; border-radius: 1mm; background: #4d6bfe; }
 .section-head .title { font-size: 9pt; font-weight: 700; letter-spacing: 1pt; color: #4d6bfe; }
-.hl { display: flex; gap: 4mm; padding: 5mm 0; border-bottom: 1px solid #e9edf5; }
+.hl { display: flex; gap: 4mm; padding: 3.6mm 0; border-bottom: 1px solid #e9edf5; }
 .hl:last-child { border-bottom: none; }
 .hl .num { width: 7mm; font-size: 9pt; font-weight: 700; color: #94a3b8; padding-top: 0.6mm; }
 .hl .body { flex: 1; }
 .hl-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.8mm; }
-.hl-detail { font-size: 9.5pt; line-height: 1.55; color: #475569; }
-.risk { display: flex; gap: 4mm; align-items: baseline; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 2.5mm; padding: 4.5mm 5mm; font-size: 9.5pt; color: #9a3412; line-height: 1.5; }
+.hl-detail { font-size: 9.5pt; line-height: 1.5; color: #475569; }
+.risk { display: flex; gap: 4mm; align-items: baseline; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 2.5mm; padding: 4mm 5mm; font-size: 9.5pt; color: #9a3412; line-height: 1.45; }
 .risk-label { font-size: 8pt; letter-spacing: 1pt; font-weight: 700; white-space: nowrap; opacity: 0.8; }
 .next { display: flex; gap: 3mm; }
-.next-item { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 2.5mm; padding: 5.4mm 4.5mm; font-size: 9.5pt; line-height: 1.55; color: #1e293b; }
+.next-item { flex: 1; background: #ffffff; border: 1px solid #e6eaf2; border-radius: 2.5mm; padding: 4.2mm 4.5mm; font-size: 9.5pt; line-height: 1.5; color: #1e293b; }
 .next-num { display: inline-block; color: #4d6bfe; font-weight: 700; margin-right: 1.5mm; }
 .footer { position: absolute; left: 16mm; right: 16mm; bottom: 11mm; display: flex; justify-content: space-between; font-size: 7.5pt; color: #94a3b8; border-top: 1px solid #e6eaf2; padding-top: 2.5mm; }
 </style></head>
 <body><div class="page">
-  <div class="eyebrow"><span class="brand">DSH DAILY BRIEF</span><span>${esc(data.date)} · ${esc(data.weekday)}</span></div>
-  <h1>今日工作总结</h1>
+  <div class="eyebrow"><span class="brand">DSH WEEKLY BRIEF</span><span>${esc(rangeText(data.start, data.end))} · ${data.days} 天</span></div>
+  <h1>本周工作总结</h1>
   <p class="headline">${esc(content.headline)}</p>
   <div class="kpis">${kpis.map(k => `<div class="kpi"><div class="value">${esc(k.value)}</div><div class="label">${esc(k.label)}</div></div>`).join('')}</div>
   <div class="token-block">
-    <div class="token-head"><span>Token 构成</span><span class="token-note">provider 计费口径（同 Context Insights）</span></div>
-    <div class="token-bar">${tokenBar}</div>
-    <div class="legend">${legend}</div>
+    <div class="token-head"><span>任务 Token 占比</span><span class="token-note">总 ${fmtTokens(pie.total)} token · 按任务归并</span></div>
+    <div class="token-grid">
+      <div class="pie">${pieSvg(pie.items, pie.total)}</div>
+      <div class="pie-legend">${pieRows}</div>
+    </div>
+    <div class="pie-foot">${esc(pieFoot)}</div>
   </div>
   <div>
-    <div class="section-head"><span class="bar"></span><span class="title">今日重点</span></div>
+    <div class="section-head"><span class="bar"></span><span class="title">本周重点</span></div>
     ${highlightRows}
   </div>
   ${risk}
   <div class="section">
-    <div class="section-head"><span class="bar"></span><span class="title">明日重点</span></div>
+    <div class="section-head"><span class="bar"></span><span class="title">下周重点</span></div>
     <div class="next">${nextItems}</div>
   </div>
   <div class="footer"><span>数据：DSH 会话日志（provider usage）</span><span>数据截至 ${localTime()} · DSH 自动生成</span></div>
 </div></body></html>`
 }
 
-function renderImage(html, date) {
+function renderImage(html, base) {
   const dir = path.join(APP_DIR, 'last')
   fs.mkdirSync(dir, { recursive: true })
-  const base = `daily-summary-${date}`
   const htmlPath = path.join(dir, `${base}.html`)
   const pdfPath = path.join(dir, `${base}.pdf`)
   const pngPrefix = path.join(dir, base)
@@ -660,9 +767,9 @@ function larkEnv() {
   return { ...process.env, PATH: [path.join(HOME, '.local/bin'), '/usr/local/bin', '/usr/bin', '/bin'].join(':') }
 }
 
-function sendImage(imagePath, date) {
+function sendImage(imagePath, end) {
   if (!chatId) throw new Error('missing chat id (pass --chat-id or set DSH_DAILY_SUMMARY_CHAT)')
-  const key = `dsh-daily-img-${date.replace(/-/g, '')}${args.resend ? `-${Date.now()}` : ''}`
+  const key = `dsh-weekly-img-${end.replace(/-/g, '')}${args.resend ? `-${Date.now()}` : ''}`
   const output = execFileSync(larkCli, ['im', '+messages-send', '--chat-id', chatId, '--image', path.basename(imagePath), '--idempotency-key', key], {
     cwd: path.dirname(imagePath), encoding: 'utf8', timeout: 120_000, env: larkEnv(),
   })
@@ -671,9 +778,9 @@ function sendImage(imagePath, date) {
   return parsed
 }
 
-function sendTextFallback(data, content, date, reason) {
+function sendTextFallback(data, content, end, reason) {
   const lines = [
-    `📊 今日工作总结 · ${data.date}（${data.weekday}）`,
+    `📊 本周工作总结 · ${rangeText(data.start, end)}`,
     '',
     content.headline,
     '',
@@ -681,12 +788,12 @@ function sendTextFallback(data, content, date, reason) {
     '',
     content.risk ? `⚠️ ${content.risk}` : '✅ 无阻塞。',
     '',
-    '**明日重点**',
+    '**下周重点**',
     ...content.next.map((n, i) => `${i + 1}. ${n}`),
     '',
     `（图片版生成失败：${reason}）`,
   ]
-  const key = `dsh-daily-text-${date.replace(/-/g, '')}${args.resend ? `-${Date.now()}` : ''}`
+  const key = `dsh-weekly-text-${end.replace(/-/g, '')}${args.resend ? `-${Date.now()}` : ''}`
   const output = execFileSync(larkCli, ['im', '+messages-send', '--chat-id', chatId, '--markdown', '-', '--idempotency-key', key], {
     input: lines.join('\n'), encoding: 'utf8', timeout: 120_000, env: larkEnv(),
   })
@@ -696,9 +803,12 @@ function sendTextFallback(data, content, date, reason) {
 }
 
 async function main() {
-  const date = args.date || localDate()
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error(`invalid date: ${date}`)
-  const data = await buildReportData(date)
+  const end = args.date || localDate()
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(end)) throw new Error(`invalid date: ${end}`)
+  const days = Number(args.days || 7)
+  if (!Number.isInteger(days) || days < 1 || days > 31) throw new Error(`invalid --days: ${args.days} (1-31)`)
+  const range = reportWindow(end, days)
+  const data = await buildReportData(range)
   const curated = args.content ? JSON.parse(fs.readFileSync(args.content, 'utf8')) : await curate(data)
   const content = validContent(curated) ? normalizeContent(curated) : localContent(data)
   content.next = planItems(data)
@@ -706,24 +816,25 @@ async function main() {
   fs.mkdirSync(path.join(APP_DIR, 'last'), { recursive: true })
   fs.writeFileSync(path.join(APP_DIR, 'last', 'content.json'), JSON.stringify(content, null, 2))
   const html = reportHtml(data, content)
+  const base = `weekly-summary-${range.end}`
 
   if (args.dryRun) {
-    const rendered = renderImage(html, date)
+    const rendered = renderImage(html, base)
     console.log(JSON.stringify(content, null, 2))
-    console.log(`\n[dry-run] ${date} tokens=${data.totals.tokens} requests=${data.totals.requests} sessions=${data.totals.sessions} tickets=${data.tickets.length} open=${data.open.length} openPrs=${data.openPrs.length}`)
+    console.log(`\n[dry-run] ${range.start}..${range.end} tokens=${data.totals.tokens} requests=${data.totals.requests} sessions=${data.totals.sessions} tasks=${data.tasks.length} otherSessions=${data.other.sessions} tickets=${data.tickets.length} open=${data.open.length} openPrs=${data.openPrs.length}`)
     console.log(`image: ${rendered.pngPath}`)
     return
   }
 
   try {
-    const rendered = renderImage(html, date)
-    const sent = sendImage(rendered.pngPath, date)
-    console.log(`[${new Date().toISOString()}] sent daily report for ${date}: ${JSON.stringify(sent?.data ?? sent)} image=${rendered.pngPath}`)
+    const rendered = renderImage(html, base)
+    const sent = sendImage(rendered.pngPath, range.end)
+    console.log(`[${new Date().toISOString()}] sent weekly report for ${range.start}..${range.end}: ${JSON.stringify(sent?.data ?? sent)} image=${rendered.pngPath}`)
   } catch (error) {
     const reason = clean(error instanceof Error ? error.message : String(error), 80)
-    console.error(`[${new Date().toISOString()}] image report failed for ${date}: ${reason}`)
+    console.error(`[${new Date().toISOString()}] image report failed for ${range.start}..${range.end}: ${reason}`)
     if (!chatId) throw error
-    const sent = sendTextFallback(data, content, date, reason)
+    const sent = sendTextFallback(data, content, range.end, reason)
     console.error(`[${new Date().toISOString()}] text fallback sent: ${JSON.stringify(sent?.data ?? sent)}`)
     process.exitCode = 1
   }

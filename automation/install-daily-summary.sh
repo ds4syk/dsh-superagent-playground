@@ -1,16 +1,20 @@
 #!/bin/sh
-# Install (or update) the daily DSH summary: copy the script, write its launcher, add the cron line.
+# Install (or update) the weekly DSH summary: copy the script, write its launcher, add the cron line.
 #
 # Usage:
-#   ./install-daily-summary.sh --chat-id oc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx [--repo owner/name] [--time 20:00]
+#   ./install-daily-summary.sh --chat-id oc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \
+#     [--repo owner/name] [--time 20:00] [--weekday 0] [--days 7]
 #
-# The launcher carries the chat id, so the repository itself never stores a Feishu chat id.
+# --weekday is 0-6 (0 = Sunday). The launcher carries the chat id, so the repository itself
+# never stores a Feishu chat id.
 set -eu
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 chat=
 repo=ds4syk/dsh-superagent-playground
 time=20:00
+weekday=0
+days=7
 lark="${HOME}/.local/bin/lark-bot"
 gh="${HOME}/.local/bin/gh-agent"
 
@@ -23,6 +27,8 @@ while [ $# -gt 0 ]; do
     --chat-id) chat=${2:-}; shift 2 ;;
     --repo) repo=${2:-}; shift 2 ;;
     --time) time=${2:-}; shift 2 ;;
+    --weekday) weekday=${2:-}; shift 2 ;;
+    --days) days=${2:-}; shift 2 ;;
     --lark-cli) lark=${2:-}; shift 2 ;;
     --gh) gh=${2:-}; shift 2 ;;
     -h|--help) usage; exit 0 ;;
@@ -32,6 +38,8 @@ done
 
 [ -n "$chat" ] || { echo "missing --chat-id" >&2; usage >&2; exit 2; }
 echo "$time" | grep -Eq '^([01][0-9]|2[0-3]):[0-5][0-9]$' || { echo "invalid --time: $time (HH:MM)" >&2; exit 2; }
+echo "$weekday" | grep -Eq '^[0-6]$' || { echo "invalid --weekday: $weekday (0-6, 0 = Sunday)" >&2; exit 2; }
+echo "$days" | grep -Eq '^([1-9]|[12][0-9]|3[01])$' || { echo "invalid --days: $days (1-31)" >&2; exit 2; }
 node=$(command -v node) || { echo "node not found in PATH" >&2; exit 1; }
 
 minute=${time#*:}
@@ -74,14 +82,23 @@ export DSH_DAILY_SUMMARY_REPO='${repo}'
 export DSH_DAILY_SUMMARY_LARK_CLI='${lark}'
 export DSH_DAILY_SUMMARY_GH='${gh}'
 export DSH_DAILY_SUMMARY_WEASYPRINT='${dir}/venv/bin/weasyprint'
-exec '${node}' '${dir}/daily-summary.mjs' "\$@"
+exec '${node}' '${dir}/daily-summary.mjs' --days ${days} "\$@"
 EOF
 chmod +x "${dir}/run.sh"
 
-cron_line="${minute} ${hour} * * * ${dir}/run.sh >> ${dir}/run.log 2>&1"
+case "$weekday" in
+  0) weekday_name=Sunday ;;
+  1) weekday_name=Monday ;;
+  2) weekday_name=Tuesday ;;
+  3) weekday_name=Wednesday ;;
+  4) weekday_name=Thursday ;;
+  5) weekday_name=Friday ;;
+  6) weekday_name=Saturday ;;
+esac
+cron_line="${minute} ${hour} * * ${weekday} ${dir}/run.sh >> ${dir}/run.log 2>&1"
 {
   crontab -l 2>/dev/null | grep -v 'dsh-daily-summary' || true
-  echo "# dsh-daily-summary: daily DSH work summary at ${time} (Asia/Shanghai)"
+  echo "# dsh-daily-summary: weekly DSH work summary every ${weekday_name} at ${time} (Asia/Shanghai)"
   echo "${cron_line}"
 } | crontab -
 
