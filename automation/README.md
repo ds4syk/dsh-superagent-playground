@@ -27,8 +27,9 @@ highlights) is curated by a small DeepSeek call; if the model or the render fail
 falls back to a deterministic brief and then to a short text message, so the group still gets
 the week's summary.
 
-The window ends on the run day and defaults to the last 7 days (`--days`), so the Sunday 20:00
-cron covers Monday through Sunday.
+The window is date-based and ends on the run day, defaulting to the last 7 days (`--days`), so
+the Sunday 20:00 cron covers Monday through Sunday. Sunday usage after the 20:00 run is not in
+that report, and the next week's window starts on Monday, so those hours fall between reports.
 
 ## Requirements
 
