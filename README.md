@@ -22,3 +22,7 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
+- **SuperMimic 复现（2026-11）**：官方实现 + LAFAN1 单卡受控对比：
+  [报告](vla/SuperMimic/report/复现报告.md) · [目录](vla/SuperMimic/README.md) ·
+  [复现脚本](vla/SuperMimic/repro) · [结果](vla/SuperMimic/results) ·
+  [DOCX 知识库](deliverables/SuperMimic复现_2026-11.docx)

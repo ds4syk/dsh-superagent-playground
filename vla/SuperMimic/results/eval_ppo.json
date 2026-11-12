@@ -1,0 +1,330 @@
+{
+  "checkpoint": "/mnt/storage1/syk/VLA/SuperMimic/supermimic/logs/rsl_rl/g1_tracking/2026-11-12_18-21-37_ppo-lafan1-4096/model_9200.pt",
+  "task_id": "Mjlab-Tracking-Flat-Unitree-G1",
+  "clips": 40,
+  "mean_normalized_return": 0.2098775953054428,
+  "min_normalized_return": 0.0013447008095681667,
+  "failed": 38,
+  "rows": [
+    {
+      "clip": "dance1_subject1",
+      "steps": 1584,
+      "clip_steps": 6574,
+      "sum_reward": 118.40177154541016,
+      "normalized_return": 0.18010613322257996,
+      "failed": true
+    },
+    {
+      "clip": "dance1_subject2",
+      "steps": 1343,
+      "clip_steps": 6574,
+      "sum_reward": 84.99304962158203,
+      "normalized_return": 0.12928664684295654,
+      "failed": true
+    },
+    {
+      "clip": "dance1_subject3",
+      "steps": 1458,
+      "clip_steps": 6574,
+      "sum_reward": 121.07586669921875,
+      "normalized_return": 0.1841738075017929,
+      "failed": true
+    },
+    {
+      "clip": "dance2_subject1",
+      "steps": 1649,
+      "clip_steps": 11284,
+      "sum_reward": 124.7918472290039,
+      "normalized_return": 0.11059185117483139,
+      "failed": true
+    },
+    {
+      "clip": "dance2_subject2",
+      "steps": 476,
+      "clip_steps": 11284,
+      "sum_reward": 44.031768798828125,
+      "normalized_return": 0.03902141749858856,
+      "failed": true
+    },
+    {
+      "clip": "dance2_subject3",
+      "steps": 4902,
+      "clip_steps": 11284,
+      "sum_reward": 345.3140869140625,
+      "normalized_return": 0.30602097511291504,
+      "failed": true
+    },
+    {
+      "clip": "dance2_subject4",
+      "steps": 2662,
+      "clip_steps": 11284,
+      "sum_reward": 162.30303955078125,
+      "normalized_return": 0.1438346654176712,
+      "failed": true
+    },
+    {
+      "clip": "dance2_subject5",
+      "steps": 3184,
+      "clip_steps": 11284,
+      "sum_reward": 239.43423461914062,
+      "normalized_return": 0.21218913793563843,
+      "failed": true
+    },
+    {
+      "clip": "fallAndGetUp1_subject1",
+      "steps": 343,
+      "clip_steps": 8411,
+      "sum_reward": 24.910547256469727,
+      "normalized_return": 0.02961662784218788,
+      "failed": true
+    },
+    {
+      "clip": "fallAndGetUp1_subject4",
+      "steps": 354,
+      "clip_steps": 8411,
+      "sum_reward": 28.03420066833496,
+      "normalized_return": 0.03333039954304695,
+      "failed": true
+    },
+    {
+      "clip": "fallAndGetUp1_subject5",
+      "steps": 442,
+      "clip_steps": 8411,
+      "sum_reward": 33.68455123901367,
+      "normalized_return": 0.04004821181297302,
+      "failed": true
+    },
+    {
+      "clip": "fallAndGetUp2_subject2",
+      "steps": 622,
+      "clip_steps": 8196,
+      "sum_reward": 49.65680694580078,
+      "normalized_return": 0.060586635023355484,
+      "failed": true
+    },
+    {
+      "clip": "fallAndGetUp2_subject3",
+      "steps": 777,
+      "clip_steps": 8196,
+      "sum_reward": 55.82299041748047,
+      "normalized_return": 0.06811004132032394,
+      "failed": true
+    },
+    {
+      "clip": "fallAndGetUp3_subject1",
+      "steps": 444,
+      "clip_steps": 5109,
+      "sum_reward": 36.509124755859375,
+      "normalized_return": 0.07146041095256805,
+      "failed": true
+    },
+    {
+      "clip": "fight1_subject2",
+      "steps": 946,
+      "clip_steps": 12244,
+      "sum_reward": 51.703269958496094,
+      "normalized_return": 0.04222743213176727,
+      "failed": true
+    },
+    {
+      "clip": "fight1_subject3",
+      "steps": 825,
+      "clip_steps": 12244,
+      "sum_reward": 52.15745162963867,
+      "normalized_return": 0.04259837418794632,
+      "failed": true
+    },
+    {
+      "clip": "fight1_subject5",
+      "steps": 21,
+      "clip_steps": 12244,
+      "sum_reward": 1.646451711654663,
+      "normalized_return": 0.0013447008095681667,
+      "failed": true
+    },
+    {
+      "clip": "fightAndSports1_subject1",
+      "steps": 222,
+      "clip_steps": 12257,
+      "sum_reward": 19.838438034057617,
+      "normalized_return": 0.016185393556952477,
+      "failed": true
+    },
+    {
+      "clip": "fightAndSports1_subject4",
+      "steps": 664,
+      "clip_steps": 12257,
+      "sum_reward": 44.90880584716797,
+      "normalized_return": 0.03663931041955948,
+      "failed": true
+    },
+    {
+      "clip": "jumps1_subject1",
+      "steps": 3759,
+      "clip_steps": 12222,
+      "sum_reward": 226.64735412597656,
+      "normalized_return": 0.18544210493564606,
+      "failed": true
+    },
+    {
+      "clip": "jumps1_subject2",
+      "steps": 571,
+      "clip_steps": 12222,
+      "sum_reward": 44.44095230102539,
+      "normalized_return": 0.036361437290906906,
+      "failed": true
+    },
+    {
+      "clip": "jumps1_subject5",
+      "steps": 294,
+      "clip_steps": 12222,
+      "sum_reward": 20.23773193359375,
+      "normalized_return": 0.016558444127440453,
+      "failed": true
+    },
+    {
+      "clip": "run1_subject2",
+      "steps": 6417,
+      "clip_steps": 11891,
+      "sum_reward": 396.3406066894531,
+      "normalized_return": 0.33331143856048584,
+      "failed": true
+    },
+    {
+      "clip": "run1_subject5",
+      "steps": 2473,
+      "clip_steps": 11891,
+      "sum_reward": 128.5973358154297,
+      "normalized_return": 0.1081467792391777,
+      "failed": true
+    },
+    {
+      "clip": "run2_subject1",
+      "steps": 3626,
+      "clip_steps": 12241,
+      "sum_reward": 220.34274291992188,
+      "normalized_return": 0.18000388145446777,
+      "failed": true
+    },
+    {
+      "clip": "run2_subject4",
+      "steps": 1662,
+      "clip_steps": 12241,
+      "sum_reward": 104.1353530883789,
+      "normalized_return": 0.08507095277309418,
+      "failed": true
+    },
+    {
+      "clip": "sprint1_subject2",
+      "steps": 1643,
+      "clip_steps": 13656,
+      "sum_reward": 114.9615478515625,
+      "normalized_return": 0.08418390899896622,
+      "failed": true
+    },
+    {
+      "clip": "sprint1_subject4",
+      "steps": 857,
+      "clip_steps": 13656,
+      "sum_reward": 60.07976150512695,
+      "normalized_return": 0.04399513825774193,
+      "failed": true
+    },
+    {
+      "clip": "walk1_subject1",
+      "steps": 11179,
+      "clip_steps": 13066,
+      "sum_reward": 826.0077514648438,
+      "normalized_return": 0.6321810483932495,
+      "failed": true
+    },
+    {
+      "clip": "walk1_subject2",
+      "steps": 13066,
+      "clip_steps": 13066,
+      "sum_reward": 919.509765625,
+      "normalized_return": 0.7037423849105835,
+      "failed": false
+    },
+    {
+      "clip": "walk1_subject5",
+      "steps": 3987,
+      "clip_steps": 13066,
+      "sum_reward": 288.5477600097656,
+      "normalized_return": 0.22083863615989685,
+      "failed": true
+    },
+    {
+      "clip": "walk2_subject1",
+      "steps": 6303,
+      "clip_steps": 11909,
+      "sum_reward": 405.58148193359375,
+      "normalized_return": 0.3405672013759613,
+      "failed": true
+    },
+    {
+      "clip": "walk2_subject3",
+      "steps": 7112,
+      "clip_steps": 11909,
+      "sum_reward": 533.0162963867188,
+      "normalized_return": 0.44757434725761414,
+      "failed": true
+    },
+    {
+      "clip": "walk2_subject4",
+      "steps": 8430,
+      "clip_steps": 11909,
+      "sum_reward": 616.2522583007812,
+      "normalized_return": 0.5174676775932312,
+      "failed": true
+    },
+    {
+      "clip": "walk3_subject1",
+      "steps": 6674,
+      "clip_steps": 12331,
+      "sum_reward": 511.4505615234375,
+      "normalized_return": 0.41476812958717346,
+      "failed": true
+    },
+    {
+      "clip": "walk3_subject2",
+      "steps": 12331,
+      "clip_steps": 12331,
+      "sum_reward": 918.828857421875,
+      "normalized_return": 0.7451373338699341,
+      "failed": false
+    },
+    {
+      "clip": "walk3_subject3",
+      "steps": 8766,
+      "clip_steps": 12331,
+      "sum_reward": 612.1388549804688,
+      "normalized_return": 0.49642273783683777,
+      "failed": true
+    },
+    {
+      "clip": "walk3_subject4",
+      "steps": 4793,
+      "clip_steps": 12331,
+      "sum_reward": 356.5758972167969,
+      "normalized_return": 0.2891702950000763,
+      "failed": true
+    },
+    {
+      "clip": "walk3_subject5",
+      "steps": 4240,
+      "clip_steps": 12331,
+      "sum_reward": 234.01446533203125,
+      "normalized_return": 0.18977735936641693,
+      "failed": true
+    },
+    {
+      "clip": "walk4_subject1",
+      "steps": 7339,
+      "clip_steps": 8196,
+      "sum_reward": 472.9181213378906,
+      "normalized_return": 0.5770108699798584,
+      "failed": true
+    }
+  ]
+}
