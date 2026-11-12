@@ -51,3 +51,29 @@ crontab. It is idempotent; re-run it after changing the script.
 
 The last HTML, PDF and PNG are kept in `~/.local/share/dsh-daily-summary/last/` for inspection;
 cron redirects output to `~/.local/share/dsh-daily-summary/run.log`.
+
+# Monthly token usage
+
+`monthly-usage.mjs` tallies token usage and estimated CNY cost over a rolling window and
+`monthly-usage-chart.py` renders the one-page summary. It reuses the same 口径 as the daily
+report, but reads the durable session logs directly
+(`~/.dsh/sessions/<workspace>/<session>/session.v4.jsonl.zstd`), so it also works when the
+Context Insights projection cache is stale or only partially backfilled.
+
+```sh
+node automation/monthly-usage.mjs --days 30 --json usage-30d.json
+python3 automation/monthly-usage-chart.py usage-30d.json docs/visuals/2026-11-12-monthly-token-cost.png
+```
+
+- `--days N` sets the window length (default 30), `--end YYYY-MM-DD` fixes its last day
+  (default today in Asia/Shanghai). Without `--json` the JSON is printed to stdout.
+- Billed tokens = uncached input + cache read + cache write + output; a step is billed to the
+  day it started, seeded sessions do not double-count inherited parent history.
+- Prices live in `MODEL_PRICES` in `monthly-usage.mjs` (DeepSeek CNY list price, checked
+  2026-11-11: `deepseek-flash` cache hit ¥0.04 / miss ¥2 / output ¥8 per 1M tokens, weekday
+  09:00–12:00 and 14:00–18:00 at peak, everything else half price). The figure is a
+  list-price estimate, not a platform bill.
+- Output JSON: window, coverage, totals, `byDay`, `byModel`, `byWorkspace`, `bands`
+  (peak/off-peak), `byKind` (main vs subagent), per-session totals with `kind`, and the
+  price table used. Subagent child sessions are separate logs under the same workspace
+  directory and are counted like any other session.
