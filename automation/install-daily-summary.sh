@@ -95,12 +95,16 @@ case "$weekday" in
   5) weekday_name=Friday ;;
   6) weekday_name=Saturday ;;
 esac
-cron_line="${minute} ${hour} * * ${weekday} ${dir}/run.sh >> ${dir}/run.log 2>&1"
+cron_daily="${minute} ${hour} * * 1-6 ${dir}/run.sh --days 1 >> ${dir}/run.log 2>&1"
+cron_weekly="${minute} ${hour} * * ${weekday} ${dir}/run.sh --days 7 >> ${dir}/run.log 2>&1"
 {
   crontab -l 2>/dev/null | grep -v 'dsh-daily-summary' || true
+  echo "# dsh-daily-summary: daily (Mon-Sat) DSH work summary at ${time} (Asia/Shanghai)"
+  echo "${cron_daily}"
   echo "# dsh-daily-summary: weekly DSH work summary every ${weekday_name} at ${time} (Asia/Shanghai)"
-  echo "${cron_line}"
+  echo "${cron_weekly}"
 } | crontab -
 
 echo "installed ${dir}/run.sh"
-echo "cron: ${cron_line}"
+echo "cron daily: ${cron_daily}"
+echo "cron weekly: ${cron_weekly}"

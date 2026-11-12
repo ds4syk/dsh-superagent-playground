@@ -34,9 +34,13 @@ highlights) is curated by a small DeepSeek call; if the model or the render fail
 falls back to a deterministic brief and then to a short text message, so the group still gets
 the week's summary.
 
-The window is date-based and ends on the run day, defaulting to the last 7 days (`--days`), so
-the Sunday 20:00 cron covers Monday through Sunday. Sunday usage after the 20:00 run is not in
-that report, and the next week's window starts on Monday, so those hours fall between reports.
+Two cron lines share the same template:
+
+- **Daily**: Monday–Saturday at 20:00, `--days 1`, single-day window and 今日/明日 wording.
+- **Weekly**: Sunday at 20:00, `--days 7`, Monday–Sunday window and 本周/下周 wording.
+
+The window is date-based and ends on the run day. Sunday usage after the 20:00 weekly run is not
+in that report, and the next week's window starts on Monday, so those hours fall between reports.
 
 ## Requirements
 
@@ -56,20 +60,22 @@ that report, and the next week's window starts on Monday, so those hours fall be
   --repo ds4syk/dsh-superagent-playground --time 20:00 --weekday 0 --days 7
 ```
 
-`--weekday` is `0`–`6` (`0` = Sunday, the default), `--days` is the window length (default 7).
-The installer copies the script to `~/.local/share/dsh-daily-summary/`, creates the WeasyPrint
-virtualenv on first use, writes a `run.sh` launcher that carries the chat id and environment (so
-the repository never stores one), and replaces the `dsh-daily-summary` line in the user's
-crontab (including an older daily line). It is idempotent; re-run it after changing the script.
+`--weekday` is `0`–`6` (`0` = Sunday, the default), `--days` is the weekly window length
+(default 7). The installer copies the script to `~/.local/share/dsh-daily-summary/`, creates the
+WeasyPrint virtualenv on first use, writes a `run.sh` launcher that carries the chat id and
+environment (so the repository never stores one), and replaces the `dsh-daily-summary` lines in
+the user's crontab with two entries: daily Monday–Saturday `--days 1`, weekly Sunday `--days 7`.
+It is idempotent; re-run it after changing the script.
 
 ## Run by hand
 
 ```sh
-~/.local/share/dsh-daily-summary/run.sh --dry-run     # render the image, send nothing
-~/.local/share/dsh-daily-summary/run.sh              # render and send now
-~/.local/share/dsh-daily-summary/run.sh --date 2026-11-11 --days 7 --dry-run
-~/.local/share/dsh-daily-summary/run.sh --no-llm     # deterministic brief, no API call
-~/.local/share/dsh-daily-summary/run.sh --date 2026-11-11 --resend  # re-send the same week
+~/.local/share/dsh-daily-summary/run.sh --days 1 --dry-run     # daily sample, send nothing
+~/.local/share/dsh-daily-summary/run.sh --days 7 --dry-run     # weekly sample
+~/.local/share/dsh-daily-summary/run.sh --days 1               # render and send a daily report
+~/.local/share/dsh-daily-summary/run.sh --days 7               # render and send a weekly report
+~/.local/share/dsh-daily-summary/run.sh --date 2026-11-11 --days 1 --no-llm
+~/.local/share/dsh-daily-summary/run.sh --date 2026-11-11 --days 7 --resend
 ```
 
 `--date` is the last day of the window. The last HTML, PDF and PNG are kept in

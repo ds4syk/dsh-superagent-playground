@@ -566,23 +566,27 @@ async function curate(data) {
   if (!args.llm) return undefined
   const key = apiKey()
   if (!key) return undefined
+  const cadence = data.days === 1 ? '每日' : '每周'
+  const word = data.days === 1 ? '今日' : '本周'
+  const next = data.days === 1 ? '明日' : '下周'
   const system = [
-    '你是资深技术负责人，为团队写每周一页简报。遵循这些原则：',
-    '- 倒金字塔：先给结论，再给支撑细节；读者 10 秒能看懂本周最重要的事。',
+    `你是资深技术负责人，为团队写${cadence}一页简报。遵循这些原则：`,
+    `- 倒金字塔：先给结论，再给支撑细节；读者 10 秒能看懂${word}最重要的事。`,
     '- 只写结果、影响和关键进展；合并同类项；不写过程流水账，不罗列所有会话。',
     '- 亮点 3 条以内；每条主题不超过 14 个字，说明不超过 45 个字。',
     '- 只使用输入数据中的事实；不编造数字或结论。API 费用只能引用 totals.costCNY，不要自行按价格表计算。',
-    '- 任务标题只代表本周在做的主题，不能据此写「已产出 / 已完成 / 已跑出 / 成功 / 已交付」；只有 weekTickets 中 status 为「已完成」或「已合并」的事项才能写完成。',
+    `- 任务标题只代表${word}在做的主题，不能据此写「已产出 / 已完成 / 已跑出 / 成功 / 已交付」；只有 windowTickets 中 status 为「已完成」或「已合并」的事项才能写完成。`,
     '- 「待审」表示 PR/交付物还没合并或验收，不能写成已交付；「进行中」只能写推进、提交、排队或等待。',
     '- 进行中的事项用「推进 / 恢复 / 提交 / 排队 / 等待」等状态词。',
     '- 不要自行推断风险、CI 缺失或流程问题。',
-    '- 中文，短句，避免术语堆砌和空话；正文不要出现输入 JSON 的字段名（如 weekTickets、totals、openItems、openPullRequests），用中文表述。',
-    '- 完成/已合并数量以 completedTasks 为准，待审 PR 数以 openPrCount 为准，不要自行清点 weekTickets。',
-    '- 不需要输出风险或下周重点：系统会从工作项状态自动生成。',
+    '- 中文，短句，避免术语堆砌和空话；正文不要出现输入 JSON 的字段名（如 windowTickets、totals、openItems、openPullRequests），用中文表述。',
+    '- 完成/已合并数量以 completedTasks 为准，待审 PR 数以 openPrCount 为准，不要自行清点 windowTickets。',
+    `- 简报口径是「${cadence}」；正文使用「${word} / ${next}」措辞，不要混用其他周期。`,
+    `- 不需要输出风险或${next}重点：系统会从工作项状态自动生成。`,
     '只返回 JSON：{"headline":"一句话结论，不超过40字","highlights":[{"title":"主题","detail":"结果或影响，不超过45字"}]}',
   ].join('\n')
   const payload = {
-    period: { start: data.start, end: data.end, days: data.days },
+    period: { start: data.start, end: data.end, days: data.days, cadence: data.days === 1 ? 'daily' : 'weekly' },
     taskCount: data.tickets.length,
     completedTasks: data.tickets.filter(t => t.status === '已完成' || t.status === '已合并').length,
     openPrCount: data.openPrs.length,
@@ -590,7 +594,7 @@ async function curate(data) {
     models: data.models.map(m => ({ model: m.model, tokens: m.tokens, requests: m.requests, costCNY: Number(m.cost.toFixed(2)) })),
     tasks: data.tasks.slice(0, 12).map(t => ({ title: t.title, tokens: t.tokens, sharePercent: t.share, sessions: t.sessions, requests: t.requests, status: t.status, prs: t.prs })),
     nonTaskSessions: { tokens: data.other.tokens, sessions: data.other.sessions },
-    weekTickets: data.tickets.map(t => ({ title: t.title, status: t.status, prs: t.prs })),
+    windowTickets: data.tickets.map(t => ({ title: t.title, status: t.status, prs: t.prs })),
     openItems: data.open.map(t => ({ title: t.title, status: t.status, prs: t.prs })),
     openPullRequests: data.openPrs.map(p => `#${p.number} ${p.title}`),
   }
@@ -634,8 +638,10 @@ function validContent(c) {
 
 function scrubFields(value) {
   return String(value ?? '')
-    .replace(/weekTickets\s*中/g, '本周工单中')
-    .replace(/\bweekTickets\b/g, '本周工单')
+    .replace(/weekTickets\s*中/g, '窗口内工单中')
+    .replace(/\bweekTickets\b/g, '窗口内工单')
+    .replace(/windowTickets\s*中/g, '窗口内工单中')
+    .replace(/\bwindowTickets\b/g, '窗口内工单')
     .replace(/\bopenItems\b/g, '进行中事项')
     .replace(/\bopenPullRequests\b/g, '开放 PR')
     .replace(/\btotals\b/g, '总计')
@@ -654,7 +660,8 @@ function localContent(data) {
   const completed = data.tickets.filter(t => t.status === '已完成' || t.status === '已合并').length
   const waiting = data.tickets.filter(t => t.status === '待审')
   const blocked = data.tickets.find(t => t.status === '受阻')
-  const headline = `${data.days} 天 ${data.totals.sessions} 个会话、${fmtInt(data.totals.requests)} 次请求；API 费用约 ${fmtCost(data.totals.cost)}。`
+  const period = data.days === 1 ? '今日' : `${data.days} 天`
+  const headline = `${period} ${data.totals.sessions} 个会话、${fmtInt(data.totals.requests)} 次请求；API 费用约 ${fmtCost(data.totals.cost)}。`
   const highlights = data.tasks.slice(0, 2).map(t => ({
     title: clean(t.title, 14),
     detail: `${t.share}% token · ${t.sessions} 个会话 · ${fmtInt(t.requests)} 次请求`,
@@ -774,8 +781,13 @@ function prRisk(data) {
 
 function reportHtml(data, content) {
   const t = data.totals
+  const daily = data.days === 1
+  const period = daily ? '今日' : '本周'
+  const nextPeriod = daily ? '明日' : '下周'
   const completed = data.tickets.filter(item => item.status === '已完成' || item.status === '已合并').length
-  const subtitle = `本周 DSH 处理 ${data.tickets.length} 项任务，${completed} 项完成`
+  const subtitle = `${period} DSH 处理 ${data.tickets.length} 项任务，${completed} 项完成`
+  const eyebrowPeriod = daily ? `${data.end} · 日报` : `${data.start} ~ ${hyphenDate(data.end)} · 周报`
+  const footerPeriod = daily ? `今日 ${hyphenDate(data.end)}` : `本周 ${hyphenDate(data.start)} ~ ${hyphenDate(data.end)}`
   const kpis = [
     { value: fmtTokens(t.tokens), label: 'Token 用量' },
     { value: fmtInt(t.requests), label: '模型请求' },
@@ -872,8 +884,8 @@ h1 { font-size: 26pt; line-height: 1.15; letter-spacing: -0.6pt; margin: 4mm 0 2
 .footer { position: absolute; left: 16mm; right: 16mm; bottom: 11mm; display: flex; justify-content: space-between; font-size: 7.3pt; color: #94a3b8; border-top: 1px solid #e6eaf2; padding-top: 2.4mm; }
 </style></head>
 <body><div class="page">
-  <div class="eyebrow"><span class="brand">DSH WEEKLY BRIEF</span><span>${esc(data.start)} ~ ${esc(hyphenDate(data.end))} · 周报</span></div>
-  <h1>本周工作总结</h1>
+  <div class="eyebrow"><span class="brand">DSH ${daily ? 'DAILY' : 'WEEKLY'} BRIEF</span><span>${esc(eyebrowPeriod)}</span></div>
+  <h1>${period}工作总结</h1>
   <p class="subtitle">${esc(subtitle)}</p>
   <div class="kpis">${kpis.map(k => `<div class="kpi"><div class="value">${esc(k.value)}</div><div class="label">${esc(k.label)}</div></div>`).join('')}</div>
   <div class="token-cards">
@@ -901,15 +913,15 @@ h1 { font-size: 26pt; line-height: 1.15; letter-spacing: -0.6pt; margin: 4mm 0 2
     <div class="model-note">${esc(costNote)}</div>
   </div>
   <div>
-    <div class="section-head"><span class="bar"></span><span class="title">本周重点</span></div>
+    <div class="section-head"><span class="bar"></span><span class="title">${period}重点</span></div>
     ${highlightRows}
   </div>
   ${risk}
   <div class="section">
-    <div class="section-head"><span class="bar"></span><span class="title">下周重点</span></div>
+    <div class="section-head"><span class="bar"></span><span class="title">${nextPeriod}重点</span></div>
     <div class="next">${nextItems}</div>
   </div>
-  <div class="footer"><span>数据：DSH 会话日志（provider usage）· superagent 工单</span><span>本周 ${esc(hyphenDate(data.start))} ~ ${esc(hyphenDate(data.end))} · 数据截至 ${localTime()} · DSH 自动生成</span></div>
+  <div class="footer"><span>数据：DSH 会话日志（provider usage）· superagent 工单</span><span>${esc(footerPeriod)} · 数据截至 ${localTime()} · DSH 自动生成</span></div>
 </div></body></html>`
 }
 
@@ -934,9 +946,9 @@ function larkEnv() {
   return { ...process.env, PATH: [path.join(HOME, '.local/bin'), '/usr/local/bin', '/usr/bin', '/bin'].join(':') }
 }
 
-function sendImage(imagePath, end) {
+function sendImage(imagePath, end, mode) {
   if (!chatId) throw new Error('missing chat id (pass --chat-id or set DSH_DAILY_SUMMARY_CHAT)')
-  const key = `dsh-weekly-img-${end.replace(/-/g, '')}${args.resend ? `-${Date.now()}` : ''}`
+  const key = `dsh-${mode}-img-${end.replace(/-/g, '')}${args.resend ? `-${Date.now()}` : ''}`
   const output = execFileSync(larkCli, ['im', '+messages-send', '--chat-id', chatId, '--image', path.basename(imagePath), '--idempotency-key', key], {
     cwd: path.dirname(imagePath), encoding: 'utf8', timeout: 120_000, env: larkEnv(),
   })
@@ -945,9 +957,10 @@ function sendImage(imagePath, end) {
   return parsed
 }
 
-function sendTextFallback(data, content, end, reason) {
+function sendTextFallback(data, content, end, mode, reason) {
+  const nextLabel = data.days === 1 ? '明日' : '下周'
   const lines = [
-    `📊 本周工作总结 · ${rangeText(data.start, end)}`,
+    `📊 ${data.days === 1 ? '今日' : '本周'}工作总结 · ${rangeText(data.start, end)}`,
     '',
     content.headline,
     '',
@@ -957,12 +970,12 @@ function sendTextFallback(data, content, end, reason) {
     '',
     `Token ${fmtTokens(data.totals.tokens)} · API 费用约 ${fmtCost(data.totals.cost)}`,
     '',
-    '**下周重点**',
+    `**${nextLabel}重点**`,
     ...content.next.map((n, i) => `${i + 1}. ${n}`),
     '',
     `（图片版生成失败：${reason}）`,
   ]
-  const key = `dsh-weekly-text-${end.replace(/-/g, '')}${args.resend ? `-${Date.now()}` : ''}`
+  const key = `dsh-${mode}-text-${end.replace(/-/g, '')}${args.resend ? `-${Date.now()}` : ''}`
   const output = execFileSync(larkCli, ['im', '+messages-send', '--chat-id', chatId, '--markdown', '-', '--idempotency-key', key], {
     input: lines.join('\n'), encoding: 'utf8', timeout: 120_000, env: larkEnv(),
   })
@@ -977,20 +990,22 @@ async function main() {
   const days = Number(args.days || 7)
   if (!Number.isInteger(days) || days < 1 || days > 31) throw new Error(`invalid --days: ${args.days} (1-31)`)
   const range = reportWindow(end, days)
+  const mode = days === 1 ? 'daily' : 'weekly'
   const data = await buildReportData(range)
   const curated = args.content ? JSON.parse(fs.readFileSync(args.content, 'utf8')) : await curate(data)
   const content = validContent(curated) ? normalizeContent(curated) : localContent(data)
   content.next = planItems(data)
   content.risk = riskFromData(data) || prRisk(data)
   fs.mkdirSync(path.join(APP_DIR, 'last'), { recursive: true })
+  fs.writeFileSync(path.join(APP_DIR, 'last', `content-${mode}.json`), JSON.stringify(content, null, 2))
   fs.writeFileSync(path.join(APP_DIR, 'last', 'content.json'), JSON.stringify(content, null, 2))
   const html = reportHtml(data, content)
-  const base = `weekly-summary-${range.end}`
+  const base = `${mode}-summary-${range.end}`
 
   if (args.dryRun) {
     const rendered = renderImage(html, base)
     console.log(JSON.stringify(content, null, 2))
-    console.log(`\n[dry-run] ${range.start}..${range.end} tokens=${data.totals.tokens} cost=${data.totals.cost.toFixed(2)} requests=${data.totals.requests} sessions=${data.totals.sessions} tasks=${data.tasks.length} otherSessions=${data.other.sessions} tickets=${data.tickets.length} open=${data.open.length} openPrs=${data.openPrs.length}`)
+    console.log(`\n[dry-run] ${mode} ${range.start}..${range.end} tokens=${data.totals.tokens} cost=${data.totals.cost.toFixed(2)} requests=${data.totals.requests} sessions=${data.totals.sessions} tasks=${data.tasks.length} otherSessions=${data.other.sessions} tickets=${data.tickets.length} open=${data.open.length} openPrs=${data.openPrs.length}`)
     console.log(`models: ${data.models.map(m => `${m.model} ${m.requests}req ${m.tokens}tok ¥${m.cost.toFixed(2)}`).join(' | ')}`)
     console.log(`image: ${rendered.pngPath}`)
     return
@@ -998,13 +1013,13 @@ async function main() {
 
   try {
     const rendered = renderImage(html, base)
-    const sent = sendImage(rendered.pngPath, range.end)
-    console.log(`[${new Date().toISOString()}] sent weekly report for ${range.start}..${range.end}: ${JSON.stringify(sent?.data ?? sent)} image=${rendered.pngPath}`)
+    const sent = sendImage(rendered.pngPath, range.end, mode)
+    console.log(`[${new Date().toISOString()}] sent ${mode} report for ${range.start}..${range.end}: ${JSON.stringify(sent?.data ?? sent)} image=${rendered.pngPath}`)
   } catch (error) {
     const reason = clean(error instanceof Error ? error.message : String(error), 80)
     console.error(`[${new Date().toISOString()}] image report failed for ${range.start}..${range.end}: ${reason}`)
     if (!chatId) throw error
-    const sent = sendTextFallback(data, content, range.end, reason)
+    const sent = sendTextFallback(data, content, range.end, mode, reason)
     console.error(`[${new Date().toISOString()}] text fallback sent: ${JSON.stringify(sent?.data ?? sent)}`)
     process.exitCode = 1
   }
