@@ -74,4 +74,6 @@ python3 automation/monthly-usage-chart.py usage-30d.json docs/visuals/2026-11-12
   09:00–12:00 and 14:00–18:00 at peak, everything else half price). The figure is a
   list-price estimate, not a platform bill.
 - Output JSON: window, coverage, totals, `byDay`, `byModel`, `byWorkspace`, `bands`
-  (peak/off-peak), per-session totals and the price table used.
+  (peak/off-peak), `byKind` (main vs subagent), per-session totals with `kind`, and the
+  price table used. Subagent child sessions are separate logs under the same workspace
+  directory and are counted like any other session.

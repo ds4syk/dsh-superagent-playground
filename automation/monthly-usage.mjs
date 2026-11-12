@@ -93,7 +93,7 @@ function parseArgs(argv) {
   return args
 }
 
-const trackedEvent = /"type":\s*"(?:assistant\/message|step\/start|session\/end-seed|session\/title|session)"/
+const trackedEvent = /"type":\s*"(?:assistant\/message|step\/start|session\/end-seed|session\/title|subagent\/descriptor|session)"/
 
 /** Session logs that can hold events in the window; a log's mtime is its last appended event. */
 function sessionLogFiles(startDate) {
@@ -145,6 +145,8 @@ async function scanSessionLog({ id, file }, start, end, verbose) {
   const lines = readline.createInterface({ input: child.stdout, crlfDelay: Infinity })
   let header = null
   let title = ''
+  let isSubagent = false
+  let subagentLabel = ''
   let inheritedThrough = -1
   const stepStarts = new Map()
   const usages = []
@@ -159,6 +161,7 @@ async function scanSessionLog({ id, file }, start, end, verbose) {
         continue
       }
       if (event.type === 'session/title') { title = String(event.data?.title || title); continue }
+      if (event.type === 'subagent/descriptor') { isSubagent = true; subagentLabel = String(event.data?.label || ''); continue }
       if (event.type === 'session/end-seed') {
         if (event.data?.inherited === true && event.seq > inheritedThrough) inheritedThrough = event.seq
         continue
@@ -207,6 +210,8 @@ async function scanSessionLog({ id, file }, start, end, verbose) {
   return {
     id,
     bands,
+    kind: isSubagent ? 'subagent' : 'main',
+    label: subagentLabel,
     title,
     workspace: header?.cwd || '',
     createdAt: header?.createdAt,
@@ -228,6 +233,7 @@ async function main() {
   const { files, all } = sessionLogFiles(start)
   const totals = newBucket()
   const bands = { peak: newBucket(), off: newBucket() }
+  const byKind = { main: newBucket(), subagent: newBucket() }
   const perDay = new Map(dates.map(d => [d, newBucket()]))
   const perDaySessions = new Map(dates.map(d => [d, new Set()]))
   const perModel = new Map()
@@ -250,13 +256,14 @@ async function main() {
       continue
     }
     if (!session) continue
-    sessions.push({ id: session.id, title: session.title, workspace: session.workspace, tokens: session.days.reduce((n, d) => n + d.tokens, 0) })
+    sessions.push({ id: session.id, kind: session.kind, label: session.label, title: session.title, workspace: session.workspace, tokens: session.days.reduce((n, d) => n + d.tokens, 0) })
     for (const day of session.days) {
       perDaySessions.get(day.date)?.add(session.id)
       const bucket = perDay.get(day.date) || newBucket()
       for (const key of ['requests', 'uncached', 'cacheRead', 'cacheWrite', 'output', 'tokens', 'cost', 'peakRequests', 'offRequests']) bucket[key] += day[key]
       perDay.set(day.date, bucket)
       for (const key of ['requests', 'uncached', 'cacheRead', 'cacheWrite', 'output', 'tokens', 'cost', 'peakRequests', 'offRequests']) totals[key] += day[key]
+      for (const key of ['requests', 'uncached', 'cacheRead', 'cacheWrite', 'output', 'tokens', 'cost', 'peakRequests', 'offRequests']) byKind[session.kind][key] += day[key]
       if (!coverage.firstDayWithUsage || day.date < coverage.firstDayWithUsage) coverage.firstDayWithUsage = day.date
       if (!coverage.lastDayWithUsage || day.date > coverage.lastDayWithUsage) coverage.lastDayWithUsage = day.date
     }
@@ -287,6 +294,7 @@ async function main() {
     },
     totals: { sessions: sessions.length, ...totals },
     bands,
+    byKind,
     byDay: [...perDay.entries()].map(([date, bucket]) => ({ date, sessions: perDaySessions.get(date)?.size ?? 0, ...bucket })),
     byModel: [...perModel.values()].sort((a, b) => b.tokens - a.tokens),
     byWorkspace: [...perWorkspace.entries()].map(([workspace, bucket]) => ({ workspace, ...bucket })).sort((a, b) => b.tokens - a.tokens),
