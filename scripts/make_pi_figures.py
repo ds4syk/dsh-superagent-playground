@@ -58,9 +58,9 @@ def overview():
     ax.axis("off")
     fig.patch.set_facecolor(BG)
 
-    ax.text(8, 10.05, "π 的无理性指数：第一阶段独立探索（严格盲测）",
+    ax.text(8, 10.05, "π 的无理性指数：v1 盲测 + v2 官方过程核对",
             ha="center", va="center", fontsize=19, fontweight="bold", color="#202124")
-    ax.text(8, 9.55, "任务 A/B/D 已完成；C 已作三条路线探索并定位障碍",
+    ax.text(8, 9.55, "v1 的“冲突”判断已更正：$\\mu=2$ 与已知上界不矛盾，是更强结论",
             ha="center", va="center", fontsize=12, color="#5F6368")
 
     # ---------------- left ----------------
@@ -68,7 +68,7 @@ def overview():
         "结论\n"
         "①  $\\mu(\\pi)\\geq 2$：已完整证明（Dirichlet + $\\pi$ 无理性）\n"
         "②  $\\mu(\\pi)=2\\Leftrightarrow \\mathrm{limsup}_n \\frac{\\log q_{n+1}}{\\log q_n}=1$（连分数）\n"
-        "③  $\\mu(\\pi)\\leq 2$：据训练知识为公开问题，详见右栏",
+        "③  $\\mu(\\pi)=2$：OpenAI 2026-09-24 声称证明，待独立核验",
         BLUE, BLUE_E, 10.5, False)
 
     box(ax, 0.4, 6.05, 7.4, 1.45,
@@ -86,25 +86,25 @@ def overview():
     # map 2..8 to x0..x1
     def X(v):
         return x0 + (v - 2) / 6 * (x1 - x0)
-    ax.add_patch(Rectangle((X(2), y0 - 0.13), X(7.6063) - X(2), 0.26,
+    ax.add_patch(Rectangle((X(2), y0 - 0.13), X(7.1018) - X(2), 0.26,
                            fc="#D2E3FC", ec="none"))
     for v in [2, 3, 4, 5, 6, 7, 8]:
         ax.plot([X(v), X(v)], [y0 - 0.18, y0 + 0.18], color="#5F6368", lw=1)
         ax.text(X(v), y0 - 0.38, str(v), ha="center", va="top", fontsize=8.5, color="#5F6368")
     ax.plot([X(2)], [y0], marker="o", ms=9, color=GREEN_E)
-    ax.plot([X(7.6063)], [y0], marker="o", ms=9, color=RED_E)
-    ax.text(X(2) + 0.08, y0 + 0.30, "2（Dirichlet）", fontsize=9, color=GREEN_E, ha="left")
-    ax.text(X(7.6063) - 0.05, y0 + 0.30, "7.6063（最好已知上界，待核验）",
+    ax.plot([X(7.1018)], [y0], marker="o", ms=9, color=RED_E)
+    ax.text(X(2) + 0.08, y0 + 0.30, "2（Dirichlet 下界）", fontsize=9, color=GREEN_E, ha="left")
+    ax.text(X(7.1018) - 0.05, y0 + 0.30, "7.1018（Bai 2026，2026 年前上界）",
             fontsize=9, color=RED_E, ha="right")
-    ax.text(4.0, y0 - 0.85, "目标 $\\mu(\\pi)=2$ 在区间左端；一致的 $c/q^2$ 下界不可能，$\\varepsilon$ 不可去",
+    ax.text(4.0, y0 - 0.85, "$\\mu=2$ 与上界不矛盾（更强）；一致的 $c/q^2$ 不可能，$\\varepsilon$ 不可去",
             fontsize=9.5, color="#202124", ha="center")
 
     box(ax, 0.4, 1.45, 7.4, 2.15,
-        "为什么难：三条路线落在同一障碍\n"
+        "v1 三条路线 vs 官方路线\n"
         "连分数 $\\Leftrightarrow$ 线性型双见证 $\\Leftrightarrow$ 所有部分商次指数增长\n"
         "• 任何“对所有无理数成立”的论证都不够：Liouville 数 $\\mu=+\\infty$\n"
         "• 单族线性型在例外有理数 $p/q=-a_n/b_n$ 处失效\n"
-        "• 第二个独立见证 $\\Leftrightarrow q_{m+1}\\leq 2q_m^{1+\\varepsilon}$：仍是公开问题",
+        "• 官方路线：几何插值 + 行列式（盲测未找到）",
         RED, RED_E, 9.8, False)
 
     # ---------------- right ----------------
@@ -117,25 +117,25 @@ def overview():
         GREEN, GREEN_E, 9.3, False)
 
     box(ax, 8.25, 6.35, 7.4, 1.0,
-        "未证明 / 公开问题\n"
-        "$\\mu(\\pi)\\leq 2$（主定理）；$\\pi$ 是否 badly approximable",
-        RED, RED_E, 10.5, True)
+        "官方声称（2026-09-24）\n"
+        "论文 + 869 个 Lean 文件（0 sorry/axiom）\n独立编译/审计未完成",
+        YELLOW, YELLOW_E, 10.5, True)
 
     box(ax, 8.25, 5.05, 7.4, 1.0,
-        "待核验（阶段 II/III）\n"
-        "$\\mu(\\pi)\\leq7.6063$ 的出处与机制；Family 017 的正式命题",
+        "待核验\n"
+        "数学逐节审计 + Lean 构建/Comparator\nNEXUS 独立审计尚未编译",
         GRAY, GRAY_E, 9.8, False)
 
     box(ax, 8.25, 3.55, 7.4, 1.2,
         "下一步\n"
-        "阶段 II 核对 Family 017 命题 $\\to$ 阶段 III 论文对照\n"
-        "$\\to$ 阶段 IV 用 Lean 4 形式化已证部分（零 sorry）",
+        "阶段 III 论文逐节审计 $\\to$ 阶段 IV 独立 Lean 构建\n"
+        "$\\to$ Comparator 校验 + 独立形式化（零 sorry）",
         BLUE, BLUE_E, 9.8, False)
 
     box(ax, 8.25, 1.45, 7.4, 1.7,
         "关键量化\n"
-        "已知 $2\\leq\\mu(\\pi)\\leq 7.6063$，目标 2\n"
-        "指数差距 $\\approx 5.6$；这是“质的跳跃”，不是常数优化",
+        "已知 $2\\leq\\mu(\\pi)\\leq 7.1018$（Bai 2026），目标 2\n"
+        "若官方证明成立：上界从 7.1018 直接改进到 2",
         YELLOW, YELLOW_E, 10.5, False)
 
     fig.savefig(os.path.join(ASSETS, "2026-11-17-pi-exponent-overview.png"),
