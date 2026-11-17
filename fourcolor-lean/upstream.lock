@@ -1,0 +1,31 @@
+# 上游四色定理 Lean 4 形式化的固定版本
+# 本仓库不复制上游源码；复现脚本按此文件克隆并检出。
+
+[project]
+name = "The Four Colour Theorem in Lean 4"
+repo = "https://github.com/corun1024/4ct"
+commit = "3db71e0a786a1f19be04c5266fe3d06fed216885"
+commit_date = "2026-09-16T14:31:07Z"
+license = "MIT"
+author = "Chris Emery"
+
+[toolchain]
+lean = "leanprover/lean4:v4.34.0-rc2"
+
+[mathlib]
+repo = "https://github.com/leanprover-community/mathlib4"
+rev = "141f6b6455959bfeb0b2a6b04118031191d62683"
+
+[statement]
+module = "FourColor.RealPlane"
+theorem = "FourColor.fourColorTheorem"
+theorem_type = "FourColor.FourColorTheorem"
+
+[secondary]
+# 用于交叉比较的独立 Lean 4 发展（不在本仓库构建）
+name = "The Four Color Theorem (Lean 4 port of Gonthier's Coq proof)"
+repo = "https://github.com/RBarish-UTokyo/FourColorTheorem-Lean4"
+commit = "20fa34599f5189dd569d96dd22f306c94ab1c446"
+commit_date = "2026-09-26T16:14:19Z"
+license = "Apache-2.0"
+theorem = "FourColor.RealPlane.four_color"
