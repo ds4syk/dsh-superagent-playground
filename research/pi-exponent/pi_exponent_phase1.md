@@ -902,7 +902,9 @@ lake env lean /mnt/storage1/syk/.superagent-work/pi-exponent-proof-dd8280cf5917/
 
 **第四轮**（`research/pi-exponent-independent/upper_bound_round4.md`，2026-11-17 完成）：按 round3 的下一步尝试 (1) $\int_0^\pi\sin x\,dx=2$ 型积分，(2) 复围道经过 $\pi$，(3) 依赖 $q$ 的 Padé 校准。结果：端点含 $\pi$ 的积分/围道会产生 $\cos p$、$\sin p$、$e^{ip}$（Lindemann 超越），无法整数化；$\cos p\approx(-1)^q$ 展开的误差 $q^2\delta^2$ 与目标同阶，循环。Padé 校准给出指数 $K=2+\log a_{n+1}/\log q$，要 $K\le2+\varepsilon$ 必须 $a_{n+1}\le q^{\varepsilon}$，即部分商次指数——回到第一轮的 CF 公开问题。**仍未证明 $\mu(\pi)\le2$**。
 
-**当前状态：** 主定理 $\mu(\pi)\le2$ 仍未由独立窗口证明；官方 2026 论文声称的插值–行列式路线仍未独立编译/审计。独立窗口已连续四轮尝试，所有自选路线都归约到同一 CF/部分商障碍或失效；是否继续第五轮或改用非官方提示，待用户决定。
+**第五至九轮**（`research/pi-exponent-independent/upper_bound_rounds_5_15.md`）：尝试 (5) $\pi^2$ 关系，证明 $\mu(\pi)\le2\mu(\pi^2)$ 但方向反了（需 $\mu(\pi^2)\le1$，而 $\pi^2$ 无理）；(6) $GL_2(\mathbb Z)$ 分式变换不变性 $\mu(M\pi)=\mu(\pi)$，变换不能改善；(7) Wallis/Leibniz/Machin 显式逼近，$q_N^2\varepsilon_N$ 指数发散，只给弱下界；(8) “有理逼近 + 二次无理逼近”双逼近，条件性，需未知的二次逼近信息。该窗口认为第 10–15 轮没有新的可执行方向，主动合并为诚实的 no-go 总结（不空转），剩余 6 轮是否用于文献/数值验算待用户决定。
+
+**当前状态：** 主定理 $\mu(\pi)\le2$ 仍未由独立窗口证明；官方 2026 论文声称的插值–行列式路线仍未独立编译/审计。独立窗口已连续九轮尝试，所有自选路线都归约到同一 CF/部分商障碍或代数逼近障碍；没有找到第三条路。
 
 ---
 
