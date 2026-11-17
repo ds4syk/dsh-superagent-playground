@@ -36,10 +36,10 @@ Web 端会话视图里，红色错误行由 `turn/end` 的 `reason.kind = "inter
 | 18:58:33 | π 工单的独立子 agent（`独立推导 μ(π)=2`）turn 1 开始 | session `f0040578…` `turn/start turn=1` |
 | 19:06:16 | 个人 `dsh web --no-open --port 0` 启动（用户从远端打开 Web UI） | `/proc/2039546` 启动时间 |
 | 19:06:26 | 个人 web 在 π 工单目录下新建空会话 `session-ded22bb1…` | 该会话目录与文件时间 |
-| 19:07:57 | 用户在四色工单 thread 发「resume一下这份工作，疑似中断了」 | Feishu trigger `1c31ac4b…` |
+| 19:07:57 | 用户在四色工单 thread 发出 resume 请求 | 用户消息（时间） |
 | 19:07:58 | 该消息被并入**仍在运行**的四色 worker turn 1（`agent/inbox/spliced`） | 四色会话 seq 10403 |
 | 19:08:05 | 四色 worker 在 turn 1 内明确处理该 resume 消息 | 四色会话 seq 10411 |
-| 19:08:09 | 用户在 π 工单 thread 发同样的 resume | Feishu trigger `710abd4a…` |
+| 19:08:09 | 用户在 π 工单 thread 发出 resume 请求 | 用户消息（时间） |
 | 19:08:11 | 该消息进入 π worker 的 turn 5 | π worker 会话 seq 1195/1199 |
 | 19:08:57 | π worker 的 turn 5 `completed` | π worker 会话 `turn/end` |
 | 19:09:50 | 四色 worker 的 turn 1 `completed`（共 1322 步） | 四色会话 `turn/end` |
