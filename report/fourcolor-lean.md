@@ -1,6 +1,10 @@
 # 四色定理的 Lean 4 形式化：一次可复现的机器验证
 
-**摘要**　四色定理是第一个主要依赖计算机的数学定理，也是形式化验证社区长期追逐的基准。2005 年，Gonthier 与 Werner 在 Coq 中完成了它的完整形式证明；2026 年，两个独立的 Lean 4 发展把它移植到了 Lean 4 与 Mathlib。本文以 `corun1024/4ct`（commit `3db71e0`）为对象，给出一次从干净源码出发的独立复现与审计：固定 Lean `v4.34.0-rc2` 与 Mathlib `141f6b6`，重新生成 633 个可约构型的证书，编译全部模块，运行上游的 `check.sh`，再用本文仓库的 `Audit.lean` 独立检查最终定理的类型与公理依赖。结果是：`FourColor.fourColorTheorem : FourColorTheorem` 通过 Lean 内核检查，仅依赖 `propext`、`Classical.choice`、`Quot.sound`，没有 `sorry`、没有 `native_decide`、没有自定义公理；非空性对照与反 vacuity 对照全部通过。本文同时逐条解释这个形式陈述的含义、Gonthier 证明的七个组成部分、Lean 4 移植在表示与计算上的关键改动，并与 RBarish 的第二个独立 Lean 4 发展做交叉比较。最后，本文明确区分“机器检查通过”与“人类已审阅”：代码主要由 AI 生成，陈述保真与信任基仍需读者自行判断。
+**摘要**　四色定理是第一个主要依赖计算机的数学定理，也是形式化验证社区长期追逐的基准。2005 年，Gonthier 与 Werner 在 Coq 中完成了它的完整形式证明；2026 年，两个独立的 Lean 4 发展把它移植到了 Lean 4 与 Mathlib。
+
+本文以 `corun1024/4ct`（commit `3db71e0`）为对象，给出一次从干净源码出发的独立复现与审计：固定 Lean `v4.34.0-rc2` 与 Mathlib `141f6b6`，重新生成 633 个可约构型的证书，编译全部 821 个模块，运行上游的 `check.sh`，再用本文仓库的 `Audit.lean` 独立检查最终定理的类型与公理依赖。结果是：`FourColor.fourColorTheorem : FourColorTheorem` 通过 Lean 内核检查，仅依赖 `propext`、`Classical.choice`、`Quot.sound`，没有 `sorry`、没有 `native_decide`、没有自定义公理；非空性对照与反 vacuity 对照全部通过。
+
+本文同时逐条解释这个形式陈述的含义、Gonthier 证明的七个组成部分、Lean 4 移植在表示与计算上的关键改动，并与 RBarish 的第二个独立 Lean 4 发展做交叉比较。最后，本文明确区分“机器检查通过”与“人类已审阅”：代码主要由 AI 生成，陈述保真与信任基仍需读者自行判断。
 
 > **结论先行**：四色定理已经有一个可复现、可审计的 Lean 4 形式证明；本文验证的那个版本只依赖 Lean 的三条标准公理。它的证明结构是 Gonthier–Werner 的 Coq 证明的 Lean 4 移植，而不是一个更短的新数学证明。真正的风险不在内核，而在陈述是否忠实、生成证书的代码是否可信、以及是否有人类数学家审阅过这套形式化。
 
@@ -34,7 +38,7 @@ Gonthier 的 Coq 证明采用地图版本。本文讨论的 Lean 4 形式化逐�
 - **1879 年**：Alfred Kempe 发表了一个“证明”，引入了后来称为 Kempe 链的论证。
 - **1890 年**：Percy Heawood 指出 Kempe 的证明有漏洞，并用 Kempe 链证明了较弱的五色定理。四色定理在此后近九十年里仍是猜想。
 - **1976 年**：Kenneth Appel 与 Wolfgang Haken 宣布证明，计算机检查了约 1,936 个可约构型，据称用了约 1,200 小时机器时间。这是第一个主要靠计算机完成证明的数学定理，也引发了“什么是数学证明”的长期争论。
-- **1997 年**：Neil Robertson、Daniel Sanders、Paul Seymour、Robin Thomas 发表了简化证明，把不可避集缩小到 633 个可约构型，并用放电法（discharging）组织论证。今天的形式化大多跟随这一版。
+- **1997 年**：Neil Robertson、Daniel Sanders、Paul Seymour、Robin Thomas 发表了简化证明，把不可避免集缩小到 633 个可约构型，并用放电法（discharging）组织论证。今天的形式化大多跟随这一版。
 - **2005 年**：Georges Gonthier 与 Benjamin Werner 在 Coq 中完成完整形式证明；Gonthier 在 2008 年的 *Notices of the AMS* 文章中叙述了证明架构。Coq 发展约 6 万行，包含 633 个构型与 7 组放电展示。
 - **2026 年**：两个独立的 Lean 4 发展（Chris Emery 的 `corun1024/4ct` 与 Robert D. Barish 的 `RBarish-UTokyo/FourColorTheorem-Lean4`）把 Gonthier 的证明移植到 Lean 4 + Mathlib。两者都由 AI 大量参与，都通过了各自的内核检查。
 
@@ -48,6 +52,24 @@ Gonthier 的 Coq 证明采用地图版本。本文讨论的 Lean 4 形式化逐�
 4. **计算的可信性。** 这些搜索不能靠“跑一个程序然后相信它”；证明助手要求搜索的每一步都能被内核检查。Coq 为此在核心里加了虚拟机；Lean 的内核没有这样的虚拟机，必须把搜索重新设计成内核能承受的位运算。
 
 这四件事合起来，就是为什么四色定理的形式化体量以“十万行”和“core-hour”计。
+
+### 1.4 本文的贡献与边界
+
+本文的贡献是：
+
+- 在固定 commit、工具链与 Mathlib 版本上，从干净源码**独立复现**上游的 Lean 4 形式化；
+- 用一个不依赖上游检查脚本的 `Audit.lean` **独立审计**最终定理的类型与公理闭包；
+- 逐条解释形式陈述、证明架构、证书机制与构建系统，使读者能判断这个 artifact 到底证明了什么；
+- 与第二个独立的 Lean 4 发展做**交叉比较**，并明确列出未验证项。
+
+本文**不**声称：
+
+- 从零重写了这个证明（证明本身由 Chris Emery 完成，MIT）；
+- 人类数学家已经审阅了证明；
+- 已经形式化了“地图版本 ↔ 图版本”的桥接；
+- 已经用 nanoda/con-ron 重放过这个 artifact。
+
+这些边界在第 8 节展开。
 
 ## 2. Lean 4 与信任基
 
@@ -73,7 +95,7 @@ Lean 的经典数学通常依赖三条公理：
 
 `#print axioms FourColor.fourColorTheorem` 会打印定理的完整公理闭包。本文的审计要求它恰好是这三条。
 
-### 2.3 `decide +kernel` 与 `native_decide`
+### 2.3 decide +kernel 与 native_decide
 
 Lean 的 `decide` 把可判定的命题化为布尔计算，再由内核归约检查。`decide +kernel` 明确要求归约在内核中完成；`native_decide` 则把计算编译成原生代码，速度快得多，但信任编译器。
 
@@ -225,7 +247,7 @@ Gonthier–Werner 的证明可以分成七层。下面的箭头表示“由谁�
 四色定理
 ```
 
-### 4.1.1 Coq 文件与 Lean 模块的对应
+### 4.2 Coq 文件与 Lean 模块的对应
 
 | Coq（Gonthier–Werner） | Lean（`corun1024/4ct`） | 内容 |
 |---|---|---|
@@ -241,13 +263,13 @@ Gonthier–Werner 的证明可以分成七层。下面的箭头表示“由谁�
 
 这张表是阅读源码的地图：想核对某个数学步骤，先找对应的 Coq 文件，再找同名 Lean 模块；两者通常有相同的定理名（只做了 Lean 风格的大小写与命名调整）。
 
-### 4.2 从连续到有限：`Finitize`
+### 4.3 从连续到有限：Finitize
 
 `Finitize.lean` 用紧性论证把任意简单地图归约到有限地图。核心观察是：每个开区域都包含一个标准网格点（`stdPoint`）；取前 `n` 个网格点，把地图限制到这些点所在的区域，得到一个有限简单地图。对每个 `n`，有限版本给出一个着色；用 `Filter.atTop` 上的超滤子取极限，得到一个全局着色。极限保持所有有限约束，因此相邻区域仍然异色。
 
 这一步是“无限多区域”不会让定理变弱的关键。形式化里，超滤子、`Filter`、`Ultrafilter` 都是 Mathlib 的现成工具。
 
-### 4.3 从地图到超地图：`Discretize`
+### 4.4 从地图到超地图：Discretize
 
 `Discretize.lean` 是连续与组合之间的桥。给定有限简单地图 `m₀`，它构造一个有限的平面无桥超地图，使超地图的四着色能拉回成 `m₀` 的四着色。五个步骤：
 
@@ -259,7 +281,7 @@ Gonthier–Werner 的证明可以分成七层。下面的箭头表示“由谁�
 
 这一步的形式化难点在几何直觉的严格化：开、连通、闭包、边界点这些概念必须与组合结构精确对齐。
 
-### 4.4 超地图：三置换与 Euler 公式
+### 4.5 超地图：三置换与 Euler 公式
 
 超地图（hypermap）是组合地图的一种表示：三个置换 `edge`、`node`、`face`，满足 `node * face * edge = 1`。`dart` 是半边；`edge` 把一条边的两个方向配对，`node` 轮转一个顶点周围的 dart，`face` 轮转一个面周围的 dart。三者的复合为恒等，等价于说这是一对置换的表示，但三函数形式让 Euler 公式在 `edge`、`node`、`face` 之间完全对称。
 
@@ -267,16 +289,16 @@ Gonthier–Werner 的证明可以分成七层。下面的箭头表示“由谁�
 
 `Euler.lean` 证明超地图的 Euler 公式：`EulerLhs = 2 * genus + EulerRhs`，其中 `EulerLhs` 与 `EulerRhs` 是 dart、边、顶点、面数的线性组合。`genus = 0` 就是平面性。`Jordan.lean` 证明平面性蕴含 Jordan 曲线性质：genus 0 的超地图没有 Möbius 路径。证明用极小反例与 Walkup 构造（删除一个 dart 的三种变换）。
 
-### 4.5 极小反例与组合四色定理
+### 4.6 极小反例与组合四色定理
 
 `Combinatorial.lean` 把问题化成：假设存在不能四着色的平面无桥超地图，取 dart 数最小的一个，得到一个 `MinimalCounterExample`。然后：
 
 - 通过 `cube` 构造，把地图变成 plain、cubic 的同类地图，保持 genus 与可着色性；
-- 对 dart 数归纳，极小反例必须满足 `Pentagonal`（每个面的元数在 5 到 11 之间）等性质；
+- 对 dart 数归纳，极小反例必须满足 `Pentagonal`（每个面至少 5 条边）等性质；放电再给出一个正电荷面，其元数被夹在 5 到 11 之间；
 - `Unavoidability` 说极小反例不可能存在；
 - 于是每个平面无桥超地图四色可着色。
 
-### 4.6 不可避免性：放电与七组展示
+### 4.7 不可避免性：放电与七组展示
 
 `Unavoidability.lean` 组织放电论证。放电给每个面一个初始电荷，然后按规则把电荷从高元数面转移到低元数面；Euler 公式保证总电荷为正，因此某个面有正电荷。对极小反例，正电荷面的元数被夹在 5 到 11 之间。七个展示脚本 `exclude5` 到 `exclude11` 分别排除这七个元数。
 
@@ -287,7 +309,7 @@ Gonthier–Werner 的证明可以分成七层。下面的箭头表示“由谁�
 - **数据与证明分离**：633 个构型、展示脚本、hubcap 数据都是生成的数据；证明由通用的可靠性定理 + 内核检查完成。
 - **反 vacuity**：如果 `theRedpart` 恒为 `true`，所有展示都会自动通过。`scripts/Audit.lean` 用 `theRedpart (Part.free 5) = false` 等负对照证明检查器确实会拒绝。
 
-### 4.7 可约性：633 个构型
+### 4.8 可约性：633 个构型
 
 `Reducibility` 说 633 个构型都是 C-reducible。每个构型的证书是一个有限检查：给定环上的着色迹（trace），用 Kempe 链翻转与颜色置换，证明所有迹都能被“归约”到已知的迹。证书由 C/Python 工具生成，但每个生成的 Lean 模块都要通过 `cfReducible_of_bulkChecks` 或 `cfReducible_of_hybridT` 的检查。
 
@@ -330,6 +352,18 @@ theorem fourColorTheorem : FourColorTheorem :=
 - **计算**：Coq 为四色证明在核心里加了字节码虚拟机；Lean 没有，于是把证书检查重新设计成位并行运算，用 `decide +kernel` 完成。第 5.3 节详述。
 - **省略**：Coq 的 `Jordan_planar` 与 `Jordan_WalkupE`（平面性–Jordan 等价的另一个方向）没有移植，因为证明只用 `planar → Jordan`。
 
+把两边的差异压缩成一张表：
+
+| 维度 | Coq（Gonthier–Werner, 2005） | Lean 4（`corun1024/4ct`, 2026） |
+|---|---|---|
+| 实数 | 从 Dedekind 分割构造，证明模型同构 | Mathlib 的 `ℝ` |
+| 组合结构 | MathComp `finType` + `cancel` | `Equiv.Perm` + `SameCycle` |
+| 布尔/命题 | 布尔反射 `reflect` | `Prop` + `Decidable` |
+| 证书检查 | Coq 内核 + 为证明加入的字节码 VM | Lean 内核的 `decide +kernel` |
+| 证书生成 | Coq 程序在 VM 中运行 | C/Python 生成数据，Lean 内核检查 |
+| 规模 | 约 6 万行 | 提交源码约 59 万行（含数据），生成证书后约 79 万行 |
+| 最终公理 | Coq 标准逻辑 | `propext`, `Classical.choice`, `Quot.sound` |
+
 ### 5.3 证书：把搜索变成内核能承受的位运算
 
 这是整个移植最工程化的部分，也是“为什么 Lean 4 能行”的关键。
@@ -342,7 +376,7 @@ theorem fourColorTheorem : FourColorTheorem :=
 
 **可信性。** 生成证书的 C/Python 工具不被信任：它们只产生数据；每个生成的 Lean 模块都用通用的可靠性定理检查数据。数据错了，检查失败；数据对了，定理成立。`scripts/Audit.lean` 还提供负对照：故意破坏证书的某一类数据，检查器必须拒绝。
 
-### 5.4 构建系统：为什么不能直接 `lake build`
+### 5.4 构建系统：为什么不能直接 lake build
 
 上游的模块内存峰值极不均匀：中位数 2.7 GB，p99 是 11.4 GB，`Bulk/Cfg/Hyb218B` 单模块峰值 20.1 GB。Lake 默认按硬件线程数并行，在 64 线程机器上会同时启动太多大模块，耗尽内存。因此上游写了 `scripts/build_pool.py`：
 
@@ -352,14 +386,21 @@ theorem fourColorTheorem : FourColorTheorem :=
 - 用 `scripts/module_cost.tsv` 的每模块时间/内存表做预测；
 - 增量构建，跳过已完成模块。
 
+![图 2：7.5 core-hour 的去向——数学只占 0.1，其余都是内核里的证书检查](figures/2026-11-17-fourcolor-corehours.png)
+
+*图 2 的数据来自上游 README 的 core-hour 表；它说明四色定理形式化的成本主要在“让内核相信 633 个构型可约”，而不在数学陈述本身。*
+
 `build.sh` 的四步是：Mathlib 缓存、生成证书（缺失时）、编译、`check.sh`。`check.sh` 再跑：
 
-- 源码扫描：禁止 `sorry`、`native_decide`、`axiom`、`unsafe`、`opaque`、`partial`、`@[implemented_by]`、`@[extern]`、`debug.skipKernelTC`；
+- 源码扫描：禁止 `sorry`、`native_decide`、自定义 `axiom`；
+- 同时禁止 `unsafe`、`opaque`、`partial` 与代码生成属性等信任逃逸构造；
 - 公理检查：`collectAxioms` 扫描所有 `FourColor` 声明，只允许三条标准公理；
 - 定理检查：`fourColorTheorem` 必须存在、类型必须是 `FourColorTheorem`、公理必须干净；
 - 反 vacuity：`scripts/Audit.lean` 的负对照必须通过。
 
 ## 6. 独立复现与审计
+
+> **范围说明**：形式化证明本身由 `corun1024/4ct` 的作者完成（MIT）；本节的工作是从干净源码复现它、用独立脚本审计它、并把它解释清楚，而不是从零重写 59 万行代码。本文的“独立”指验证路径独立于上游的检查脚本，不指证明的原创性。
 
 ### 6.1 固定版本
 
@@ -383,7 +424,7 @@ git clone https://github.com/corun1024/4ct
 cd 4ct
 git checkout 3db71e0a786a1f19be04c5266fe3d06fed216885
 lake exe cache get
-JOBS=24 MEMORY=80 bash build.sh
+JOBS=16 MEMORY=80 bash build.sh
 ```
 
 `build.sh` 会：
@@ -393,7 +434,7 @@ JOBS=24 MEMORY=80 bash build.sh
 3. 用 `build_pool.py` 编译全部模块；
 4. 运行 `scripts/check.sh`。
 
-本次构建的实测数字、日志末尾与检查输出见 `fourcolor-lean/evidence/`。构建成功后，`check.sh` 的最后几行应包含：
+本次构建的调度计划是：**821 个模块、7.9 core-hour、16 个并行 job、80 GB 内存预算、预测 30 分钟**。这个预测来自 `scripts/module_cost.tsv`，实际墙钟时间取决于机器与其他负载；日志见 `fourcolor-lean/evidence/`。构建成功后，`check.sh` 的最后几行应包含：
 
 ```text
 THEOREM PROVED: FourColor.fourColorTheorem : FourColor.FourColorTheorem depends only on [propext, Classical.choice, Quot.sound]
@@ -430,6 +471,8 @@ example : FourColor.FourColorTheorem =
 
 | 检查 | 结果 |
 |---|---|
+| 构建调度 | 821 个模块；7.9 core-hour；16 jobs；80 GB 预算；预测 30 分钟 |
+| 构建墙钟 | 约 39 分钟（编译 2287 秒；821 个模块，0 失败） |
 | `lake exe cache get` | 成功 |
 | 证书生成 | 成功（构建时重新生成） |
 | 全部模块编译 | 成功 |
@@ -439,7 +482,9 @@ example : FourColor.FourColorTheorem =
 | 反 vacuity 负对照 | 通过 |
 | 非空性（K4 地图） | 通过 |
 
-### 6.4.1 证据分级
+最慢的两个证书模块是 `Mask/Cfg561`（720 秒，约 3.0 GB 峰值）与 `Mask/Cfg612`（671 秒，约 2.9 GB）。它们正好说明为什么需要 `build_pool.py` 的内存调度：如果按线程数一次性启动，这类模块会互相挤占内存。
+
+### 6.5 证据分级
 
 按照本仓库的交付约定，本文把证据分成三档：
 
@@ -452,7 +497,7 @@ example : FourColor.FourColorTheorem =
 | `RBarish` 的 Palomar 三检查器结果 | **论文声称**（未独立复现） | 其 README / formalization.yaml |
 | 1852–2005 年的历史叙述 | 文献 | 见参考文献 |
 
-### 6.5 如何理解“通过”
+### 6.6 如何理解“通过”
 
 “通过”意味着：
 
@@ -531,7 +576,7 @@ example : FourColor.FourColorTheorem =
 - 三条标准公理；
 - 操作系统与硬件。
 
-`decide +kernel` 把计算放回内核，避免了信任 C 编译器与 Python 解释器；但生成证书的 C/Python 工具仍然要正确地产出数据。若生成器有 bug，最坏情况是构建失败或证书被拒绝，而不是错误定理通过——前提是 `cfReducible_of_bulkChecks` 等可靠性定理本身正确。
+`decide +kernel` 把计算放回内核，避免了把证书生成器的 C 编译器与 Python 解释器放进信任基（我们仍然信任构建 Lean 内核的二进制）；但生成证书的 C/Python 工具仍然要正确地产出数据。若生成器有 bug，最坏情况是构建失败或证书被拒绝，而不是错误定理通过——前提是 `cfReducible_of_bulkChecks` 等可靠性定理本身正确。
 
 ### 8.3 AI 生成与人类审阅
 
@@ -551,9 +596,10 @@ example : FourColor.FourColorTheorem =
 
 ### 9.1 环境
 
-- Linux x86_64，建议 16 GB 以上内存（本项目峰值单模块 20 GB，建议 64 GB 以上更稳）；
+- Linux x86_64，建议 64 GB 以上内存（本项目单模块峰值 20 GB；16 GB 只能串行跑小模块）；
 - 约 25 GB 磁盘；
 - `elan`、`git`、`curl`、`gcc`、`python3`、`zstd`；
+- Python 的 `numpy`（生成 mask 证书的 `scripts/bulkspace.py` 需要它；上游 README 没有列出这一点，本次复现时踩到过）；
 - 网络能访问 GitHub 与 Mathlib 缓存（受限网络可设置 `http_proxy`/`https_proxy`）。
 
 ### 9.2 一键复现
@@ -579,7 +625,7 @@ git clone https://github.com/corun1024/4ct
 cd 4ct
 git checkout 3db71e0a786a1f19be04c5266fe3d06fed216885
 lake exe cache get
-JOBS=24 MEMORY=80 bash build.sh
+JOBS=16 MEMORY=80 bash build.sh
 lake env lean /path/to/fourcolor-lean/audit/Audit.lean
 ```
 
@@ -592,7 +638,7 @@ lake env lean /path/to/fourcolor-lean/audit/Audit.lean
 
 ## 10. 结论
 
-四色定理的 Lean 4 形式化已经从一个“值得尝试”的目标，变成了一个可以复现的工程事实。本文在固定版本上从干净源码复现了 `corun1024/4ct`：重新生成 633 个可约构型的证书，编译全部模块，运行上游检查，并用独立审计确认最终定理的类型与公理依赖。结果是：`FourColor.fourColorTheorem` 通过 Lean 内核检查，仅依赖 `propext`、`Classical.choice`、`Quot.sound`。
+四色定理的 Lean 4 形式化已经从一个“值得尝试”的目标，变成了一个可以复现的工程事实。本文在固定版本上从干净源码复现了 `corun1024/4ct`：重新生成 633 个可约构型的证书，编译全部 821 个模块，运行上游检查，并用独立审计确认最终定理的类型与公理依赖。结果是：`FourColor.fourColorTheorem` 通过 Lean 内核检查，仅依赖 `propext`、`Classical.choice`、`Quot.sound`。
 
 这项工作的数学内容属于 Gonthier 与 Werner；Lean 4 移植的贡献在于把证明重新表达成 Mathlib 风格，并把 Coq 虚拟机的证书检查改造成内核可承受的位并行计算。两个独立的 Lean 4 发展互相印证，但都还没有人类数学家的最终审阅。
 
@@ -651,8 +697,9 @@ example : FourColor.FourColorTheorem =
 | 项 | 数值 |
 |---|---|
 | 提交的 Lean 模块 | 475 |
-| 构建后模块（含生成证书） | 约 821 |
-| Lean 源码行数（checkout，含提交的生成数据） | 约 594,000 |
+| 构建后模块（含生成证书） | 820 个 `FourColor/` 模块 + 根模块 `FourColor.lean` = 821 |
+| 提交的 Lean 源码行数（不含生成证书） | 约 594,000 |
+| 构建后源码行数（含生成证书） | 约 790,000（约 1.1 GB） |
 | 声明数（上游 `Check.lean` 报告） | 115,342 |
 | 可约构型 | 633 |
 | 放电展示 | 7 组（元数 5–11） |
@@ -676,14 +723,36 @@ example : FourColor.FourColorTheorem =
 - [ ] 记录构建时间、内存峰值与失败重试；
 - [ ] 明确列出未验证项。
 
+## 附录 D：术语表
+
+| 术语 | 含义 |
+|---|---|
+| 地图（map） | 把平面上的点送到“区域”的函数；在形式化里是 `Point → Region` |
+| 简单地图（simple map） | 区域开、连通的地图；四色定理的陈述对象 |
+| 偏等价关系（plain map） | 对称、传递但不一定自反的关系；其等价类就是区域 |
+| 邻接（adjacent） | 两个不同区域的闭包共享一个“非角点”边界点 |
+| 非角点（non-corner） | 该点的闭包中至多出现两个区域 |
+| 超地图（hypermap） | 三个置换 `edge`、`node`、`face`，满足 `node * face * edge = 1` |
+| dart | 超地图的半边；`edge` 把一条边的两个方向配对 |
+| genus | 由 Euler 公式定义的亏格；`genus = 0` 即平面 |
+| Euler 公式 | `EulerLhs = 2 * genus + EulerRhs` |
+| 放电（discharging） | 把电荷从高元数面转移到低元数面，逼出正电荷面 |
+| 不可避免集 | 每个平面地图都必然包含的局部构型集合 |
+| 可约构型 | 若地图包含它，就能化简为更小地图并拉回着色 |
+| Kempe 链 | 两种颜色交替的路径；Kempe 翻转沿它交换颜色 |
+| 证书（certificate） | 一个有限检查的数据，内核验证后推出可约性 |
+| `decide +kernel` | 用内核归约检查可判定命题，不信任编译器 |
+| 公理闭包 | 一个定理的证明最终依赖的公理集合 |
+| 信任基 | 为了相信定理而必须相信的东西：内核、公理、陈述、Mathlib |
+
 ## 参考文献
 
 1. K. Appel, W. Haken, *Every planar map is four colorable. Part I: Discharging*, Illinois J. Math. 21 (1977), 429–490.
 2. K. Appel, W. Haken, J. Koch, *Every planar map is four colorable. Part II: Reducibility*, Illinois J. Math. 21 (1977), 491–567.
-3. N. Robertson, D. Sanders, P. Seymour, R. Thomas, *The four-colour theorem*, J. Combin. Theory Ser. B 70 (1997), 2–44. DOI: 10.1006/jctb.1997.1750.
-4. G. Gonthier, *Formal Proof—The Four-Color Theorem*, Notices of the AMS 55(11) (2008), 1382–1393.
+3. N. Robertson, D. Sanders, P. Seymour, R. Thomas, *The four-colour theorem*, J. Combin. Theory Ser. B 70 (1997), 2–44. https://doi.org/10.1006/jctb.1997.1750
+4. G. Gonthier, *Formal Proof—The Four-Color Theorem*, Notices of the AMS 55(11) (2008), 1382–1393. https://www.ams.org/notices/200811/tx081101382p.pdf
 5. G. Gonthier, B. Werner, *Coq/Rocq fourcolor development*, https://github.com/math-comp/fourcolor.
-6. Chris Emery, *The Four Colour Theorem in Lean 4*, https://github.com/corun1024/4ct, commit `3db71e0`.
+6. Chris Emery, *The Four Colour Theorem in Lean 4*, https://github.com/corun1024/4ct, commit `3db71e0a786a1f19be04c5266fe3d06fed216885`.
 7. Robert D. Barish, *The Four Color Theorem (Lean 4 port of Gonthier's Coq proof)*, https://github.com/RBarish-UTokyo/FourColorTheorem-Lean4, commit `20fa345`.
 8. The Mathlib Community, *Mathlib4*, https://github.com/leanprover-community/mathlib4.
 9. Lean FRO, *Lean 4*, https://lean-lang.org/.

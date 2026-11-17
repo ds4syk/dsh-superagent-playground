@@ -1,0 +1,1657 @@
+== Mathlib (from the cache)
+Current branch: HEAD
+Using cache from origin: (some leanprover-community/mathlib4)
+No files to download
+Already decompressed 8905 file(s)
+== the FourColor modules
+plan: 821 modules, 7.9 core-hours, 16 jobs, 80 GB budget, predicted 30 min
+FourColor.Bulk.Lit 2.2s 1543MB rc=0
+FourColor.Dyck 9.0s 1190MB rc=0
+FourColor.Seq 9.1s 1470MB rc=0
+FourColor.Path 9.2s 1479MB rc=0
+FourColor.Adjoin 12.3s 1735MB rc=0
+FourColor.Color 4.3s 1713MB rc=0
+FourColor.Component 1.4s 1752MB rc=0
+FourColor.Ctree 2.4s 1706MB rc=0
+FourColor.Chromogram 2.6s 1700MB rc=0
+FourColor.Bulk.Digits 3.6s 1849MB rc=0
+FourColor.Bulk.Coclosure 1.0s 1586MB rc=0
+FourColor.Perm 5.1s 1986MB rc=0
+FourColor.RealPlane 17.7s 2122MB rc=0
+FourColor.CertFlip 1.8s 1592MB rc=0
+FourColor.InitCtree 2.4s 1690MB rc=0
+FourColor.Gtree 2.4s 1633MB rc=0
+FourColor.MaskCert 2.7s 1680MB rc=0
+FourColor.Orbit 1.4s 1942MB rc=0
+FourColor.Bulk.Move 2.1s 1786MB rc=0
+FourColor.RealPlaneMathlib 1.5s 2109MB rc=0
+FourColor.Hypermap 2.3s 1998MB rc=0
+FourColor.MaskRank 1.5s 1620MB rc=0
+FourColor.GtreeRestrict 2.2s 1654MB rc=0
+FourColor.Bulk.Chords 3.0s 1732MB rc=0
+FourColor.InitGtree 2.9s 1662MB rc=0
+FourColor.Bulk.Masks 2.8s 1800MB rc=0
+FourColor.Walkup 3.1s 2021MB rc=0
+FourColor.Bulk.Pair 2.1s 1788MB rc=0
+FourColor.Grid 4.3s 2069MB rc=0
+FourColor.Euler 1.4s 1938MB rc=0
+FourColor.CtreeRestrict 6.2s 1654MB rc=0
+FourColor.Bulk.Flip 2.3s 1808MB rc=0
+FourColor.Bulk.Perms 2.4s 1790MB rc=0
+FourColor.Jordan 2.7s 2006MB rc=0
+FourColor.Geometry 4.2s 2035MB rc=0
+FourColor.Mask.Cfg504 9.0s 2658MB rc=0
+FourColor.Mask.Cfg501 8.5s 2618MB rc=0
+FourColor.EulerTree 3.4s 1995MB rc=0
+FourColor.Bulk.Index 1.8s 1768MB rc=0
+FourColor.KempeTree 6.5s 1678MB rc=0
+FourColor.Mask.Cfg289 12.5s 3047MB rc=0
+FourColor.Coloring 4.9s 1996MB rc=0
+FourColor.Bulk.Small 5.0s 2085MB rc=0
+FourColor.Mask.Cfg629 18.0s 3570MB rc=0
+FourColor.Bulk.Kempe 13.1s 1822MB rc=0
+FourColor.Mask.Cfg398 8.9s 2577MB rc=0
+FourColor.Mask.Cfg317 9.0s 2600MB rc=0
+FourColor.Bulk.Checks 2.2s 1757MB rc=0
+FourColor.Mask.Cfg295 9.4s 2617MB rc=0
+FourColor.Patch 5.5s 2079MB rc=0
+FourColor.Quiz 7.8s 2077MB rc=0
+FourColor.CfMap 12.7s 2267MB rc=0
+FourColor.Mask.Cfg453 26.0s 3663MB rc=0
+FourColor.Part 17.4s 2321MB rc=0
+FourColor.Mask.Cfg202 6.4s 2418MB rc=0
+FourColor.Mask.Cfg300 7.0s 2501MB rc=0
+FourColor.Kempe 10.5s 2128MB rc=0
+FourColor.Mask.Cfg303 8.2s 2586MB rc=0
+FourColor.Mask.Cfg534 7.4s 2517MB rc=0
+FourColor.Discharge 4.2s 2066MB rc=0
+FourColor.QuizTree 8.1s 2065MB rc=0
+FourColor.CfColor 6.0s 2090MB rc=0
+FourColor.Mask.Cfg082 34.9s 3282MB rc=0
+FourColor.Mask.Cfg502 5.9s 2331MB rc=0
+FourColor.Mask.Cfg234 5.2s 2327MB rc=0
+FourColor.HubCap 4.9s 2065MB rc=0
+FourColor.Mask.Cfg549 6.8s 2439MB rc=0
+FourColor.Mask.Cfg506 6.5s 2452MB rc=0
+FourColor.Present 3.2s 2001MB rc=0
+FourColor.Bulk.FoldList 3.8s 2014MB rc=0
+FourColor.Mask.Cfg562 3.9s 2143MB rc=0
+FourColor.Mask.Cfg285 4.8s 2179MB rc=0
+FourColor.Mask.Cfg230 5.0s 2225MB rc=0
+FourColor.Configurations 18.0s 2483MB rc=0
+FourColor.Mask.Cfg228 3.4s 2107MB rc=0
+FourColor.Mask.Cfg308 5.0s 2254MB rc=0
+FourColor.Mask.Cfg292 5.9s 2397MB rc=0
+FourColor.Bulk.Fold 6.0s 2151MB rc=0
+FourColor.Mask.Cfg489 5.5s 2313MB rc=0
+FourColor.Mask.Cfg619 2.7s 2094MB rc=0
+FourColor.RedPart 13.1s 2204MB rc=0
+FourColor.Mask.Cfg290 2.5s 2083MB rc=0
+FourColor.Mask.Cfg617 2.7s 2076MB rc=0
+FourColor.Mask.Cfg311 4.4s 2335MB rc=0
+FourColor.Mask.Cfg227 3.2s 2112MB rc=0
+FourColor.Mask.Cfg620 4.7s 2262MB rc=0
+FourColor.Mask.Cfg310 3.3s 2143MB rc=0
+FourColor.Mask.Cfg282 2.5s 2055MB rc=0
+FourColor.Mask.Cfg485 4.4s 2246MB rc=0
+FourColor.Mask.Cfg542 3.4s 2119MB rc=0
+FourColor.CfQuiz 26.1s 2194MB rc=0
+FourColor.Mask.Cfg541 2.7s 2066MB rc=0
+FourColor.Mask.Cfg498 3.8s 2195MB rc=0
+FourColor.Mask.Cfg530 2.9s 2073MB rc=0
+FourColor.CfContract 19.7s 2429MB rc=0
+FourColor.Sew 2.3s 1972MB rc=0
+FourColor.Snip 4.0s 2047MB rc=0
+FourColor.CfReducible 2.2s 2014MB rc=0
+FourColor.QuizTreeData 25.1s 2197MB rc=0
+FourColor.Mask.Cfg583 5.7s 2375MB rc=0
+FourColor.Mask.Cfg469 8.3s 2657MB rc=0
+FourColor.CertBase 2.0s 1977MB rc=0
+FourColor.Mask.Cfg465 7.1s 2517MB rc=0
+FourColor.Mask.Cfg587 7.0s 2516MB rc=0
+FourColor.RevSnip 3.8s 2087MB rc=0
+FourColor.Mask.Cfg447 5.0s 2340MB rc=0
+FourColor.Mask.Cfg151 60.1s 3198MB rc=0
+FourColor.Bulk.Reducible 2.4s 2011MB rc=0
+FourColor.Mask.Cfg377 4.1s 2211MB rc=0
+FourColor.Cert 3.0s 2015MB rc=0
+FourColor.Mask.Cfg196 4.0s 2226MB rc=0
+FourColor.Mask.Cfg181 4.1s 2271MB rc=0
+FourColor.Mask.Cfg521 3.4s 2150MB rc=0
+FourColor.Mask.Cfg574 13.7s 3231MB rc=0
+FourColor.Mask.Cfg444 4.5s 2282MB rc=0
+FourColor.Mask.Cfg261 4.5s 2273MB rc=0
+FourColor.Mask.Cfg191 6.3s 2408MB rc=0
+FourColor.MaskWit 3.5s 2027MB rc=0
+FourColor.Bulk.Hybrid 4.3s 2020MB rc=0
+FourColor.MaskChord 2.8s 2020MB rc=0
+FourColor.Bulk.HybridC 7.2s 2065MB rc=0
+FourColor.Bulk.Lanes 2.9s 2068MB rc=0
+FourColor.Bulk.HybridT 14.9s 3370MB rc=0
+FourColor.Bulk.Cfg.Grp14_19 124.2s 4464MB rc=0
+FourColor.Bulk.Cfg.Grp11_01 130.4s 2647MB rc=0
+FourColor.Bulk.Cfg.Grp14_09 129.9s 4448MB rc=0
+FourColor.Bulk.Cfg.Grp14_13 130.1s 4422MB rc=0
+FourColor.Bulk.Cfg.Grp14_16 133.3s 4445MB rc=0
+FourColor.Bulk.Cfg.Grp14_20 136.7s 4446MB rc=0
+FourColor.Bulk.Cfg.Grp14_01 138.0s 4459MB rc=0
+FourColor.Bulk.Cfg.Grp14_18 139.9s 4431MB rc=0
+FourColor.Bulk.Cfg.Grp11_00 148.7s 2675MB rc=0
+FourColor.Bulk.Cfg.Grp14_14 113.8s 4458MB rc=0
+FourColor.QuizData 175.6s 2922MB rc=0
+FourColor.TheQuizTree 4.5s 2460MB rc=0
+FourColor.Present7Defs 23.5s 2906MB rc=0
+FourColor.Mask.Cfg393 269.4s 2778MB rc=0
+FourColor.Bulk.Cfg.Grp14_23 104.0s 4442MB rc=0
+FourColor.Bulk.Cfg.Grp14_06 105.8s 4447MB rc=0
+FourColor.Bulk.Cfg.Grp14_02 113.0s 4448MB rc=0
+FourColor.Bulk.Cfg.Grp14_12 103.3s 4443MB rc=0
+FourColor.Bulk.Cfg.Grp14_22 103.8s 4404MB rc=0
+FourColor.Bulk.Cfg.Grp14_05 118.1s 4452MB rc=0
+FourColor.Bulk.Cfg.Grp14_10 109.0s 4405MB rc=0
+FourColor.Present8Defs 19.4s 2824MB rc=0
+FourColor.Bulk.Cfg.Grp14_00 126.0s 4423MB rc=0
+FourColor.Bulk.Cfg.Grp14_15 135.5s 4442MB rc=0
+FourColor.Bulk.Cfg.Grp14_17 126.2s 4440MB rc=0
+FourColor.Present8Chk2 107.1s 2500MB rc=0
+FourColor.Mask.Cfg280 444.5s 2737MB rc=0
+FourColor.Present7Chk45 142.8s 4149MB rc=0
+FourColor.Present8Chk51 134.4s 3951MB rc=0
+FourColor.Present7Chk74 167.4s 8181MB rc=0
+FourColor.Bulk.Cfg.Hyb280D 38.3s 2531MB rc=0
+FourColor.Present8Chk36 158.7s 3900MB rc=0
+FourColor.Mask.Cfg218 498.6s 2597MB rc=0
+FourColor.Present7Chk62 202.1s 6560MB rc=0
+FourColor.Present7Chk63 239.6s 6384MB rc=0
+FourColor.Present7Chk66 188.8s 5137MB rc=0
+FourColor.Present7Chk85 254.2s 7487MB rc=0
+FourColor.Present7Chk87 234.3s 9217MB rc=0
+FourColor.Bulk.Cfg.Hyb218D 34.2s 2539MB rc=0
+FourColor.Present8Chk37 208.4s 3824MB rc=0
+FourColor.Present7Chk68 241.1s 6682MB rc=0
+FourColor.Present7Chk56 96.1s 4636MB rc=0
+FourColor.Present8Chk12 153.4s 3509MB rc=0
+FourColor.Present7Chk46 98.4s 3457MB rc=0
+FourColor.Present8Chk35 129.0s 3954MB rc=0
+FourColor.Present8Chk32 124.9s 4137MB rc=0
+FourColor.Present7Chk98 85.2s 3871MB rc=0
+FourColor.Present7Chk43 101.8s 5601MB rc=0
+FourColor.Present7Chk100 78.9s 3838MB rc=0
+FourColor.Present7Chk84 116.0s 6447MB rc=0
+FourColor.Present7Chk86 131.8s 8100MB rc=0
+FourColor.Present7Chk41 108.8s 4152MB rc=0
+FourColor.Present8Chk103 162.8s 6339MB rc=0
+FourColor.Present8Chk61 116.8s 3890MB rc=0
+FourColor.Present7Chk76 72.3s 3303MB rc=0
+FourColor.Present7Chk44 84.7s 3576MB rc=0
+FourColor.Mask.Cfg612 671.0s 2877MB rc=0
+FourColor.Present9Defs 15.5s 2535MB rc=0
+FourColor.Present8Chk92 110.9s 3740MB rc=0
+FourColor.Present8Chk33 110.4s 4114MB rc=0
+FourColor.Present7Chk37 79.4s 4222MB rc=0
+FourColor.Present7Chk40 89.4s 4154MB rc=0
+FourColor.Present7Chk97 76.4s 3302MB rc=0
+FourColor.Present7Chk99 67.9s 5938MB rc=0
+FourColor.Present8Chk58 117.4s 3974MB rc=0
+FourColor.Present7Chk75 73.4s 3819MB rc=0
+FourColor.Mask.Cfg561 720.0s 3038MB rc=0
+FourColor.Present7Chk1 71.1s 2832MB rc=0
+FourColor.Present7Chk25 67.9s 2638MB rc=0
+FourColor.Present8Chk67 101.3s 4543MB rc=0
+FourColor.Present8Chk1 94.5s 3595MB rc=0
+FourColor.Present7Chk90 56.8s 2694MB rc=0
+FourColor.Present7Chk24 59.9s 2867MB rc=0
+FourColor.Present7Chk112 62.6s 2909MB rc=0
+FourColor.Bulk.Cfg.Hyb561D 41.9s 2553MB rc=0
+FourColor.Present7Chk88 81.2s 4102MB rc=0
+FourColor.Present7Chk5 65.3s 3700MB rc=0
+FourColor.Present7Chk42 55.7s 3307MB rc=0
+FourColor.Present8Chk34 84.4s 4153MB rc=0
+FourColor.Present7Chk57 57.6s 3330MB rc=0
+FourColor.Present8Chk59 86.4s 3978MB rc=0
+FourColor.Present8Chk90 98.9s 3760MB rc=0
+FourColor.Bulk.Cfg.Hyb218K1 223.0s 14431MB rc=0
+FourColor.Present7Chk19 55.7s 2761MB rc=0
+FourColor.Present7Chk16 60.1s 3493MB rc=0
+FourColor.Bulk.Cfg.Hyb218C 275.6s 3804MB rc=0
+FourColor.Present7Chk34 53.2s 3874MB rc=0
+FourColor.Present7Chk9 67.7s 3500MB rc=0
+FourColor.Present7Chk61 49.7s 2649MB rc=0
+FourColor.Present7Chk65 53.1s 3227MB rc=0
+FourColor.Present7Chk113 70.0s 3032MB rc=0
+FourColor.Present8Chk63 77.5s 4546MB rc=0
+FourColor.Present7Chk13 49.7s 3041MB rc=0
+FourColor.Present7Chk49 49.2s 4057MB rc=0
+FourColor.Present7Chk107 54.4s 3664MB rc=0
+FourColor.Present8Chk76 84.4s 2997MB rc=0
+FourColor.Present7Chk53 69.5s 3816MB rc=0
+FourColor.Present8Chk3 70.4s 2957MB rc=0
+FourColor.Bulk.Cfg.Hyb612D 34.9s 2554MB rc=0
+FourColor.Present7Chk15 50.2s 2668MB rc=0
+FourColor.Present7Chk96 47.4s 3091MB rc=0
+FourColor.Present7Chk52 48.9s 4426MB rc=0
+FourColor.Present8Chk109 88.2s 3884MB rc=0
+FourColor.Present7Chk8 49.5s 3490MB rc=0
+FourColor.Present8Chk66 84.8s 3674MB rc=0
+FourColor.Present8Chk25 71.0s 3053MB rc=0
+FourColor.Present8Chk31 73.1s 4141MB rc=0
+FourColor.Present7Chk7 48.7s 2906MB rc=0
+FourColor.Present7Chk39 50.0s 2786MB rc=0
+FourColor.Bulk.Cfg.Hyb218K2 231.4s 15018MB rc=0
+FourColor.Present7Chk64 52.1s 4528MB rc=0
+FourColor.Present8Chk41 77.6s 3420MB rc=0
+FourColor.Present7Chk36 56.6s 2529MB rc=0
+FourColor.Present7Chk2 49.3s 2347MB rc=0
+FourColor.Present8Chk15 66.0s 3321MB rc=0
+FourColor.Present7Chk89 41.3s 3040MB rc=0
+FourColor.Present7Chk51 55.2s 3660MB rc=0
+FourColor.Present8Chk9 83.0s 3428MB rc=0
+FourColor.Present9Chk25 112.7s 3812MB rc=0
+FourColor.Present8Chk13 83.2s 3056MB rc=0
+FourColor.Present7Chk73 43.2s 2768MB rc=0
+FourColor.Present7Chk21 49.2s 2602MB rc=0
+FourColor.Present7Chk22 40.6s 2900MB rc=0
+FourColor.Present8Chk6 90.5s 3028MB rc=0
+FourColor.Present8Chk20 73.2s 2947MB rc=0
+FourColor.Present7Chk108 41.2s 2427MB rc=0
+FourColor.Present8Chk39 71.0s 3858MB rc=0
+FourColor.Present7Chk54 50.1s 2647MB rc=0
+FourColor.Bulk.Cfg.Hyb561C 236.7s 3066MB rc=0
+FourColor.Present7Chk67 44.6s 2500MB rc=0
+FourColor.Present8Chk16 71.9s 4174MB rc=0
+FourColor.Present7Chk83 41.4s 3120MB rc=0
+FourColor.Present8Chk89 79.7s 3226MB rc=0
+FourColor.Present7Chk30 39.8s 2968MB rc=0
+FourColor.Present7Chk29 49.3s 2751MB rc=0
+FourColor.Present8Chk69 60.1s 4075MB rc=0
+FourColor.Present8Chk70 61.9s 2911MB rc=0
+FourColor.Bulk.Cfg.Hyb561B 239.9s 17824MB rc=0
+FourColor.Present7Chk4 47.6s 3012MB rc=0
+FourColor.Present8Chk95 70.2s 3082MB rc=0
+FourColor.Present8Chk91 58.6s 3518MB rc=0
+FourColor.Present8Chk85 62.5s 2962MB rc=0
+FourColor.Present8Chk57 62.2s 3674MB rc=0
+FourColor.Present7Chk95 43.5s 3311MB rc=0
+FourColor.Present8Chk19 64.7s 3544MB rc=0
+FourColor.Present7Chk32 42.2s 2463MB rc=0
+FourColor.Present7Chk27 34.6s 2595MB rc=0
+FourColor.Present7Chk50 35.4s 3148MB rc=0
+FourColor.Present7Chk17 43.4s 3159MB rc=0
+FourColor.Present7Chk23 32.1s 2744MB rc=0
+FourColor.Present7Chk71 33.0s 2550MB rc=0
+FourColor.Present8Chk14 62.5s 3270MB rc=0
+FourColor.Present7Chk72 44.5s 2605MB rc=0
+FourColor.Present7Chk69 45.8s 2345MB rc=0
+FourColor.Present8Chk65 58.7s 3532MB rc=0
+FourColor.Present8Chk26 60.8s 2857MB rc=0
+FourColor.Present7Chk3 32.7s 2269MB rc=0
+FourColor.Present8Chk52 69.2s 2959MB rc=0
+FourColor.Present9Chk56 99.6s 3235MB rc=0
+FourColor.Present7Chk6 31.2s 2661MB rc=0
+FourColor.Present7Chk31 27.8s 2848MB rc=0
+FourColor.Present8Chk50 59.3s 3972MB rc=0
+FourColor.Present7Chk70 41.1s 2540MB rc=0
+FourColor.Present7Chk93 29.1s 2743MB rc=0
+FourColor.Bulk.Cfg.Hyb280B 195.3s 14489MB rc=0
+FourColor.Present8Chk100 53.5s 4094MB rc=0
+FourColor.Present8Chk55 61.1s 3009MB rc=0
+FourColor.Present7Chk38 32.9s 2577MB rc=0
+FourColor.Present8Chk23 53.0s 3233MB rc=0
+FourColor.Present7Chk55 34.9s 3514MB rc=0
+FourColor.Present8Chk78 52.7s 3227MB rc=0
+FourColor.Present8Chk77 55.8s 2926MB rc=0
+FourColor.Present8Chk7 53.7s 2809MB rc=0
+FourColor.Present8Chk10 66.6s 2883MB rc=0
+FourColor.Present7Chk33 36.4s 2303MB rc=0
+FourColor.Present8Chk56 51.5s 2732MB rc=0
+FourColor.Present7Chk59 36.3s 2418MB rc=0
+FourColor.Present7Chk28 25.0s 2504MB rc=0
+FourColor.Present7Chk35 25.3s 2328MB rc=0
+FourColor.Present7Chk12 27.0s 2946MB rc=0
+FourColor.Present9Chk65 96.2s 3533MB rc=0
+FourColor.Present7Chk47 27.7s 2334MB rc=0
+FourColor.Present8Chk84 58.9s 2985MB rc=0
+FourColor.Present8Chk42 66.6s 3053MB rc=0
+FourColor.Present7Chk14 26.6s 2230MB rc=0
+FourColor.Present7Chk58 26.3s 2970MB rc=0
+FourColor.Present7Chk94 22.1s 2476MB rc=0
+FourColor.Present7Chk103 22.2s 2483MB rc=0
+FourColor.Present9Chk62 90.9s 3058MB rc=0
+FourColor.Present7Chk91 20.7s 2513MB rc=0
+FourColor.Present7Chk26 33.5s 2237MB rc=0
+FourColor.Present7Chk80 20.4s 3254MB rc=0
+FourColor.Present7Chk111 32.1s 2327MB rc=0
+FourColor.Present7Chk18 30.4s 2389MB rc=0
+FourColor.Present8Chk72 68.2s 3159MB rc=0
+FourColor.Present7Chk20 20.2s 2250MB rc=0
+FourColor.Present8Chk88 52.3s 2513MB rc=0
+FourColor.Present7Chk109 21.8s 2299MB rc=0
+FourColor.Present8Chk45 56.6s 2948MB rc=0
+FourColor.Present7Chk106 23.1s 2197MB rc=0
+FourColor.Present8Chk54 48.3s 3008MB rc=0
+FourColor.Present7Chk101 21.7s 2326MB rc=0
+FourColor.Present7Chk11 22.9s 2679MB rc=0
+FourColor.Present7Chk48 20.0s 2266MB rc=0
+FourColor.Present7Chk105 19.2s 2329MB rc=0
+FourColor.Present7Chk10 28.8s 2372MB rc=0
+FourColor.Present7Chk82 19.6s 2250MB rc=0
+FourColor.Present8Chk87 48.7s 3534MB rc=0
+FourColor.Present8Chk8 46.8s 2553MB rc=0
+FourColor.Present7Chk79 15.1s 2493MB rc=0
+FourColor.Present7Chk81 14.5s 2295MB rc=0
+FourColor.Present7Chk104 20.1s 2376MB rc=0
+FourColor.Present7Chk110 20.3s 2235MB rc=0
+FourColor.Present7Chk60 15.2s 2215MB rc=0
+FourColor.Present8Chk17 53.3s 2827MB rc=0
+FourColor.Present8Chk102 47.4s 2589MB rc=0
+FourColor.Present7Chk92 14.3s 2146MB rc=0
+FourColor.Present7Chk78 13.0s 2321MB rc=0
+FourColor.Present7Chk102 9.0s 2064MB rc=0
+FourColor.Present8Chk82 50.6s 3773MB rc=0
+FourColor.Present7Chk77 9.4s 2076MB rc=0
+FourColor.Present8Chk44 52.7s 2639MB rc=0
+FourColor.Present8Chk105 46.9s 2800MB rc=0
+FourColor.Bulk.Cfg.Hyb561K1 165.8s 12670MB rc=0
+FourColor.Present8Chk93 18.3s 2245MB rc=0
+FourColor.Present8Chk62 42.4s 3730MB rc=0
+FourColor.Present8Chk94 41.1s 2724MB rc=0
+FourColor.Present8Chk106 30.9s 2231MB rc=0
+FourColor.Present8Chk47 51.6s 2480MB rc=0
+FourColor.Present7Hub1 1.4s 2021MB rc=0
+FourColor.Present8Chk11 38.8s 2483MB rc=0
+FourColor.Mask.Cfg171 1.9s 2081MB rc=0
+FourColor.Present8Chk40 27.9s 2381MB rc=0
+FourColor.Mask.Cfg473 1.9s 2091MB rc=0
+FourColor.Mask.Cfg379 1.8s 2059MB rc=0
+FourColor.Mask.Cfg179 2.4s 2055MB rc=0
+FourColor.Present8Chk46 45.2s 2855MB rc=0
+FourColor.Mask.Cfg456 1.8s 2049MB rc=0
+FourColor.Present8Chk5 46.9s 2542MB rc=0
+FourColor.Bulk.Cfg.Hyb218B 279.6s 20507MB rc=0
+FourColor.Present8Chk74 32.7s 2650MB rc=0
+FourColor.Bulk.Cfg.Hyb280C 198.2s 2971MB rc=0
+FourColor.Present8Chk71 34.9s 2796MB rc=0
+FourColor.Present8Chk18 45.5s 3480MB rc=0
+FourColor.Present8Chk48 27.1s 2500MB rc=0
+FourColor.Present8Chk30 25.6s 2386MB rc=0
+FourColor.Present8Chk73 40.4s 2921MB rc=0
+FourColor.Present8Chk96 35.6s 2825MB rc=0
+FourColor.Present8Chk27 46.1s 3400MB rc=0
+FourColor.Present8Chk21 27.2s 2288MB rc=0
+FourColor.Present8Chk4 34.2s 2541MB rc=0
+FourColor.Present8Chk60 41.5s 2565MB rc=0
+FourColor.Present8Chk75 35.8s 2943MB rc=0
+FourColor.Present8Chk43 39.8s 3357MB rc=0
+FourColor.Present8Chk101 39.0s 3124MB rc=0
+FourColor.Present9Chk32 68.2s 3250MB rc=0
+FourColor.Bulk.Cfg.Hyb561K2 183.1s 12740MB rc=0
+FourColor.Present8Chk99 36.6s 2918MB rc=0
+FourColor.Present8Chk80 36.8s 2911MB rc=0
+FourColor.Present8Chk104 38.1s 3207MB rc=0
+FourColor.Present8Chk81 34.5s 3232MB rc=0
+FourColor.Present8Chk29 31.8s 2680MB rc=0
+FourColor.Present8Chk38 32.2s 2610MB rc=0
+FourColor.Present9Chk30 71.7s 3418MB rc=0
+FourColor.Present8Chk49 31.9s 2764MB rc=0
+FourColor.Present8Chk83 36.3s 2655MB rc=0
+FourColor.Present8Chk79 31.3s 2599MB rc=0
+FourColor.Present8Chk68 41.8s 2807MB rc=0
+FourColor.Present9Chk19 68.9s 2948MB rc=0
+FourColor.Present7Step1 15.8s 2375MB rc=0
+FourColor.Present8Chk86 30.1s 2712MB rc=0
+FourColor.Present9Chk26 75.3s 3588MB rc=0
+FourColor.Present9Chk39 78.3s 3226MB rc=0
+FourColor.Present8Chk22 24.8s 2473MB rc=0
+FourColor.Bulk.Cfg.Hyb612B 133.6s 11616MB rc=0
+FourColor.Present8Chk24 22.7s 2334MB rc=0
+FourColor.Present8Chk64 30.9s 2919MB rc=0
+FourColor.Present8Chk110 18.4s 2821MB rc=0
+FourColor.Present8Chk108 18.8s 2565MB rc=0
+FourColor.Present9Chk71 69.0s 4187MB rc=0
+FourColor.Present8Chk53 28.8s 2618MB rc=0
+FourColor.Present8Chk28 18.0s 2256MB rc=0
+FourColor.Present9Chk24 71.7s 3364MB rc=0
+FourColor.Present9Chk69 64.0s 3387MB rc=0
+FourColor.Present9Chk53 69.6s 3188MB rc=0
+FourColor.Present9Chk61 55.1s 2801MB rc=0
+FourColor.Present8Chk107 18.5s 2164MB rc=0
+FourColor.Present9Chk27 63.0s 3018MB rc=0
+FourColor.Present8Chk97 19.9s 2669MB rc=0
+FourColor.Present9Chk12 56.9s 2713MB rc=0
+FourColor.Present9Chk34 57.8s 2809MB rc=0
+FourColor.Present8Chk98 9.7s 2087MB rc=0
+FourColor.Bulk.Cfg.Hyb218K3 167.0s 14801MB rc=0
+FourColor.Present9Chk57 60.9s 3587MB rc=0
+FourColor.Present9Chk45 50.5s 3440MB rc=0
+FourColor.Present9Chk37 49.5s 2887MB rc=0
+FourColor.Present9Chk40 50.1s 2858MB rc=0
+FourColor.Present9Chk7 56.5s 2724MB rc=0
+FourColor.Bulk.Cfg.Hyb561K3 135.8s 12896MB rc=0
+FourColor.Present9Chk15 49.8s 2941MB rc=0
+FourColor.Present9Chk14 48.0s 2719MB rc=0
+FourColor.Present7Step2 15.7s 2396MB rc=0
+FourColor.Bulk.Cfg.Hyb393D 36.3s 2519MB rc=0
+FourColor.Present10Defs 6.7s 2230MB rc=0
+FourColor.Present9Chk70 49.0s 3507MB rc=0
+FourColor.Present9Chk48 55.5s 3258MB rc=0
+FourColor.Present9Chk38 47.6s 2920MB rc=0
+FourColor.Present9Chk2 46.7s 2561MB rc=0
+FourColor.Present9Chk51 45.5s 3000MB rc=0
+FourColor.Present9Chk46 47.6s 3331MB rc=0
+FourColor.Present9Chk21 43.7s 3077MB rc=0
+FourColor.Present9Chk1 43.9s 2484MB rc=0
+FourColor.Present9Chk52 46.5s 3202MB rc=0
+FourColor.Present9Chk66 39.5s 3077MB rc=0
+FourColor.Present9Chk54 49.3s 2435MB rc=0
+FourColor.Present8Hub1 1.9s 2087MB rc=0
+FourColor.Present9Chk43 44.6s 3033MB rc=0
+FourColor.Present9Chk3 44.4s 2656MB rc=0
+FourColor.Present9Chk29 42.2s 2657MB rc=0
+FourColor.Present9Chk36 48.1s 2616MB rc=0
+FourColor.Present8Hub2 1.9s 2085MB rc=0
+FourColor.Present9Chk10 37.8s 2734MB rc=0
+FourColor.Present9Chk75 34.7s 3056MB rc=0
+FourColor.Present9Chk16 33.5s 2920MB rc=0
+FourColor.Present9Chk50 36.1s 2695MB rc=0
+FourColor.Present9Chk23 38.2s 2994MB rc=0
+FourColor.Present9Chk60 48.8s 2629MB rc=0
+FourColor.Present8Hub3 1.8s 2088MB rc=0
+FourColor.Bulk.Cfg.Hyb280K2 151.8s 10799MB rc=0
+FourColor.Present9Chk22 32.0s 2862MB rc=0
+FourColor.Present9Chk59 34.6s 2647MB rc=0
+FourColor.Present9Chk47 35.4s 3039MB rc=0
+FourColor.Present9Chk68 29.3s 3128MB rc=0
+FourColor.Present9Chk31 39.7s 2764MB rc=0
+FourColor.Present8Hub4 2.0s 2076MB rc=0
+FourColor.Present9Chk44 43.6s 3460MB rc=0
+FourColor.Present8Hub5 1.3s 2014MB rc=0
+FourColor.Present9Chk77 31.2s 2539MB rc=0
+FourColor.Present9Chk13 39.2s 2605MB rc=0
+FourColor.Present9Chk41 29.2s 2895MB rc=0
+FourColor.Present9Chk4 35.0s 2723MB rc=0
+FourColor.Present7Step3 15.1s 2409MB rc=0
+FourColor.Bulk.Cfg.Hyb280K1 122.9s 10225MB rc=0
+FourColor.Present9Chk5 36.2s 2232MB rc=0
+FourColor.Present9Chk49 35.3s 2708MB rc=0
+FourColor.Present8Step1 16.4s 2467MB rc=0
+FourColor.Present9Chk74 29.4s 3204MB rc=0
+FourColor.Present9Chk8 34.5s 2898MB rc=0
+FourColor.Present9Chk64 30.3s 2954MB rc=0
+FourColor.Present9Chk35 27.6s 2717MB rc=0
+FourColor.Bulk.Cfg.Hyb612C 123.5s 3005MB rc=0
+FourColor.Present9Chk17 36.6s 2302MB rc=0
+FourColor.Present9Chk6 27.0s 2209MB rc=0
+FourColor.Present9Chk28 23.2s 2411MB rc=0
+FourColor.Present9Chk33 27.6s 3286MB rc=0
+FourColor.Present9Chk11 30.4s 2619MB rc=0
+FourColor.Present9Chk55 25.0s 2809MB rc=0
+FourColor.Present10Chk5 102.8s 3590MB rc=0
+FourColor.Present7Step4 9.5s 2161MB rc=0
+FourColor.Present9Chk18 21.3s 2366MB rc=0
+FourColor.Present9Chk72 17.8s 2937MB rc=0
+FourColor.Present9Chk58 25.0s 2510MB rc=0
+FourColor.Present9Chk73 22.2s 2867MB rc=0
+FourColor.Present9Chk20 17.5s 2926MB rc=0
+FourColor.Present9Chk9 17.6s 2646MB rc=0
+FourColor.Present9Chk42 24.1s 2506MB rc=0
+FourColor.Present9Chk63 13.6s 2147MB rc=0
+FourColor.Present9Chk67 17.4s 2294MB rc=0
+FourColor.Present9Chk76 27.2s 2497MB rc=0
+FourColor.Present8Step2 14.9s 2445MB rc=0
+FourColor.Present7Step5 11.3s 2257MB rc=0
+FourColor.Present9Hub1 2.4s 2076MB rc=0
+FourColor.Present9Hub2 2.5s 2073MB rc=0
+FourColor.Bulk.Cfg.Hyb280K3 108.4s 10728MB rc=0
+FourColor.Present7Step6 18.4s 2468MB rc=0
+FourColor.Present10Chk10 66.3s 3526MB rc=0
+FourColor.Bulk.Cfg.Hyb612K2 97.6s 9186MB rc=0
+FourColor.Bulk.Cfg.Hyb393B 102.0s 8928MB rc=0
+FourColor.Bulk.Cfg.Hyb612K1 94.2s 9034MB rc=0
+FourColor.Bulk.Cfg.Hyb393C 92.0s 2808MB rc=0
+FourColor.Bulk.Cfg.Grp14_11 95.7s 4199MB rc=0
+FourColor.Bulk.Cfg.Grp12_07 94.7s 2732MB rc=0
+FourColor.Bulk.Cfg.Grp14_03 102.2s 4460MB rc=0
+FourColor.Bulk.Cfg.Grp12_02 89.2s 2717MB rc=0
+FourColor.Bulk.Cfg.Grp13_00 99.2s 3081MB rc=0
+FourColor.Bulk.Cfg.Grp14_08 105.8s 4448MB rc=0
+FourColor.Bulk.Cfg.Grp14_04 112.3s 4409MB rc=0
+FourColor.Bulk.Cfg.Grp14_07 122.1s 4447MB rc=0
+FourColor.Bulk.Cfg.Grp14_21 130.7s 4226MB rc=0
+FourColor.Bulk.Cfg.Grp13_13 100.2s 3122MB rc=0
+FourColor.Bulk.Cfg.Grp12_01 100.4s 2730MB rc=0
+FourColor.Bulk.Cfg.Grp13_15 91.4s 3128MB rc=0
+FourColor.Bulk.Cfg.Grp13_10 104.9s 3129MB rc=0
+FourColor.Bulk.Cfg.Grp13_17 96.6s 3128MB rc=0
+FourColor.Bulk.Cfg.Grp12_04 113.7s 2722MB rc=0
+FourColor.Bulk.Cfg.Grp13_14 80.6s 3059MB rc=0
+FourColor.Bulk.Cfg.Grp13_11 83.6s 3117MB rc=0
+FourColor.Bulk.Cfg.Grp13_07 86.8s 3128MB rc=0
+FourColor.Present9Hub3 2.3s 2073MB rc=0
+FourColor.Bulk.Cfg.Hyb612K3 77.7s 9156MB rc=0
+FourColor.Bulk.Cfg.Grp12_06 97.1s 2721MB rc=0
+FourColor.Present8Step3 13.7s 2374MB rc=0
+FourColor.Bulk.Cfg.Grp12_08 91.6s 2722MB rc=0
+FourColor.Present9Hub4 2.4s 2074MB rc=0
+FourColor.Bulk.Cfg.Grp12_03 119.8s 2726MB rc=0
+FourColor.Present9Hub5 2.4s 2073MB rc=0
+FourColor.Bulk.Cfg.Grp13_02 111.8s 3103MB rc=0
+FourColor.Present9Hub6 2.2s 2044MB rc=0
+FourColor.Bulk.Cfg.Grp13_16 110.3s 3123MB rc=0
+FourColor.Bulk.Cfg.Grp12_00 88.5s 2728MB rc=0
+FourColor.Present9Step1 13.9s 2386MB rc=0
+FourColor.Bulk.Cfg.Grp13_03 91.6s 3121MB rc=0
+FourColor.Bulk.Cfg.Grp13_06 97.4s 3129MB rc=0
+FourColor.Present8Step4 12.2s 2368MB rc=0
+FourColor.Bulk.Cfg.Grp13_04 92.3s 3129MB rc=0
+FourColor.Present10Chk21 49.7s 3004MB rc=0
+FourColor.Present10Chk22 40.4s 3036MB rc=0
+FourColor.Present10Chk6 53.3s 2944MB rc=0
+FourColor.Present10Chk18 39.1s 3028MB rc=0
+FourColor.Present7Step7 14.5s 2407MB rc=0
+FourColor.Bulk.Cfg.Grp13_08 92.0s 3057MB rc=0
+FourColor.Present10Chk13 39.7s 3509MB rc=0
+FourColor.Bulk.Cfg.Grp13_05 98.5s 3053MB rc=0
+FourColor.Bulk.Cfg.Grp12_05 96.0s 2697MB rc=0
+FourColor.Bulk.Cfg.Hyb393K1 67.6s 7489MB rc=0
+FourColor.Bulk.Cfg.Grp13_01 90.5s 3081MB rc=0
+FourColor.Bulk.Cfg.Hyb393K2 76.4s 7328MB rc=0
+FourColor.Bulk.Cfg.Grp13_12 97.2s 3107MB rc=0
+FourColor.Bulk.Cfg.Grp13_09 90.0s 3059MB rc=0
+FourColor.Present10Chk8 30.9s 3012MB rc=0
+FourColor.Present10Chk24 37.8s 2491MB rc=0
+FourColor.Present10Chk12 41.7s 2479MB rc=0
+FourColor.Present10Chk2 33.4s 2783MB rc=0
+FourColor.Present10Chk20 32.4s 2730MB rc=0
+FourColor.Present10Chk23 36.3s 2527MB rc=0
+FourColor.Present11Defs 4.0s 2114MB rc=0
+FourColor.Bulk.Cfg.Grp12_09 77.1s 2699MB rc=0
+FourColor.Present10Chk14 39.5s 2928MB rc=0
+FourColor.Bulk.Cfg.Hyb393K3 52.0s 7352MB rc=0
+FourColor.Bulk.Cfg.Hyb629 63.6s 4441MB rc=0
+FourColor.Bulk.Cfg.Hyb082 82.2s 3488MB rc=0
+FourColor.Bulk.Cfg.Hyb504 59.9s 4430MB rc=0
+FourColor.Present9Step2 9.8s 2255MB rc=0
+FourColor.Present10Chk4 39.2s 2957MB rc=0
+FourColor.Present8Step5 10.9s 2283MB rc=0
+FourColor.Bulk.Cfg.Grp10_00 85.4s 2575MB rc=0
+FourColor.Present10Chk11 36.0s 2967MB rc=0
+FourColor.Bulk.Cfg.Hyb289 67.9s 4534MB rc=0
+FourColor.Bulk.Cfg.Hyb501 66.0s 4429MB rc=0
+FourColor.Bulk.Cfg.Hyb317 60.9s 4430MB rc=0
+FourColor.Bulk.Cfg.Hyb398 70.3s 4430MB rc=0
+FourColor.Bulk.Cfg.Hyb295 58.6s 4430MB rc=0
+FourColor.Present7Step8 13.2s 2314MB rc=0
+FourColor.Present11Chk5 45.4s 2447MB rc=0
+FourColor.Bulk.Cfg.Hyb300 57.2s 4550MB rc=0
+FourColor.Bulk.Cfg.Hyb549 52.6s 4208MB rc=0
+FourColor.Bulk.Cfg.Hyb502 56.9s 4432MB rc=0
+FourColor.Bulk.Cfg.Hyb202 68.1s 4438MB rc=0
+FourColor.Bulk.Cfg.Hyb453 51.9s 3397MB rc=0
+FourColor.Bulk.Cfg.Hyb506 60.8s 4431MB rc=0
+FourColor.Bulk.Cfg.Hyb534 63.6s 4428MB rc=0
+FourColor.Bulk.Cfg.Hyb303 66.9s 4432MB rc=0
+FourColor.Present6Defs 4.7s 2159MB rc=0
+FourColor.Bulk.Cfg.Hyb285 54.1s 4427MB rc=0
+FourColor.Present10Chk9 24.5s 2703MB rc=0
+FourColor.Present9Step3 10.8s 2303MB rc=0
+FourColor.Present10Chk1 25.9s 2926MB rc=0
+FourColor.Present10Chk15 26.0s 2512MB rc=0
+FourColor.Bulk.Cfg.Hyb562 51.6s 4430MB rc=0
+FourColor.Bulk.Cfg.Hyb230 52.9s 4426MB rc=0
+FourColor.Bulk.Cfg.Hyb234 51.3s 4428MB rc=0
+FourColor.Present10Chk17 24.6s 2173MB rc=0
+FourColor.Bulk.Cfg.Hyb228 55.2s 4428MB rc=0
+FourColor.Bulk.Cfg.Hyb619 52.3s 4428MB rc=0
+FourColor.Bulk.Cfg.Hyb308 51.8s 4425MB rc=0
+FourColor.Bulk.Cfg.Hyb290 60.3s 4426MB rc=0
+FourColor.Bulk.Cfg.Hyb617 53.4s 4431MB rc=0
+FourColor.Present8Step6 11.8s 2303MB rc=0
+FourColor.Bulk.Cfg.Hyb311 51.4s 4209MB rc=0
+FourColor.Bulk.Cfg.Hyb227 56.2s 4427MB rc=0
+FourColor.Bulk.Cfg.Hyb292 60.2s 4443MB rc=0
+FourColor.Present10Chk3 19.8s 2587MB rc=0
+FourColor.Present10Chk19 21.5s 2398MB rc=0
+FourColor.Bulk.Cfg.Hyb310 51.2s 4423MB rc=0
+FourColor.Bulk.Cfg.Hyb620 51.8s 4429MB rc=0
+FourColor.Bulk.Cfg.Hyb489 70.6s 4239MB rc=0
+FourColor.Bulk.Cfg.Hyb485 47.5s 4203MB rc=0
+FourColor.Mask.Cfg194 2.9s 2175MB rc=0
+FourColor.Present7Step9 8.4s 2231MB rc=0
+FourColor.Mask.Cfg192 4.3s 2276MB rc=0
+FourColor.Present9Step4 8.4s 2272MB rc=0
+FourColor.Mask.Cfg197 3.3s 2218MB rc=0
+FourColor.Present11Chk4 35.5s 2759MB rc=0
+FourColor.Bulk.Cfg.Hyb541 52.1s 4432MB rc=0
+FourColor.Present10Chk7 15.4s 2433MB rc=0
+FourColor.Present8Step7 13.6s 2428MB rc=0
+FourColor.Mask.Cfg455 3.0s 2151MB rc=0
+FourColor.Present10Chk16 22.3s 2357MB rc=0
+FourColor.Bulk.Cfg.Hyb282 59.6s 4435MB rc=0
+FourColor.Present9Step5 10.3s 2312MB rc=0
+FourColor.Bulk.Cfg.Hyb151D 10.3s 2483MB rc=0
+FourColor.Present6Chk1 34.4s 2706MB rc=0
+FourColor.Present6Chk4 19.1s 2074MB rc=0
+FourColor.Present7Step10 16.7s 2429MB rc=0
+FourColor.Mask.Cfg445 2.7s 2175MB rc=0
+FourColor.Birkhoff 12.8s 3188MB rc=0
+FourColor.Mask.Cfg252 2.9s 2158MB rc=0
+FourColor.Mask.Cfg381 3.4s 2274MB rc=0
+FourColor.Bulk.Cfg.Hyb542 59.5s 4430MB rc=0
+FourColor.Mask.Cfg378 2.2s 2125MB rc=0
+FourColor.Bulk.Cfg.Grp11_02 46.7s 2567MB rc=0
+FourColor.Bulk.Cfg.Grp13_18 45.8s 3026MB rc=0
+FourColor.Bulk.Cfg.Hyb498 53.0s 4429MB rc=0
+FourColor.Bulk.Cfg.Hyb587 27.5s 3128MB rc=0
+FourColor.Bulk.Cfg.Hyb530 55.0s 4425MB rc=0
+FourColor.Bulk.Cfg.Grp14_24 27.9s 4394MB rc=0
+FourColor.Bulk.Cfg.Hyb469 31.0s 3136MB rc=0
+FourColor.Mask.Cfg592 3.0s 2154MB rc=0
+FourColor.Mask.Cfg467 2.9s 2103MB rc=0
+FourColor.Bulk.Cfg.Hyb377 31.3s 3121MB rc=0
+FourColor.Mask.Cfg254 2.1s 2089MB rc=0
+FourColor.Mask.Cfg259 2.1s 2106MB rc=0
+FourColor.Mask.Cfg625 2.0s 2089MB rc=0
+FourColor.Bulk.Cfg.Hyb465 34.6s 3143MB rc=0
+FourColor.Present11Chk6 17.9s 2204MB rc=0
+FourColor.Bulk.Cfg.Hyb583 30.9s 3154MB rc=0
+FourColor.Bulk.Cfg.Hyb447 27.9s 3140MB rc=0
+FourColor.Present10Hub1 2.0s 2066MB rc=0
+FourColor.Mask.Cfg457 2.2s 2072MB rc=0
+FourColor.Mask.Cfg602 2.2s 2087MB rc=0
+FourColor.Mask.Cfg448 1.9s 2065MB rc=0
+FourColor.Mask.Cfg558 1.9s 2062MB rc=0
+FourColor.Mask.Cfg094 2.4s 2165MB rc=0
+FourColor.Bulk.Cfg.Hyb444 26.1s 3127MB rc=0
+FourColor.Mask.Cfg460 1.9s 2074MB rc=0
+FourColor.Bulk.Cfg.Hyb196 28.1s 3124MB rc=0
+FourColor.Bulk.Cfg.Hyb521 28.6s 3119MB rc=0
+FourColor.Mask.Cfg376 2.8s 2151MB rc=0
+FourColor.Mask.Cfg584 2.1s 2081MB rc=0
+FourColor.Mask.Cfg458 2.6s 2172MB rc=0
+FourColor.Mask.Cfg256 2.4s 2066MB rc=0
+FourColor.Present10Hub2 1.9s 2064MB rc=0
+FourColor.Bulk.Cfg.Hyb181 31.2s 3147MB rc=0
+FourColor.Bulk.Cfg.Hyb574 25.1s 2875MB rc=0
+FourColor.Bulk.Cfg.Hyb261 30.2s 3133MB rc=0
+FourColor.Bulk.Cfg.Hyb191 29.9s 3130MB rc=0
+FourColor.Bulk.Cfg.Hyb455 25.5s 3116MB rc=0
+FourColor.Bulk.Cfg.Hyb197 24.7s 3106MB rc=0
+FourColor.Bulk.Cfg.Hyb592 22.0s 3033MB rc=0
+FourColor.Bulk.Cfg.Hyb467 22.5s 3100MB rc=0
+FourColor.Bulk.Cfg.Hyb252 24.3s 3103MB rc=0
+FourColor.Bulk.Cfg.Hyb171 22.9s 3028MB rc=0
+FourColor.Mask.Cfg380 1.9s 2064MB rc=0
+FourColor.Bulk.Cfg.Hyb194 35.7s 3101MB rc=0
+FourColor.Bulk.Cfg.Hyb381 23.5s 3043MB rc=0
+FourColor.Bulk.Cfg.Hyb378 26.2s 3100MB rc=0
+FourColor.Present8Step8 10.6s 2319MB rc=0
+FourColor.Bulk.Cfg.Hyb192 33.5s 3108MB rc=0
+FourColor.Mask.Cfg203 1.8s 2065MB rc=0
+FourColor.Bulk.Cfg.Hyb445 31.7s 3105MB rc=0
+FourColor.Bulk.Cfg.Hyb254 25.8s 3114MB rc=0
+FourColor.Present6Chk2 12.3s 2048MB rc=0
+FourColor.Bulk.Cfg.Hyb625 29.9s 3113MB rc=0
+FourColor.Bulk.Cfg.Hyb259 25.9s 3103MB rc=0
+FourColor.Bulk.Cfg.Hyb602 22.7s 3100MB rc=0
+FourColor.Bulk.Cfg.Hyb457 25.9s 3102MB rc=0
+FourColor.Present6Chk5 7.2s 2033MB rc=0
+FourColor.Present10Step1 5.8s 2136MB rc=0
+FourColor.Bulk.Cfg.Hyb460 22.0s 3101MB rc=0
+FourColor.Bulk.Cfg.Hyb448 24.6s 3100MB rc=0
+FourColor.Bulk.Cfg.Hyb094 23.9s 3026MB rc=0
+FourColor.Mask.Cfg539 1.7s 2049MB rc=0
+FourColor.Present6Chk3 6.6s 2033MB rc=0
+FourColor.Bulk.Cfg.Hyb473 24.7s 3030MB rc=0
+FourColor.Present6Chk6 6.7s 2043MB rc=0
+FourColor.Bulk.Cfg.Hyb558 26.9s 3103MB rc=0
+FourColor.Bulk.Cfg.Hyb379 23.5s 3097MB rc=0
+FourColor.Bulk.Cfg.Hyb256 20.9s 3098MB rc=0
+FourColor.Mask.Cfg140 2.3s 2126MB rc=0
+FourColor.Bulk.Cfg.Hyb376 27.2s 3058MB rc=0
+FourColor.Present9Step6 8.5s 2259MB rc=0
+FourColor.Mask.Cfg138 2.9s 2133MB rc=0
+FourColor.Present6Chk7 6.0s 2007MB rc=0
+FourColor.Bulk.Cfg.Hyb584 29.1s 3098MB rc=0
+FourColor.Bulk.Cfg.Hyb458 30.7s 3103MB rc=0
+FourColor.Present6Chk8 4.5s 1999MB rc=0
+FourColor.Bulk.Cfg.Hyb179 26.8s 3098MB rc=0
+FourColor.Mask.Cfg410 2.1s 2067MB rc=0
+FourColor.Bulk.Cfg.Hyb151K1 16.0s 3742MB rc=0
+FourColor.Bulk.Cfg.Hyb456 25.1s 3097MB rc=0
+FourColor.Mask.Cfg575 2.4s 2064MB rc=0
+FourColor.Contract 4.4s 2100MB rc=0
+FourColor.Present11Chk1 11.8s 2174MB rc=0
+FourColor.Bulk.Cfg.Hyb203 20.5s 3036MB rc=0
+FourColor.Present7Step11 11.2s 2302MB rc=0
+FourColor.Matte 8.4s 2223MB rc=0
+FourColor.Bulk.Cfg.Hyb393A 15.9s 4161MB rc=0
+FourColor.Bulk.Cfg.Hyb218A 16.5s 4390MB rc=0
+FourColor.Mask.Cfg072 2.0s 2087MB rc=0
+FourColor.Bulk.Cfg.Hyb612A 15.1s 4163MB rc=0
+FourColor.Bulk.Cfg.Hyb151K3 14.8s 3622MB rc=0
+FourColor.Bulk.Cfg.Hyb380 25.2s 3102MB rc=0
+FourColor.Bulk.Cfg.Hyb561A 15.6s 4171MB rc=0
+FourColor.Bulk.Cfg.Hyb280A 15.2s 4166MB rc=0
+FourColor.Mask.Cfg358 2.2s 2093MB rc=0
+FourColor.Mask.Cfg073 2.2s 2089MB rc=0
+FourColor.Mask.Cfg411 1.8s 2067MB rc=0
+FourColor.Mask.Cfg427 1.9s 2069MB rc=0
+FourColor.Mask.Cfg355 2.3s 2049MB rc=0
+FourColor.Mask.Cfg144 1.9s 2048MB rc=0
+FourColor.Mask.Cfg141 1.9s 2058MB rc=0
+FourColor.Mask.Cfg353 2.0s 2079MB rc=0
+FourColor.Present11Chk3 8.4s 2062MB rc=0
+FourColor.Mask.Cfg145 1.8s 2065MB rc=0
+FourColor.Mask.Cfg361 2.0s 2063MB rc=0
+FourColor.Mask.Cfg364 1.9s 2057MB rc=0
+FourColor.Mask.Cfg079 1.8s 2061MB rc=0
+FourColor.Present11Chk2 9.1s 2026MB rc=0
+FourColor.Bulk.Cfg.Hyb151B 13.0s 3338MB rc=0
+FourColor.Bulk.Cfg.Hyb151K2 13.9s 3579MB rc=0
+FourColor.Mask.Cfg143 1.8s 2049MB rc=0
+FourColor.Bulk.Cfg.Hyb140 17.5s 2720MB rc=0
+FourColor.Present10Step2 11.2s 2353MB rc=0
+FourColor.Bulk.Cfg.Hyb539 22.8s 3028MB rc=0
+FourColor.Embed 8.6s 2283MB rc=0
+FourColor.Bulk.Cfg.Hyb151C 12.1s 2543MB rc=0
+FourColor.Bulk.Cfg.Hyb138 16.3s 2718MB rc=0
+FourColor.Bulk.Cfg.Hyb575 16.1s 2699MB rc=0
+FourColor.Bulk.Cfg.Grp09_00 15.8s 2502MB rc=0
+FourColor.Bulk.Cfg.Hyb072 15.3s 2688MB rc=0
+FourColor.Present6Step1 15.9s 2391MB rc=0
+FourColor.Bulk.Cfg.Hyb410 17.8s 2706MB rc=0
+FourColor.Mask.Cfg335 2.1s 2061MB rc=0
+FourColor.Bulk.Cfg.Hyb411 17.0s 2708MB rc=0
+FourColor.Bulk.Cfg.Hyb358 16.6s 2696MB rc=0
+FourColor.Present8Step9 11.1s 2315MB rc=0
+FourColor.Bulk.Cfg.Hyb073 18.1s 2695MB rc=0
+FourColor.Present9Step7 9.4s 2258MB rc=0
+FourColor.Mask.Cfg059 1.7s 2055MB rc=0
+FourColor.Mask.Cfg338 1.7s 2046MB rc=0
+FourColor.Mask.Cfg051 1.7s 2047MB rc=0
+FourColor.Bulk.Cfg.Hyb427 14.5s 2689MB rc=0
+FourColor.Mask.Cfg033 1.8s 2053MB rc=0
+FourColor.Present11Hub1 1.4s 1986MB rc=0
+FourColor.Bulk.Cfg.Hyb355 15.1s 2694MB rc=0
+FourColor.Bulk.Cfg.Hyb141 14.9s 2695MB rc=0
+FourColor.Bulk.Cfg.Hyb144 14.4s 2714MB rc=0
+FourColor.Bulk.Cfg.Hyb353 15.4s 2683MB rc=0
+FourColor.Approx 7.1s 2246MB rc=0
+FourColor.Bulk.Cfg.Hyb151A 9.8s 3069MB rc=0
+FourColor.GridMap 4.5s 2110MB rc=0
+FourColor.Bulk.Cfg.Hyb145 15.0s 2674MB rc=0
+FourColor.Cube 2.0s 2000MB rc=0
+FourColor.Bulk.Cfg.Hyb364 12.7s 2653MB rc=0
+FourColor.Finitize 2.4s 2200MB rc=0
+FourColor.RedpartSound 1.7s 2017MB rc=0
+FourColor.Present5Defs 2.2s 2077MB rc=0
+FourColor.Bulk.Cfg.Hyb361 14.2s 2654MB rc=0
+FourColor.Bulk.Cfg.Hyb335 9.5s 2556MB rc=0
+FourColor.Bulk.Cfg.Grp08_00 7.9s 2472MB rc=0
+FourColor.Bulk.Cfg.Hyb143 13.3s 2690MB rc=0
+FourColor.Present7Step12 9.3s 2227MB rc=0
+FourColor.Combinatorial 1.6s 2168MB rc=0
+FourColor.Bulk.Cfg.Hyb079 14.1s 2674MB rc=0
+FourColor.Bulk.Cfg.Hyb059 9.6s 2549MB rc=0
+FourColor.Bulk.Cfg.Hyb338 9.0s 2546MB rc=0
+FourColor.Discretize 2.8s 2238MB rc=0
+FourColor.Bulk.Cfg.Hyb033 7.6s 2509MB rc=0
+FourColor.Bulk.Cfg.Hyb051 9.0s 2553MB rc=0
+FourColor.Present5Chk1 2.1s 1982MB rc=0
+FourColor.Bulk.Cfg.Grp06_00 2.4s 2454MB rc=0
+FourColor.Bulk.Cfg.Hyb151 2.0s 2451MB rc=0
+FourColor.Bulk.Cfg.Hyb612 2.1s 2457MB rc=0
+FourColor.Bulk.Cfg.Hyb280 2.1s 2457MB rc=0
+FourColor.Bulk.Cfg.Hyb218 2.1s 2458MB rc=0
+FourColor.Unavoidability 4.6s 2280MB rc=0
+FourColor.Bulk.Cfg.Hyb561 2.3s 2455MB rc=0
+FourColor.FourColorTheorem 1.6s 2166MB rc=0
+FourColor.Bulk.Cfg.Hyb393 2.2s 2451MB rc=0
+FourColor.Bulk.Cfg.Grp07_00 3.3s 2455MB rc=0
+FourColor.Present9Step8 5.3s 2133MB rc=0
+FourColor.Present5Step1 1.8s 2004MB rc=0
+FourColor.Present6 1.3s 1980MB rc=0
+FourColor.Present7Step13 2.2s 2043MB rc=0
+FourColor.Present11Step1 8.8s 2220MB rc=0
+FourColor.Present10Step3 6.2s 2177MB rc=0
+FourColor.Main 1.4s 2223MB rc=0
+FourColor.Present9 1.2s 2006MB rc=0
+FourColor.Present5 1.1s 1975MB rc=0
+FourColor.Reduce.All 1.8s 2754MB rc=0
+FourColor.Present7 1.2s 2020MB rc=0
+FourColor.Present8Step10 5.9s 2171MB rc=0
+FourColor.Present11 1.4s 1952MB rc=0
+FourColor.Present10 1.5s 1961MB rc=0
+FourColor.Present8 1.2s 2018MB rc=0
+FourColor.Complete 1.7s 3096MB rc=0
+FourColor.Nonvacuity 12.9s 3296MB rc=0
+FourColor 1.7s 3175MB rc=0
+WALL 2287s compiled 821 skipped-uptodate 0 failed 0 not-built 0 total 821 jobs 16 memory 80GB
+== verifying
+up to date: 821 modules; 0 to build
+plan: 0 modules, 0.0 core-hours, 32 jobs, 68 GB budget, predicted 0 min
+WALL 0s compiled 0 skipped-uptodate 821 failed 0 not-built 0 total 821 jobs 32 memory 68GB
+anti-vacuity audit: negative controls pass
+THEOREM PROVED: FourColor.fourColorTheorem : FourColor.FourColorTheorem depends only on [propext, Classical.choice, Quot.sound]
+checked 115342 FourColor declarations: no sorries, no extra axioms
+  FourColor.Adjoin: 10
+  FourColor.Approx: 90
+  FourColor.Birkhoff: 138
+  FourColor.Bulk.Cfg.Grp06_00: 15
+  FourColor.Bulk.Cfg.Grp07_00: 15
+  FourColor.Bulk.Cfg.Grp08_00: 80
+  FourColor.Bulk.Cfg.Grp09_00: 136
+  FourColor.Bulk.Cfg.Grp10_00: 540
+  FourColor.Bulk.Cfg.Grp11_00: 608
+  FourColor.Bulk.Cfg.Grp11_01: 608
+  FourColor.Bulk.Cfg.Grp11_02: 247
+  FourColor.Bulk.Cfg.Grp12_00: 336
+  FourColor.Bulk.Cfg.Grp12_01: 336
+  FourColor.Bulk.Cfg.Grp12_02: 336
+  FourColor.Bulk.Cfg.Grp12_03: 336
+  FourColor.Bulk.Cfg.Grp12_04: 336
+  FourColor.Bulk.Cfg.Grp12_05: 336
+  FourColor.Bulk.Cfg.Grp12_06: 336
+  FourColor.Bulk.Cfg.Grp12_07: 336
+  FourColor.Bulk.Cfg.Grp12_08: 336
+  FourColor.Bulk.Cfg.Grp12_09: 252
+  FourColor.Bulk.Cfg.Grp13_00: 176
+  FourColor.Bulk.Cfg.Grp13_01: 176
+  FourColor.Bulk.Cfg.Grp13_02: 176
+  FourColor.Bulk.Cfg.Grp13_03: 176
+  FourColor.Bulk.Cfg.Grp13_04: 176
+  FourColor.Bulk.Cfg.Grp13_05: 176
+  FourColor.Bulk.Cfg.Grp13_06: 176
+  FourColor.Bulk.Cfg.Grp13_07: 176
+  FourColor.Bulk.Cfg.Grp13_08: 176
+  FourColor.Bulk.Cfg.Grp13_09: 176
+  FourColor.Bulk.Cfg.Grp13_10: 176
+  FourColor.Bulk.Cfg.Grp13_11: 176
+  FourColor.Bulk.Cfg.Grp13_12: 176
+  FourColor.Bulk.Cfg.Grp13_13: 176
+  FourColor.Bulk.Cfg.Grp13_14: 176
+  FourColor.Bulk.Cfg.Grp13_15: 176
+  FourColor.Bulk.Cfg.Grp13_16: 176
+  FourColor.Bulk.Cfg.Grp13_17: 176
+  FourColor.Bulk.Cfg.Grp13_18: 88
+  FourColor.Bulk.Cfg.Grp14_00: 96
+  FourColor.Bulk.Cfg.Grp14_01: 96
+  FourColor.Bulk.Cfg.Grp14_02: 96
+  FourColor.Bulk.Cfg.Grp14_03: 96
+  FourColor.Bulk.Cfg.Grp14_04: 96
+  FourColor.Bulk.Cfg.Grp14_05: 96
+  FourColor.Bulk.Cfg.Grp14_06: 96
+  FourColor.Bulk.Cfg.Grp14_07: 96
+  FourColor.Bulk.Cfg.Grp14_08: 96
+  FourColor.Bulk.Cfg.Grp14_09: 96
+  FourColor.Bulk.Cfg.Grp14_10: 96
+  FourColor.Bulk.Cfg.Grp14_11: 96
+  FourColor.Bulk.Cfg.Grp14_12: 96
+  FourColor.Bulk.Cfg.Grp14_13: 96
+  FourColor.Bulk.Cfg.Grp14_14: 96
+  FourColor.Bulk.Cfg.Grp14_15: 96
+  FourColor.Bulk.Cfg.Grp14_16: 96
+  FourColor.Bulk.Cfg.Grp14_17: 96
+  FourColor.Bulk.Cfg.Grp14_18: 96
+  FourColor.Bulk.Cfg.Grp14_19: 96
+  FourColor.Bulk.Cfg.Grp14_20: 96
+  FourColor.Bulk.Cfg.Grp14_21: 96
+  FourColor.Bulk.Cfg.Grp14_22: 96
+  FourColor.Bulk.Cfg.Grp14_23: 96
+  FourColor.Bulk.Cfg.Grp14_24: 24
+  FourColor.Bulk.Cfg.Hyb033: 147
+  FourColor.Bulk.Cfg.Hyb051: 169
+  FourColor.Bulk.Cfg.Hyb059: 179
+  FourColor.Bulk.Cfg.Hyb072: 221
+  FourColor.Bulk.Cfg.Hyb073: 229
+  FourColor.Bulk.Cfg.Hyb079: 191
+  FourColor.Bulk.Cfg.Hyb082: 249
+  FourColor.Bulk.Cfg.Hyb094: 236
+  FourColor.Bulk.Cfg.Hyb138: 273
+  FourColor.Bulk.Cfg.Hyb140: 239
+  FourColor.Bulk.Cfg.Hyb141: 227
+  FourColor.Bulk.Cfg.Hyb143: 221
+  FourColor.Bulk.Cfg.Hyb144: 217
+  FourColor.Bulk.Cfg.Hyb145: 195
+  FourColor.Bulk.Cfg.Hyb151: 2
+  FourColor.Bulk.Cfg.Hyb151A: 13
+  FourColor.Bulk.Cfg.Hyb151B: 57
+  FourColor.Bulk.Cfg.Hyb151C: 41
+  FourColor.Bulk.Cfg.Hyb151D: 152
+  FourColor.Bulk.Cfg.Hyb151K1: 4
+  FourColor.Bulk.Cfg.Hyb151K2: 3
+  FourColor.Bulk.Cfg.Hyb151K3: 3
+  FourColor.Bulk.Cfg.Hyb171: 214
+  FourColor.Bulk.Cfg.Hyb179: 248
+  FourColor.Bulk.Cfg.Hyb181: 270
+  FourColor.Bulk.Cfg.Hyb191: 262
+  FourColor.Bulk.Cfg.Hyb192: 244
+  FourColor.Bulk.Cfg.Hyb194: 276
+  FourColor.Bulk.Cfg.Hyb196: 274
+  FourColor.Bulk.Cfg.Hyb197: 242
+  FourColor.Bulk.Cfg.Hyb202: 306
+  FourColor.Bulk.Cfg.Hyb203: 220
+  FourColor.Bulk.Cfg.Hyb218: 2
+  FourColor.Bulk.Cfg.Hyb218A: 15
+  FourColor.Bulk.Cfg.Hyb218B: 221
+  FourColor.Bulk.Cfg.Hyb218C: 77
+  FourColor.Bulk.Cfg.Hyb218D: 273
+  FourColor.Bulk.Cfg.Hyb218K1: 4
+  FourColor.Bulk.Cfg.Hyb218K2: 4
+  FourColor.Bulk.Cfg.Hyb218K3: 4
+  FourColor.Bulk.Cfg.Hyb227: 258
+  FourColor.Bulk.Cfg.Hyb228: 262
+  FourColor.Bulk.Cfg.Hyb230: 256
+  FourColor.Bulk.Cfg.Hyb234: 264
+  FourColor.Bulk.Cfg.Hyb252: 260
+  FourColor.Bulk.Cfg.Hyb254: 272
+  FourColor.Bulk.Cfg.Hyb256: 250
+  FourColor.Bulk.Cfg.Hyb259: 240
+  FourColor.Bulk.Cfg.Hyb261: 266
+  FourColor.Bulk.Cfg.Hyb280: 2
+  FourColor.Bulk.Cfg.Hyb280A: 15
+  FourColor.Bulk.Cfg.Hyb280B: 185
+  FourColor.Bulk.Cfg.Hyb280C: 95
+  FourColor.Bulk.Cfg.Hyb280D: 256
+  FourColor.Bulk.Cfg.Hyb280K1: 4
+  FourColor.Bulk.Cfg.Hyb280K2: 4
+  FourColor.Bulk.Cfg.Hyb280K3: 4
+  FourColor.Bulk.Cfg.Hyb282: 258
+  FourColor.Bulk.Cfg.Hyb285: 260
+  FourColor.Bulk.Cfg.Hyb289: 280
+  FourColor.Bulk.Cfg.Hyb290: 266
+  FourColor.Bulk.Cfg.Hyb292: 260
+  FourColor.Bulk.Cfg.Hyb295: 290
+  FourColor.Bulk.Cfg.Hyb300: 306
+  FourColor.Bulk.Cfg.Hyb303: 262
+  FourColor.Bulk.Cfg.Hyb308: 254
+  FourColor.Bulk.Cfg.Hyb310: 254
+  FourColor.Bulk.Cfg.Hyb311: 232
+  FourColor.Bulk.Cfg.Hyb317: 326
+  FourColor.Bulk.Cfg.Hyb335: 181
+  FourColor.Bulk.Cfg.Hyb338: 167
+  FourColor.Bulk.Cfg.Hyb353: 203
+  FourColor.Bulk.Cfg.Hyb355: 205
+  FourColor.Bulk.Cfg.Hyb358: 235
+  FourColor.Bulk.Cfg.Hyb361: 195
+  FourColor.Bulk.Cfg.Hyb364: 191
+  FourColor.Bulk.Cfg.Hyb376: 246
+  FourColor.Bulk.Cfg.Hyb377: 256
+  FourColor.Bulk.Cfg.Hyb378: 244
+  FourColor.Bulk.Cfg.Hyb379: 256
+  FourColor.Bulk.Cfg.Hyb380: 220
+  FourColor.Bulk.Cfg.Hyb381: 242
+  FourColor.Bulk.Cfg.Hyb393: 2
+  FourColor.Bulk.Cfg.Hyb393A: 15
+  FourColor.Bulk.Cfg.Hyb393B: 127
+  FourColor.Bulk.Cfg.Hyb393C: 75
+  FourColor.Bulk.Cfg.Hyb393D: 219
+  FourColor.Bulk.Cfg.Hyb393K1: 4
+  FourColor.Bulk.Cfg.Hyb393K2: 4
+  FourColor.Bulk.Cfg.Hyb393K3: 4
+  FourColor.Bulk.Cfg.Hyb398: 274
+  FourColor.Bulk.Cfg.Hyb410: 271
+  FourColor.Bulk.Cfg.Hyb411: 247
+  FourColor.Bulk.Cfg.Hyb427: 213
+  FourColor.Bulk.Cfg.Hyb444: 250
+  FourColor.Bulk.Cfg.Hyb445: 262
+  FourColor.Bulk.Cfg.Hyb447: 278
+  FourColor.Bulk.Cfg.Hyb448: 282
+  FourColor.Bulk.Cfg.Hyb453: 308
+  FourColor.Bulk.Cfg.Hyb455: 248
+  FourColor.Bulk.Cfg.Hyb456: 236
+  FourColor.Bulk.Cfg.Hyb457: 252
+  FourColor.Bulk.Cfg.Hyb458: 230
+  FourColor.Bulk.Cfg.Hyb460: 250
+  FourColor.Bulk.Cfg.Hyb465: 276
+  FourColor.Bulk.Cfg.Hyb467: 228
+  FourColor.Bulk.Cfg.Hyb469: 362
+  FourColor.Bulk.Cfg.Hyb473: 216
+  FourColor.Bulk.Cfg.Hyb485: 238
+  FourColor.Bulk.Cfg.Hyb489: 270
+  FourColor.Bulk.Cfg.Hyb498: 286
+  FourColor.Bulk.Cfg.Hyb501: 274
+  FourColor.Bulk.Cfg.Hyb502: 262
+  FourColor.Bulk.Cfg.Hyb504: 290
+  FourColor.Bulk.Cfg.Hyb506: 264
+  FourColor.Bulk.Cfg.Hyb521: 340
+  FourColor.Bulk.Cfg.Hyb530: 242
+  FourColor.Bulk.Cfg.Hyb534: 292
+  FourColor.Bulk.Cfg.Hyb539: 200
+  FourColor.Bulk.Cfg.Hyb541: 270
+  FourColor.Bulk.Cfg.Hyb542: 270
+  FourColor.Bulk.Cfg.Hyb549: 244
+  FourColor.Bulk.Cfg.Hyb558: 254
+  FourColor.Bulk.Cfg.Hyb561: 2
+  FourColor.Bulk.Cfg.Hyb561A: 15
+  FourColor.Bulk.Cfg.Hyb561B: 276
+  FourColor.Bulk.Cfg.Hyb561C: 171
+  FourColor.Bulk.Cfg.Hyb561D: 337
+  FourColor.Bulk.Cfg.Hyb561K1: 4
+  FourColor.Bulk.Cfg.Hyb561K2: 4
+  FourColor.Bulk.Cfg.Hyb561K3: 4
+  FourColor.Bulk.Cfg.Hyb562: 288
+  FourColor.Bulk.Cfg.Hyb574: 278
+  FourColor.Bulk.Cfg.Hyb575: 245
+  FourColor.Bulk.Cfg.Hyb583: 346
+  FourColor.Bulk.Cfg.Hyb584: 246
+  FourColor.Bulk.Cfg.Hyb587: 268
+  FourColor.Bulk.Cfg.Hyb592: 234
+  FourColor.Bulk.Cfg.Hyb602: 278
+  FourColor.Bulk.Cfg.Hyb612: 2
+  FourColor.Bulk.Cfg.Hyb612A: 15
+  FourColor.Bulk.Cfg.Hyb612B: 284
+  FourColor.Bulk.Cfg.Hyb612C: 235
+  FourColor.Bulk.Cfg.Hyb612D: 366
+  FourColor.Bulk.Cfg.Hyb612K1: 4
+  FourColor.Bulk.Cfg.Hyb612K2: 4
+  FourColor.Bulk.Cfg.Hyb612K3: 4
+  FourColor.Bulk.Cfg.Hyb617: 260
+  FourColor.Bulk.Cfg.Hyb619: 252
+  FourColor.Bulk.Cfg.Hyb620: 278
+  FourColor.Bulk.Cfg.Hyb625: 280
+  FourColor.Bulk.Cfg.Hyb629: 298
+  FourColor.Bulk.Checks: 8
+  FourColor.Bulk.Chords: 45
+  FourColor.Bulk.Coclosure: 3
+  FourColor.Bulk.Digits: 45
+  FourColor.Bulk.Flip: 18
+  FourColor.Bulk.Fold: 154
+  FourColor.Bulk.FoldList: 78
+  FourColor.Bulk.Hybrid: 13
+  FourColor.Bulk.HybridC: 27
+  FourColor.Bulk.HybridT: 39
+  FourColor.Bulk.Index: 10
+  FourColor.Bulk.Kempe: 32
+  FourColor.Bulk.Lanes: 52
+  FourColor.Bulk.Lit: 1
+  FourColor.Bulk.Masks: 50
+  FourColor.Bulk.Move: 25
+  FourColor.Bulk.Pair: 13
+  FourColor.Bulk.Perms: 59
+  FourColor.Bulk.Reducible: 16
+  FourColor.Bulk.Small: 26
+  FourColor.Cert: 142
+  FourColor.CertBase: 3
+  FourColor.CertFlip: 25
+  FourColor.CfColor: 219
+  FourColor.CfContract: 121
+  FourColor.CfMap: 610
+  FourColor.CfQuiz: 137
+  FourColor.CfReducible: 36
+  FourColor.Chromogram: 139
+  FourColor.Color: 228
+  FourColor.Coloring: 117
+  FourColor.Combinatorial: 2
+  FourColor.Complete: 3
+  FourColor.Component: 27
+  FourColor.Configurations: 635
+  FourColor.Contract: 17
+  FourColor.Ctree: 183
+  FourColor.CtreeRestrict: 77
+  FourColor.Cube: 111
+  FourColor.Discharge: 153
+  FourColor.Discretize: 39
+  FourColor.Dyck: 18
+  FourColor.Embed: 116
+  FourColor.Euler: 3
+  FourColor.EulerTree: 34
+  FourColor.Finitize: 35
+  FourColor.FourColorTheorem: 1
+  FourColor.Geometry: 275
+  FourColor.Grid: 143
+  FourColor.GridMap: 127
+  FourColor.Gtree: 136
+  FourColor.GtreeRestrict: 85
+  FourColor.HubCap: 142
+  FourColor.Hypermap: 116
+  FourColor.InitCtree: 94
+  FourColor.InitGtree: 75
+  FourColor.Jordan: 9
+  FourColor.Kempe: 129
+  FourColor.KempeTree: 87
+  FourColor.Main: 1
+  FourColor.Mask.Cfg033: 37
+  FourColor.Mask.Cfg051: 39
+  FourColor.Mask.Cfg059: 39
+  FourColor.Mask.Cfg072: 41
+  FourColor.Mask.Cfg073: 41
+  FourColor.Mask.Cfg079: 41
+  FourColor.Mask.Cfg082: 53
+  FourColor.Mask.Cfg094: 43
+  FourColor.Mask.Cfg138: 41
+  FourColor.Mask.Cfg140: 41
+  FourColor.Mask.Cfg141: 41
+  FourColor.Mask.Cfg143: 41
+  FourColor.Mask.Cfg144: 41
+  FourColor.Mask.Cfg145: 41
+  FourColor.Mask.Cfg151: 57
+  FourColor.Mask.Cfg171: 43
+  FourColor.Mask.Cfg179: 43
+  FourColor.Mask.Cfg181: 43
+  FourColor.Mask.Cfg191: 43
+  FourColor.Mask.Cfg192: 43
+  FourColor.Mask.Cfg194: 43
+  FourColor.Mask.Cfg196: 43
+  FourColor.Mask.Cfg197: 43
+  FourColor.Mask.Cfg202: 45
+  FourColor.Mask.Cfg203: 43
+  FourColor.Mask.Cfg218: 701
+  FourColor.Mask.Cfg227: 45
+  FourColor.Mask.Cfg228: 45
+  FourColor.Mask.Cfg230: 45
+  FourColor.Mask.Cfg234: 45
+  FourColor.Mask.Cfg252: 43
+  FourColor.Mask.Cfg254: 43
+  FourColor.Mask.Cfg256: 43
+  FourColor.Mask.Cfg259: 43
+  FourColor.Mask.Cfg261: 43
+  FourColor.Mask.Cfg280: 515
+  FourColor.Mask.Cfg282: 45
+  FourColor.Mask.Cfg285: 45
+  FourColor.Mask.Cfg289: 45
+  FourColor.Mask.Cfg290: 45
+  FourColor.Mask.Cfg292: 45
+  FourColor.Mask.Cfg295: 45
+  FourColor.Mask.Cfg300: 45
+  FourColor.Mask.Cfg303: 45
+  FourColor.Mask.Cfg308: 45
+  FourColor.Mask.Cfg310: 45
+  FourColor.Mask.Cfg311: 45
+  FourColor.Mask.Cfg317: 45
+  FourColor.Mask.Cfg335: 39
+  FourColor.Mask.Cfg338: 39
+  FourColor.Mask.Cfg353: 41
+  FourColor.Mask.Cfg355: 41
+  FourColor.Mask.Cfg358: 41
+  FourColor.Mask.Cfg361: 41
+  FourColor.Mask.Cfg364: 41
+  FourColor.Mask.Cfg376: 43
+  FourColor.Mask.Cfg377: 43
+  FourColor.Mask.Cfg378: 43
+  FourColor.Mask.Cfg379: 43
+  FourColor.Mask.Cfg380: 43
+  FourColor.Mask.Cfg381: 43
+  FourColor.Mask.Cfg393: 193
+  FourColor.Mask.Cfg398: 45
+  FourColor.Mask.Cfg410: 41
+  FourColor.Mask.Cfg411: 41
+  FourColor.Mask.Cfg427: 41
+  FourColor.Mask.Cfg444: 43
+  FourColor.Mask.Cfg445: 43
+  FourColor.Mask.Cfg447: 43
+  FourColor.Mask.Cfg448: 43
+  FourColor.Mask.Cfg453: 49
+  FourColor.Mask.Cfg455: 43
+  FourColor.Mask.Cfg456: 43
+  FourColor.Mask.Cfg457: 43
+  FourColor.Mask.Cfg458: 43
+  FourColor.Mask.Cfg460: 43
+  FourColor.Mask.Cfg465: 43
+  FourColor.Mask.Cfg467: 43
+  FourColor.Mask.Cfg469: 43
+  FourColor.Mask.Cfg473: 43
+  FourColor.Mask.Cfg485: 45
+  FourColor.Mask.Cfg489: 45
+  FourColor.Mask.Cfg498: 45
+  FourColor.Mask.Cfg501: 45
+  FourColor.Mask.Cfg502: 45
+  FourColor.Mask.Cfg504: 45
+  FourColor.Mask.Cfg506: 45
+  FourColor.Mask.Cfg521: 43
+  FourColor.Mask.Cfg530: 45
+  FourColor.Mask.Cfg534: 45
+  FourColor.Mask.Cfg539: 43
+  FourColor.Mask.Cfg541: 45
+  FourColor.Mask.Cfg542: 45
+  FourColor.Mask.Cfg549: 45
+  FourColor.Mask.Cfg558: 43
+  FourColor.Mask.Cfg561: 655
+  FourColor.Mask.Cfg562: 45
+  FourColor.Mask.Cfg574: 41
+  FourColor.Mask.Cfg575: 41
+  FourColor.Mask.Cfg583: 43
+  FourColor.Mask.Cfg584: 43
+  FourColor.Mask.Cfg587: 43
+  FourColor.Mask.Cfg592: 43
+  FourColor.Mask.Cfg602: 43
+  FourColor.Mask.Cfg612: 299
+  FourColor.Mask.Cfg617: 45
+  FourColor.Mask.Cfg619: 45
+  FourColor.Mask.Cfg620: 45
+  FourColor.Mask.Cfg625: 43
+  FourColor.Mask.Cfg629: 45
+  FourColor.MaskCert: 89
+  FourColor.MaskChord: 40
+  FourColor.MaskRank: 21
+  FourColor.MaskWit: 68
+  FourColor.Matte: 223
+  FourColor.Nonvacuity: 90
+  FourColor.Orbit: 16
+  FourColor.Part: 494
+  FourColor.Patch: 74
+  FourColor.Path: 11
+  FourColor.Perm: 37
+  FourColor.Present: 23
+  FourColor.Present10: 1
+  FourColor.Present10Chk1: 123
+  FourColor.Present10Chk10: 117
+  FourColor.Present10Chk11: 116
+  FourColor.Present10Chk12: 121
+  FourColor.Present10Chk13: 118
+  FourColor.Present10Chk14: 124
+  FourColor.Present10Chk15: 125
+  FourColor.Present10Chk16: 120
+  FourColor.Present10Chk17: 124
+  FourColor.Present10Chk18: 117
+  FourColor.Present10Chk19: 121
+  FourColor.Present10Chk2: 120
+  FourColor.Present10Chk20: 122
+  FourColor.Present10Chk21: 125
+  FourColor.Present10Chk22: 123
+  FourColor.Present10Chk23: 117
+  FourColor.Present10Chk24: 90
+  FourColor.Present10Chk3: 119
+  FourColor.Present10Chk4: 124
+  FourColor.Present10Chk5: 120
+  FourColor.Present10Chk6: 122
+  FourColor.Present10Chk7: 115
+  FourColor.Present10Chk8: 124
+  FourColor.Present10Chk9: 124
+  FourColor.Present10Defs: 876
+  FourColor.Present10Hub1: 40
+  FourColor.Present10Hub2: 40
+  FourColor.Present10Step1: 58
+  FourColor.Present10Step2: 143
+  FourColor.Present10Step3: 74
+  FourColor.Present11: 1
+  FourColor.Present11Chk1: 117
+  FourColor.Present11Chk2: 118
+  FourColor.Present11Chk3: 117
+  FourColor.Present11Chk4: 124
+  FourColor.Present11Chk5: 125
+  FourColor.Present11Chk6: 24
+  FourColor.Present11Defs: 279
+  FourColor.Present11Hub1: 3
+  FourColor.Present11Step1: 90
+  FourColor.Present5: 1
+  FourColor.Present5Chk1: 40
+  FourColor.Present5Defs: 44
+  FourColor.Present5Step1: 9
+  FourColor.Present6: 1
+  FourColor.Present6Chk1: 124
+  FourColor.Present6Chk2: 124
+  FourColor.Present6Chk3: 124
+  FourColor.Present6Chk4: 124
+  FourColor.Present6Chk5: 124
+  FourColor.Present6Chk6: 124
+  FourColor.Present6Chk7: 124
+  FourColor.Present6Chk8: 76
+  FourColor.Present6Defs: 656
+  FourColor.Present6Step1: 153
+  FourColor.Present7: 1
+  FourColor.Present7Chk1: 121
+  FourColor.Present7Chk10: 125
+  FourColor.Present7Chk100: 125
+  FourColor.Present7Chk101: 122
+  FourColor.Present7Chk102: 122
+  FourColor.Present7Chk103: 122
+  FourColor.Present7Chk104: 124
+  FourColor.Present7Chk105: 123
+  FourColor.Present7Chk106: 125
+  FourColor.Present7Chk107: 124
+  FourColor.Present7Chk108: 122
+  FourColor.Present7Chk109: 121
+  FourColor.Present7Chk11: 120
+  FourColor.Present7Chk110: 120
+  FourColor.Present7Chk111: 122
+  FourColor.Present7Chk112: 122
+  FourColor.Present7Chk113: 94
+  FourColor.Present7Chk12: 125
+  FourColor.Present7Chk13: 121
+  FourColor.Present7Chk14: 122
+  FourColor.Present7Chk15: 125
+  FourColor.Present7Chk16: 125
+  FourColor.Present7Chk17: 125
+  FourColor.Present7Chk18: 118
+  FourColor.Present7Chk19: 125
+  FourColor.Present7Chk2: 124
+  FourColor.Present7Chk20: 121
+  FourColor.Present7Chk21: 118
+  FourColor.Present7Chk22: 121
+  FourColor.Present7Chk23: 121
+  FourColor.Present7Chk24: 121
+  FourColor.Present7Chk25: 118
+  FourColor.Present7Chk26: 124
+  FourColor.Present7Chk27: 124
+  FourColor.Present7Chk28: 123
+  FourColor.Present7Chk29: 125
+  FourColor.Present7Chk3: 125
+  FourColor.Present7Chk30: 119
+  FourColor.Present7Chk31: 122
+  FourColor.Present7Chk32: 125
+  FourColor.Present7Chk33: 123
+  FourColor.Present7Chk34: 118
+  FourColor.Present7Chk35: 125
+  FourColor.Present7Chk36: 120
+  FourColor.Present7Chk37: 123
+  FourColor.Present7Chk38: 124
+  FourColor.Present7Chk39: 123
+  FourColor.Present7Chk4: 120
+  FourColor.Present7Chk40: 123
+  FourColor.Present7Chk41: 118
+  FourColor.Present7Chk42: 122
+  FourColor.Present7Chk43: 123
+  FourColor.Present7Chk44: 121
+  FourColor.Present7Chk45: 120
+  FourColor.Present7Chk46: 124
+  FourColor.Present7Chk47: 120
+  FourColor.Present7Chk48: 121
+  FourColor.Present7Chk49: 125
+  FourColor.Present7Chk5: 120
+  FourColor.Present7Chk50: 122
+  FourColor.Present7Chk51: 120
+  FourColor.Present7Chk52: 120
+  FourColor.Present7Chk53: 123
+  FourColor.Present7Chk54: 120
+  FourColor.Present7Chk55: 125
+  FourColor.Present7Chk56: 124
+  FourColor.Present7Chk57: 121
+  FourColor.Present7Chk58: 120
+  FourColor.Present7Chk59: 121
+  FourColor.Present7Chk6: 122
+  FourColor.Present7Chk60: 122
+  FourColor.Present7Chk61: 125
+  FourColor.Present7Chk62: 123
+  FourColor.Present7Chk63: 120
+  FourColor.Present7Chk64: 119
+  FourColor.Present7Chk65: 120
+  FourColor.Present7Chk66: 121
+  FourColor.Present7Chk67: 123
+  FourColor.Present7Chk68: 125
+  FourColor.Present7Chk69: 120
+  FourColor.Present7Chk7: 119
+  FourColor.Present7Chk70: 124
+  FourColor.Present7Chk71: 125
+  FourColor.Present7Chk72: 125
+  FourColor.Present7Chk73: 125
+  FourColor.Present7Chk74: 121
+  FourColor.Present7Chk75: 121
+  FourColor.Present7Chk76: 123
+  FourColor.Present7Chk77: 119
+  FourColor.Present7Chk78: 125
+  FourColor.Present7Chk79: 119
+  FourColor.Present7Chk8: 124
+  FourColor.Present7Chk80: 118
+  FourColor.Present7Chk81: 125
+  FourColor.Present7Chk82: 120
+  FourColor.Present7Chk83: 118
+  FourColor.Present7Chk84: 120
+  FourColor.Present7Chk85: 122
+  FourColor.Present7Chk86: 123
+  FourColor.Present7Chk87: 121
+  FourColor.Present7Chk88: 123
+  FourColor.Present7Chk89: 118
+  FourColor.Present7Chk9: 119
+  FourColor.Present7Chk90: 119
+  FourColor.Present7Chk91: 121
+  FourColor.Present7Chk92: 120
+  FourColor.Present7Chk93: 121
+  FourColor.Present7Chk94: 123
+  FourColor.Present7Chk95: 121
+  FourColor.Present7Chk96: 122
+  FourColor.Present7Chk97: 121
+  FourColor.Present7Chk98: 124
+  FourColor.Present7Chk99: 125
+  FourColor.Present7Defs: 5051
+  FourColor.Present7Hub1: 6
+  FourColor.Present7Step1: 133
+  FourColor.Present7Step10: 152
+  FourColor.Present7Step11: 107
+  FourColor.Present7Step12: 80
+  FourColor.Present7Step13: 9
+  FourColor.Present7Step2: 143
+  FourColor.Present7Step3: 146
+  FourColor.Present7Step4: 52
+  FourColor.Present7Step5: 86
+  FourColor.Present7Step6: 171
+  FourColor.Present7Step7: 135
+  FourColor.Present7Step8: 111
+  FourColor.Present7Step9: 73
+  FourColor.Present8: 1
+  FourColor.Present8Chk1: 121
+  FourColor.Present8Chk10: 121
+  FourColor.Present8Chk100: 125
+  FourColor.Present8Chk101: 120
+  FourColor.Present8Chk102: 119
+  FourColor.Present8Chk103: 121
+  FourColor.Present8Chk104: 121
+  FourColor.Present8Chk105: 124
+  FourColor.Present8Chk106: 117
+  FourColor.Present8Chk107: 124
+  FourColor.Present8Chk108: 123
+  FourColor.Present8Chk109: 125
+  FourColor.Present8Chk11: 125
+  FourColor.Present8Chk110: 41
+  FourColor.Present8Chk12: 124
+  FourColor.Present8Chk13: 122
+  FourColor.Present8Chk14: 119
+  FourColor.Present8Chk15: 121
+  FourColor.Present8Chk16: 121
+  FourColor.Present8Chk17: 123
+  FourColor.Present8Chk18: 125
+  FourColor.Present8Chk19: 125
+  FourColor.Present8Chk2: 124
+  FourColor.Present8Chk20: 121
+  FourColor.Present8Chk21: 121
+  FourColor.Present8Chk22: 118
+  FourColor.Present8Chk23: 125
+  FourColor.Present8Chk24: 124
+  FourColor.Present8Chk25: 120
+  FourColor.Present8Chk26: 121
+  FourColor.Present8Chk27: 119
+  FourColor.Present8Chk28: 122
+  FourColor.Present8Chk29: 120
+  FourColor.Present8Chk3: 122
+  FourColor.Present8Chk30: 125
+  FourColor.Present8Chk31: 121
+  FourColor.Present8Chk32: 125
+  FourColor.Present8Chk33: 121
+  FourColor.Present8Chk34: 120
+  FourColor.Present8Chk35: 123
+  FourColor.Present8Chk36: 121
+  FourColor.Present8Chk37: 125
+  FourColor.Present8Chk38: 122
+  FourColor.Present8Chk39: 123
+  FourColor.Present8Chk4: 123
+  FourColor.Present8Chk40: 125
+  FourColor.Present8Chk41: 120
+  FourColor.Present8Chk42: 120
+  FourColor.Present8Chk43: 125
+  FourColor.Present8Chk44: 122
+  FourColor.Present8Chk45: 123
+  FourColor.Present8Chk46: 117
+  FourColor.Present8Chk47: 122
+  FourColor.Present8Chk48: 123
+  FourColor.Present8Chk49: 124
+  FourColor.Present8Chk5: 121
+  FourColor.Present8Chk50: 123
+  FourColor.Present8Chk51: 125
+  FourColor.Present8Chk52: 119
+  FourColor.Present8Chk53: 120
+  FourColor.Present8Chk54: 123
+  FourColor.Present8Chk55: 124
+  FourColor.Present8Chk56: 125
+  FourColor.Present8Chk57: 123
+  FourColor.Present8Chk58: 120
+  FourColor.Present8Chk59: 122
+  FourColor.Present8Chk6: 124
+  FourColor.Present8Chk60: 119
+  FourColor.Present8Chk61: 118
+  FourColor.Present8Chk62: 122
+  FourColor.Present8Chk63: 123
+  FourColor.Present8Chk64: 117
+  FourColor.Present8Chk65: 120
+  FourColor.Present8Chk66: 121
+  FourColor.Present8Chk67: 125
+  FourColor.Present8Chk68: 123
+  FourColor.Present8Chk69: 121
+  FourColor.Present8Chk7: 120
+  FourColor.Present8Chk70: 122
+  FourColor.Present8Chk71: 124
+  FourColor.Present8Chk72: 119
+  FourColor.Present8Chk73: 119
+  FourColor.Present8Chk74: 123
+  FourColor.Present8Chk75: 121
+  FourColor.Present8Chk76: 124
+  FourColor.Present8Chk77: 122
+  FourColor.Present8Chk78: 124
+  FourColor.Present8Chk79: 125
+  FourColor.Present8Chk8: 122
+  FourColor.Present8Chk80: 124
+  FourColor.Present8Chk81: 120
+  FourColor.Present8Chk82: 119
+  FourColor.Present8Chk83: 121
+  FourColor.Present8Chk84: 123
+  FourColor.Present8Chk85: 121
+  FourColor.Present8Chk86: 120
+  FourColor.Present8Chk87: 125
+  FourColor.Present8Chk88: 124
+  FourColor.Present8Chk89: 119
+  FourColor.Present8Chk9: 120
+  FourColor.Present8Chk90: 121
+  FourColor.Present8Chk91: 125
+  FourColor.Present8Chk92: 120
+  FourColor.Present8Chk93: 122
+  FourColor.Present8Chk94: 124
+  FourColor.Present8Chk95: 124
+  FourColor.Present8Chk96: 125
+  FourColor.Present8Chk97: 117
+  FourColor.Present8Chk98: 118
+  FourColor.Present8Chk99: 119
+  FourColor.Present8Defs: 4313
+  FourColor.Present8Hub1: 40
+  FourColor.Present8Hub2: 40
+  FourColor.Present8Hub3: 40
+  FourColor.Present8Hub4: 40
+  FourColor.Present8Hub5: 3
+  FourColor.Present8Step1: 176
+  FourColor.Present8Step10: 61
+  FourColor.Present8Step2: 165
+  FourColor.Present8Step3: 140
+  FourColor.Present8Step4: 127
+  FourColor.Present8Step5: 102
+  FourColor.Present8Step6: 110
+  FourColor.Present8Step7: 163
+  FourColor.Present8Step8: 122
+  FourColor.Present8Step9: 119
+  FourColor.Present9: 1
+  FourColor.Present9Chk1: 121
+  FourColor.Present9Chk10: 119
+  FourColor.Present9Chk11: 118
+  FourColor.Present9Chk12: 122
+  FourColor.Present9Chk13: 121
+  FourColor.Present9Chk14: 119
+  FourColor.Present9Chk15: 121
+  FourColor.Present9Chk16: 124
+  FourColor.Present9Chk17: 118
+  FourColor.Present9Chk18: 125
+  FourColor.Present9Chk19: 124
+  FourColor.Present9Chk2: 121
+  FourColor.Present9Chk20: 117
+  FourColor.Present9Chk21: 122
+  FourColor.Present9Chk22: 119
+  FourColor.Present9Chk23: 121
+  FourColor.Present9Chk24: 123
+  FourColor.Present9Chk25: 125
+  FourColor.Present9Chk26: 124
+  FourColor.Present9Chk27: 124
+  FourColor.Present9Chk28: 122
+  FourColor.Present9Chk29: 120
+  FourColor.Present9Chk3: 122
+  FourColor.Present9Chk30: 119
+  FourColor.Present9Chk31: 125
+  FourColor.Present9Chk32: 124
+  FourColor.Present9Chk33: 124
+  FourColor.Present9Chk34: 122
+  FourColor.Present9Chk35: 118
+  FourColor.Present9Chk36: 123
+  FourColor.Present9Chk37: 122
+  FourColor.Present9Chk38: 122
+  FourColor.Present9Chk39: 120
+  FourColor.Present9Chk4: 119
+  FourColor.Present9Chk40: 120
+  FourColor.Present9Chk41: 125
+  FourColor.Present9Chk42: 124
+  FourColor.Present9Chk43: 119
+  FourColor.Present9Chk44: 123
+  FourColor.Present9Chk45: 118
+  FourColor.Present9Chk46: 117
+  FourColor.Present9Chk47: 124
+  FourColor.Present9Chk48: 120
+  FourColor.Present9Chk49: 118
+  FourColor.Present9Chk5: 116
+  FourColor.Present9Chk50: 123
+  FourColor.Present9Chk51: 117
+  FourColor.Present9Chk52: 119
+  FourColor.Present9Chk53: 122
+  FourColor.Present9Chk54: 122
+  FourColor.Present9Chk55: 118
+  FourColor.Present9Chk56: 123
+  FourColor.Present9Chk57: 122
+  FourColor.Present9Chk58: 119
+  FourColor.Present9Chk59: 119
+  FourColor.Present9Chk6: 118
+  FourColor.Present9Chk60: 125
+  FourColor.Present9Chk61: 123
+  FourColor.Present9Chk62: 120
+  FourColor.Present9Chk63: 120
+  FourColor.Present9Chk64: 118
+  FourColor.Present9Chk65: 123
+  FourColor.Present9Chk66: 118
+  FourColor.Present9Chk67: 121
+  FourColor.Present9Chk68: 122
+  FourColor.Present9Chk69: 120
+  FourColor.Present9Chk7: 122
+  FourColor.Present9Chk70: 124
+  FourColor.Present9Chk71: 122
+  FourColor.Present9Chk72: 122
+  FourColor.Present9Chk73: 125
+  FourColor.Present9Chk74: 123
+  FourColor.Present9Chk75: 121
+  FourColor.Present9Chk76: 124
+  FourColor.Present9Chk77: 105
+  FourColor.Present9Chk8: 125
+  FourColor.Present9Chk9: 117
+  FourColor.Present9Defs: 2736
+  FourColor.Present9Hub1: 40
+  FourColor.Present9Hub2: 40
+  FourColor.Present9Hub3: 40
+  FourColor.Present9Hub4: 40
+  FourColor.Present9Hub5: 40
+  FourColor.Present9Hub6: 23
+  FourColor.Present9Step1: 157
+  FourColor.Present9Step2: 100
+  FourColor.Present9Step3: 117
+  FourColor.Present9Step4: 109
+  FourColor.Present9Step5: 121
+  FourColor.Present9Step6: 101
+  FourColor.Present9Step7: 102
+  FourColor.Present9Step8: 54
+  FourColor.Quiz: 214
+  FourColor.QuizData: 131
+  FourColor.QuizTree: 133
+  FourColor.QuizTreeData: 1
+  FourColor.RealPlane: 70
+  FourColor.RealPlaneMathlib: 3
+  FourColor.RedPart: 393
+  FourColor.RedpartSound: 4
+  FourColor.Reduce.All: 17
+  FourColor.RevSnip: 104
+  FourColor.Seq: 16
+  FourColor.Sew: 46
+  FourColor.Snip: 98
+  FourColor.TheQuizTree: 19
+  FourColor.Unavoidability: 2
+  FourColor.Walkup: 77
+BUILD2_RC=0

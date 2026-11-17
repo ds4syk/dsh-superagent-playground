@@ -24,6 +24,12 @@ MEMORY=${MEMORY:-60}
 
 export PATH="$HOME/.elan/bin:$PATH"
 
+if ! python3 -c 'import numpy' >/dev/null 2>&1; then
+  echo "error: python3 需要 numpy（生成 mask 证书的 scripts/bulkspace.py 使用）" >&2
+  echo "提示：python3 -m pip install numpy，或使用带 numpy 的虚拟环境并把它的 bin 放到 PATH 前面" >&2
+  exit 1
+fi
+
 {
   echo "date: $(date -Is)"
   echo "host: $(hostname)"
@@ -36,6 +42,7 @@ export PATH="$HOME/.elan/bin:$PATH"
   echo "git: $(git --version)"
   echo "gcc: $(gcc --version | head -1)"
   echo "python3: $(python3 --version)"
+  echo "numpy: $(python3 -c 'import numpy; print(numpy.__version__)')"
 } | tee "$EV/environment.txt"
 
 if [ ! -d "$UP/.git" ]; then

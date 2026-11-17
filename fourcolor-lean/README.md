@@ -16,6 +16,14 @@
 
 详细的构建日志、公理输出与源码扫描见 [`evidence/`](evidence/)。
 
+## 本次实测（2026-11-17）
+
+- 机器：40 线程，125.5 GiB 内存，Linux x86_64；
+- 构建：821 个模块，16 jobs，80 GB 预算，计划 7.9 core-hour；最慢的证书模块 `Mask/Cfg561` 约 720 秒、`Mask/Cfg612` 约 671 秒；
+- 构建墙钟：约 39 分钟（编译 2287 秒；821 个模块，0 失败）；
+- 结果：`check.sh` 通过，`#print axioms` = `[propext, Classical.choice, Quot.sound]`；
+- 独立审计：`AUDIT OK`（详细日志见 `evidence/`）。
+
 ## 目录
 
 | 路径 | 内容 |
@@ -27,8 +35,8 @@
 
 ## 复现
 
-依赖：Linux x86_64、`elan`、`git`、`curl`、`gcc`、`python3`、`zstd`，
-约 25 GB 磁盘，建议 16 GB 以上内存（单模块峰值可达 20 GB，建议 64 GB）。
+依赖：Linux x86_64、`elan`、`git`、`curl`、`gcc`、`python3`（含 `numpy`）、`zstd`，
+约 25 GB 磁盘，建议 64 GB 以上内存（单模块峰值可达 20 GB）。
 
 ```shell
 cd fourcolor-lean/audit
@@ -42,7 +50,7 @@ git clone https://github.com/corun1024/4ct
 cd 4ct
 git checkout 3db71e0a786a1f19be04c5266fe3d06fed216885
 lake exe cache get
-JOBS=24 MEMORY=80 bash build.sh
+JOBS=16 MEMORY=80 bash build.sh
 lake env lean /path/to/fourcolor-lean/audit/Audit.lean
 ```
 

@@ -1,0 +1,5 @@
+FourColor.fourColorTheorem : FourColor.FourColorTheorem
+def FourColor.FourColorTheorem : Prop :=
+∀ (m : FourColor.PlaneMap), FourColor.SimpleMap m → FourColor.ColorableWith 4 m
+'FourColor.fourColorTheorem' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT OK: FourColor.fourColorTheorem : FourColor.FourColorTheorem; axioms = [propext, Classical.choice, Quot.sound]; declarations = 115342; sorryAx = 0

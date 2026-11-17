@@ -1,0 +1,12 @@
+date: 2026-11-17T19:08:02+08:00
+host: ls
+kernel: Linux 6.8.0-107-generic x86_64
+cpu: 40 threads
+memory: 125.5 GiB
+upstream: https://github.com/corun1024/4ct @ 3db71e0a786a1f19be04c5266fe3d06fed216885
+lean: Lean (version 4.34.0-rc2, x86_64-unknown-linux-gnu, commit 6a10ac8c22beadecabdbb0919c2b50214762f91d, Release)
+lake: Lake version 5.0.0-src+6a10ac8 (Lean version 4.34.0-rc2)
+git: git version 2.34.1
+gcc: gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0
+python3: Python 3.13.18
+numpy: 2.5.5

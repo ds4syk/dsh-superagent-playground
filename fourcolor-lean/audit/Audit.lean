@@ -49,8 +49,8 @@ run_cmd do
   let extra := axs.filter (fun a => !allowed.contains a)
   unless extra.isEmpty do
     throwError "AUDIT FAIL: 非标准公理依赖 {extra.toList}"
-  let mut declarations := 0
-  let mut sorryDeclarations := 0
+  let mut declarations : Nat := 0
+  let mut sorryDeclarations : Nat := 0
   for (c, _) in env.constants.toList do
     if (`FourColor).isPrefixOf c && !c.isInternal then
       declarations := declarations + 1
@@ -59,7 +59,6 @@ run_cmd do
           sorryDeclarations := sorryDeclarations + 1
   unless sorryDeclarations == 0 do
     throwError "AUDIT FAIL: {sorryDeclarations} 个声明依赖 sorryAx"
-  logInfo s!"AUDIT OK: {goal} : {goalType}; \
-axioms = {axs.toList}; declarations = {declarations}; sorryAx = 0"
+  logInfo s!"AUDIT OK: {goal} : {goalType}; axioms = {axs.toList}; declarations = {declarations}; sorryAx = 0"
 
 end FourColorAudit

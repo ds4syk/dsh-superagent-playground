@@ -6,9 +6,10 @@
 
 | 文件 | 内容 |
 |---|---|
-| `environment.txt` | 主机、CPU、内存、Lean/Lake/git/gcc/Python 版本，上游 commit |
+| `environment.txt` | 主机、CPU、内存、Lean/Lake/git/gcc/Python/numpy 版本，上游 commit |
 | `cache-get.log` | `lake exe cache get` 的完整输出 |
-| `build.log` | `build.sh` 的完整输出（含证书生成、编译、`check.sh`） |
+| `build.log` | 成功构建的完整输出（含 `build_pool` 计划、全部 821 个模块、`check.sh`） |
+| `build-attempt1.log` | 第一次构建的输出；在生成证书模块时因缺 `numpy` 失败（保留以便复现时避坑） |
 | `audit.txt` | 本仓库 `audit/Audit.lean` 的完整输出 |
 | `summary.txt` | 公理、源码扫描、模块与行数统计 |
 | `leanchecker.txt` | （可选）Lean 独立检查器对最终模块的重放结果 |

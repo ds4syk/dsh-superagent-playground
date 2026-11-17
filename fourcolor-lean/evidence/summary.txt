@@ -1,0 +1,10 @@
+=== audit ===
+'FourColor.fourColorTheorem' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT OK: FourColor.fourColorTheorem : FourColor.FourColorTheorem; axioms = [propext, Classical.choice, Quot.sound]; declarations = 115342; sorryAx = 0
+
+=== source scan ===
+sorry (code): 0
+native_decide: 0
+axiom declarations: 0
+Lean modules: 820
+Lean source lines: 790755
