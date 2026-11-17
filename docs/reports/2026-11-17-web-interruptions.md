@@ -100,7 +100,7 @@ Web 端会话视图里，红色错误行由 `turn/end` 的 `reason.kind = "inter
 
 | 时间 | 会话 | 原因 |
 |-|-|-|
-| 11-01 15:55 / 20:28 / 21:40；11-02 18:10 | Dreamer 个人会话（`session-9e5fc772…`、`session-40f1da1c…`） | 个人 `dsh web` 随远端连接退出，回合被截断（真实中断） |
+| 11-01 15:55 / 20:28 / 21:40；11-02 18:10 | Dreamer 个人会话（`session-9e5fc772…`、`session-40f1da1c…`） | 个人 `dsh web` 退出，回合被截断（真实中断；按此前诊断报告） |
 | 11-01 22:25 | resume-dreamer worker | host 重启/会话恢复链（真实中断） |
 | **11-13 14:56:45 / 14:56:48 / 14:56:52** | sdpr-dreamer-notebooks、daily-summary-zero、resume-dreamer 三个 worker | superagent host 重启（启动日志 14:56:53） |
 | **11-13 14:58:09 / 14:58:11 / 14:58:12** | dreamer-version-diff、sdpr-gpu-parallel 两个 worker + orchestrator | 第二次 host 重启（启动日志 14:58:13） |
