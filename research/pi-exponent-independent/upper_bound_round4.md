@@ -161,7 +161,7 @@ $$
 
 $\arctan$ 的 Gauss 连分式：
 $$
-\arctan x=\cfrac{x}{1+\cfrac{x^2}{3+\cfrac{4x^2}{5+\cfrac{9x^2}{7+\cdots}}}}. \qquad (\text{3.1})
+\arctan x=\frac{x}{1+\frac{x^2}{3+\frac{4x^2}{5+\frac{9x^2}{7+\cdots}}}}. \qquad (\text{3.1})
 $$
 第 $n$ 个收敛子 $P_n(x)/Q_n(x)$ 在 $x=1$ 处给 $\pi/4$ 的有理逼近，误差
 $$
