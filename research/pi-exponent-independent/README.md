@@ -19,3 +19,8 @@ $\mu(x)=2+\limsup \log a_{n+1}/\log q_n$，从而 $\mu(\pi)=2$ 等价于 $\pi$ �
 已被同日的官方过程核对更正（见 [`../pi-exponent/pi_exponent_phase1.md`](../pi-exponent/pi_exponent_phase1.md) §9）：
 OpenAI 2026-09-24 论文声称证明 $\mu(\pi)=2$，已有约 869 个文件的 Lean 形式化，但独立编译/审计尚未完成。
 本目录保留原始盲测记录，不做事后改写。
+
+## 后续轮次
+
+- **第二轮（上界）**：[`upper_bound_round2.md`](upper_bound_round2.md)。尝试 Roth 型插值/零点估计与周期/Picard–Fuchs；提出“$d=1$ 退化”。**注意**：其命题 1.1 的 iff 有量级错误（$q=1$ 反例），文件末尾“更正”节已保留原文并修正；主报告 §10.1 记录了这次复核。
+- **第三轮（上界）**：[`upper_bound_round3.md`](upper_bound_round3.md)。依赖 $q$ 的辅助函数/局部线性型；固定积分构造在 $n=1,2$ 失效，含 $\\pi$ 的多 arctan 耦合未完成，线性辅助函数只覆盖离散 $q$。未证 $\\mu\\le2$。
