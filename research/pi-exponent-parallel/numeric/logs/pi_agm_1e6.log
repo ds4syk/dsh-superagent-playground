@@ -1,0 +1,2 @@
+{"digits": 1000000, "guard": 80, "iterations": 20, "seconds": 159.74, "method": "Gauss-Legendre AGM via decimal.Decimal (libmpdec)", "checks": {"head50_ok": true, "feynman_999999_at_762": true, "len": 1000000}, "python": "3.14.8"}
+wrote data/pi_d1000000.txt

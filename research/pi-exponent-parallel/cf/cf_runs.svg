@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" font-family="DejaVu Sans, sans-serif">
+<rect width="900" height="480" fill="white"/>
+<text x="450.0" y="28" text-anchor="middle" font-size="17">Run-length distribution of pi partial quotients (97189 terms)</text>
+<line x1="80" y1="410" x2="760" y2="410" stroke="#333"/>
+<line x1="80" y1="50" x2="80" y2="410" stroke="#333"/>
+<line x1="80" y1="410.00" x2="760" y2="410.00" stroke="#ddd" stroke-width="0.6"/>
+<text x="72" y="414.00" text-anchor="end" font-size="10">0</text>
+<line x1="80" y1="338.00" x2="760" y2="338.00" stroke="#ddd" stroke-width="0.6"/>
+<text x="72" y="342.00" text-anchor="end" font-size="10">14386</text>
+<line x1="80" y1="266.00" x2="760" y2="266.00" stroke="#ddd" stroke-width="0.6"/>
+<text x="72" y="270.00" text-anchor="end" font-size="10">28771</text>
+<line x1="80" y1="194.00" x2="760" y2="194.00" stroke="#ddd" stroke-width="0.6"/>
+<text x="72" y="198.00" text-anchor="end" font-size="10">43157</text>
+<line x1="80" y1="122.00" x2="760" y2="122.00" stroke="#ddd" stroke-width="0.6"/>
+<text x="72" y="126.00" text-anchor="end" font-size="10">57542</text>
+<line x1="80" y1="50.00" x2="760" y2="50.00" stroke="#ddd" stroke-width="0.6"/>
+<text x="72" y="54.00" text-anchor="end" font-size="10">71928</text>
+<text x="80.00" y="428" text-anchor="middle" font-size="10">1</text>
+<text x="216.00" y="428" text-anchor="middle" font-size="10">3</text>
+<text x="352.00" y="428" text-anchor="middle" font-size="10">5</text>
+<text x="488.00" y="428" text-anchor="middle" font-size="10">7</text>
+<text x="624.00" y="428" text-anchor="middle" font-size="10">9</text>
+<text x="760.00" y="428" text-anchor="middle" font-size="10">11</text>
+<polyline points="80.00,326.92 148.00,382.40 216.00,399.03 284.00,406.05 352.00,408.44 420.00,409.35 488.00,409.74 556.00,409.93 624.00,409.94 692.00,409.99 760.00,409.99" fill="none" stroke="#1a5fb4" stroke-width="1.8"/>
+<line x1="772" y1="64" x2="790" y2="64" stroke="#1a5fb4" stroke-width="2"/>
+<text x="796" y="68" font-size="11">runs of 1</text>
+<polyline points="80.00,82.73 148.00,365.95 216.00,397.02 284.00,405.77 352.00,408.37 420.00,409.33 488.00,409.74 556.00,409.93 624.00,409.94 692.00,409.99 760.00,409.99" fill="none" stroke="#c01c28" stroke-width="1.8"/>
+<line x1="772" y1="86" x2="790" y2="86" stroke="#c01c28" stroke-width="2"/>
+<text x="796" y="90" font-size="11">runs of equal values</text>
+<text x="420.0" y="466" text-anchor="middle" font-size="12">run length</text>
+<text x="18" y="230.0" text-anchor="middle" font-size="12" transform="rotate(-90 18 230.0)">count</text>
+</svg>
