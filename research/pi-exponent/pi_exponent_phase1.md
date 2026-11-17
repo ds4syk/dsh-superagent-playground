@@ -631,7 +631,7 @@ S9 (Lean) ← S1/S2/S3/S5
 
 ---
 
-## 7. 形式化计划（阶段 IV，尚未开始）
+## 7. 形式化计划与 Lean 检查（阶段 IV，部分完成）
 
 **目标**：在 Lean 4 + Mathlib 中形式化本阶段**已证明**的部分，主定理作为未证明命题陈述。
 
@@ -659,6 +659,8 @@ S9 (Lean) ← S1/S2/S3/S5
 - 最终 `lake build` 必须零 `sorry`、零 `admit`、零自定义公理；
 - 主定理若未证，只能以 `def`/`Prop` 出现，不能以 `theorem` 出现；
 - 每个引理独立编译，报告中列出“已编译定理清单”与“未证明命题清单”。
+
+**2026-11-17 更新**：S1/S2 已形式化并编译通过（见 §11）；S3（连分数公式）、S5（双见证）、主定理 μ(π)≤2 仍未形式化。
 
 ---
 
@@ -835,6 +837,53 @@ $$
 **与官方过程的对照：** 这个第二窗口独立地重现了 v1 的连分数/线性型路线与同一障碍；它没有找到官方的插值–行列式路线（因为盲测）。这从另一个侧面说明：官方路线不是从“连分数/线性型”视角自然可达的；要完成主定理，必须进入阶段 III 的论文审计与阶段 IV 的 Lean 验证。
 
 **说明：** 第二窗口的报告写于盲测条件，其中“$\mu=2$ 是公开问题”“上界约 7.6”等背景判断是基于 2025 年前的训练知识，已被 §9 更正；本报告保留原始盲测记录，不做事后改写。
+
+---
+
+## 11. Lean 4 检查结果（2026-11-17）
+
+按用户要求“基于我们自己的方案，进行 Lean 检查”，把本报告已证的 **S1（定义）+ S2（μ(π)≥2）** 形式化并编译；不依赖 OpenAI 的 Lean 项目。
+
+### 11.1 文件、命令与结果
+
+- 文件：[`lean/PiExponent.lean`](../lean/PiExponent.lean)；说明：[`lean/README.md`](../lean/README.md)；日志：[`lean/check.log`](../lean/check.log)。
+- 工具链：Lean `v4.34.0-rc2` + 本机 `fourcolor-audit` 项目的 Mathlib 缓存（官方 `openai/math` 用 `v4.34.1`；本检查**不依赖**官方项目）。
+- 命令：
+
+```bash
+cd /mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a
+export PATH=$HOME/.elan/bin:$PATH
+lake env lean /mnt/storage1/syk/.superagent-work/pi-exponent-proof-dd8280cf5917/lean/PiExponent.lean
+```
+
+- 结果：`rc=0`，无 `sorry`、无 `admit`、无自定义 `axiom`。
+
+### 11.2 编译通过的声明
+
+- `GoodApproximations`、`ApproximationExponents`（对应 §1.1 的定义）；
+- `finite_den_one_good`：分母为 1 的好逼近只有有限多个；
+- `infinite_den_ge_two_sq`：分母 ≥2、误差 $<1/q.\mathrm{den}^2$ 的有理逼近有无穷多个；
+- `mu_pi_ge_two`：$(2:\mathbb{R})\in\mathrm{ApproximationExponents}(\pi)$，即形式化的 $\mu(\pi)\ge2$；
+- `mu_pi_ge_two_of_lt`：对每个 $\nu<2$，$\mathrm{GoodApproximations}(\pi,\nu)$ 无穷。
+
+**公理审计**（`#print axioms`，见 `lean/check.log`）：
+
+```text
+'PiExponent.mu_pi_ge_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PiExponent.mu_pi_ge_two_of_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+```
+
+即只依赖 Lean/Mathlib 的标准公理，没有 `sorryAx` 或自定义公理。
+
+### 11.3 范围与限制
+
+- 只覆盖 **S1/S2**；**不包含** $\mu(\pi)\le2$（未证/官方声称）、S3（连分数公式）、S5（双见证）。
+- 没有把 $\mu$ 定义为 `sSup` 再证 $2\le\mu$：`sSup` 的下界需要指数集合有上界（即 $\mu(\pi)<\infty$，正是未证的难点）。形式化的是等价的下界命题 $2\in\mathrm{ApproximationExponents}(\pi)$，文件头已注明。
+- 这是“**我们自己的方案**”的 Lean 检查，不是官方 869 文件 Lean 项目的独立构建；官方项目的编译/Comparator 仍未完成（§9.4）。
+
+### 11.4 结论
+
+本报告的 $\mu(\pi)\ge2$ 部分已经在 Lean 4 中通过编译，且只依赖标准公理；$\mu(\pi)\le2$ 与连分数公式仍未形式化。
 
 ---
 

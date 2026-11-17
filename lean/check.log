@@ -1,0 +1,2 @@
+'PiExponent.mu_pi_ge_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PiExponent.mu_pi_ge_two_of_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
