@@ -22,3 +22,9 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
+- **π 的无理性指数（2026-11）**：第一阶段独立探索（严格盲测）。μ(π)≥2 完整证明；
+  μ(π)≤2 归约到同一个公开障碍（连分数 / 线性型双见证 / 度量与代数类比）；
+  含 π 连分数前缀数值实验与 Lean 4 形式化计划。
+  [报告](research/pi-exponent/pi_exponent_phase1.md) ·
+  [DOCX](deliverables/π无理性指数_第一阶段_2026-11.docx) ·
+  [一页速览](docs/visuals/2026-11-17-pi-exponent-overview.png)
