@@ -1,0 +1,49 @@
+=== build plan ===
+plan: 821 modules, 7.9 core-hours, 16 jobs, 80 GB budget, predicted 30 min
+
+=== build tail ===
+  FourColor.Present9Chk72: 122
+  FourColor.Present9Chk73: 125
+  FourColor.Present9Chk74: 123
+  FourColor.Present9Chk75: 121
+  FourColor.Present9Chk76: 124
+  FourColor.Present9Chk77: 105
+  FourColor.Present9Chk8: 125
+  FourColor.Present9Chk9: 117
+  FourColor.Present9Defs: 2736
+  FourColor.Present9Hub1: 40
+  FourColor.Present9Hub2: 40
+  FourColor.Present9Hub3: 40
+  FourColor.Present9Hub4: 40
+  FourColor.Present9Hub5: 40
+  FourColor.Present9Hub6: 23
+  FourColor.Present9Step1: 157
+  FourColor.Present9Step2: 100
+  FourColor.Present9Step3: 117
+  FourColor.Present9Step4: 109
+  FourColor.Present9Step5: 121
+  FourColor.Present9Step6: 101
+  FourColor.Present9Step7: 102
+  FourColor.Present9Step8: 54
+  FourColor.Quiz: 214
+  FourColor.QuizData: 131
+  FourColor.QuizTree: 133
+  FourColor.QuizTreeData: 1
+  FourColor.RealPlane: 70
+  FourColor.RealPlaneMathlib: 3
+  FourColor.RedPart: 393
+  FourColor.RedpartSound: 4
+  FourColor.Reduce.All: 17
+  FourColor.RevSnip: 104
+  FourColor.Seq: 16
+  FourColor.Sew: 46
+  FourColor.Snip: 98
+  FourColor.TheQuizTree: 19
+  FourColor.Unavoidability: 2
+  FourColor.Walkup: 77
+BUILD2_RC=0
+
+=== check.sh markers ===
+anti-vacuity audit: negative controls pass
+THEOREM PROVED: FourColor.fourColorTheorem : FourColor.FourColorTheorem depends only on [propext, Classical.choice, Quot.sound]
+checked 115342 FourColor declarations: no sorries, no extra axioms

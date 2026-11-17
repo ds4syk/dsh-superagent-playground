@@ -1,0 +1,1307 @@
+== Mathlib (from the cache)
+Current branch: HEAD
+Using cache from origin: (some leanprover-community/mathlib4)
+No files to download
+Already decompressed 8905 file(s)
+== reducibility certificates (not present; regenerating, about one core-hour)
+== inputs (cpcolor and contract colourings of the 633 configurations)
+633 configs
+CFG 0 ring 6 good 48 ctr 45
+CFG 1 ring 7 good 117 ctr 93
+CFG 2 ring 8 good 333 ctr 303
+CFG 3 ring 8 good 243 ctr 54
+CFG 4 ring 8 good 300 ctr 228
+CFG 5 ring 9 good 798 ctr 645
+CFG 6 ring 9 good 633 ctr 489
+CFG 7 ring 8 good 312 ctr 270
+CFG 8 ring 10 good 1890 ctr 1488
+CFG 9 ring 10 good 1890 ctr 1488
+CFG 10 ring 10 good 1662 ctr 378
+CFG 11 ring 9 good 771 ctr 579
+CFG 12 ring 10 good 1608 ctr 1242
+CFG 13 ring 10 good 1614 ctr 1248
+CFG 14 ring 11 good 3966 ctr 972
+CFG 15 ring 11 good 4290 ctr 3339
+CFG 16 ring 11 good 4089 ctr 3141
+CFG 17 ring 11 good 4080 ctr 3171
+CFG 18 ring 10 good 1935 ctr 1374
+CFG 19 ring 12 good 10056 ctr 2430
+CFG 20 ring 11 good 4143 ctr 3267
+CFG 21 ring 12 good 10326 ctr 8169
+CFG 22 ring 13 good 21126 ctr 5076
+CFG 23 ring 8 good 285 ctr 228
+CFG 24 ring 9 good 774 ctr 720
+CFG 25 ring 9 good 609 ctr 489
+CFG 26 ring 9 good 720 ctr 549
+CFG 27 ring 10 good 1794 ctr 1428
+CFG 28 ring 10 good 1680 ctr 324
+CFG 29 ring 10 good 1914 ctr 1566
+CFG 30 ring 10 good 1986 ctr 1566
+CFG 31 ring 10 good 1539 ctr 1167
+CFG 32 ring 10 good 1548 ctr 1194
+CFG 33 ring 10 good 1587 ctr 1254
+CFG 34 ring 10 good 1581 ctr 1176
+CFG 35 ring 10 good 1593 ctr 1191
+CFG 36 ring 10 good 1581 ctr 1194
+CFG 37 ring 9 good 810 ctr 654
+CFG 38 ring 11 good 3768 ctr 864
+CFG 39 ring 11 good 3966 ctr 756
+CFG 40 ring 11 good 4530 ctr 3612
+CFG 41 ring 11 good 4212 ctr 3378
+CFG 42 ring 11 good 4119 ctr 3339
+CFG 43 ring 11 good 4302 ctr 3378
+CFG 44 ring 10 good 2190 ctr 1842
+CFG 45 ring 10 good 2136 ctr 1842
+CFG 46 ring 11 good 3351 ctr 2463
+CFG 47 ring 10 good 1881 ctr 1440
+CFG 48 ring 11 good 4038 ctr 3042
+CFG 49 ring 11 good 4056 ctr 3078
+CFG 50 ring 11 good 3909 ctr 3060
+CFG 51 ring 11 good 4041 ctr 3237
+CFG 52 ring 11 good 3912 ctr 3105
+CFG 53 ring 11 good 3921 ctr 3042
+CFG 54 ring 11 good 4038 ctr 2922
+CFG 55 ring 11 good 4032 ctr 2745
+CFG 56 ring 11 good 4062 ctr 3006
+CFG 57 ring 11 good 4074 ctr 3138
+CFG 58 ring 11 good 4095 ctr 3111
+CFG 59 ring 11 good 4050 ctr 3237
+CFG 60 ring 11 good 4029 ctr 3060
+CFG 61 ring 12 good 9486 ctr 2214
+CFG 62 ring 12 good 9624 ctr 7872
+CFG 63 ring 12 good 10089 ctr 1890
+CFG 64 ring 12 good 10122 ctr 7824
+CFG 65 ring 12 good 9858 ctr 2430
+CFG 66 ring 12 good 10431 ctr 8100
+CFG 67 ring 12 good 10971 ctr 8676
+CFG 68 ring 12 good 10944 ctr 8622
+CFG 69 ring 11 good 5148 ctr 4104
+CFG 70 ring 11 good 5148 ctr 4104
+CFG 71 ring 11 good 5292 ctr 4335
+CFG 72 ring 12 good 8526 ctr 6801
+CFG 73 ring 12 good 8532 ctr 6756
+CFG 74 ring 12 good 8523 ctr 4926
+CFG 75 ring 12 good 8589 ctr 6579
+CFG 76 ring 10 good 2016 ctr 1605
+CFG 77 ring 11 good 4875 ctr 3600
+CFG 78 ring 12 good 10329 ctr 7530
+CFG 79 ring 12 good 10251 ctr 8307
+CFG 80 ring 12 good 9939 ctr 7767
+CFG 81 ring 11 good 4821 ctr 3438
+CFG 82 ring 13 good 21378 ctr 4212
+CFG 83 ring 12 good 10338 ctr 7938
+CFG 84 ring 12 good 10290 ctr 7578
+CFG 85 ring 12 good 10242 ctr 7944
+CFG 86 ring 13 good 24138 ctr 19380
+CFG 87 ring 13 good 24402 ctr 19230
+CFG 88 ring 12 good 10743 ctr 2538
+CFG 89 ring 12 good 11007 ctr 2808
+CFG 90 ring 13 good 27945 ctr 21060
+CFG 91 ring 12 good 13320 ctr 9402
+CFG 92 ring 12 good 13305 ctr 9516
+CFG 93 ring 12 good 12972 ctr 10206
+CFG 94 ring 13 good 21669 ctr 17478
+CFG 95 ring 13 good 21630 ctr 16995
+CFG 96 ring 12 good 10443 ctr 8001
+CFG 97 ring 12 good 10500 ctr 8001
+CFG 98 ring 12 good 9900 ctr 7947
+CFG 99 ring 12 good 9930 ctr 8091
+CFG 100 ring 13 good 21840 ctr 16110
+CFG 101 ring 13 good 21867 ctr 15933
+CFG 102 ring 13 good 21804 ctr 16413
+CFG 103 ring 13 good 21645 ctr 12390
+CFG 104 ring 11 good 5283 ctr 4206
+CFG 105 ring 13 good 26370 ctr 20397
+CFG 106 ring 13 good 31899 ctr 22140
+CFG 107 ring 13 good 32025 ctr 22140
+CFG 108 ring 12 good 12645 ctr 8808
+CFG 109 ring 14 good 55305 ctr 43992
+CFG 110 ring 10 good 1488 ctr 1137
+CFG 111 ring 10 good 1512 ctr 1239
+CFG 112 ring 10 good 1752 ctr 1332
+CFG 113 ring 11 good 4155 ctr 3486
+CFG 114 ring 11 good 4818 ctr 3831
+CFG 115 ring 11 good 3243 ctr 783
+CFG 116 ring 10 good 1698 ctr 1395
+CFG 117 ring 11 good 3894 ctr 2841
+CFG 118 ring 11 good 3849 ctr 2856
+CFG 119 ring 11 good 3756 ctr 2973
+CFG 120 ring 11 good 3786 ctr 2952
+CFG 121 ring 11 good 3837 ctr 2850
+CFG 122 ring 11 good 3840 ctr 2874
+CFG 123 ring 11 good 3585 ctr 1296
+CFG 124 ring 11 good 3909 ctr 3219
+CFG 125 ring 11 good 3927 ctr 3222
+CFG 126 ring 12 good 9132 ctr 7542
+CFG 127 ring 12 good 9594 ctr 1944
+CFG 128 ring 12 good 9756 ctr 8040
+CFG 129 ring 11 good 4548 ctr 3402
+CFG 130 ring 12 good 10539 ctr 8193
+CFG 131 ring 12 good 10485 ctr 8364
+CFG 132 ring 12 good 10557 ctr 8139
+CFG 133 ring 11 good 5517 ctr 4524
+CFG 134 ring 11 good 4032 ctr 3030
+CFG 135 ring 11 good 3996 ctr 3030
+CFG 136 ring 12 good 8325 ctr 6318
+CFG 137 ring 12 good 8175 ctr 3600
+CFG 138 ring 12 good 8178 ctr 6510
+CFG 139 ring 12 good 8355 ctr 3024
+CFG 140 ring 12 good 8346 ctr 6558
+CFG 141 ring 12 good 8367 ctr 6090
+CFG 142 ring 12 good 8394 ctr 2052
+CFG 143 ring 12 good 8160 ctr 6459
+CFG 144 ring 12 good 8406 ctr 3000
+CFG 145 ring 12 good 9852 ctr 7980
+CFG 146 ring 12 good 9759 ctr 7356
+CFG 147 ring 12 good 10134 ctr 8238
+CFG 148 ring 12 good 9999 ctr 7590
+CFG 149 ring 12 good 10017 ctr 7443
+CFG 150 ring 12 good 10104 ctr 7434
+CFG 151 ring 13 good 20712 ctr 4104
+CFG 152 ring 12 good 9966 ctr 8040
+CFG 153 ring 12 good 9834 ctr 7422
+CFG 154 ring 12 good 9930 ctr 7509
+CFG 155 ring 12 good 10032 ctr 7350
+CFG 156 ring 12 good 9894 ctr 7614
+CFG 157 ring 12 good 9786 ctr 7200
+CFG 158 ring 12 good 9162 ctr 3456
+CFG 159 ring 13 good 24540 ctr 18870
+CFG 160 ring 13 good 24540 ctr 18870
+CFG 161 ring 13 good 24816 ctr 19338
+CFG 162 ring 13 good 24816 ctr 19338
+CFG 163 ring 13 good 24315 ctr 19551
+CFG 164 ring 13 good 24843 ctr 20538
+CFG 165 ring 13 good 24726 ctr 6210
+CFG 166 ring 13 good 22758 ctr 18246
+CFG 167 ring 13 good 24966 ctr 18960
+CFG 168 ring 13 good 24846 ctr 6210
+CFG 169 ring 13 good 27756 ctr 20925
+CFG 170 ring 13 good 26769 ctr 21357
+CFG 171 ring 13 good 27552 ctr 22191
+CFG 172 ring 12 good 12336 ctr 9954
+CFG 173 ring 12 good 12336 ctr 9954
+CFG 174 ring 12 good 13272 ctr 10470
+CFG 175 ring 12 good 13272 ctr 10470
+CFG 176 ring 12 good 12714 ctr 9858
+CFG 177 ring 13 good 21258 ctr 16887
+CFG 178 ring 12 good 10281 ctr 8031
+CFG 179 ring 13 good 20991 ctr 16623
+CFG 180 ring 13 good 20730 ctr 8040
+CFG 181 ring 13 good 20820 ctr 16752
+CFG 182 ring 13 good 21543 ctr 10500
+CFG 183 ring 13 good 21348 ctr 16314
+CFG 184 ring 13 good 21618 ctr 9600
+CFG 185 ring 13 good 21483 ctr 16617
+CFG 186 ring 13 good 21471 ctr 9600
+CFG 187 ring 13 good 20979 ctr 15330
+CFG 188 ring 13 good 21510 ctr 15858
+CFG 189 ring 13 good 21534 ctr 16335
+CFG 190 ring 13 good 20862 ctr 15906
+CFG 191 ring 13 good 21714 ctr 16995
+CFG 192 ring 13 good 21462 ctr 6912
+CFG 193 ring 13 good 21648 ctr 7488
+CFG 194 ring 13 good 20778 ctr 16623
+CFG 195 ring 13 good 20739 ctr 15747
+CFG 196 ring 13 good 21351 ctr 17001
+CFG 197 ring 13 good 21276 ctr 16902
+CFG 198 ring 13 good 20823 ctr 7200
+CFG 199 ring 13 good 21399 ctr 17271
+CFG 200 ring 13 good 21390 ctr 6912
+CFG 201 ring 11 good 5130 ctr 4011
+CFG 202 ring 14 good 51444 ctr 12150
+CFG 203 ring 13 good 26436 ctr 17634
+CFG 204 ring 13 good 25863 ctr 17247
+CFG 205 ring 13 good 25392 ctr 20322
+CFG 206 ring 14 good 52398 ctr 13230
+CFG 207 ring 13 good 25365 ctr 17769
+CFG 208 ring 13 good 25623 ctr 18495
+CFG 209 ring 13 good 25989 ctr 19506
+CFG 210 ring 13 good 25869 ctr 18372
+CFG 211 ring 13 good 23565 ctr 17355
+CFG 212 ring 14 good 62499 ctr 48270
+CFG 213 ring 13 good 27102 ctr 21468
+CFG 214 ring 14 good 63720 ctr 49446
+CFG 215 ring 14 good 61998 ctr 15444
+CFG 216 ring 14 good 62958 ctr 15498
+CFG 217 ring 13 good 21882 ctr 16995
+CFG 218 ring 14 good 45540 ctr 35382
+CFG 219 ring 13 good 26883 ctr 17400
+CFG 220 ring 14 good 52626 ctr 42084
+CFG 221 ring 14 good 55536 ctr 42003
+CFG 222 ring 14 good 55458 ctr 40497
+CFG 223 ring 14 good 55428 ctr 40383
+CFG 224 ring 14 good 55011 ctr 39723
+CFG 225 ring 14 good 55638 ctr 30819
+CFG 226 ring 14 good 55917 ctr 43530
+CFG 227 ring 14 good 54837 ctr 39810
+CFG 228 ring 14 good 54657 ctr 41994
+CFG 229 ring 14 good 55758 ctr 43101
+CFG 230 ring 14 good 55122 ctr 43542
+CFG 231 ring 14 good 55020 ctr 24576
+CFG 232 ring 14 good 53433 ctr 40203
+CFG 233 ring 14 good 55071 ctr 42330
+CFG 234 ring 14 good 53478 ctr 42669
+CFG 235 ring 12 good 13092 ctr 10068
+CFG 236 ring 14 good 67485 ctr 51507
+CFG 237 ring 14 good 76734 ctr 61200
+CFG 238 ring 14 good 69678 ctr 54402
+CFG 239 ring 14 good 69015 ctr 44934
+CFG 240 ring 14 good 77889 ctr 62511
+CFG 241 ring 11 good 4314 ctr 3429
+CFG 242 ring 12 good 9675 ctr 7407
+CFG 243 ring 12 good 9381 ctr 7422
+CFG 244 ring 12 good 9624 ctr 8040
+CFG 245 ring 12 good 8748 ctr 3024
+CFG 246 ring 12 good 9432 ctr 6954
+CFG 247 ring 12 good 9690 ctr 7068
+CFG 248 ring 13 good 23610 ctr 19530
+CFG 249 ring 12 good 9822 ctr 7485
+CFG 250 ring 12 good 9723 ctr 7269
+CFG 251 ring 13 good 20367 ctr 15516
+CFG 252 ring 13 good 20499 ctr 15774
+CFG 253 ring 13 good 20466 ctr 7776
+CFG 254 ring 13 good 20469 ctr 15774
+CFG 255 ring 13 good 20934 ctr 15816
+CFG 256 ring 13 good 20517 ctr 15768
+CFG 257 ring 12 good 10053 ctr 7659
+CFG 258 ring 13 good 20520 ctr 5157
+CFG 259 ring 13 good 20703 ctr 16842
+CFG 260 ring 13 good 20481 ctr 7056
+CFG 261 ring 13 good 20571 ctr 16830
+CFG 262 ring 13 good 19947 ctr 8400
+CFG 263 ring 13 good 19860 ctr 9600
+CFG 264 ring 13 good 20649 ctr 8376
+CFG 265 ring 13 good 20319 ctr 7776
+CFG 266 ring 13 good 24954 ctr 19320
+CFG 267 ring 13 good 25284 ctr 20934
+CFG 268 ring 13 good 24339 ctr 19530
+CFG 269 ring 14 good 51384 ctr 42414
+CFG 270 ring 13 good 22542 ctr 7560
+CFG 271 ring 13 good 25014 ctr 17655
+CFG 272 ring 13 good 24477 ctr 19008
+CFG 273 ring 13 good 24681 ctr 18705
+CFG 274 ring 13 good 24621 ctr 19269
+CFG 275 ring 13 good 23973 ctr 18474
+CFG 276 ring 14 good 59550 ctr 45894
+CFG 277 ring 14 good 59550 ctr 45894
+CFG 278 ring 14 good 61398 ctr 47562
+CFG 279 ring 14 good 60426 ctr 45966
+CFG 280 ring 14 good 44016 ctr 14400
+CFG 281 ring 14 good 52317 ctr 40455
+CFG 282 ring 14 good 52650 ctr 41604
+CFG 283 ring 14 good 52698 ctr 38652
+CFG 284 ring 13 good 25518 ctr 19956
+CFG 285 ring 14 good 53175 ctr 44112
+CFG 286 ring 14 good 54168 ctr 24768
+CFG 287 ring 14 good 53874 ctr 14040
+CFG 288 ring 14 good 53643 ctr 39876
+CFG 289 ring 14 good 53049 ctr 41514
+CFG 290 ring 14 good 52524 ctr 38334
+CFG 291 ring 14 good 52680 ctr 19440
+CFG 292 ring 14 good 52701 ctr 42414
+CFG 293 ring 14 good 50481 ctr 19680
+CFG 294 ring 14 good 51051 ctr 38601
+CFG 295 ring 14 good 52044 ctr 40494
+CFG 296 ring 14 good 53658 ctr 16128
+CFG 297 ring 14 good 53667 ctr 25800
+CFG 298 ring 14 good 53403 ctr 25128
+CFG 299 ring 14 good 52935 ctr 43500
+CFG 300 ring 14 good 51453 ctr 40950
+CFG 301 ring 14 good 52374 ctr 23400
+CFG 302 ring 14 good 51318 ctr 21600
+CFG 303 ring 14 good 52074 ctr 41562
+CFG 304 ring 14 good 64500 ctr 48903
+CFG 305 ring 14 good 63177 ctr 44964
+CFG 306 ring 14 good 68898 ctr 56418
+CFG 307 ring 14 good 59217 ctr 47784
+CFG 308 ring 14 good 59361 ctr 48111
+CFG 309 ring 14 good 60042 ctr 46458
+CFG 310 ring 14 good 60018 ctr 46821
+CFG 311 ring 14 good 64677 ctr 52650
+CFG 312 ring 14 good 74505 ctr 58464
+CFG 313 ring 14 good 69507 ctr 56532
+CFG 314 ring 14 good 70539 ctr 49977
+CFG 315 ring 14 good 77652 ctr 51033
+CFG 316 ring 14 good 88392 ctr 65673
+CFG 317 ring 14 good 50226 ctr 40578
+CFG 318 ring 14 good 51798 ctr 39240
+CFG 319 ring 14 good 50556 ctr 20616
+CFG 320 ring 14 good 49701 ctr 18144
+CFG 321 ring 14 good 57933 ctr 46452
+CFG 322 ring 14 good 59106 ctr 46575
+CFG 323 ring 9 good 705 ctr 555
+CFG 324 ring 10 good 1716 ctr 1428
+CFG 325 ring 10 good 1938 ctr 1746
+CFG 326 ring 10 good 1542 ctr 1167
+CFG 327 ring 10 good 1500 ctr 864
+CFG 328 ring 10 good 1854 ctr 1371
+CFG 329 ring 11 good 3861 ctr 756
+CFG 330 ring 11 good 4650 ctr 3606
+CFG 331 ring 11 good 4194 ctr 3336
+CFG 332 ring 11 good 5013 ctr 3831
+CFG 333 ring 11 good 3234 ctr 2463
+CFG 334 ring 11 good 3942 ctr 2973
+CFG 335 ring 11 good 3954 ctr 3093
+CFG 336 ring 11 good 3939 ctr 2889
+CFG 337 ring 11 good 3933 ctr 3012
+CFG 338 ring 11 good 3933 ctr 3111
+CFG 339 ring 11 good 3909 ctr 2913
+CFG 340 ring 11 good 3930 ctr 3018
+CFG 341 ring 11 good 3555 ctr 1080
+CFG 342 ring 12 good 9705 ctr 2430
+CFG 343 ring 10 good 2013 ctr 1620
+CFG 344 ring 12 good 9858 ctr 7674
+CFG 345 ring 12 good 9858 ctr 7674
+CFG 346 ring 12 good 9708 ctr 1728
+CFG 347 ring 12 good 11811 ctr 8985
+CFG 348 ring 11 good 5175 ctr 4215
+CFG 349 ring 11 good 4971 ctr 4215
+CFG 350 ring 12 good 12006 ctr 9243
+CFG 351 ring 12 good 12006 ctr 9243
+CFG 352 ring 12 good 10881 ctr 8193
+CFG 353 ring 12 good 10959 ctr 8589
+CFG 354 ring 11 good 5517 ctr 4524
+CFG 355 ring 12 good 8364 ctr 6318
+CFG 356 ring 12 good 8334 ctr 3024
+CFG 357 ring 12 good 8289 ctr 2592
+CFG 358 ring 12 good 8340 ctr 6609
+CFG 359 ring 12 good 10128 ctr 7614
+CFG 360 ring 12 good 10122 ctr 7722
+CFG 361 ring 12 good 9993 ctr 7896
+CFG 362 ring 11 good 4773 ctr 3504
+CFG 363 ring 12 good 10098 ctr 7554
+CFG 364 ring 12 good 10050 ctr 7992
+CFG 365 ring 12 good 10080 ctr 7518
+CFG 366 ring 12 good 10119 ctr 7800
+CFG 367 ring 11 good 4275 ctr 3480
+CFG 368 ring 12 good 9975 ctr 7329
+CFG 369 ring 12 good 9933 ctr 7542
+CFG 370 ring 12 good 10614 ctr 1998
+CFG 371 ring 12 good 10740 ctr 2214
+CFG 372 ring 13 good 25248 ctr 18870
+CFG 373 ring 13 good 25248 ctr 18870
+CFG 374 ring 12 good 13164 ctr 10275
+CFG 375 ring 12 good 13164 ctr 10275
+CFG 376 ring 13 good 21177 ctr 16635
+CFG 377 ring 13 good 21192 ctr 16542
+CFG 378 ring 13 good 21189 ctr 15933
+CFG 379 ring 13 good 21342 ctr 12390
+CFG 380 ring 13 good 21570 ctr 16350
+CFG 381 ring 13 good 21297 ctr 17070
+CFG 382 ring 12 good 12240 ctr 8403
+CFG 383 ring 13 good 25755 ctr 19869
+CFG 384 ring 13 good 25632 ctr 18999
+CFG 385 ring 13 good 25707 ctr 19827
+CFG 386 ring 12 good 10923 ctr 8487
+CFG 387 ring 12 good 10794 ctr 8274
+CFG 388 ring 12 good 10827 ctr 8907
+CFG 389 ring 12 good 13644 ctr 11127
+CFG 390 ring 12 good 13788 ctr 11784
+CFG 391 ring 12 good 14058 ctr 11784
+CFG 392 ring 12 good 13788 ctr 11784
+CFG 393 ring 14 good 44265 ctr 15984
+CFG 394 ring 13 good 26115 ctr 19731
+CFG 395 ring 13 good 25947 ctr 19812
+CFG 396 ring 13 good 25974 ctr 19506
+CFG 397 ring 14 good 53631 ctr 42192
+CFG 398 ring 14 good 53946 ctr 43734
+CFG 399 ring 13 good 32439 ctr 25872
+CFG 400 ring 14 good 66489 ctr 51201
+CFG 401 ring 11 good 3789 ctr 2754
+CFG 402 ring 11 good 3780 ctr 3054
+CFG 403 ring 11 good 3735 ctr 2088
+CFG 404 ring 11 good 4470 ctr 3300
+CFG 405 ring 12 good 11208 ctr 8730
+CFG 406 ring 12 good 10944 ctr 8544
+CFG 407 ring 12 good 10299 ctr 7929
+CFG 408 ring 12 good 12153 ctr 9261
+CFG 409 ring 12 good 8181 ctr 3024
+CFG 410 ring 12 good 8028 ctr 6294
+CFG 411 ring 12 good 8007 ctr 6318
+CFG 412 ring 12 good 9888 ctr 7944
+CFG 413 ring 12 good 9864 ctr 6888
+CFG 414 ring 12 good 9720 ctr 7071
+CFG 415 ring 12 good 9690 ctr 7395
+CFG 416 ring 12 good 9855 ctr 7455
+CFG 417 ring 12 good 9654 ctr 7254
+CFG 418 ring 12 good 9831 ctr 7824
+CFG 419 ring 12 good 9492 ctr 7116
+CFG 420 ring 12 good 9510 ctr 6966
+CFG 421 ring 12 good 9729 ctr 7254
+CFG 422 ring 12 good 9699 ctr 6657
+CFG 423 ring 11 good 4281 ctr 3321
+CFG 424 ring 11 good 4260 ctr 3321
+CFG 425 ring 12 good 9717 ctr 7887
+CFG 426 ring 11 good 4338 ctr 3738
+CFG 427 ring 12 good 9780 ctr 7704
+CFG 428 ring 12 good 9798 ctr 6915
+CFG 429 ring 12 good 9483 ctr 7053
+CFG 430 ring 12 good 9714 ctr 7824
+CFG 431 ring 12 good 9030 ctr 6870
+CFG 432 ring 12 good 9705 ctr 7059
+CFG 433 ring 12 good 8958 ctr 2268
+CFG 434 ring 12 good 8676 ctr 2520
+CFG 435 ring 13 good 23640 ctr 18270
+CFG 436 ring 13 good 24144 ctr 18750
+CFG 437 ring 13 good 23826 ctr 18684
+CFG 438 ring 13 good 24318 ctr 18312
+CFG 439 ring 13 good 22449 ctr 4698
+CFG 440 ring 13 good 26562 ctr 19887
+CFG 441 ring 12 good 11793 ctr 9702
+CFG 442 ring 12 good 11664 ctr 10569
+CFG 443 ring 13 good 21066 ctr 16146
+CFG 444 ring 13 good 20856 ctr 16602
+CFG 445 ring 13 good 21060 ctr 16278
+CFG 446 ring 13 good 20874 ctr 5760
+CFG 447 ring 13 good 20691 ctr 16230
+CFG 448 ring 13 good 21018 ctr 15168
+CFG 449 ring 13 good 20772 ctr 15804
+CFG 450 ring 12 good 9906 ctr 7047
+CFG 451 ring 12 good 9870 ctr 5328
+CFG 452 ring 12 good 10161 ctr 7044
+CFG 453 ring 13 good 20943 ctr 9600
+CFG 454 ring 13 good 20859 ctr 16110
+CFG 455 ring 13 good 20691 ctr 16368
+CFG 456 ring 13 good 20262 ctr 15330
+CFG 457 ring 13 good 20964 ctr 16314
+CFG 458 ring 13 good 20934 ctr 16368
+CFG 459 ring 13 good 20127 ctr 6480
+CFG 460 ring 13 good 20826 ctr 16350
+CFG 461 ring 12 good 8943 ctr 3024
+CFG 462 ring 12 good 9159 ctr 3456
+CFG 463 ring 13 good 20571 ctr 6912
+CFG 464 ring 12 good 9897 ctr 7524
+CFG 465 ring 13 good 20844 ctr 16410
+CFG 466 ring 13 good 20880 ctr 14739
+CFG 467 ring 13 good 20493 ctr 16350
+CFG 468 ring 13 good 20772 ctr 4617
+CFG 469 ring 13 good 20376 ctr 7056
+CFG 470 ring 13 good 20298 ctr 6048
+CFG 471 ring 13 good 25200 ctr 17844
+CFG 472 ring 13 good 25188 ctr 18768
+CFG 473 ring 13 good 24579 ctr 19569
+CFG 474 ring 13 good 25515 ctr 11232
+CFG 475 ring 13 good 24603 ctr 19008
+CFG 476 ring 13 good 23457 ctr 14853
+CFG 477 ring 13 good 23448 ctr 12390
+CFG 478 ring 13 good 22272 ctr 6300
+CFG 479 ring 13 good 22203 ctr 9300
+CFG 480 ring 13 good 22119 ctr 16947
+CFG 481 ring 12 good 11136 ctr 8289
+CFG 482 ring 13 good 24840 ctr 18711
+CFG 483 ring 12 good 10479 ctr 7995
+CFG 484 ring 12 good 10914 ctr 8289
+CFG 485 ring 14 good 63654 ctr 50910
+CFG 486 ring 14 good 62076 ctr 47874
+CFG 487 ring 14 good 56637 ctr 24768
+CFG 488 ring 14 good 58035 ctr 12312
+CFG 489 ring 14 good 62520 ctr 50304
+CFG 490 ring 12 good 12474 ctr 8763
+CFG 491 ring 13 good 26196 ctr 16848
+CFG 492 ring 14 good 50400 ctr 16848
+CFG 493 ring 14 good 54144 ctr 39258
+CFG 494 ring 14 good 54120 ctr 39084
+CFG 495 ring 14 good 54027 ctr 38490
+CFG 496 ring 14 good 54267 ctr 41664
+CFG 497 ring 14 good 53490 ctr 17400
+CFG 498 ring 14 good 54252 ctr 40248
+CFG 499 ring 14 good 54123 ctr 31530
+CFG 500 ring 14 good 51867 ctr 39939
+CFG 501 ring 14 good 53913 ctr 42072
+CFG 502 ring 14 good 53073 ctr 41004
+CFG 503 ring 14 good 52533 ctr 42204
+CFG 504 ring 14 good 52752 ctr 40881
+CFG 505 ring 14 good 53367 ctr 38430
+CFG 506 ring 14 good 52617 ctr 42204
+CFG 507 ring 12 good 10773 ctr 8478
+CFG 508 ring 14 good 53646 ctr 39462
+CFG 509 ring 14 good 53814 ctr 13824
+CFG 510 ring 14 good 51663 ctr 22200
+CFG 511 ring 13 good 25968 ctr 17601
+CFG 512 ring 14 good 58767 ctr 34704
+CFG 513 ring 13 good 27762 ctr 21561
+CFG 514 ring 13 good 27825 ctr 19968
+CFG 515 ring 14 good 69270 ctr 51030
+CFG 516 ring 14 good 67608 ctr 51966
+CFG 517 ring 13 good 34683 ctr 27807
+CFG 518 ring 14 good 57681 ctr 44502
+CFG 519 ring 13 good 20031 ctr 7056
+CFG 520 ring 13 good 19890 ctr 10680
+CFG 521 ring 13 good 19749 ctr 16350
+CFG 522 ring 12 good 10677 ctr 7983
+CFG 523 ring 13 good 24633 ctr 13032
+CFG 524 ring 13 good 23820 ctr 17340
+CFG 525 ring 13 good 24375 ctr 17148
+CFG 526 ring 13 good 23943 ctr 16536
+CFG 527 ring 12 good 10947 ctr 9369
+CFG 528 ring 13 good 23895 ctr 18147
+CFG 529 ring 13 good 24675 ctr 17082
+CFG 530 ring 14 good 51936 ctr 41304
+CFG 531 ring 14 good 51861 ctr 39906
+CFG 532 ring 14 good 52053 ctr 20940
+CFG 533 ring 14 good 51393 ctr 19296
+CFG 534 ring 14 good 51537 ctr 40221
+CFG 535 ring 14 good 52161 ctr 38430
+CFG 536 ring 13 good 24435 ctr 18720
+CFG 537 ring 13 good 24825 ctr 19890
+CFG 538 ring 13 good 25329 ctr 19191
+CFG 539 ring 13 good 22995 ctr 20622
+CFG 540 ring 14 good 50778 ctr 38430
+CFG 541 ring 14 good 51987 ctr 36714
+CFG 542 ring 14 good 50436 ctr 40662
+CFG 543 ring 14 good 51660 ctr 42180
+CFG 544 ring 13 good 22002 ctr 7056
+CFG 545 ring 14 good 61692 ctr 43722
+CFG 546 ring 14 good 62226 ctr 49632
+CFG 547 ring 14 good 62838 ctr 46806
+CFG 548 ring 14 good 64536 ctr 47169
+CFG 549 ring 14 good 57420 ctr 47118
+CFG 550 ring 13 good 27162 ctr 21012
+CFG 551 ring 14 good 58077 ctr 20304
+CFG 552 ring 14 good 72321 ctr 56538
+CFG 553 ring 14 good 71829 ctr 58326
+CFG 554 ring 14 good 56289 ctr 50511
+CFG 555 ring 12 good 9642 ctr 6684
+CFG 556 ring 12 good 9453 ctr 5040
+CFG 557 ring 13 good 20265 ctr 16389
+CFG 558 ring 13 good 20184 ctr 15747
+CFG 559 ring 12 good 10911 ctr 7980
+CFG 560 ring 12 good 10521 ctr 8172
+CFG 561 ring 14 good 42492 ctr 33366
+CFG 562 ring 14 good 52158 ctr 40875
+CFG 563 ring 14 good 50991 ctr 16200
+CFG 564 ring 13 good 28479 ctr 20505
+CFG 565 ring 13 good 26622 ctr 21417
+CFG 566 ring 10 good 1809 ctr 1383
+CFG 567 ring 11 good 4521 ctr 3504
+CFG 568 ring 11 good 4932 ctr 4338
+CFG 569 ring 11 good 3777 ctr 2850
+CFG 570 ring 11 good 3819 ctr 2754
+CFG 571 ring 11 good 4560 ctr 3321
+CFG 572 ring 12 good 11586 ctr 8934
+CFG 573 ring 12 good 11532 ctr 9240
+CFG 574 ring 12 good 8007 ctr 2592
+CFG 575 ring 12 good 8031 ctr 6138
+CFG 576 ring 12 good 9699 ctr 7395
+CFG 577 ring 12 good 9705 ctr 7158
+CFG 578 ring 12 good 9585 ctr 6828
+CFG 579 ring 12 good 9684 ctr 7206
+CFG 580 ring 12 good 9804 ctr 7116
+CFG 581 ring 12 good 9687 ctr 7032
+CFG 582 ring 11 good 4992 ctr 3927
+CFG 583 ring 13 good 20481 ctr 7344
+CFG 584 ring 13 good 20469 ctr 15450
+CFG 585 ring 13 good 20622 ctr 15618
+CFG 586 ring 13 good 20715 ctr 15606
+CFG 587 ring 13 good 20658 ctr 16455
+CFG 588 ring 13 good 20274 ctr 6264
+CFG 589 ring 13 good 24774 ctr 19065
+CFG 590 ring 12 good 10458 ctr 8469
+CFG 591 ring 12 good 10806 ctr 8346
+CFG 592 ring 13 good 22680 ctr 18234
+CFG 593 ring 13 good 24855 ctr 18084
+CFG 594 ring 13 good 32220 ctr 25011
+CFG 595 ring 13 good 22356 ctr 6264
+CFG 596 ring 14 good 52797 ctr 15984
+CFG 597 ring 12 good 9381 ctr 6876
+CFG 598 ring 12 good 9417 ctr 7386
+CFG 599 ring 12 good 9432 ctr 6687
+CFG 600 ring 13 good 20097 ctr 4725
+CFG 601 ring 13 good 20169 ctr 14292
+CFG 602 ring 13 good 19743 ctr 15732
+CFG 603 ring 13 good 19914 ctr 15816
+CFG 604 ring 13 good 23589 ctr 17337
+CFG 605 ring 12 good 10824 ctr 8040
+CFG 606 ring 13 good 24054 ctr 16701
+CFG 607 ring 13 good 23877 ctr 17190
+CFG 608 ring 13 good 23928 ctr 16977
+CFG 609 ring 12 good 10473 ctr 8172
+CFG 610 ring 12 good 10896 ctr 7980
+CFG 611 ring 13 good 23889 ctr 17172
+CFG 612 ring 14 good 41706 ctr 13392
+CFG 613 ring 14 good 51963 ctr 14400
+CFG 614 ring 14 good 52005 ctr 14040
+CFG 615 ring 13 good 24693 ctr 17475
+CFG 616 ring 13 good 22686 ctr 17400
+CFG 617 ring 14 good 50700 ctr 39960
+CFG 618 ring 14 good 51114 ctr 36540
+CFG 619 ring 14 good 49128 ctr 39240
+CFG 620 ring 14 good 50511 ctr 38304
+CFG 621 ring 11 good 4401 ctr 3417
+CFG 622 ring 12 good 9441 ctr 7104
+CFG 623 ring 12 good 9390 ctr 6876
+CFG 624 ring 13 good 19869 ctr 6264
+CFG 625 ring 13 good 19827 ctr 15228
+CFG 626 ring 13 good 19986 ctr 15126
+CFG 627 ring 13 good 24255 ctr 17607
+CFG 628 ring 13 good 23943 ctr 17388
+CFG 629 ring 14 good 51174 ctr 40716
+CFG 630 ring 13 good 23310 ctr 16557
+CFG 631 ring 13 good 23142 ctr 16494
+CFG 632 ring 12 good 10998 ctr 8373
+== bulk certificates (planes)
+110 residual configurations, 523 settled by the bulk certificate
+== residual certificates
+== Lean modules
+62 groups for 523 bulk configurations -> certgen/groups.txt
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+Traceback (most recent call last):
+ModuleNotFoundError: No module named 'numpy'
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+Traceback (most recent call last):
+    import numpy as np
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+ModuleNotFoundError: No module named 'numpy'
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/gen_maskc_jobs.py", line 32, in <module>
+    import bulkspace as BS
+  File "/mnt/storage1/syk/tmp-notebook-work/fourcolor-audit/a/scripts/bulkspace.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+BUILD_RC=123
