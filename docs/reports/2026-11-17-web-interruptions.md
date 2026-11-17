@@ -114,6 +114,7 @@ Web 端会话视图里，红色错误行由 `turn/end` 的 `reason.kind = "inter
 | 今天这两个工单真的中断了吗？ | **没有**。四色 worker 在 19:06–19:08 持续运行；π 工单的 resume 进入 turn 5 并完成。两个工单的工作都没有被中断。 |
 | Web 端显示「中断」是界面 bug 吗？ | **是，存在可复现的误报**。跨 DSH 进程冷读一个仍在写入的会话时，未闭合回合被无条件当成本地崩溃恢复。 |
 | 有数据丢失吗？ | 没有。工作区、git、PR 与会话日志都在；误报只影响 Web 端的显示与用户判断。 |
+| 当前系统是否异常？ | 没有。superagent 管理 API `problems = 0`，16 个 open 工单无 `failed`/`blocked`；运行 2 / 槽位 3。 |
 | 影响面 | 任何「A 进程写、B 进程读」的场景：个人 `dsh web`/`dsh-remote` 查看 superagent worker 会话、多个 DSH 实例共享 `~/.dsh/sessions`、崩溃后由另一进程打开旧会话。 |
 | 责任位置 | DSH core：`dsh-session-query` 的冷读恢复 + `dsh-client-ui-chat` 的文案；不是 `dsh-superagent` 插件本身。本机只有安装包（无源码 checkout），因此本工单只做诊断，不在这里改 DSH 代码。 |
 
