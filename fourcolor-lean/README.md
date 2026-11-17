@@ -57,6 +57,27 @@ lake env lean /path/to/fourcolor-lean/audit/Audit.lean
 网络受限时，先设置 `http_proxy` / `https_proxy`；`Audit.lean` 的路径换成
 本仓库中的实际路径。
 
+## 本次任务的 token 与成本（估算）
+
+截至 2026-11-17 19:11（本条回复本身尚未计入），DSH 会话 `tokenUsage` 记录：
+
+| 项 | 数值 |
+|---|---:|
+| 未缓存输入 | 467,323 tokens |
+| 缓存读取 | 512,394,880 tokens |
+| 输出 | 299,036 tokens |
+| 合计 | 513,161,239 tokens |
+| 缓存命中率 | 99.909% |
+
+按 DeepSeek 官方 CNY 列表价（`deepseek-flash`：缓存命中 ¥0.04 / 未命中 ¥2 / 输出 ¥8 每百万 token；非高峰半价），本次任务在 18:06–19:11 的非高峰时段运行，估算 **约 ¥11.91**；若按高峰价约 **¥23.82**。这是列表价估算，不是平台账单。
+
+## 参考来源与原创边界
+
+- **主体形式化**：`corun1024/4ct`（Chris Emery，MIT，commit `3db71e0`）。它是 Gonthier–Werner 的 Coq 证明 [`math-comp/fourcolor`](https://github.com/math-comp/fourcolor) 的 Lean 4 移植，跟随 Robertson–Sanders–Seymour–Thomas 的 633 构型证明。
+- **交叉比较**：`RBarish-UTokyo/FourColorTheorem-Lean4`（Robert D. Barish，Apache-2.0，commit `20fa345`）。本仓库只做源码/文档层面的比较，未完整构建。
+- **工具与库**：Lean 4 `v4.34.0-rc2`、Mathlib `141f6b6`。
+- **本仓库新增**：`audit/Audit.lean`、`audit/run.sh`、论文、图表、DOCX/PDF 构建脚本与证据日志；**没有**从零重写 59 万行证明。
+
 ## 许可证与归属
 
 - 上游 `corun1024/4ct`：MIT License，Copyright (c) 2026 Chris Emery；
