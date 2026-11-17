@@ -1,0 +1,84 @@
+{
+  "tag": "d1e6",
+  "n": 970563,
+  "tests": [
+    {
+      "name": "P1",
+      "statement": "a_n bounded by 1000",
+      "verdict": "REFUTED",
+      "witness": "max a_n = 12996958 at n = 453293 (q_{n-1} has 233325 digits)"
+    },
+    {
+      "name": "P2",
+      "statement": "a_n = O(log n)",
+      "verdict": "REFUTED",
+      "witness": "max a_n/log(n+1) = 997901.0 at n = 453293 (a = 12996958); ratio grows like n/log n"
+    },
+    {
+      "name": "P3",
+      "statement": "a_n <= n^2 for all n >= 5",
+      "verdict": "SUPPORTED",
+      "witness": "no violations for 5 <= n < 970563"
+    },
+    {
+      "name": "P4",
+      "statement": "a_n <= 50 n for n >= 5",
+      "verdict": "SUPPORTED",
+      "witness": "max a_n/n = 48.20 at n = 431; no violations"
+    },
+    {
+      "name": "P5",
+      "statement": "a_n <= n^1.7 for n >= 5",
+      "verdict": "SUPPORTED",
+      "witness": "max log a_n/log n = 1.64 at n=431; no violations"
+    },
+    {
+      "name": "P6",
+      "statement": "log a_n <= 0.01 n for n >= 1000  (sufficient for mu(pi)=2)",
+      "verdict": "SUPPORTED",
+      "witness": "no violations"
+    },
+    {
+      "name": "P7",
+      "statement": "r_n is decreasing for n >= 1000",
+      "verdict": "REFUTED",
+      "witness": "514285 increases among 969562 steps; first at n=1000 (+4.15e-03)"
+    },
+    {
+      "name": "P8",
+      "statement": "r_n <= 1 + 1/n for n >= 1000",
+      "verdict": "REFUTED",
+      "witness": "372631 violations, first n=1000 (excess 4.47e-03 > 1/n = 1.00e-03)"
+    },
+    {
+      "name": "P9",
+      "statement": "T_K - 1 <= 10/K",
+      "verdict": "REFUTED",
+      "witness": "max K(T_K-1) = 11.21 at K = 367733"
+    },
+    {
+      "name": "P10",
+      "statement": "T_K - 1 <= C log10(K)/K with C = 2 (K >= 1000)",
+      "verdict": "REFUTED",
+      "witness": "max (T_K-1)K/log10(K) = 2.015 at K = 367733"
+    },
+    {
+      "name": "P11",
+      "statement": "q^2|pi - p/q| >= 1e-4 for all convergents",
+      "verdict": "REFUTED",
+      "witness": "min over k<=N of q_k^2|pi-p_k/q_k| = 1/(max a_k + rho) ~ 7.694e-08"
+    },
+    {
+      "name": "P12",
+      "statement": "quotients equidistributed mod 2 and mod 3 (Gauss-Kuzmin)",
+      "verdict": "SUPPORTED",
+      "witness": "{\"mod2\": {\"observed\": [0.34908501560434513, 0.650913954065836], \"expected\": [0.348503509854346, 0.6514957687987123], \"chi2\": 1.4460174861838424, \"dof\": 1}, \"mod3\": {\"observed\": [0.17864888729531211, 0.5460068022374642, 0.2753432801374048], \"expected\": [0.1789928269628846, 0.5469548374085872, 0.27405233562852827], \"chi2\": 8.138373636106596, \"dof\": 2}}"
+    },
+    {
+      "name": "P13",
+      "statement": "no run of 5 consecutive 1s",
+      "verdict": "REFUTED",
+      "witness": "longest run of 1s = 14"
+    }
+  ]
+}

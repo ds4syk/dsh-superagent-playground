@@ -1,0 +1,7 @@
+{
+  "digits": 200000,
+  "terms": 14295,
+  "seconds": 0.76,
+  "method": "Chudnovsky binary splitting, integer arithmetic",
+  "python": "3.14.8"
+}

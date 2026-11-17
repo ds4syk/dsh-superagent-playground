@@ -908,6 +908,28 @@ lake env lean /mnt/storage1/syk/.superagent-work/pi-exponent-proof-dd8280cf5917/
 
 ---
 
+## 12. 并行深挖：五个方向的独立结论（2026-11-17）
+
+按用户要求，主窗口并行派发了 5 个独立窗口（CF、Padé/Salikhov、一般 Roth/插值、周期/定量超越、数值/构造测试），各自独立目录、充足预算、禁止读取官方材料。**没有一个证明 $\mu(\pi)\le2$**；但它们把主定理的难点拆成了可检查的壁垒与大量数据。这不是“都失败了”的清单，而是“哪些路线的极限在哪里”的精确记录。
+
+| 方向 | 最强严格结果/数据 | 精确障碍 | 文件 |
+|---|---|---|---|
+| CF/部分商 | $a_n\le\exp(Cn^\alpha)$（$\alpha<1$）$\Rightarrow\mu=2$；$q_n\bmod2$ 的 $2:1$ 结构；$e$ 对照（$a_n$ 线性增长但 $\mu(e)=2$） | 缺“解析表示$\to$部分商上界”的传递引理 (TP)；Gauss 轨道逐项下界 $T^n(\pi)\ge e^{-o(n)}$ | `research/pi-exponent-parallel/cf/` |
+| Padé/Salikhov | 分母平方定律 $\varrho_n=D_n^2|\ell_n||b_n|$；arctan Padé 内在质量超 Dirichlet 16 倍但分母差 $24^n$；正权族差 $3.66^n$；只有 CF 收敛子通过 | 需要整数/分母 $\le4^n$ 的算术 Padé，或 CF 控制；二维 Beukers 只给 $\mu(\pi^2)$ | `research/pi-exponent-parallel/pade/` |
+| 一般 Roth/插值 | 代数插值对 $\pi$ 无法启动；有理插值定理 4.1；鸽笼 $A\ge D$ | 机器自身含 $Q_0=\prod(q_iX-p_i)^m$，$|Q_0(\pi)|\le C H(Q_0)^{1-\kappa}$，否定所需的 $A\le1$；官方必须给出特殊的 $A\le1$ 输入 | `research/pi-exponent-parallel/interpolation/` |
+| 周期/定量超越 | 类型壁垒：双边型 $\tau$ + 对数稠密 $\Rightarrow\mu\le1+1/\tau$；$\tau=1\iff\pi$ 坏逼近（严格强于目标）；现有 $\tau\le0.1638$，差 6.1 倍 | $\tau\to1$ / 部分商有界；Nesterenko $d=2$ 需 $\kappa_2=1$ 的边缘值；PF 方程齐次不能生成 $\pi$ | `research/pi-exponent-parallel/periods/` |
+| 数值/构造 | $10^6$ 位 $\pi$、970,563 个认证部分商；$T_K\to1$；有限范围 $q\le10^{499,997}$ 时 $|\pi-p/q|\ge7.694\times10^{-8}/q^2$；C1–C3 猜想 | 仅是计算/猜想；Legendre 定理排除显式 $\lambda\ge2$ 构造绕过 CF | `research/pi-exponent-parallel/numeric/` |
+
+**综合判断（五个方向的交汇点）：**
+
+1. 所有自选路线要么归约到 CF/部分商（$a_{n+1}=q_n^{o(1)}$），要么撞上结构性 no-go（分母 $24^n/3.66^n$、$\tau=1$、$Q_0$ 的 $\kappa-1$、PF 齐次性）。没有找到第三条非循环路线。
+2. 一般 Roth/插值窗口的定理 4.1 最有针对性：**标准“一般算术输入”的插值/行列式架构不能证明 $\mu\le2$**；若官方论文的分离权重插值要成功，它必须提供绕开 $Q_0$ 的特殊 $A\le1$ 下界——这正是阶段 III 要审计的核心。
+3. 5 个窗口都**没有**看到官方论文/Lean（按约束），所以它们的 no-go 是对“一般/显式/CF/周期”类方法的；不是对官方特定构造的否证。官方 869 文件 Lean 仍未独立编译。
+
+**与官方过程的对照（主窗口补充）：** 官方论文的路线是“分离权重多变量插值 + 曲线不等式 + 行列式比较”；它恰好属于“插值/行列式”大类，但依赖一个**特殊的**插值定理（权重先于中心）。并行插值窗口的 no-go 说明：一般输入的版本不成立；官方必须证明其特殊定理确实给出 $A\le1$ 的算术下界。这个“特殊 vs 一般”的差异是本实验下一阶段最值得审计的点。
+
+---
+
 ## 附录 A：符号与约定
 
 | 符号 | 含义 |

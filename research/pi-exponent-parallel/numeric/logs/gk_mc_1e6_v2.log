@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/.superagent-work/pi-exponent-proof-dd8280cf5917/research/pi-exponent-parallel/numeric/scripts/gk_montecarlo.py", line 121, in <module>
+    main()
+    ~~~~^^
+  File "/mnt/storage1/syk/.superagent-work/pi-exponent-proof-dd8280cf5917/research/pi-exponent-parallel/numeric/scripts/gk_montecarlo.py", line 87, in main
+    Tc, mratio = T_curve(a, grid)
+                 ~~~~~~~^^^^^^^^^
+  File "/mnt/storage1/syk/.superagent-work/pi-exponent-proof-dd8280cf5917/research/pi-exponent-parallel/numeric/scripts/gk_montecarlo.py", line 57, in T_curve
+    r[k] = logq[k + 1] / logq[k]
+           ~~~~~~~~~~~~^~~~~~~~~
+ZeroDivisionError: division by zero

@@ -1,0 +1,10 @@
+{
+  "agm_vs_chud_agree_digits": 1000000,
+  "compared": 1000000,
+  "pi_digits": 1000000,
+  "agm_checks": {
+    "head50_ok": true,
+    "feynman_999999_at_762": true,
+    "len": 1000000
+  }
+}
