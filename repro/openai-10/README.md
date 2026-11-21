@@ -91,6 +91,10 @@ python3 run_sessions.py --models deepseek --problems 287_free_group_factors --st
 （DeepSeek/Kimi）各评一次，分歧由人工复核。评分只看“是否复现官方声称的方向与主定理”，
 不把官方声称当作已独立验证的真理。
 
+## 6.5 成本
+
+Kimi API 来源与 token/费用审计见 `COST.md`（实测 1.36M tokens ≈ $3.5；含被取消的 Kimi thinking 预跑约 1.9M、$9–10）。
+
 ## 7. 已知限制
 
 - 10 个案例是 OpenAI 选出的公开样例，存在选择偏差（很可能偏向“成功且可讲清楚”的结果）。
