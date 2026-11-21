@@ -1,0 +1,50 @@
+This is by an automated agent, not a human.
+
+## 摘要
+
+回答 Feishu 调研问题：国内高校/课题组怎么报销，境外 AI 订阅（ChatGPT/Claude）开不出中国发票时，能否按“技术服务费”报销。
+
+**结论：不建议把境外订阅“弄成技术服务费”。** 没有真实技术服务而让境内公司开“技术服务费”发票，属于票货不符/变名开票；合规路径是“先确认科目与票据口径 → 境内模型/云服务或学校统一采购 → 横向课题按真实服务合同采购 → 学校对公境外采购（门槛高）→ 个人垫付（不建议）”。
+
+![一页决策图](https://raw.githubusercontent.com/ds4syk/dsh-superagent-playground/agent/china-reimbursement-research-356c9e2797d9/docs/visuals/2026-11-21-ai-reimbursement.png)
+
+## 关键结论
+
+1. **“技术服务费”不是科研经费科目**：国自然/重点研发的直接费用只分设备费、业务费、劳务费；AI 订阅只能在“业务费—信息传播/其他相关支出”或学校自设的“数据服务费/云服务费”里找位置。
+2. **没有真实服务，就没有“技术服务费”**：发票必须与实际交易一致（2017 年第 16 号公告）；纯代充/代购开“技术服务费”属于变名开票，可能触发虚开、套取科研经费风险。
+3. **境外直接订阅的税务/外汇门槛很高**：境外单位在境内发生应税交易，购买方是增值税扣缴义务人（6%）；构成特许权使用费的，可能涉及 10% 预提所得税；单笔超过 5 万美元要办理对外支付税务备案。
+4. **各校口径差异很大**：新疆大学 2026 年明确纵向经费不报“各类软件服务费/会员年费”；山西工商学院允许“数据库使用权限费”但不报会员费；北信科把“信息传播费”限定在出版/文献/检索；东南大学、中科大允许境外 Invoice/Receipt + 付款记录作为凭证。
+5. **境外 AI 的地区限制是独立问题**：OpenAI/Anthropic 官方支持地区不含中国大陆，个人版不能对公付款；即使财务同意，也可能卡在采购、外汇、数据合规。
+6. **最稳的合规路径**：境内模型/云服务（有增值税发票）→ 学校统一采购/集中账号 → 横向合作企业真实服务 → 学校对公境外采购；“个人垫付 + 找票”风险最高。
+
+## 交付物
+
+- **Markdown 知识库**：[00 总览](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/00.md) · [01 报销体系](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/01.md) · [02 票据税务](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/02.md) · [03 技术服务费](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/03.md) · [04 各校样本](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/04.md) · [05 行动清单](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/05.md) · [06 风险清单](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/06.md)
+- **DOCX 知识库**：[下载](https://github.com/ds4syk/dsh-superagent-playground/raw/agent/china-reimbursement-research-356c9e2797d9/deliverables/%E9%AB%98%E6%A0%A1%E6%8A%A5%E9%94%80%E4%B8%8E%E5%A2%83%E5%A4%96AI%E8%AE%A2%E9%98%85_2026-11.docx)（34 页，内嵌决策图）
+- **一页决策图**：[PNG 原图](https://raw.githubusercontent.com/ds4syk/dsh-superagent-playground/agent/china-reimbursement-research-356c9e2797d9/docs/visuals/2026-11-21-ai-reimbursement.png)（2200×1600）
+- **调研索引**：`report/README-china-ai-reimbursement.md`（证据/限制说明）
+- **生成脚本**：`src/build_docx_reimbursement.py`、`src/make_visual_reimbursement.py`（可复现）
+
+## 证据与方法
+
+- **政策原文**：国自然资金管理办法（财教〔2021〕177号）、重点研发计划资金管理办法（财教〔2025〕2号）、《增值税法》、《企业所得税法》及实施条例、国家税务总局公告 2017 年第 16 号、服务贸易对外支付税务备案（2013 年第 40 号、2021 年第 19 号）、《生成式人工智能服务管理暂行办法》、《数据出境安全评估办法》。
+- **高校一手文件**：新疆大学 2026-03 温馨提示、山西工商学院 院科函〔2025〕104号、北信科 校财发〔2021〕2号、东南大学/中科大财务问答、中国劳动关系学院 2026 年境外电子资源采购招标文件、北京大学 AI 大模型安全管理暂行规定。
+- **专业解读/案例**：中国税务报“私人订制的咨询业务发票”案例、发现律师事务所 AI Token 合规分析、2026-11 农工党社情民意“关于完善科研项目人工智能科研费用管理的建议”。
+- **方法**：制度文本对照 + 高校样本 + 税务规则推演；没有做全国问卷，样本有限。
+
+## 验证
+
+- DOCX 用 LibreOffice 转 PDF 检查 34 页：页数与空白页正常；抽查封面、决策图、关键表格/页脚，未见溢出。
+- PNG 2200×1600，中文 Noto Sans CJK，决策链与“推荐顺序”可读。
+- 生成脚本可重复运行：
+  - `~/miniconda3/envs/sdpr-clean/bin/python src/make_visual_reimbursement.py`
+  - `~/miniconda3/envs/sdpr-clean/bin/python src/build_docx_reimbursement.py`
+- 本 PR 不涉及代码运行逻辑；`src/md2docx.py` 仅增加 `add_image` 返回段落对象，便于控制分页。
+
+## 限制与合并风险
+
+- **Door:** two-way（仅新增文档/图片，revert 即可回滚）；**Blast Radius:** docs-only。
+- **不是全国统一口径**：高校样本有限，具体报销以本单位财务处、科研院和主管税务机关书面答复为准；本报告不构成法律/税务/财务意见。
+- **政策时点**：《增值税法》2026-01-01 施行；各校 2025—2026 年仍在收紧/调整，引用时注意版本。
+- **Feishu 知识库未创建**：本次执行环境的 bot 未申请 `docx:document` / `drive:drive` 权限，无法创建 Feishu 文档；阅读副本通过本 PR 的 Markdown/PNG/DOCX 提供。
+- **合并方式**：无 UI 变更；请人工 review 后合并，未启用自动合并。

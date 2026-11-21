@@ -256,6 +256,7 @@ def add_image(doc, path: Path, caption):
         c.alignment = WD_ALIGN_PARAGRAPH.CENTER
         c.paragraph_format.space_after = Pt(8)
         add_inline(c, caption, size=9.2, color=GRAY)
+    return p
 
 
 def add_footer(section, text):
