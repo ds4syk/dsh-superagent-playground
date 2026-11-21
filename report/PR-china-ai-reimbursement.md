@@ -43,6 +43,7 @@ This is by an automated agent, not a human.
 
 ## 限制与合并风险
 
+- **Door:** two-way（仅新增文档/图片，revert 即可回滚）；**Blast Radius:** docs-only。
 - **不是全国统一口径**：高校样本有限，具体报销以本单位财务处、科研院和主管税务机关书面答复为准；本报告不构成法律/税务/财务意见。
 - **政策时点**：《增值税法》2026-01-01 施行；各校 2025—2026 年仍在收紧/调整，引用时注意版本。
 - **Feishu 知识库未创建**：本次执行环境的 bot 未申请 `docx:document` / `drive:drive` 权限，无法创建 Feishu 文档；阅读副本通过本 PR 的 Markdown/PNG/DOCX 提供。
