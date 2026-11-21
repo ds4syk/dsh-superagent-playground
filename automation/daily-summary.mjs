@@ -18,9 +18,10 @@
  *  - Open pull requests of the configured repository (optional; skipped when gh fails)
  *
  * Usage:
- *   node daily-summary.mjs [--date YYYY-MM-DD] [--days 7] [--dry-run] [--no-llm] [--resend]
+ *   node daily-summary.mjs [--date YYYY-MM-DD] [--end-time HH:MM] [--days 7] [--dry-run] [--no-llm] [--resend]
  *
- * --date is the last day of the report window; --days is its length (default 7).
+ * The window is rolling: the last --days x 24h ending at --end-time on --date (or at now when
+ * neither is given), so a 20:00 run never drops the 20:00-24:00 hours.
  *
  * Environment overrides: DSH_DAILY_SUMMARY_CHAT, DSH_DAILY_SUMMARY_REPO,
  * DSH_DAILY_SUMMARY_LARK_CLI, DSH_DAILY_SUMMARY_GH, DSH_DAILY_SUMMARY_STATE_DIR,
@@ -45,6 +46,7 @@ function parseArgs(argv) {
     else if (a === '--resend') args.resend = true
     else if (a === '--no-llm') args.llm = false
     else if (a === '--date') args.date = argv[++i]
+    else if (a === '--end-time') args.endTime = argv[++i]
     else if (a === '--days') args.days = Number(argv[++i])
     else if (a === '--chat-id') args.chat = argv[++i]
     else if (a === '--repo') args.repo = argv[++i]
@@ -90,11 +92,12 @@ function addDays(date, days) {
   value.setUTCDate(value.getUTCDate() + days)
   return localDate(value)
 }
-/** The inclusive window ending at `end`, newest last. */
-function reportWindow(end, days) {
+/** A rolling window ending at endMs: the last `days` x 24h, so no calendar-day/hour gap. */
+function reportWindow(endMs, days) {
+  const startMs = endMs - days * 24 * 60 * 60 * 1000
   const dates = []
-  for (let i = days - 1; i >= 0; i--) dates.push(addDays(end, -i))
-  return { start: dates[0], end, days: dates.length, dates }
+  for (let d = localDate(new Date(startMs)); d <= localDate(new Date(endMs)); d = addDays(d, 1)) dates.push(d)
+  return { start: localDate(new Date(startMs)), end: localDate(new Date(endMs)), startMs, endMs, days, dates }
 }
 function shortDate(date) {
   const [, month, day] = date.split('-')
@@ -234,8 +237,8 @@ function collectSessionsFromCache(dates) {
 }
 
 /** Session logs that can hold events in the window; a log's mtime is its last appended event. */
-function sessionLogFiles(startDate) {
-  const since = Date.parse(`${startDate}T00:00:00+08:00`)
+function sessionLogFiles(startMs) {
+  const since = startMs
   const files = []
   for (const slug of fs.readdirSync(sessionsRoot)) {
     const dir = path.join(sessionsRoot, slug)
@@ -257,11 +260,11 @@ function sessionLogFiles(startDate) {
 /**
  * Fold one session log into the requested window.
  *
- * A step is billed to the day it started, like Context Insights. `session/end-seed` with
+ * A step is billed to its start time. `session/end-seed` with
  * `inherited: true` closes the copied parent history of a seeded side conversation: those events
  * were already billed in the parent session, so only later events are counted.
  */
-async function scanSessionLog({ id, file }, start, end) {
+async function scanSessionLog({ id, file }, startMs, endMs) {
   const child = spawn(zstdcat, [file], { stdio: ['ignore', 'pipe', 'ignore'] })
   await new Promise((resolve, reject) => {
     child.once('spawn', resolve)
@@ -327,8 +330,7 @@ async function scanSessionLog({ id, file }, start, end) {
   for (const item of usages) {
     if (item.seq <= inheritedThrough) continue
     const started = stepStarts.get(`${item.turn}:${item.step}`) ?? item.time
-    const startedDate = localDate(new Date(started))
-    if (startedDate < start || startedDate > end) continue
+    if (started < startMs || started > endMs) continue
     const usage = item.usage
     const uncached = Number(usage.inputTokens || 0)
     const cacheRead = Number(usage.cacheReadTokens || 0)
@@ -358,14 +360,14 @@ async function scanSessionLog({ id, file }, start, end) {
 }
 
 /** Sessions with the window's per-day figures, read from the durable session logs. */
-async function collectSessions(dates, start, end) {
+async function collectSessions(dates, startMs, endMs) {
   try {
     execFileSync(zstdcat, ['--version'], { stdio: 'ignore', timeout: 10_000 })
     const sessions = []
     let failures = 0
-    for (const entry of sessionLogFiles(start)) {
+    for (const entry of sessionLogFiles(startMs)) {
       try {
-        const session = await scanSessionLog(entry, start, end)
+        const session = await scanSessionLog(entry, startMs, endMs)
         if (session) sessions.push(session)
       } catch (error) {
         failures += 1
@@ -377,7 +379,7 @@ async function collectSessions(dates, start, end) {
       // A log-format change would also look empty; the cache is the only other source then.
       const cached = collectSessionsFromCache(dates)
       if (cached.length > 0) {
-        console.error(`no usage found in session logs for ${start}..${end}; using the Context Insights projection cache`)
+        console.error(`no usage found in session logs for ${localDate(new Date(startMs))}..${localDate(new Date(endMs))}; using the Context Insights projection cache`)
         return cached
       }
     }
@@ -390,17 +392,13 @@ async function collectSessions(dates, start, end) {
 }
 
 /** Tickets the superagent touched in the window, plus the ones still open. */
-function readTickets(start, end) {
+function readTickets(startMs, endMs) {
   if (!fs.existsSync(ticketDb)) return { week: [], open: [], byDir: new Map() }
   const db = new DatabaseSync(ticketDb, { readOnly: true })
   const week = []
   const open = []
   const byDir = new Map()
-  const inWindow = (ms) => {
-    if (!Number.isFinite(ms)) return false
-    const day = localDate(new Date(ms))
-    return day >= start && day <= end
-  }
+  const inWindow = (ms) => Number.isFinite(ms) && ms >= startMs && ms <= endMs
   try {
     for (const row of db.prepare('select value from ticket').all()) {
       let ticket
@@ -439,10 +437,10 @@ function readTickets(start, end) {
   return { week, open, byDir }
 }
 
-function collectTickets(start, end) {
+function collectTickets(startMs, endMs) {
   // The host writes this SQLite database continuously; a busy read gets retried.
   for (let attempt = 1; attempt <= 3; attempt++) {
-    try { return readTickets(start, end) } catch {
+    try { return readTickets(startMs, endMs) } catch {
       if (attempt === 3) return { week: [], open: [], byDir: new Map() }
       execFileSync('/bin/sleep', ['1'])
     }
@@ -479,8 +477,8 @@ function ticketStatus(ticket) {
 
 /** Normalized data handed to the curator and the renderer. */
 async function buildReportData(range) {
-  const sessions = await collectSessions(range.dates, range.start, range.end)
-  const tickets = collectTickets(range.start, range.end)
+  const sessions = await collectSessions(range.dates, range.startMs, range.endMs)
+  const tickets = collectTickets(range.startMs, range.endMs)
   const openPrs = openPullRequests()
 
   const taskMap = new Map()
@@ -540,6 +538,8 @@ async function buildReportData(range) {
   return {
     start: range.start,
     end: range.end,
+    startMs: range.startMs,
+    endMs: range.endMs,
     days: range.days,
     weekday: weekdayText(range.end),
     totals,
@@ -567,7 +567,7 @@ async function curate(data) {
   const key = apiKey()
   if (!key) return undefined
   const cadence = data.days === 1 ? '每日' : '每周'
-  const word = data.days === 1 ? '今日' : '本周'
+  const word = data.days === 1 ? '近 24 小时' : '近 7 天'
   const next = data.days === 1 ? '明日' : '下周'
   const system = [
     `你是资深技术负责人，为团队写${cadence}一页简报。遵循这些原则：`,
@@ -586,7 +586,7 @@ async function curate(data) {
     '只返回 JSON：{"headline":"一句话结论，不超过40字","highlights":[{"title":"主题","detail":"结果或影响，不超过45字"}]}',
   ].join('\n')
   const payload = {
-    period: { start: data.start, end: data.end, days: data.days, cadence: data.days === 1 ? 'daily' : 'weekly' },
+    period: { start: data.start, end: data.end, days: data.days, cadence: data.days === 1 ? 'daily' : 'weekly', startTime: localTime(new Date(data.startMs)), endTime: localTime(new Date(data.endMs)) },
     taskCount: data.tickets.length,
     completedTasks: data.tickets.filter(t => t.status === '已完成' || t.status === '已合并').length,
     openPrCount: data.openPrs.length,
@@ -660,7 +660,7 @@ function localContent(data) {
   const completed = data.tickets.filter(t => t.status === '已完成' || t.status === '已合并').length
   const waiting = data.tickets.filter(t => t.status === '待审')
   const blocked = data.tickets.find(t => t.status === '受阻')
-  const period = data.days === 1 ? '今日' : `${data.days} 天`
+  const period = data.days === 1 ? '近 24 小时' : '近 7 天'
   const headline = `${period} ${data.totals.sessions} 个会话、${fmtInt(data.totals.requests)} 次请求；API 费用约 ${fmtCost(data.totals.cost)}。`
   const highlights = data.tasks.slice(0, 2).map(t => ({
     title: clean(t.title, 14),
@@ -782,12 +782,13 @@ function prRisk(data) {
 function reportHtml(data, content) {
   const t = data.totals
   const daily = data.days === 1
-  const period = daily ? '今日' : '本周'
+  const period = daily ? '近 24 小时' : '近 7 天'
   const nextPeriod = daily ? '明日' : '下周'
+  const windowText = `${hyphenDate(localDate(data.startMs))} ${localTime(new Date(data.startMs))} ~ ${hyphenDate(localDate(data.endMs))} ${localTime(new Date(data.endMs))}`
   const completed = data.tickets.filter(item => item.status === '已完成' || item.status === '已合并').length
   const subtitle = `${period} DSH 处理 ${data.tickets.length} 项任务，${completed} 项完成`
-  const eyebrowPeriod = daily ? `${data.end} · 日报` : `${data.start} ~ ${hyphenDate(data.end)} · 周报`
-  const footerPeriod = daily ? `今日 ${hyphenDate(data.end)}` : `本周 ${hyphenDate(data.start)} ~ ${hyphenDate(data.end)}`
+  const eyebrowPeriod = `${windowText} · ${daily ? '日报' : '周报'}`
+  const footerPeriod = period
   const kpis = [
     { value: fmtTokens(t.tokens), label: 'Token 用量' },
     { value: fmtInt(t.requests), label: '模型请求' },
@@ -921,7 +922,7 @@ h1 { font-size: 26pt; line-height: 1.15; letter-spacing: -0.6pt; margin: 4mm 0 2
     <div class="section-head"><span class="bar"></span><span class="title">${nextPeriod}重点</span></div>
     <div class="next">${nextItems}</div>
   </div>
-  <div class="footer"><span>数据：DSH 会话日志（provider usage）· superagent 工单</span><span>${esc(footerPeriod)} · 数据截至 ${localTime()} · DSH 自动生成</span></div>
+  <div class="footer"><span>数据：DSH 会话日志（provider usage）· superagent 工单</span><span>${esc(footerPeriod)} · 数据截至 ${localTime(new Date(data.endMs))} · DSH 自动生成</span></div>
 </div></body></html>`
 }
 
@@ -960,7 +961,7 @@ function sendImage(imagePath, end, mode) {
 function sendTextFallback(data, content, end, mode, reason) {
   const nextLabel = data.days === 1 ? '明日' : '下周'
   const lines = [
-    `📊 ${data.days === 1 ? '今日' : '本周'}工作总结 · ${rangeText(data.start, end)}`,
+    `📊 ${data.days === 1 ? '近 24 小时' : '近 7 天'}工作总结 · ${hyphenDate(localDate(data.startMs))} ${localTime(new Date(data.startMs))} ~ ${hyphenDate(localDate(data.endMs))} ${localTime(new Date(data.endMs))}`,
     '',
     content.headline,
     '',
@@ -985,11 +986,15 @@ function sendTextFallback(data, content, end, mode, reason) {
 }
 
 async function main() {
-  const end = args.date || localDate()
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(end)) throw new Error(`invalid date: ${end}`)
+  const endDate = args.date || localDate()
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(endDate)) throw new Error(`invalid date: ${endDate}`)
+  const endTime = args.endTime || (args.date ? '23:59:59' : null)
+  if (endTime && !/^([01]\d|2[0-3]):[0-5]\d$/.test(endTime)) throw new Error(`invalid --end-time: ${endTime} (HH:MM)`)
+  const endMs = endTime ? Date.parse(`${endDate}T${endTime}:00+08:00`) : Date.now()
+  if (!Number.isFinite(endMs)) throw new Error(`invalid end time: ${endDate} ${endTime || ''}`)
   const days = Number(args.days || 7)
   if (!Number.isInteger(days) || days < 1 || days > 31) throw new Error(`invalid --days: ${args.days} (1-31)`)
-  const range = reportWindow(end, days)
+  const range = reportWindow(endMs, days)
   const mode = days === 1 ? 'daily' : 'weekly'
   const data = await buildReportData(range)
   const curated = args.content ? JSON.parse(fs.readFileSync(args.content, 'utf8')) : await curate(data)

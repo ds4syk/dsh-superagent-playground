@@ -36,11 +36,13 @@ the week's summary.
 
 Two cron lines share the same template:
 
-- **Daily**: Monday–Saturday at 20:00, `--days 1`, single-day window and 今日/明日 wording.
-- **Weekly**: Sunday at 20:00, `--days 7`, Monday–Sunday window and 本周/下周 wording.
+- **Daily**: Monday–Saturday at 20:00, `--days 1`, rolling last 24 hours, 近 24 小时/明日 wording.
+- **Weekly**: Sunday at 20:00, `--days 7`, rolling last 7 days, 近 7 天/下周 wording.
 
-The window is date-based and ends on the run day. Sunday usage after the 20:00 weekly run is not
-in that report, and the next week's window starts on Monday, so those hours fall between reports.
+The window is a timestamp range ending at the run time, not a calendar day truncated at 20:00.
+A 20:00 run therefore covers 20:00 the previous day through 20:00 today (and the previous 7×24h
+for the weekly), so the 20:00–24:00 hours are counted exactly once instead of falling between
+reports.
 
 ## Requirements
 
@@ -61,7 +63,10 @@ in that report, and the next week's window starts on Monday, so those hours fall
 ```
 
 `--weekday` is `0`–`6` (`0` = Sunday, the default), `--days` is the weekly window length
-(default 7). The installer copies the script to `~/.local/share/dsh-daily-summary/`, creates the
+(default 7). `--date` + `--end-time 20:00` reproduces a cron run by hand; a dated run without
+`--end-time` ends at 23:59:59.
+
+The installer copies the script to `~/.local/share/dsh-daily-summary/`, creates the
 WeasyPrint virtualenv on first use, writes a `run.sh` launcher that carries the chat id and
 environment (so the repository never stores one), and replaces the `dsh-daily-summary` lines in
 the user's crontab with two entries: daily Monday–Saturday `--days 1`, weekly Sunday `--days 7`.
@@ -74,10 +79,10 @@ It is idempotent; re-run it after changing the script.
 ~/.local/share/dsh-daily-summary/run.sh --days 7 --dry-run     # weekly sample
 ~/.local/share/dsh-daily-summary/run.sh --days 1               # render and send a daily report
 ~/.local/share/dsh-daily-summary/run.sh --days 7               # render and send a weekly report
-~/.local/share/dsh-daily-summary/run.sh --date 2026-11-11 --days 1 --no-llm
-~/.local/share/dsh-daily-summary/run.sh --date 2026-11-11 --days 7 --resend
+~/.local/share/dsh-daily-summary/run.sh --date 2026-11-21 --end-time 20:00 --days 1 --no-llm
+~/.local/share/dsh-daily-summary/run.sh --date 2026-11-21 --end-time 20:00 --days 7 --resend
 ```
 
-`--date` is the last day of the window. The last HTML, PDF and PNG are kept in
+`--date` is the end date of the rolling window; `--end-time` is the end time (default: 23:59:59 for a dated run, now otherwise). The last HTML, PDF and PNG are kept in
 `~/.local/share/dsh-daily-summary/last/` for inspection; cron redirects output to
 `~/.local/share/dsh-daily-summary/run.log`.
