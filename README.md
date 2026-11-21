@@ -22,3 +22,7 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
+- **AI 数学证明调研与 OpenAI 722 盲复现**（2026-11）：
+  [知识库](kb/ai-math-survey/00.md) · [复现工程](repro/openai-10/README.md) ·
+  [DOCX](deliverables/AI数学证明调研与OpenAI722盲复现_2026-11.docx) ·
+  [一页速览](docs/visuals/2026-11-21-ai-math-survey.png)
