@@ -19,11 +19,11 @@ This is by an automated agent, not a human.
 
 ## 交付物
 
-- `kb/reimbursement-ai/00.md`–`06.md`：知识库源文件（总览、报销体系、票据税务、技术服务费、各校样本、行动清单、风险清单）。
-- `deliverables/高校报销与境外AI订阅_2026-11.docx`：34 页 DOCX 知识库，内嵌决策图。
-- `docs/visuals/2026-11-21-ai-reimbursement.png`：一页决策图（2200×1600）。
-- `report/README-china-ai-reimbursement.md`：调研索引与证据/限制说明。
-- `src/build_docx_reimbursement.py`、`src/make_visual_reimbursement.py`：可复现生成脚本。
+- **Markdown 知识库**：[00 总览](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/00.md) · [01 报销体系](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/01.md) · [02 票据税务](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/02.md) · [03 技术服务费](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/03.md) · [04 各校样本](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/04.md) · [05 行动清单](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/05.md) · [06 风险清单](https://github.com/ds4syk/dsh-superagent-playground/blob/agent/china-reimbursement-research-356c9e2797d9/kb/reimbursement-ai/06.md)
+- **DOCX 知识库**：[下载](https://github.com/ds4syk/dsh-superagent-playground/raw/agent/china-reimbursement-research-356c9e2797d9/deliverables/%E9%AB%98%E6%A0%A1%E6%8A%A5%E9%94%80%E4%B8%8E%E5%A2%83%E5%A4%96AI%E8%AE%A2%E9%98%85_2026-11.docx)（34 页，内嵌决策图）
+- **一页决策图**：[PNG 原图](https://raw.githubusercontent.com/ds4syk/dsh-superagent-playground/agent/china-reimbursement-research-356c9e2797d9/docs/visuals/2026-11-21-ai-reimbursement.png)（2200×1600）
+- **调研索引**：`report/README-china-ai-reimbursement.md`（证据/限制说明）
+- **生成脚本**：`src/build_docx_reimbursement.py`、`src/make_visual_reimbursement.py`（可复现）
 
 ## 证据与方法
 
