@@ -1,0 +1,8 @@
+{
+  "n": 30000,
+  "passed": 20661,
+  "pass_rate": 0.6887,
+  "score_max": 61.47,
+  "train_top": 6000,
+  "train_threshold": 54.6
+}

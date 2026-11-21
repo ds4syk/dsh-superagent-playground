@@ -1,0 +1,112 @@
+[
+  {
+    "key": "A",
+    "name": "A 光板桥（L1）",
+    "level": 1,
+    "note": "只有 12 根桥面梁，不加上部结构",
+    "cost": 2430.0,
+    "score": 0.0,
+    "passed": false,
+    "reason": "杆件断裂/车辆失败",
+    "members": 10
+  },
+  {
+    "key": "B",
+    "name": "B 上承式桁架（L1）",
+    "level": 1,
+    "note": "桥面上方 2 层钢/木桁架",
+    "cost": 9104.11,
+    "score": 38.55,
+    "passed": true,
+    "reason": "",
+    "members": 41
+  },
+  {
+    "key": "C",
+    "name": "C 下承式桁架（L1）",
+    "level": 1,
+    "note": "桥面下方 2 米深木/钢桁架",
+    "cost": 7930.0,
+    "score": 44.26,
+    "passed": true,
+    "reason": "",
+    "members": 39
+  },
+  {
+    "key": "D",
+    "name": "D 优化下承式（L1）",
+    "level": 1,
+    "note": "从 C 出发逐根删减/换材，保持三场景通过",
+    "cost": 5710.0,
+    "score": 61.47,
+    "passed": true,
+    "reason": "",
+    "members": 34
+  },
+  {
+    "key": "E",
+    "name": "E 光板桥（L2）",
+    "level": 2,
+    "note": "30 米跨径只铺直线桥面",
+    "cost": 4880.0,
+    "score": 0.0,
+    "passed": false,
+    "reason": "杆件断裂/车辆失败",
+    "members": 20
+  },
+  {
+    "key": "F",
+    "name": "F 直线桁架（L2）",
+    "level": 2,
+    "note": "把 L1 的上承式桁架直接放大到 30 米",
+    "cost": 13980.0,
+    "score": 0.0,
+    "passed": false,
+    "reason": "杆件断裂/车辆失败",
+    "members": 57
+  },
+  {
+    "key": "G",
+    "name": "G 官方参考（L2）",
+    "level": 2,
+    "note": "载入参考答案，展示正式 100 分基准",
+    "cost": 10616.73,
+    "score": 100.0,
+    "passed": true,
+    "reason": "",
+    "members": 76
+  },
+  {
+    "key": "H",
+    "name": "H 选手 Sol（L2）",
+    "level": 2,
+    "note": "载入 GPT-6.2 Sol 的 30 米悬索桥（137.85 分）",
+    "cost": 7701.8,
+    "score": 137.85,
+    "passed": true,
+    "reason": "",
+    "members": 50
+  },
+  {
+    "key": "I",
+    "name": "I 官方参考（L3）",
+    "level": 3,
+    "note": "28 米河 + 中间礁石，双向车流",
+    "cost": 7967.26,
+    "score": 100.0,
+    "passed": true,
+    "reason": "",
+    "members": 57
+  },
+  {
+    "key": "J",
+    "name": "J 官方参考（L6）",
+    "level": 6,
+    "note": "36 米、两块礁石、航道与卡车的地狱关",
+    "cost": 16709.27,
+    "score": 100.0,
+    "passed": true,
+    "reason": "",
+    "members": 88
+  }
+]

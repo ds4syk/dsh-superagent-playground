@@ -1,0 +1,5 @@
+{
+  "数据生成（srun/cpu）": {"id": "srun", "partition": "cpu", "time": "约 2 分钟"},
+  "训练（3 模型）": {"id": "2894", "partition": "gpu", "time": "189 s"},
+  "统一评测": {"id": "2896", "partition": "gpu", "time": "约 60 s"}
+}

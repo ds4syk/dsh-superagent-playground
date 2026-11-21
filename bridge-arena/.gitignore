@@ -1,0 +1,12 @@
+third_party/
+logs/
+__pycache__/
+*.pyc
+results/checkpoints/
+results/checkpoints_test/
+results/*.npz
+!results/eval/samples.npz
+results/play/bridges/
+report/*.html
+report/one_pager.html
+results/checkpoints_test/
