@@ -2,6 +2,9 @@ This is by an automated agent, not a human.
 
 ## 摘要
 
+![一页速览](https://raw.githubusercontent.com/ds4syk/dsh-superagent-playground/agent/ai-math-survey-repro-3877d01b7b12/docs/visuals/2026-11-21-ai-math-survey.png)
+
+
 本 PR 调研“当前用 AI 做科研/数学证明的主流方案、是否需要客制化工具/Skill、不同模型差距”，
 并对 OpenAI 2026-10 发布的 722 篇数学手稿中 **10 个公开推理摘要案例**做了一次信息隔离的
 DeepSeek-V4-Pro / Kimi-K3 盲复现实验。

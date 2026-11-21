@@ -25,15 +25,15 @@ def main():
     p = ROOT / "results" / "grades_summary.json"
     rows = json.loads(p.read_text()) if p.exists() else []
     by = {(r["session"].split("/")[0], r["session"].split("/")[1]): r for r in rows}
-    print("| 案例 | DeepSeek | Kimi | 方向 (D/K) | 备注 |")
+    print("| 案例 | DeepSeek-V4-Pro | Kimi-K3 | 方向 (D/K) | 备注 |")
     print("|---|---:|---:|---|---|")
     for pid, title in TITLES.items():
         d = by.get(("deepseek", pid), {})
         k = by.get(("kimi", pid), {})
-        ds = d.get("scores", {}).get("deepseek", "—")
-        ks = k.get("scores", {}).get("kimi", "—")
-        dd = d.get("directions", {}).get("deepseek", "—")
-        kd = k.get("directions", {}).get("kimi", "—")
+        ds = d.get("mean", "—")
+        ks = k.get("mean", "—")
+        dd = "/".join(sorted({str(v) for v in (d.get("directions") or {}).values()})) or "—"
+        kd = "/".join(sorted({str(v) for v in (k.get("directions") or {}).values()})) or "—"
         print(f"| {title} | {ds} | {ks} | {dd}/{kd} | |")
     print()
     for r in rows:
