@@ -126,21 +126,20 @@ def panel_conclusions(ax):
         ("10 / 721", "公开推理摘要的 family 数"),
         ("~42%", "top-line 结果有 Lean 形式化"),
         ("10/10", "公开案例都有 Lean 文档"),
-        ("0–5", "盲复现评分：见 C 面板"),
+        ("0/10", "完整复现（DeepSeek/Kimi）"),
+        ("2.5/5", "最高均分（DeepSeek 271/362）"),
         ("", ""),
         ("主流方案", "模型探索 + 工具 + 验证"),
         ("工具需求", "探索：Python 即可；可信：Lean/Comparator"),
         ("模型差距", "FrontierMath 52% vs 22%；研究级更大"),
         ("最大瓶颈", "提出关键引理 + 诚实自审"),
     ]
-    y = 0.95
+    y = 0.98
     for a, b in lines:
         if a:
-            ax.text(0.02, y, a, fontsize=11, fontweight="bold", color="#1f4e79", va="top")
-            ax.text(0.30, y, b, fontsize=10, va="top")
-        y -= 0.085
-    ax.text(0.02, 0.02, "证据分级：论文声称 / 独立复现 / 未验证；本图 C 为独立复现，B 为官方 benchmark。",
-            fontsize=8, color="#666", va="bottom")
+            ax.text(0.02, y, a, fontsize=10.5, fontweight="bold", color="#1f4e79", va="top")
+            ax.text(0.30, y, b, fontsize=9.5, va="top")
+        y -= 0.078
 
 
 def main():
