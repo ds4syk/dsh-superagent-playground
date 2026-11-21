@@ -1,0 +1,62 @@
+{
+  "007_two_point_chowla": {
+    "title": "Ordinary two-point correlations and the corrected binary Elliott conjecture",
+    "official": "The paper proves ordinary two-point Chowla and the binary corrected Elliott conjecture for complex multiplicative functions: if at least one of f1,f2 is uniformly non-pretentious, then (1/N) sum_{n<=N} f1(n+h1) f2(n+h2) -> 0 for every fixed pair of distinct shifts h1,h2. For the Liouville function it gives O(X/(log X)^c) for fixed nonproportional affine forms.",
+    "source": "https://github.com/openai/math/blob/main/preprints/Ordinary-two-point-correlations-of-multiplicative-functions-September-24-2026/final.pdf",
+    "lean": "lean/docs/007.md"
+  },
+  "017_pi_irrationality": {
+    "title": "The irrationality exponent of pi is 2",
+    "official": "The paper proves mu(pi)=2: for every nu>2 there is Q(nu) such that |pi-p/q| >= q^{-nu} for all integers p and all q>=Q(nu). As a corollary the Flint-Hills series sum 1/(n^3 sin^2 n) converges.",
+    "source": "https://github.com/openai/math/blob/main/preprints/The-irrationality-exponent-of-pi-is-2-September-24-2026/paper.pdf",
+    "lean": "lean/docs/017.md"
+  },
+  "087_mahler": {
+    "title": "The symmetric and general Mahler conjectures",
+    "official": "The papers prove the symmetric and nonsymmetric geometric Mahler conjectures in every dimension. The minimizers are Hanner polytopes and simplices respectively, with equality classified; the sharp functional Mahler inequalities also hold, and every symmetric polar product has Gromov width 4.",
+    "source": "https://github.com/openai/math/blob/main/preprints/The-Mahler-Conjecture-for-General-Convex-Bodies-September-22-2026/paper.pdf",
+    "lean": "lean/docs/087.md"
+  },
+  "102_basic_sdp": {
+    "title": "Basic-SDP threshold and Unique Games",
+    "official": "The family proves Khot's Unique Games Conjecture and derives optimal inapproximability thresholds (Max-Cut beyond Goemans-Williamson, Vertex Cover factor 2, Min-UnCut, directed FVS) by direct reductions. Therefore the BasicSDP threshold assertion in the prompt is affirmative (via UGC + Raghavendra or a direct reduction).",
+    "source": "https://github.com/openai/math/blob/main/preprints/The-Unique-Games-Theorem-September-23-2026/paper.pdf",
+    "lean": "lean/docs/102.md"
+  },
+  "159_erdos_progressions": {
+    "title": "Erdos's reciprocal-sum conjecture and quasipolynomial Szemeredi bounds",
+    "official": "The paper proves that every set of positive integers with divergent reciprocal sum contains arithmetic progressions of every finite length; moreover it proves a quantitative bound C_k N exp(-c_k (log N)^{eps_k}) for k-progression-free subsets of {1,...,N}.",
+    "source": "https://github.com/openai/math/blob/main/preprints/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026/paper.pdf",
+    "lean": "lean/docs/159.md"
+  },
+  "197_kaplansky_direct_finiteness": {
+    "title": "A counterexample to Kaplansky's direct-finiteness conjecture in positive characteristic",
+    "official": "The paper disproves the unrestricted positive-characteristic direct-finiteness conjecture: it constructs a finitely presented torsion-free group (and a characteristic-two example) whose group algebra has ab=1 but ba != 1; it also constructs nonsofic groups and disproves Gottschalk's surjunctivity and the group-ring determinant conjecture.",
+    "source": "https://github.com/openai/math/blob/main/preprints/A-Counterexample-to-Kaplanskys-Direct-Finiteness-Conjecture-in-Characteristic-Two-September-23-2026/paper.pdf",
+    "lean": "lean/docs/197.md"
+  },
+  "221_mezard_parisi": {
+    "title": "The Mezard-Parisi formula for diluted spin glasses",
+    "official": "Under the Panchenko-Talagrand factorization/positivity assumptions and first-moment integrability, the paper proves the thermodynamic limit exists and equals the infimum over finite replica-symmetry-breaking levels of the hierarchical trial functional; this covers Viana-Bray, symmetric diluted even-spin models and weighted soft even-K SAT.",
+    "source": "https://github.com/openai/math/blob/main/preprints/The-Mezard-Parisi-formula-for-diluted-spin-glasses-September-23-2026/paper.pdf",
+    "lean": "lean/docs/221.md"
+  },
+  "271_heisenberg_magnetization": {
+    "title": "Spontaneous magnetization in the quantum Heisenberg ferromagnet",
+    "official": "The paper proves that for every d>=3 and every positive spin S, at every sufficiently low positive temperature there is a translation-invariant beta-KMS state with nonzero magnetization (at least S/4 in the Lean scope). The family also proves Bloch's T^{3/2} law with exact coefficient and the first lattice correction.",
+    "source": "https://github.com/openai/math/blob/main/preprints/Spontaneous-magnetization-in-the-quantum-Heisenberg-ferromagnet-September-24-2026/paper.pdf",
+    "lean": "lean/docs/271.md"
+  },
+  "287_free_group_factors": {
+    "title": "Isomorphism of the free group factors",
+    "official": "The paper proves L(F_2) is isomorphic to L(F_3), hence all interpolated free group factors (including L(F_infinity)) are isomorphic; their common factor has fundamental group R_{>0}.",
+    "source": "https://github.com/openai/math/blob/main/preprints/An-isomorphism-of-the-free-group-factors-September-23-2026/An-isomorphism-of-the-free-group-factors-September-23-2026.pdf",
+    "lean": "lean/docs/287.md"
+  },
+  "362_vlasov_maxwell": {
+    "title": "Global classical solutions of the 3D relativistic Vlasov-Maxwell system",
+    "official": "The paper proves large-data global existence and uniqueness for the three-dimensional one-species relativistic Vlasov-Maxwell system: every smooth admissible datum (compact support, finite energy, bounded derivatives) has T_max = infinity and the solution is smooth on every finite time interval.",
+    "source": "https://github.com/openai/math/blob/main/preprints/Global-classical-solutions-of-the-three-dimensional-relativistic-Vlasov-Maxwell-system-September-23-2026/paper.pdf",
+    "lean": "lean/docs/362.md"
+  }
+}

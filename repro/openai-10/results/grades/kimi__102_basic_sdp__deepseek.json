@@ -1,0 +1,31 @@
+{
+ "direction": "unclear",
+ "main_theorem_proved": false,
+ "score": 1,
+ "strongest_valid_partial_result": "The manuscript correctly restates the target assertion and identifies the 2-to-2 Games Theorem as a plausible starting point, but provides no rigorous reduction or proof.",
+ "fatal_gaps": [
+  "The claimed 2-to-2 Games Theorem (NP-hardness of distinguishing value 1 from value at most 1/2+epsilon) is not a known theorem; the cited works do not establish this result.",
+  "The reduction from 2-to-2 games to Max-CSP(Gamma) is only sketched with no formal construction, no proof of completeness, and no proof of soundness.",
+  "The dictatorship test soundness claim ('accepts with probability at most c_OPT + eta') is asserted without proof and is not justified by the cited Majority is Stablest theorem.",
+  "The manuscript does not define or verify the Basic SDP relaxation as used in the problem statement, nor prove that the gap instance J yields the required threshold.",
+  "The final inequality s < r c is asserted to follow by choosing delta and eta small, but no explicit choices or rigorous argument are given; the dependence on the reduction parameters is not established."
+ ],
+ "evidence_quotes": [
+  "This theorem, resolving the 2-to-2 Games Conjecture, provides the necessary starting point for unconditional hardness results for Max-CSPs.",
+  "The reduction follows the standard paradigm: ... Use a dictatorship test based on a gap instance for the Basic SDP to check consistency and satisfaction.",
+  "Soundness: If h is 'far' from a dictatorship (has low influential coordinates), the test accepts with probability at most c_OPT + eta, where eta can be made arbitrarily small. This follows from the 'Majority is Stablest' theorem and its generalizations (e.g., [MOO10])."
+ ],
+ "notes": "The manuscript is essentially a high-level outline of a possible proof strategy, not a proof. It relies on an unproven and apparently false '2-to-2 Games Theorem' as its base hardness assumption, and the reduction is described only in vague terms. Key technical ingredients—the dictatorship test, the soundness analysis, the handling of the Basic SDP gap instance, and the derivation of the gap constants—are all asserted without proof. The cited references do not support the claimed unconditional NP-hardness result. This falls far short of resolving the target statement.",
+ "session": "kimi/102_basic_sdp",
+ "grader": "deepseek",
+ "_usage": {
+  "prompt_tokens": 3616,
+  "completion_tokens": 533,
+  "total_tokens": 4149,
+  "prompt_tokens_details": {
+   "cached_tokens": 256
+  },
+  "prompt_cache_hit_tokens": 256,
+  "prompt_cache_miss_tokens": 3360
+ }
+}

@@ -1,0 +1,102 @@
+[
+ {
+  "model": "deepseek",
+  "problem": "087_mahler",
+  "content": "NO RELIABLE RECOLLECTION."
+ },
+ {
+  "model": "deepseek",
+  "problem": "271_heisenberg_magnetization",
+  "content": "NO RELIABLE RECOLLECTION."
+ },
+ {
+  "model": "deepseek",
+  "problem": "221_mezard_parisi",
+  "content": "NO RELIABLE RECOLLECTION."
+ },
+ {
+  "model": "deepseek",
+  "problem": "007_two_point_chowla",
+  "content": "NO RELIABLE RECOLLECTION."
+ },
+ {
+  "model": "deepseek",
+  "problem": "197_kaplansky_direct_finiteness",
+  "content": "NO RELIABLE RECOLLECTION."
+ },
+ {
+  "model": "deepseek",
+  "problem": "102_basic_sdp",
+  "content": "NO RELIABLE RECOLLECTION"
+ },
+ {
+  "model": "deepseek",
+  "problem": "017_pi_irrationality",
+  "content": "NO RELIABLE RECOLLECTION."
+ },
+ {
+  "model": "deepseek",
+  "problem": "159_erdos_progressions",
+  "content": "NO RELIABLE RECOLLECTION"
+ },
+ {
+  "model": "deepseek",
+  "problem": "362_vlasov_maxwell",
+  "content": "NO RELIABLE RECOLLECTION."
+ },
+ {
+  "model": "deepseek",
+  "problem": "287_free_group_factors",
+  "content": "NO RELIABLE RECOLLECTION."
+ },
+ {
+  "model": "kimi",
+  "problem": "197_kaplansky_direct_finiteness",
+  "content": "NO RELIABLE RECOLLECTION"
+ },
+ {
+  "model": "kimi",
+  "problem": "159_erdos_progressions",
+  "content": "NO RELIABLE RECOLLECTION"
+ },
+ {
+  "model": "kimi",
+  "problem": "362_vlasov_maxwell",
+  "content": "NO RELIABLE RECOLLECTION"
+ },
+ {
+  "model": "kimi",
+  "problem": "007_two_point_chowla",
+  "content": "NO RELIABLE RECOLLECTION\n\nAs of my knowledge cutoff, I do not recall a specific 2025-2026 resolution, preprint, announcement, or claimed proof that settles either the binary corrected Elliott conjecture for ordinary averages of multiplicative functions or the ordinary two-point Chowla conjecture in full generality. I also do not have a reliable memory of a definitive status change for these problems in that period."
+ },
+ {
+  "model": "kimi",
+  "problem": "087_mahler",
+  "content": "NO RELIABLE RECOLLECTION\n\nAs of my knowledge cutoff, I do not have a reliable recollection of any 2025-2026 resolution, preprint, announcement, or claimed proof settling the symmetric or general geometric Mahler conjectures on volume products of convex bodies and their polars. I should not guess at an author, venue, or claimed result.\n\nWhat I can say from memory is only the longstanding background: Mahler’s conjecture concerns a sharp lower bound for the volume product \\( |K|\\,|K^\\circ| \\), with the symmetric case traditionally conjectured to be minimized by the cube/cross-polytope pair, and the general case by simplices. I do not recall a confirmed full solution in general dimensions."
+ },
+ {
+  "model": "kimi",
+  "problem": "271_heisenberg_magnetization",
+  "content": "NO RELIABLE RECOLLECTION of any 2025-2026 resolution, preprint, announcement, or claimed proof specifically resolving spontaneous magnetization in the quantum Heisenberg ferromagnet for d≥3 or Bloch's T^{3/2} law.\n\nFrom memory, the long-standing status is: for the quantum Heisenberg ferromagnet on Z^d (or similar lattices) with d≥3, spontaneous magnetization at low positive temperature is widely expected physically, with Bloch's T^{3/2} law describing the leading low-temperature reduction of magnetization due to spin waves. However, a full mathematical proof of spontaneous magnetization for the isotropic quantum Heisenberg ferromagnet has remained a major open problem, unlike the classical case or certain anisotropic/related models.\n\nI recall rigorous results in special settings: Dyson-Lieb-Simon and related work for classical or high-spin/large-S systems, reflection positivity methods for some models, and spin-wave calculations giving Bloch-type behavior at the level of effective theory or upper/lower bounds. But I do not recall a definitive proof of Bloch's T^{3/2} law in the exact quantum Heisenberg model for d≥3.\n\nConfidence in the above general status: medium. Confidence that I lack reliable knowledge of a recent claimed resolution: high."
+ },
+ {
+  "model": "kimi",
+  "problem": "102_basic_sdp",
+  "content": "As of my knowledge cutoff, the problem of proving NP-hardness at the basic semidefinite programming (SDP) threshold for fixed finite Max-CSPs remained open, with no known resolution. The basic SDP threshold refers to the approximation ratio achieved by the canonical SDP relaxation (e.g., Goemans-Williamson for Max-Cut). While the Unique Games Conjecture (UGC) implies NP-hardness for many CSPs at this threshold, unconditional results (without UGC) were limited. For example, NP-hardness was known for Max-Cut at the Goemans-Williamson threshold (via the PCP theorem and other techniques), but for general fixed finite Max-CSPs, the question of whether the basic SDP threshold coincides with the NP-hardness threshold was unresolved.\n\nI do not recall any specific 2025-2026 resolution, preprint, announcement, or claimed proof addressing this problem. NO RELIABLE RECOLLECTION."
+ },
+ {
+  "model": "kimi",
+  "problem": "221_mezard_parisi",
+  "content": "As of my knowledge cutoff (January 2025), the **Mezard-Parisi formula** for diluted spin glasses (specifically the 1RSB formula for random $K$-SAT and related constraint satisfaction problems) remains **unproven** in full generality.\n\nThe formula, originating from the cavity method of Mézard and Parisi (2001), predicts the free energy density in the 1-step replica symmetry breaking (1RSB) phase. While the replica-symmetric (RS) solution has been rigorously established for certain parameter regimes (e.g., via the interpolation method of Franz, Leone, and Toninelli, or the Aizenman-Sims-Starr scheme), the 1RSB phase—where the solution space shatters into exponentially many clusters—lacks a complete rigorous proof for general diluted models.\n\nPartial progress includes rigorous results for specific models (e.g., the $p$-spin Ising model, or the random regular $K$-SAT for large $K$), and upper/lower bounds matching the formula in certain limits, but the general case for arbitrary degree distributions remains open.\n\n**Regarding 2025–2026 resolutions:** I have **NO RELIABLE RECOLLECTION** of any specific preprint, announcement, or claimed proof resolving this problem during that period. Given that my knowledge cutoff is January 2025, I cannot reliably report on developments from 2025–2026. If such a resolution exists, it would likely involve a major breakthrough in the rigorous cavity method or interpolation techniques, but I cannot confirm any specific claims."
+ },
+ {
+  "model": "kimi",
+  "problem": "287_free_group_factors",
+  "content": "NO RELIABLE RECOLLECTION\n\nAs of my knowledge cutoff, I am not aware of any accepted resolution to the free group factor isomorphism problem—specifically whether $L(F_2) \\cong L(F_3)$—nor do I have a reliable recollection of a specific 2025-2026 preprint, announcement, or claimed proof resolving this question.\n\nThis remains one of the most famous open problems in von Neumann algebra theory, dating back to Murray and von Neumann. While there has been significant progress on related questions (e.g., the work of Voiculescu, Dykema, and Rădulescu on interpolated free group factors $L(F_t)$ for real $t > 1$, showing that either all are isomorphic or all are pairwise non-isomorphic), the fundamental question of whether $L(F_2) \\cong L(F_3)$ specifically remains unresolved to the best of my knowledge.\n\nIf a resolution has appeared in 2025-2026, I do not have reliable information about the claimed result, the author, or the venue."
+ },
+ {
+  "model": "kimi",
+  "problem": "017_pi_irrationality",
+  "content": "As of my knowledge cutoff, I have **no reliable recollection** of any 2025–2026 resolution, preprint, announcement, or claimed proof settling either:\n\n1. **The irrationality exponent of π**: Whether μ(π) = 2 exactly (the conjectured value) or strictly greater than 2. The best unconditional upper bound I recall remains approximately **7.103** (due to Zeilberger and Zudilin, 2020). No improvement or proof of the exact value is known to me.\n\n2. **The Flint Hills series**: Convergence of the series ∑ 1/(n³ sin² n) remains **unresolved**. Its convergence is known to depend on the irrationality measure of π (specifically, it converges if μ(π) < 2.5 and diverges if μ(π) > 2.5), but since μ(π) is not known to lie in either range, the problem remains open.\n\n**NO RELIABLE RECOLLECTION** of any 2025–2026 developments on these specific problems."
+ }
+]

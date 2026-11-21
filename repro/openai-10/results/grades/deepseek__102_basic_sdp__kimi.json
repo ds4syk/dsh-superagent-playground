@@ -1,0 +1,31 @@
+{
+ "direction": "wrong",
+ "main_theorem_proved": false,
+ "score": 1,
+ "strongest_valid_partial_result": "The candidate proves that for the specific Boolean language {P1(x)=x, P2(x,y)=[x=0 and y=0]}, the basic SDP is exact (BasicSDP(I)=OPT(I) for all instances), hence alpha_Gamma=1 for this language.",
+ "fatal_gaps": [
+  "Candidate explicitly declares STATUS: NO_RESOLUTION and does not attempt to prove the target universal hardness assertion.",
+  "No reduction from Unique Games (or any NP-hard problem) is given; the official resolution proves UGC and derives the threshold, while the candidate only observes that the assertion would imply Max-Cut hardness beyond Goemans-Williamson.",
+  "The proved Theorem 1 concerns a single tractable language with alpha_Gamma=1, which is orthogonal to the target claim about all r>alpha_Gamma for arbitrary languages.",
+  "Candidate mischaracterizes the problem as open/dependent on major open questions, whereas the official resolution establishes it affirmatively via UGC."
+ ],
+ "evidence_quotes": [
+  "STATUS: NO_RESOLUTION",
+  "This manuscript does not prove the assertion and does not disprove it.",
+  "Under P≠NP, the best known NP-hardness for Max-Cut is weaker than this. Thus the assertion would settle a major open problem in hardness of approximation."
+ ],
+ "notes": "The candidate is a non-resolution: it proves only a small exactness result for one tractable language and states the main problem is unresolved, even suggesting it is tied to open questions. The official resolution establishes the assertion affirmatively by proving the Unique Games Conjecture and deriving optimal thresholds. Thus the candidate's direction is wrong and it receives minimal credit only for a correct but peripheral partial result.",
+ "session": "deepseek/102_basic_sdp",
+ "grader": "kimi",
+ "_usage": {
+  "prompt_tokens": 2636,
+  "completion_tokens": 401,
+  "total_tokens": 3037,
+  "cached_tokens": 256,
+  "completion_tokens_details": {},
+  "prompt_tokens_details": {
+   "cached_tokens": 256,
+   "cache_write_tokens": 2304
+  }
+ }
+}

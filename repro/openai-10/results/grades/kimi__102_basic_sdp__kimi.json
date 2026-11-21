@@ -1,0 +1,32 @@
+{
+ "direction": "correct",
+ "main_theorem_proved": false,
+ "score": 1,
+ "strongest_valid_partial_result": "The candidate correctly identifies that the Basic SDP threshold characterizes Max-CSP approximability (Raghavendra's theorem) and correctly cites the 2-to-2 Games Theorem as a potential starting point for unconditional hardness.",
+ "fatal_gaps": [
+  "Fatal gap: The soundness analysis of the dictatorship test (Section 4.2) is unjustified. The claim that functions with 'low influential coordinates' pass with probability ≤ c_OPT + η does not follow from Majority is Stablest; for general predicates, one needs the full invariance principle analysis with SDP vectors (as in Raghavendra [Rag08]), and the candidate provides no proof of this key technical step.",
+  "Fatal gap: The reduction from 2-to-2 games (Section 4.3) is incomplete. The candidate claims to 'enforce consistency' via 'folding' but gives no construction or analysis of how the 2-to-2 constraints are encoded into the Max-CSP instance, nor how the soundness of the 2-to-2 game translates to soundness of the CSP instance.",
+  "Fatal gap: The claim that c_SDP can be made arbitrarily close to 1 (Section 4.1) is unjustified. The candidate asserts this can be done 'by taking a product of instances' but provides no proof that the integrality gap is preserved under such products.",
+  "Fatal gap: The completeness analysis (Section 4.3) is circular. The candidate claims that if the 2-to-2 game is satisfiable, then the Max-CSP instance has value ≥ 1-δ, but does not prove that the long-code encoding actually satisfies the dictatorship test constraints with high probability.",
+  "Fatal gap: The candidate does not address the fundamental obstacle: Raghavendra's result is conditional on UGC because the reduction from Unique Games uses the full power of the UGC soundness guarantee. The 2-to-2 Games Theorem only provides soundness 1/2+ε, not the arbitrarily small soundness needed for general Max-CSPs, and the candidate does not explain how to bridge this gap."
+ ],
+ "evidence_quotes": [
+  "If h is 'far' from a dictatorship (has low influential coordinates), the test accepts with probability at most c_OPT + η, where η can be made arbitrarily small. This follows from the 'Majority is Stablest' theorem and its generalizations",
+  "To enforce consistency between u and v connected by a 2-to-2 constraint π_uv, we use the test to check that h_u and h_v are consistent dictatorships. This involves folding the functions according to the constraint π_uv",
+  "We can choose J such that c_SDP is arbitrarily close to 1 (by taking a product of instances or using a gap instance with high SDP value, which exists if α_Γ < 1)"
+ ],
+ "notes": "The candidate manuscript correctly identifies the target statement and outlines a plausible high-level strategy (reduce from 2-to-2 games using dictatorship tests based on SDP gap instances). However, the proof is fundamentally incomplete. All key technical steps—the soundness of the dictatorship test, the consistency enforcement in the reduction, the amplification of the SDP gap, and the completeness analysis—are asserted without proof. The candidate conflates the 2-to-2 Games Theorem (which gives soundness 1/2+ε) with the Unique Games Conjecture (which gives arbitrarily small soundness) and does not address why the former suffices for general Max-CSPs. The official resolution proves the full UGC and derives the result via Raghavendra's theorem; the candidate attempts to bypass UGC but provides no valid mechanism for doing so. The manuscript is a sketch of a proof strategy, not a complete proof.",
+ "session": "kimi/102_basic_sdp",
+ "grader": "kimi",
+ "_usage": {
+  "prompt_tokens": 3655,
+  "completion_tokens": 843,
+  "total_tokens": 4498,
+  "cached_tokens": 256,
+  "completion_tokens_details": {},
+  "prompt_tokens_details": {
+   "cached_tokens": 256,
+   "cache_write_tokens": 3328
+  }
+ }
+}
