@@ -1,0 +1,30 @@
+{
+ "direction": "correct",
+ "main_theorem_proved": false,
+ "score": 3,
+ "strongest_valid_partial_result": "The candidate proves a conditional continuation/extension criterion: if a classical solution on [0,T) has uniformly bounded momentum support and uniform C-infinity bounds on E and B, then it extends beyond T.",
+ "fatal_gaps": [
+  "Does not prove the global momentum-support bound.",
+  "Does not prove the required uniform field regularity from the PDE.",
+  "Therefore does not resolve the target global existence theorem."
+ ],
+ "evidence_quotes": [
+  "The target assertion ... is not resolved in this manuscript.",
+  "We prove the following theorem.",
+  "The conditional theorem above is strictly weaker than the target assertion."
+ ],
+ "notes": "The candidate is mathematically honest and does not claim the full theorem. Its conditional continuation criterion is a meaningful partial result and is argued with reasonable rigor, though some analytic details are compressed. Since the official target is full large-data global existence and uniqueness, the main theorem is not proved. This fits a substantial partial result rather than a complete solution.",
+ "session": "deepseek/362_vlasov_maxwell",
+ "grader": "kimi",
+ "_usage": {
+  "prompt_tokens": 3076,
+  "completion_tokens": 250,
+  "total_tokens": 3326,
+  "cached_tokens": 256,
+  "completion_tokens_details": {},
+  "prompt_tokens_details": {
+   "cached_tokens": 256,
+   "cache_write_tokens": 2816
+  }
+ }
+}

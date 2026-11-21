@@ -1,0 +1,55 @@
+{
+ "finished": "2026-11-21T21:32:52+0800",
+ "results": [
+  {
+   "session": "kimi/271_heisenberg_magnetization",
+   "chars": 10281,
+   "lat": 42.7
+  },
+  {
+   "session": "kimi/221_mezard_parisi",
+   "chars": 7543,
+   "lat": 49.3
+  },
+  {
+   "session": "kimi/007_two_point_chowla",
+   "chars": 7913,
+   "lat": 55.7
+  },
+  {
+   "session": "kimi/102_basic_sdp",
+   "chars": 10530,
+   "lat": 66.8
+  },
+  {
+   "session": "kimi/197_kaplansky_direct_finiteness",
+   "chars": 11623,
+   "lat": 78.1
+  },
+  {
+   "session": "kimi/287_free_group_factors",
+   "chars": 8940,
+   "lat": 49.2
+  },
+  {
+   "session": "kimi/362_vlasov_maxwell",
+   "chars": 8861,
+   "lat": 51.0
+  },
+  {
+   "session": "kimi/159_erdos_progressions",
+   "chars": 17462,
+   "lat": 104.7
+  },
+  {
+   "session": "kimi/087_mahler",
+   "chars": 43653,
+   "lat": 241.3
+  },
+  {
+   "session": "kimi/017_pi_irrationality",
+   "chars": 44385,
+   "lat": 255.1
+  }
+ ]
+}

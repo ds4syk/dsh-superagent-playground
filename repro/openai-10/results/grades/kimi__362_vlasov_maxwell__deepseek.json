@@ -1,0 +1,30 @@
+{
+ "direction": "unclear",
+ "main_theorem_proved": false,
+ "score": 1,
+ "fatal_gaps": [
+  "The candidate explicitly states the problem remains open and provides no proof or counterexample, contradicting the official resolution that global existence and uniqueness hold.",
+  "No theorem is proved; the manuscript only surveys known results and outlines difficulties.",
+  "The conclusion 'NO_RESOLUTION' directly contradicts the target statement.",
+  "Key claims such as the Glassey–Strauss criterion are stated without proof or precise hypotheses, and no new mathematical argument is given."
+ ],
+ "strongest_valid_partial_result": "The manuscript correctly recalls the Glassey–Strauss continuation criterion linking finite-time blow-up to unbounded momentum support.",
+ "evidence_quotes": [
+  "the problem of global classical well-posedness for arbitrary large data in three dimensions remains unresolved.",
+  "the assertion that every smooth admissible datum generates a unique global classical solution ... is not known to be true or false.",
+  "STATUS: NO_RESOLUTION"
+ ],
+ "notes": "The candidate does not attempt to solve the problem but instead surveys background and concludes the problem is open. This is fundamentally at odds with the official resolution, which asserts a complete proof of global existence and uniqueness. The manuscript contains no counterexample either, so it fails to address the exact target statement in either direction.",
+ "session": "kimi/362_vlasov_maxwell",
+ "grader": "deepseek",
+ "_usage": {
+  "prompt_tokens": 2706,
+  "completion_tokens": 297,
+  "total_tokens": 3003,
+  "prompt_tokens_details": {
+   "cached_tokens": 2688
+  },
+  "prompt_cache_hit_tokens": 2688,
+  "prompt_cache_miss_tokens": 18
+ }
+}

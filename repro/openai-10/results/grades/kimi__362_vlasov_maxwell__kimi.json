@@ -1,0 +1,31 @@
+{
+ "direction": "wrong",
+ "main_theorem_proved": false,
+ "score": 2,
+ "strongest_valid_partial_result": "Correctly identifies the Glassey-Strauss continuation criterion (bounded momentum support implies global existence) as the key obstruction.",
+ "fatal_gaps": [
+  "Claims the problem is open when the official resolution proves it solved",
+  "States 'not known to be true or false' contradicting the target theorem",
+  "Provides no proof of global existence or counterexample",
+  "Dated October 2023, before the purported 2026 resolution"
+ ],
+ "evidence_quotes": [
+  "the problem of global classical well-posedness for arbitrary large data in three dimensions remains unresolved",
+  "the assertion that every smooth admissible datum generates a unique global classical solution... is **not known to be true or false**",
+  "STATUS: NO_RESOLUTION"
+ ],
+ "notes": "The candidate manuscript correctly surveys the classical theory (local existence, DiPerna-Lions weak solutions, Glassey-Strauss criterion) but reaches the wrong conclusion, asserting the problem remains open. The official resolution claims the opposite: large-data global existence and uniqueness for 3D RVM is proved. Thus the candidate fails to prove the target theorem and contradicts the stated resolution.",
+ "session": "kimi/362_vlasov_maxwell",
+ "grader": "kimi",
+ "_usage": {
+  "prompt_tokens": 2760,
+  "completion_tokens": 292,
+  "total_tokens": 3052,
+  "cached_tokens": 256,
+  "completion_tokens_details": {},
+  "prompt_tokens_details": {
+   "cached_tokens": 256,
+   "cache_write_tokens": 2304
+  }
+ }
+}

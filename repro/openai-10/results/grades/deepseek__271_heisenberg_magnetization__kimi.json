@@ -1,0 +1,31 @@
+{
+ "direction": "correct",
+ "main_theorem_proved": false,
+ "score": 3,
+ "strongest_valid_partial_result": "A rigorous conditional proof that the DLS infrared bound implies the existence of a translation-invariant zero-field KMS state with nonzero magnetization at low temperature.",
+ "fatal_gaps": [
+  "Theorem A (DLS infrared bound) is assumed, not proved",
+  "Bloch's T^{3/2} law is not addressed",
+  "First lattice correction is not addressed",
+  "The quantitative bound S/4 is not matched exactly (proof gives S/2)"
+ ],
+ "evidence_quotes": [
+  "Assume the Dyson–Lieb–Simon infrared bound, stated as Theorem A below.",
+  "Theorem A is the standard Dyson–Lieb–Simon infrared bound for the quantum Heisenberg ferromagnet. It is the only unproved input in this manuscript.",
+  "STATUS: PARTIAL"
+ ],
+ "notes": "The candidate correctly identifies the main target and provides a valid, rigorous derivation of spontaneous magnetization from the DLS infrared bound. However, it explicitly leaves this bound as an unproved black box (Theorem A). Since the official resolution requires a full proof (presumably including the infrared bound) and also establishes Bloch's law and lattice corrections, the candidate is only a substantial partial result. It is honest about its limitations but fails to prove the main theorem.",
+ "session": "deepseek/271_heisenberg_magnetization",
+ "grader": "kimi",
+ "_usage": {
+  "prompt_tokens": 4388,
+  "completion_tokens": 313,
+  "total_tokens": 4701,
+  "cached_tokens": 256,
+  "completion_tokens_details": {},
+  "prompt_tokens_details": {
+   "cached_tokens": 256,
+   "cache_write_tokens": 4096
+  }
+ }
+}

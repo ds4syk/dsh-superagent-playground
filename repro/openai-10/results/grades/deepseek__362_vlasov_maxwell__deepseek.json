@@ -1,0 +1,30 @@
+{
+ "direction": "unclear",
+ "main_theorem_proved": false,
+ "score": 2,
+ "strongest_valid_partial_result": "A conditional extension criterion is proved: if a classical solution on [0,T) has uniformly bounded momentum support and the fields satisfy uniform C^∞_b-bounds up to T, then the solution extends beyond T.",
+ "fatal_gaps": [
+  "The target assertion of global existence T_max=∞ for all admissible data is not proved.",
+  "No proof is given that bounded momentum support P(t) implies the required uniform C^∞_b-bounds on E,B; this is assumed as a hypothesis.",
+  "The manuscript explicitly disclaims any proof of the global momentum-support bound, which is the central missing ingredient.",
+  "The conditional theorem is substantially weaker than the target and does not address the main difficulty."
+ ],
+ "evidence_quotes": [
+  "The target assertion, “For every smooth admissible datum, T_max=∞,” is not resolved in this manuscript. I do not prove it and I do not disprove it.",
+  "The full large-data global classical well-posedness assertion remains unresolved in this manuscript.",
+  "The previous manuscript relied on a theorem attributed to Wang without proof."
+ ],
+ "notes": "The candidate honestly rejects the earlier flawed proof and presents a rigorous but conditional extension criterion. The proof of that conditional criterion is essentially correct under its stated hypotheses, but those hypotheses are not derived from the admissible data, and the candidate explicitly does not prove the target theorem. Therefore the main theorem is not proved, and the contribution is a correct but substantially weaker partial result.",
+ "session": "deepseek/362_vlasov_maxwell",
+ "grader": "deepseek",
+ "_usage": {
+  "prompt_tokens": 2906,
+  "completion_tokens": 348,
+  "total_tokens": 3254,
+  "prompt_tokens_details": {
+   "cached_tokens": 2816
+  },
+  "prompt_cache_hit_tokens": 2816,
+  "prompt_cache_miss_tokens": 90
+ }
+}

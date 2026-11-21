@@ -1,0 +1,322 @@
+[
+ {
+  "session": "deepseek/007_two_point_chowla",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 2
+  },
+  "mean": 1.5,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "unclear"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "deepseek/017_pi_irrationality",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 2
+  },
+  "mean": 1.5,
+  "directions": {
+   "deepseek": "wrong",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "deepseek/087_mahler",
+  "scores": {
+   "deepseek": 2,
+   "kimi": 2
+  },
+  "mean": 2.0,
+  "directions": {
+   "deepseek": "correct",
+   "kimi": "unclear"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "deepseek/102_basic_sdp",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 1
+  },
+  "mean": 1.0,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "deepseek/159_erdos_progressions",
+  "scores": {
+   "deepseek": 2,
+   "kimi": 1
+  },
+  "mean": 1.5,
+  "directions": {
+   "deepseek": "correct",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "deepseek/197_kaplansky_direct_finiteness",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 2
+  },
+  "mean": 1.5,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "correct"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "deepseek/221_mezard_parisi",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 2
+  },
+  "mean": 1.5,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "correct"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "deepseek/271_heisenberg_magnetization",
+  "scores": {
+   "deepseek": 2,
+   "kimi": 3
+  },
+  "mean": 2.5,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "correct"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "deepseek/287_free_group_factors",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 2
+  },
+  "mean": 1.5,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "deepseek/362_vlasov_maxwell",
+  "scores": {
+   "deepseek": 2,
+   "kimi": 3
+  },
+  "mean": 2.5,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "correct"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "kimi/007_two_point_chowla",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 1
+  },
+  "mean": 1.0,
+  "directions": {
+   "deepseek": "wrong",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "kimi/017_pi_irrationality",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 3
+  },
+  "mean": 2.0,
+  "directions": {
+   "deepseek": "wrong",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "kimi/087_mahler",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 2
+  },
+  "mean": 1.5,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "correct"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "kimi/102_basic_sdp",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 1
+  },
+  "mean": 1.0,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "correct"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "kimi/159_erdos_progressions",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 2
+  },
+  "mean": 1.5,
+  "directions": {
+   "deepseek": "wrong",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "kimi/197_kaplansky_direct_finiteness",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 1
+  },
+  "mean": 1.0,
+  "directions": {
+   "deepseek": "wrong",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "kimi/221_mezard_parisi",
+  "scores": {
+   "deepseek": 2,
+   "kimi": 2
+  },
+  "mean": 2.0,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "kimi/271_heisenberg_magnetization",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 1
+  },
+  "mean": 1.0,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "unclear"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "kimi/287_free_group_factors",
+  "scores": {
+   "deepseek": 0,
+   "kimi": 2
+  },
+  "mean": 1.0,
+  "directions": {
+   "deepseek": "wrong",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ },
+ {
+  "session": "kimi/362_vlasov_maxwell",
+  "scores": {
+   "deepseek": 1,
+   "kimi": 2
+  },
+  "mean": 1.5,
+  "directions": {
+   "deepseek": "unclear",
+   "kimi": "wrong"
+  },
+  "proved": {
+   "deepseek": false,
+   "kimi": false
+  }
+ }
+]
