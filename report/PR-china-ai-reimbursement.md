@@ -20,7 +20,7 @@ This is by an automated agent, not a human.
 ## 交付物
 
 - `kb/reimbursement-ai/00.md`–`06.md`：知识库源文件（总览、报销体系、票据税务、技术服务费、各校样本、行动清单、风险清单）。
-- `deliverables/高校报销与境外AI订阅_2026-11.docx`：33 页 DOCX 知识库，内嵌决策图。
+- `deliverables/高校报销与境外AI订阅_2026-11.docx`：34 页 DOCX 知识库，内嵌决策图。
 - `docs/visuals/2026-11-21-ai-reimbursement.png`：一页决策图（2200×1600）。
 - `report/README-china-ai-reimbursement.md`：调研索引与证据/限制说明。
 - `src/build_docx_reimbursement.py`、`src/make_visual_reimbursement.py`：可复现生成脚本。
@@ -34,7 +34,7 @@ This is by an automated agent, not a human.
 
 ## 验证
 
-- DOCX 用 LibreOffice 转 PDF，逐页检查 33 页：标题、表格、决策图、页脚正常；无空白页、无表格溢出。
+- DOCX 用 LibreOffice 转 PDF，逐页检查 34 页：标题、表格、决策图、页脚正常；无空白页、无表格溢出。
 - PNG 2200×1600，中文 Noto Sans CJK，决策链与“推荐顺序”可读。
 - 生成脚本可重复运行：
   - `~/miniconda3/envs/sdpr-clean/bin/python src/make_visual_reimbursement.py`

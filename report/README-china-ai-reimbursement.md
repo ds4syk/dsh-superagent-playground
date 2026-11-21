@@ -18,7 +18,7 @@
 | [`kb/reimbursement-ai/05.md`](../kb/reimbursement-ai/05.md) | 合规路径与行动清单：决策表、五条路径、问财务的 6 个问题 |
 | [`kb/reimbursement-ai/06.md`](../kb/reimbursement-ai/06.md) | 风险清单：虚开、套取、税务、外汇、数据、采购、账号、学术诚信 |
 | [`docs/visuals/2026-11-21-ai-reimbursement.png`](../docs/visuals/2026-11-21-ai-reimbursement.png) | 一页决策图 |
-| [`deliverables/高校报销与境外AI订阅_2026-11.docx`](../deliverables/高校报销与境外AI订阅_2026-11.docx) | DOCX 知识库（33 页，内嵌决策图） |
+| [`deliverables/高校报销与境外AI订阅_2026-11.docx`](../deliverables/高校报销与境外AI订阅_2026-11.docx) | DOCX 知识库（34 页，内嵌决策图） |
 | [`src/build_docx_reimbursement.py`](../src/build_docx_reimbursement.py) | DOCX 生成脚本 |
 | [`src/make_visual_reimbursement.py`](../src/make_visual_reimbursement.py) | 决策图生成脚本 |
 
