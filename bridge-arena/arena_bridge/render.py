@@ -17,7 +17,6 @@ LW = {"road": 5.0, "wood": 2.4, "steel": 2.4, "cable": 1.5}
 
 
 def draw(ax, lv, design, result, title=None, show_car=True):
-    span = float(lv["anchors"][0][0]) if False else None
     xs = [a[0] for a in lv["anchors"]]
     x0, x1 = min(xs), max(xs)
     if len(xs) > 2 and max(xs) - min(xs) > 30:

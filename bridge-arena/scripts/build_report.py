@@ -42,12 +42,19 @@ def pct(x):
 def main():
     met = {m["name"]: m for m in load_json("results/eval/metrics.json")["metrics"]}
     timing = load_json("results/eval/metrics.json")["timing"]
-    train = load_json("results/checkpoints/train_meta.json")
+    train_path = "results/checkpoints/train_meta.json"
+    if not os.path.exists(train_path):
+        train_path = "results/train_meta.json"
+    train = load_json(train_path)
     play = load_json("results/play/play_log.json")
     import numpy as np
-    ds = np.load("results/dataset_l1.npz")
-    n_total = len(ds["designs"]); n_pass = int(ds["passed"].sum())
-    score_top = float(ds["score"].max())
+    if os.path.exists("results/dataset_l1.npz"):
+        ds = np.load("results/dataset_l1.npz")
+        n_total = len(ds["designs"]); n_pass = int(ds["passed"].sum())
+        score_top = float(ds["score"].max())
+    else:
+        st = load_json("results/dataset_stats.json")
+        n_total, n_pass, score_top = st["n"], st["passed"], st["score_max"]
     jobs = load_json("results/jobs.json") if os.path.exists("results/jobs.json") else {}
     pg = ["transformer", "diffusion", "cnn"]
     params = {"transformer": sum(p.numel() for p in BridgeTransformer().parameters()),

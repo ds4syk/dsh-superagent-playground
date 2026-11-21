@@ -227,7 +227,8 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     met = {m["name"]: m for m in load_json("results/eval/metrics.json")["metrics"]}
     samples = dict(np.load("results/eval/samples.npz"))
-    meta = load_json("results/checkpoints/train_meta.json")
+    meta = load_json("results/checkpoints/train_meta.json" if os.path.exists(
+        "results/checkpoints/train_meta.json") else "results/train_meta.json")
     fig_score_dist(samples, met)
     fig_metrics(met)
     fig_training(meta)
