@@ -1,0 +1,246 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{amsmath,amssymb,amsthm,bm,graphicx,booktabs,multirow,xcolor}
+\usepackage[hidelinks]{hyperref}
+\newtheorem{proposition}{Proposition}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\vect}{\operatorname{vec}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\SO}{\mathrm{SO}}
+\newcommand{\Loss}{\mathcal{L}}
+\newcommand{\bx}{\bm{x}}
+\newcommand{\bq}{\bm{q}}
+\newcommand{\bth}{\bm{\theta}}
+\newcommand{\bS}{\bm{\Sigma}}
+\newcommand{\bR}{\bm{R}}
+\newcommand{\bt}{\bm{t}}
+\newcommand{\bH}{\bm{H}}
+\newcommand{\bK}{\bm{K}}
+\newcommand{\bW}{\bm{W}}
+\newcommand{\bM}{\bm{M}}
+\newcommand{\bJ}{\bm{J}}
+\newcommand{\bA}{\bm{A}}
+\newcommand{\bp}{\bm{p}}
+\newcommand{\br}{\bm{r}}
+\newcommand{\bb}{\bm{b}}
+\newcommand{\be}{\bm{e}}
+\newcommand{\bX}{\bm{X}}
+\newcommand{\bQ}{\bm{Q}}
+\newcommand{\bdelta}{\bm{\delta}}
+\newcommand{\bB}{\bm{B}}
+
+\newcommand{\bI}{\bm{I}}
+\newcommand{\bz}{\bm{z}}
+\newcommand{\bg}{\bm{g}}
+\newcommand{\bh}{\bm{h}}
+\newcommand{\bc}{\bm{c}}
+\newcommand{\bG}{\bm{G}}
+\newcommand{\bzero}{\bm{0}}
+\newcommand{\ie}{i.e.,}
+\newcommand{\eg}{e.g.,}
+\newcommand{\etal}{et al.}
+
+\title{Certifiably Differentiable Quadratic Pose Estimation:\\ Global Gradients, Gauge, and Branch-Aware Uncertainty}
+\author{\IEEEauthorblockN{Anonymous Authors}\\
+\IEEEauthorblockA{Paper under review}}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Quadratic pose estimation (QPEP) gives a unified quaternion formulation of PnP, hand--eye calibration, and registration. A differentiable QPEP layer could connect geometric perception to control, but differentiating a local solver returns the gradient of whichever stationary point the solver found. We show that the natural rotation-matrix semidefinite lift of QPEP is \emph{value-tight but not solution-tight}: its rank-one factor is not a rotation, so it cannot certify a pose. The quaternion formulation is quartic and avoids this chirality issue. We build a layer that couples a multi-start global solve with a moment lower bound, returns a computable optimality gap, and differentiates the selected global branch through the KKT system. We characterize the branch-switch points where central differences diverge and derive the Clarke generalized Jacobian of the value function. We further show that the Laplace covariance at the selected branch misses the between-branch variance, and propose a certificate-weighted mixture covariance. On PnP instances, the KKT derivative matches finite differences of the branch to $7\times10^{-6}$ (median). On a controlled rotation model, a local-branch gradient stalls while the global-branch loss remains $4.04$; the global gradient crosses the switch. The mixture covariance changes a risk-sensitive action, reducing the true expected cost from $2.77$ to $0.85$.
+\end{abstract}
+
+\section{Introduction}
+Quadratic pose estimation (QPEP) unifies a family of geometric problems---perspective-$n$-point (PnP), perspective-$n$-line, hand--eye calibration, point-to-plane registration, and multi-robot relative pose---as a quaternion-constrained polynomial optimization problem \cite{wu2022qpep}. The quaternion parameterization is attractive because it is global and singularity-free, and the QPEP algebraic solver can enumerate all stationary points and select the best one. This makes QPEP a natural geometric layer between perception and control: a network predicts measurements, the layer returns a pose, and a controller consumes the pose. Indeed, recent humanoid whole-body control stacks learn a differentiable world model and back-propagate control objectives through it \cite{liao2026supermimic}; a differentiable geometric estimator would extend that chain to the perception side.
+
+The obstacle is differentiability. The standard recipe---solve the KKT system of a local solver and apply the implicit function theorem---returns the derivative of the \emph{local} solution selected by the solver. QPEP's global solver instead selects the minimizer among all stationary points \cite{wu2022qpep}. When the local solver lands in a different basin, its gradient is the gradient of a different function: the solver residual can be zero while the downstream loss is far from the global optimum. This is not a numerical nuisance; it is a structural mismatch between the object being differentiated (a local branch) and the object being used (the global optimum).
+
+Certifiable optimization offers a principled route. SDPRLayers \cite{holmes2025sdpr} back-propagates through a Shor relaxation of a homogeneous QCQP, using a dual certificate to prove global optimality and the QCQP KKT system to obtain the derivative. SE-Sync \cite{rosen2019sesync}, TEASER \cite{yang2021teaser}, and tightened relaxations \cite{dumbgen2024autotighten} follow the same certify-then-differentiate philosophy. Applying this recipe to QPEP, however, is not a matter of wrapping an existing solver. We identify two QPEP-specific obstructions.
+
+First, the natural rotation-matrix lift is \emph{value-tight but not solution-tight}. We formulate the QPEP algebraic cost in the rotation matrix $\bR\in\R^{3\times3}$ and translation $\bt$, impose $\bR^\top\bR=\bI$ as quadratic equalities, and solve the Shor relaxation. The relaxation value is essentially zero on noiseless data, but its solution has effective rank two; the best rank-one factor satisfies $\|\bR^\top\bR-\bI\|_F=1.73$ and $\det\bR=0$. The relaxation is mixing the true pose with a nonphysical zero-cost face. It therefore certifies a \emph{value}, not a pose, and cannot serve as a differentiable layer. The quaternion formulation avoids reflections and chirality, but its cost is quartic, not quadratic.
+
+Second, the quaternion problem is quartic and its moment relaxation is also not rank-one. A Lasserre moment relaxation \cite{lasserre2001} gives a valid lower bound, and the gap to a feasible pose is a computable suboptimality certificate, but the moment matrix has effective rank four to ten. The layer can certify the value (up to the gap), not a unique global pose. This is a genuine limitation of the current SDP route, and it motivates a gap-aware layer rather than a rank-one certificate.
+
+This paper takes the gap-aware route and studies what can still be guaranteed. Our contributions are:
+\begin{itemize}
+\item We show the failure of the rotation-matrix Shor lift for QPEP (value-tight, solution-invalid) and explain why the quaternion formulation is necessary.
+\item We build a QPEP layer that couples a multi-start global solve with a moment lower bound, returns a computable optimality gap, and differentiates the selected global branch by the KKT system with a gauge-invariant SO(3) derivative.
+\item We characterize branch switches: the global solution map is piecewise smooth, one-sided derivatives are the branch Jacobians, central differences diverge as $O(1/h)$, and the value function has a Clarke generalized Jacobian given by the convex hull of the active branch derivatives. We also show that a local-branch gradient can be zero while the global loss is maximal.
+\item We show that the Laplace covariance at one branch underestimates the posterior variance near a switch, propose a certificate-weighted mixture covariance, and demonstrate the effect on a risk-sensitive action.
+\end{itemize}
+
+\section{Related Work}
+\paragraph{Global pose estimation.} QPEP \cite{wu2022qpep} derives the quaternion cost, enumerates all KKT roots with Gr\"obner bases, and estimates covariance via a semidefinite program. sQPEP \cite{xue2025sqpep} extends the framework to scale. Our work keeps the quaternion formulation and focuses on the solution map and its derivative, not on a faster forward solver.
+
+\paragraph{Certifiable optimization and differentiable layers.} SDPRLayers \cite{holmes2025sdpr} differentiates a tight Shor relaxation of a homogeneous QCQP; the Cayley-map approach \cite{barfoot2025cayley} turns rotation estimation into a QCQP and extends it to trajectories. OptNet \cite{amos2017optnet} and Theseus \cite{pineda2022theseus} provide differentiable convex optimization layers. Our negative result shows why the generic QCQP route does not transfer directly to QPEP, and our positive result isolates what remains differentiable.
+
+\paragraph{Uncertainty and control.} QPEP provides a covariance from a semidefinite program \cite{wu2022qpep}. That covariance is a local Laplace approximation at the selected pose; near a global switch the posterior is multimodal. We make the mixture explicit and propagate it to a risk-sensitive action, which is the perception-side analogue of uncertainty-aware control.
+
+\section{Quaternion QPEP and Its Global Solution Map}
+\subsection{Quaternion cost and exact translation elimination}
+Let $\bq=(q_0,q_1,q_2,q_3)\in\R^4$ be a unit quaternion and $\bR(\bq)$ its rotation matrix. For correspondence $i$, let $\bp_i\in\R^3$ and $(u_i,v_i)$ be normalized image coordinates. The algebraic PnP residual is
+\begin{equation}
+\br_i(\bq,\bt)=
+\begin{bmatrix}
+u_i\,\be_3^\top(\bR(\bq)\bp_i+\bt)-\be_1^\top(\bR(\bq)\bp_i+\bt)\\
+v_i\,\be_3^\top(\bR(\bq)\bp_i+\bt)-\be_2^\top(\bR(\bq)\bp_i+\bt)
+\end{bmatrix},
+\end{equation}
+and $J(\bq,\bt)=\sum_i\|\br_i(\bq,\bt)\|^2$. For fixed $\bq$, $\br_i=\bA_i\bt+\bb_i(\bq)$ with $\bA_i\in\R^{2\times3}$ constant and $\bb_i(\bq)$ quadratic in $\bq$. Hence
+\begin{align}
+\bG&=\sum_i\bA_i^\top\bA_i,\quad \bh(\bq)=\sum_i\bA_i^\top\bb_i(\bq),\\
+\bc(\bq)&=\sum_i\|\bb_i(\bq)\|^2,\quad \bt(\bq)=-\bG^{-1}\bh(\bq),\\
+J(\bq)&=\bc(\bq)-\bh(\bq)^\top\bG^{-1}\bh(\bq).
+\end{align}
+The elimination is exact and polynomial: $J$ is a quartic polynomial in $\bq$, with no rational denominator. The constraint is $\bq^\top\bq=1$. The gauge $\bq\sim-\bq$ leaves $\bR(\bq)$ invariant.
+
+\subsection{Value certificates and the failure of the rotation-matrix lift}
+A lower bound on $\min_{\|\bq\|=1}J(\bq)$ can be obtained from a moment relaxation. Let $m(\bq)$ be the vector of monomials of degree at most two and let $\bW$ be the positive semidefinite Gram matrix of the residual coefficient vectors, so that $J(\bq)=m(\bq)^\top\bW m(\bq)$. The order-two relaxation is
+\begin{multline}
+L_{\rm mom}=\min_{\bM\succeq0}\ \langle\bW,\bM\rangle
+\ \text{s.t.}\ \bM_{00}=1,\ \sum_{i=0}^3\bM_{e_i,e_i}=1,\\
+L_{\bq^\top\bq-1}(\bM)=0,
+\label{eq:moment}
+\end{multline}
+where $L_{\bq^\top\bq-1}$ is the localizing matrix of the sphere constraint. For any feasible $\hat\bq$, $U=J(\hat\bq)$ is an upper bound, and
+\begin{equation}
+\Delta=U-L_{\rm mom}\ge0
+\label{eq:gap}
+\end{equation}
+is a computable optimality gap. If $\Delta\le\tau$, $\hat\bq$ is $\tau$-globally optimal. The relaxation is a valid lower bound but its moment matrix is generally not rank one (effective rank four to ten in our experiments), so it certifies the value, not a unique pose.
+
+The rotation-matrix lift is more familiar but fails more severely. With $\bx=[\vect(\bR);\bt;1]\in\R^{13}$, the algebraic cost is quadratic, $J(\bx)=\bx^\top\bQ\bx$, subject to the six orthogonality equalities $\bR^\top\bR=\bI$ and the homogenization $\bx_{13}^2=1$. The Shor relaxation is
+\begin{equation}
+\min_{\bX\succeq0}\ \langle\bQ,\bX\rangle
+\ \text{s.t.}\ \langle\bA_{ab},\bX\rangle=\delta_{ab},\ \bX_{13,13}=1.
+\label{eq:rform}
+\end{equation}
+On noiseless instances the optimal value is $\approx10^{-9}$, but the solution has effective rank two and the extracted rank-one factor is not orthogonal ($\|\bR^\top\bR-\bI\|_F=1.73$, $\det\bR=0$). The relaxed problem contains a nonphysical zero-cost face; the value is tight but the solution is invalid. This is why we work with the quartic quaternion formulation.
+
+\subsection{KKT differentiation and the gauge}
+At a stationary point $(\bq,\lambda)$ of the quaternion problem,
+\begin{equation}
+\bg(\bq)-\lambda\bq=\bzero,\qquad \bq^\top\bq-1=0,\qquad \bg(\bq)=\nabla J(\bq).
+\label{eq:kkt}
+\end{equation}
+Differentiating \eqref{eq:kkt} with respect to a parameter $\bth$ gives
+\begin{equation}
+\bK\begin{bmatrix}d\bq\\ d\lambda\end{bmatrix}
+=-\begin{bmatrix}\partial_{\bth}\bg\\0\end{bmatrix},\quad
+\bK=\begin{bmatrix}\nabla^2J-\lambda\bI&-\bq\\2\bq^\top&0\end{bmatrix}.
+\label{eq:kktdiff}
+\end{equation}
+Under the second-order sufficient condition on the tangent space, $\bK$ is nonsingular and $d\bq/d\bth$ is the derivative of the selected branch \cite{nocedal2006,dontchev2009}. The raw quaternion derivative flips sign under $\bq\mapsto-\bq$, but the rotation derivative
+\begin{equation}
+d\bR=\sum_{i=0}^3\frac{\partial\bR}{\partial q_i}\,dq_i,
+\qquad \bR^\top d\bR\in\mathfrak{so}(3),
+\label{eq:dR}
+\end{equation}
+is gauge invariant. We differentiate the physical output $(\bR,\bt)$, not the raw quaternion; any gauge-invariant loss then has a unique gradient.
+
+\subsection{Branch switches and local-gradient pollution}
+Assume that near $\bth_0$ the problem has finitely many smooth stationary branches $\bq_j(\bth)$ with strict local second-order conditions, and let $J_j(\bth)=J(\bq_j(\bth);\bth)$. The global solution is $\bq^\star(\bth)=\bq_{j^\star(\bth)}(\bth)$ with $j^\star(\bth)=\arg\min_j J_j(\bth)$.
+
+\begin{proposition}[Branch switch]
+Suppose at $\bth^\star$ two branches tie, $J_1(\bth^\star)=J_2(\bth^\star)$, and $J_1'(\bth^\star)\neq J_2'(\bth^\star)$. Then the value function $V(\bth)=\min_j J_j(\bth)$ is continuous and piecewise smooth, with one-sided derivatives $J_1'$ and $J_2'$; its Clarke generalized Jacobian \cite{clarke1983} is the interval $[\min(J_1',J_2'),\max(J_1',J_2')]$. If $\bq_1(\bth^\star)\neq\bq_2(\bth^\star)$, the global solution map is discontinuous, and the central difference
+\begin{equation}
+\frac{\bq^\star(\bth^\star+h)-\bq^\star(\bth^\star-h)}{2h}
+\label{eq:fd}
+\end{equation}
+diverges as $O(1/h)$; the one-sided derivatives are the branch Jacobians $\bq_1'$ and $\bq_2'$.
+\end{proposition}
+
+The switch margin $\Delta J=|J_1-J_2|$ is computable from the candidate branches; it predicts when the derivative is unreliable. A local solver that returns $\bq_2$ at a point where $\bq_1$ is global produces the derivative of $\bq_2$, not of $\bq_1$. The error in a downstream loss $\Loss$ is $(\bq_1'-\bq_2')^\top\nabla_{\bq}\Loss$, which does not vanish as the solver residual goes to zero. In the one-dimensional example of Section~\ref{sec:exp}, the local gradient is zero while the global loss is $4.04$: the local solver is at its own optimum, but not at the global one.
+
+\subsection{Branch-aware uncertainty}
+Treat $J(\bq;\bth)$ as a negative log-likelihood at temperature $\sigma^2$. The Laplace covariance at branch $j$ is $\bS_j=\sigma^2(\bH_j^\dagger)$ on the tangent space, with $\bH_j=\nabla^2J(\bq_j)$. The Laplace evidence of branch $j$ is $w_j\propto \exp(-J_j/\sigma^2)\sqrt{\det\bS_j}$, and the mixture is
+\begin{equation}
+\bS_{\rm mix}=\sum_j w_j\left(\bS_j+\bdelta_j\bdelta_j^\top\right),
+\quad \bdelta_j=\bq_j-\sum_k w_k\bq_k.
+\label{eq:mix}
+\end{equation}
+Near a tie, $\bS_{\rm mix}$ includes the between-branch term $\bdelta_j\bdelta_j^\top$, which the single-branch Laplace covariance omits. A risk-sensitive controller that uses $\bS_{\rm mix}$ inflates its safety margin exactly when the geometry is ambiguous.
+
+\paragraph{Inequality constraints.} The QPEP covariance problem adds $\bS\succeq0$ and $\bq^\top\bS\bq\le\alpha$. Such constraints can be handled by an active-set KKT system: on the active manifold the derivative is again $-K^{-1}N$, with $K$ the KKT matrix of the constrained problem. At a weakly active constraint or a PSD boundary, $K$ becomes singular and the derivative is one-sided; a log-barrier $-\mu\log\det\bS$ would give a smooth path whose derivative converges as $\mu\to0$. The squared-slack form $g+s^2=0$ is also smooth, but it introduces a sign symmetry and a vanishing slack derivative at the boundary, so we prefer the barrier/active-set formulation. A full numerical validation of the inequality-constrained covariance layer is left to future work.
+
+\section{Experiments}\label{sec:exp}
+\paragraph{Setup.} We use synthetic PnP instances with $n=8$ points, normalized image coordinates, and noise levels $\{0,10^{-3},10^{-2}\}$, and a one-dimensional rotation model that isolates the branch-switch mechanism. The QPEP cost is built from \eqref{eq:kkt}; the global candidate is the best of 30 local solves (SLSQP on the sphere); the lower bound is \eqref{eq:moment} solved with SCS. All experiments run on CPU.
+
+\paragraph{Value certificates.} Table~\ref{tab:cert} summarizes the certificate behavior. The rotation-matrix SDP \eqref{eq:rform} returns effective rank two, orthogonality residual $1.73$, and determinant zero on every instance; its objective is near zero but the recovered factor is not a pose. The quaternion moment bound \eqref{eq:moment} is tight on noiseless data (gap $\sim10^{-10}$), and the gap grows with noise (order three reduces it by roughly $3$--$7\times$). The moment matrix has effective rank four to ten, so it does not certify a unique pose. The layer reports $\Delta$ and treats $\Delta\le\tau$ as certified.
+
+\begin{table}[t]
+\centering
+\caption{Certificate behavior on PnP ($n=8$; median over 3 seeds). The rotation-matrix SDP is value-tight but not solution-tight; the quaternion moment bound is valid and gap-aware.}
+\label{tab:cert}
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{lcccc}
+\toprule
+noise & \multicolumn{2}{c}{rotation-matrix SDP} & \multicolumn{2}{c}{quaternion moment gap} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & eff. rank & orth. err & order 2 & order 3 \\
+\midrule
+$0$ & 2 & 1.73 & $4\times10^{-11}$ & $4\times10^{-9}$ \\
+$10^{-3}$ & 2 & 1.73 & $7\times10^{-6}$ & $2\times10^{-6}$ \\
+$10^{-2}$ & 2 & 1.73 & $1.2\times10^{-3}$ & $1.8\times10^{-4}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Gradient correctness.} Table~\ref{tab:grad} compares \eqref{eq:kktdiff} with a central difference of the selected branch (the local solve is initialized at the branch point, so both sides differentiate the same branch). The median relative error is $3.9\times10^{-5}$ at $h=10^{-4}$ and $7.4\times10^{-6}$ at $h=10^{-5}$; at $h=10^{-6}$ roundoff dominates for ill-conditioned instances (KKT condition number up to $1.3\times10^4$). This validates the KKT derivative and also shows why a finite-difference layer is not a substitute: the usable step is problem dependent.
+
+\begin{table}[t]
+\centering
+\caption{Relative error of the KKT derivative against a central difference of the same branch (median over 6 PnP instances).}
+\label{tab:grad}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+$h$ & median $\|d\bR-d\bR_{\rm fd}\|/\|d\bR_{\rm fd}\|$ & max & median cond$(\bK)$ \\
+\midrule
+$10^{-3}$ & $3.9\times10^{-4}$ & $5.6\times10^{-4}$ & 623 \\
+$10^{-4}$ & $3.9\times10^{-5}$ & $5.6\times10^{-5}$ & 623 \\
+$10^{-5}$ & $7.4\times10^{-6}$ & $3.5\times10^{-4}$ & 623 \\
+$10^{-6}$ & $8.8\times10^{-4}$ & $3.2\times10^{-2}$ & 623 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Branch switch and gradient pollution.} The controlled model is $J(x;\theta)=(x^2-1)^2+\theta x$ with $x\in\R$ and $x^\top x=1$ replaced by the two isolated minima at $x\approx\pm1$. At $\theta=0$ the branches tie; the branch values are $\pm\theta$ and the value is $-|\theta|$, so the global solution jumps from $+1$ to $-1$. Figure~\ref{fig:switch}(a) shows the switch; Figure~\ref{fig:switch}(b) shows that the central difference across the tie grows as $1/h$, while the one-sided branch derivative is $1/8$. This is the finite-difference signature of Proposition~1.
+
+For the pollution experiment, the target is $x_{\rm target}=+1$ and the loss is $(x-1)^2$. We start at $\theta=0.1$; the global branch is $x\approx-1$ (loss $4.04$), while the local solver initialized at $+1$ stays at $x\approx+1$ (branch loss $0$). The local-branch gradient is $2(x-1)x'$ with $x'\approx-1/8$, which is small; the global-branch gradient is large and negative. After 200 gradient steps (Figure~\ref{fig:pol}(a)), the local gradient leaves the global-branch loss at $4.04$, while the global gradient crosses the switch and reaches $0$. The local solver is optimal for its own branch; that is precisely why its gradient cannot detect the global error. On planar PnP, an identity-initialized local solve returns a $180^\circ$-wrong pose on 4 of 10 seeds, while the multi-start global candidate is within $0.04$ rad of the ground truth, so the phenomenon is present in 3D as well.
+
+\paragraph{Uncertainty and risk-sensitive action.} At $\theta=0.1$ and $\sigma=0.5$, the posterior over the two modes has variance $0.805$. The Laplace variance at the global mode is $0.030$, a $27\times$ underestimate; the Laplace mixture (using the two modes) gives $0.898$, close to the posterior. For a one-step control with a quadratic cost inside $|z|\le1.5$ and a penalty outside, the mixture-risk action is $0.18$ with expected cost $0.85$; the single-mode Laplace action is $1.01$, whose cost under its own model is $0.03$ but whose \emph{true} mixture cost is $2.77$. The single-mode controller is overconfident exactly at the ambiguity.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.86\textwidth]{figures/fig_method.png}
+\caption{The gap-aware differentiable QPEP layer. A global candidate is obtained by multi-start/algebraic search; a moment relaxation supplies a lower bound and a certificate gap; the selected branch is differentiated by the KKT system; the same candidates supply the branch-aware covariance and switch margin.}
+\label{fig:method}
+\end{figure*}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_switch.png}
+\caption{(a) Global QPEP solution switches at the tie $\theta=0$. (b) Central difference across the tie diverges as $1/h$; the one-sided branch derivative is $1/8$.}
+\label{fig:switch}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_pollution_control.png}
+\caption{(a) Local-branch gradient leaves the global-branch loss at $4.04$; the global-branch gradient crosses the switch and reaches zero. (b) Risk-sensitive action under the mixture covariance vs the single-mode Laplace covariance.}
+\label{fig:pol}
+\end{figure}
+
+\section{Discussion and Limitations}
+\paragraph{Complexity and real-time.} The backward pass is one $5\times5$ linear solve per sample, so the derivative is cheap. The forward cost is dominated by the global candidates and the moment bound: in our CPU prototype, 30 SLSQP solves take tens of milliseconds per instance and the order-two moment bound takes 0.05--1 s. Warm-starting, a GPU SDP, or the algebraic QPEP solver would be needed for high-frequency control; the back-propagation is not the bottleneck.
+
+The experiments support three claims: the KKT derivative is correct for a \emph{given} branch; the global branch can be selected and a value gap can be reported; and the branch-aware covariance is materially different from the local Laplace covariance. They also expose three limitations. First, the quaternion moment relaxation is not solution-tight; the layer certifies a value, not a unique pose. A future layer could combine the moment bound with a certified branch-and-bound or an exhaustive Gr\"obner root set to close the gap. Second, the global candidate is a multi-start heuristic in this paper; a production layer should use the QPEP algebraic solver or a branch-and-bound with interval bounds. Third, the controlled one-dimensional experiment is not a robot deployment. The next step is a six-DoF manipulation or humanoid root-pose experiment in which the geometric layer feeds a differentiable world model and a policy, following the SuperMimic pipeline \cite{liao2026supermimic}. The algebraic QPEP cost also has planar/chirality ambiguities; the layer differentiates the global optimum of the \emph{given} cost, and a misspecified cost can still produce a globally optimal but physically wrong pose. This is a modeling issue, not a gradient issue, and it deserves a separate study.
+
+\section{Conclusion}
+We studied what it means to differentiate a QPEP layer whose forward solve is global. The rotation-matrix Shor lift is value-tight but not solution-tight, so the generic certifiable-layer recipe does not transfer. The quaternion problem is quartic; its moment relaxation gives a gap-aware value certificate, and the KKT system gives the derivative of the selected branch, with a gauge-invariant SO(3) output. Branch switches explain the failure of local-solver gradients: the derivative is finite on each branch, but the global solution map jumps, and a local gradient can be zero while the global loss is maximal. The same candidates provide a branch-aware covariance that changes a risk-sensitive action. We hope this clarifies which guarantees a differentiable geometric estimator can offer, and which must be replaced by a gap-aware contract.
+
+\clearpage
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+\end{document}
