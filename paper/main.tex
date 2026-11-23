@@ -150,6 +150,8 @@ Suppose at $\bth^\star$ two branches tie, $J_1(\bth^\star)=J_2(\bth^\star)$, and
 diverges as $O(1/h)$; the one-sided derivatives are the branch Jacobians $\bq_1'$ and $\bq_2'$.
 \end{proposition}
 
+\emph{Proof sketch.} On each branch the envelope theorem gives $V'=J_j'$; at the tie, the Clarke subdifferential of a pointwise minimum is the convex hull of the active gradients \cite{clarke1983}. The solution jump and the $O(1/h)$ central difference follow from the two distinct branch values at $\bth^\star$.
+
 The switch margin $\Delta J=|J_1-J_2|$ is computable from the candidate branches; it predicts when the derivative is unreliable. A local solver that returns $\bq_2$ at a point where $\bq_1$ is global produces the derivative of $\bq_2$, not of $\bq_1$. The error in a downstream loss $\Loss$ is $(\bq_1'-\bq_2')^\top\nabla_{\bq}\Loss$, which does not vanish as the solver residual goes to zero. In the one-dimensional example of Section~\ref{sec:exp}, the local gradient is zero while the global loss is $4.04$: the local solver is at its own optimum, but not at the global one.
 
 \subsection{Branch-aware uncertainty}
