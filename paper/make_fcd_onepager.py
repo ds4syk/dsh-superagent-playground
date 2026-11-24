@@ -11,7 +11,7 @@ plt.rcParams.update({'font.size':9.5,'axes.titlesize':10.5,'axes.labelsize':9.5,
 fig=plt.figure(figsize=(12.8,7.0))
 gs=fig.add_gridspec(2,3,height_ratios=[1.0,0.9],hspace=0.45,wspace=0.28)
 fig.suptitle('原子位姿层：可微性属于最优面，不属于最优值',fontsize=16.5,y=0.98,weight='bold')
-fig.text(0.5,0.925,'QPEP 的 R-form 在一般 PnP 上值紧且解紧；真正的困难是最优面的多原子结构。正结果：cue-conditioned planar PnP 上 atomic 99.0% vs 最强基线 56.5%。',ha='center',fontsize=10)
+fig.text(0.5,0.925,'QPEP 的 R-form 在一般 PnP 上值紧且解紧；真正的困难是最优面的多原子结构。审计：99 vs 56.5 是 R→q 转换 bug；修复后 cue 基线 99.0/99.5，atomic 99.0——不是 SOTA。',ha='center',fontsize=10)
 # a: correct diagnosis text
 ax=fig.add_subplot(gs[0,0]); ax.axis('off')
 ax.add_patch(FancyBboxPatch((0.01,0.03),0.98,0.94,boxstyle='round,pad=0.02,rounding_size=0.04',fc='#f7fafd',ec='#2b5d8a',lw=1,transform=ax.transAxes))
@@ -28,13 +28,13 @@ ax.bar(['真值','flip','local'], [1e-15,1e-15,3.5e-17], color=['#2b5d8a','#7aa6
 ax.set_yscale('log'); ax.set_ylim(1e-18,1e-13); ax.set_ylabel('QPEP cost')
 ax.set_title('(b) planar PnP：两支精确同代价',fontsize=9)
 ax.text(0.03,0.9,'pose error: 0 vs π',transform=ax.transAxes,fontsize=7.5)
-# c: cue benchmark positive result
+# c: audit cue benchmark (not SOTA)
 ax=fig.add_subplot(gs[0,2])
-methods=['local','global','cue-init\nlocal','atomic\n+cue']; vals=[40.5,51.0,56.5,99.0]
-cols=['#7aa6c2','#9dc3d8','#d08c60','#2b5d8a']
+methods=['local','global','cue-init\nlocal','IPPE','atomic\n+cue']; vals=[40.5,51.0,99.0,99.5,99.0]
+cols=['#7aa6c2','#9dc3d8','#d08c60','#b56576','#2b5d8a']
 b=ax.bar(methods,vals,color=cols); ax.set_ylim(0,110); ax.set_ylabel('success (%)')
-ax.set_title('(c) 正结果：cue-conditioned planar PnP',fontsize=9)
-for bb,v in zip(b,vals): ax.text(bb.get_x()+bb.get_width()/2,v+2,'%.1f'%v,ha='center',fontsize=8)
+ax.set_title('(c) 审计后：cue-aware 基线也 99%，不是 SOTA',fontsize=8.6)
+for bb,v in zip(b,vals): ax.text(bb.get_x()+bb.get_width()/2,v+2,'%.1f'%v,ha='center',fontsize=7.2)
 # d: fold
 ax=fig.add_subplot(gs[1,0])
 d=json.load(open(os.path.join(RES,'fold.json')))

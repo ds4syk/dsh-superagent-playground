@@ -33,19 +33,14 @@ def q_from_R(R):
     return rot_from_R(R)
 
 def rot_from_R(R):
-    # quaternion from rotation matrix (Shepperd)
-    tr=np.trace(R)
-    if tr>0:
-        s=np.sqrt(tr+1.0)*2; q=np.array([0.25*s,(R[2,1]-R[1,2])/s,(R[0,2]-R[2,0])/s,(R[1,0]-R[0,1])/s])
-    else:
-        i=np.argmax(np.diag(R))
-        if i==0:
-            s=np.sqrt(1+R[0,0]-R[1,1]-R[2,2])*2; q=np.array([(R[2,1]-R[1,2])/s,0.25*s,(R[0,1]+R[1,0])/s,(R[0,2]+R[2,0])/s])
-        elif i==1:
-            s=np.sqrt(1+R[1,1]-R[0,0]-R[2,2])*2; q=np.array([(R[0,2]-R[2,0])/s,(R[0,1]+R[1,0])/s,0.25*s,(R[1,2]+R[2,1])/s])
-        else:
-            s=np.sqrt(1+R[2,2]-R[0,0]-R[1,1])*2; q=np.array([(R[1,0]-R[0,1])/s,(R[0,2]+R[2,0])/s,(R[1,2]+R[2,1])/s,0.25*s])
-    return norm(q)
+    # q2R returns R_std^T, so the standard inverse is applied to R.T.
+    from scipy.spatial.transform import Rotation as Rot
+    q = Rot.from_matrix(R.T).as_quat()  # [x,y,z,w]
+    q = np.array([q[3], q[0], q[1], q[2]])
+    if q[0] < 0:
+        q = -q
+    return q / np.linalg.norm(q)
+
 rows=[]; starts=branch_starts(0)
 for seed in range(400):
     g=gen(seed)

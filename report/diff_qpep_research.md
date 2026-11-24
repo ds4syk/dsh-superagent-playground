@@ -5,7 +5,7 @@
 > **如果只记三件事**：
 > 1. **R-form 不是“不 tight”**：12×12 提升返回 rank-1、正交到 1e−11、det=±1、x*=±x_gt；13×13 齐次化的最后一行才是 R=0。失败来自 O(3) 的 sign/chirality，不是松弛紧性。
 > 2. **planar PnP 有精确 flip 对称**：真值与翻转位姿代价相同（~1e−15），最优面是多原子；局部解返回一支，全局解返回集合，没有 canonical section。q-form 的 `dim ker W` 为 6–10，value gap 为 0（vacuous）。
-> 3. **正结果**：在 cue-conditioned planar PnP 上，atomic+cue 的分支成功率 **99.0%**，最强 point-estimate 基线（cue-init local）为 **56.5%**；平均旋转误差 0.032 vs 1.206 rad。
+> 3. **审计更正（2026-11-24）**：上一轮 99.0% vs 56.5% 的 SOTA 结论**不成立**。`rot_from_R` 用错 R→q 转换（`q2R` 返回 Rᵀ），使 cue-init local/opencv 基线被错误实现；修复后 cue-init local 99.0%、OpenCV IPPE 99.5%、atomic+cue 99.0%。atomic 的 99% 是真实的 cue-conditioned 分支解析，但**不是 SOTA**；无 cue 的 point-estimate 层为 40.5%/51.0%。贡献是 face/branch certificate 与 abstain，不是 accuracy SOTA。
 >
 > **正确的层合同**：FCD / Atomic Pose Layers 返回 **CERTIFIED / AMBIGUOUS / VALUE-ONLY** 三态；只有在“单个物理原子 + m>0 + ν>0”时才发位姿与 KKT 导数；多原子时返回分支/原子集、margin 与 SO(3) 混合协方差；在 tie 处用 certificate-gated Gibbs/softmin，其**selection term** 是硬损失跳变的 mollified jump，不是 Clarke 次梯度。
 
@@ -104,7 +104,7 @@ R̄ 为加权 Fréchet 均值，w_j 为 Laplace evidence 权重，未认证时�
 | E3 | 1D tie/fold | tie FD~1/h，单侧 1/8；fold θ=1.5396，导数按 ν^(−1/2) |
 | E4 | KKT vs FD | h=1e−5 中位 7.4e−6；cond 中位 623 |
 | E5 | selection/协方差（1D synthetic） | hard/local 停在 4.00，selection 到 0.00；Laplace 方差 0.030 vs 后验 0.805（27×）；风险动作真实代价 2.77→0.85 |
-| **E6** | **cue-conditioned planar PnP（正结果）** | local 40.5%、global 51.0%、cue-init local 56.5%、**atomic+cue 99.0%**；mean rot err 0.032 vs 1.206 rad |
+| **E6** | **cue-conditioned planar PnP（审计后）** | local 40.5%、global 51.0%、cue-init local 99.0%、IPPE 99.5%、atomic 99.0%；**不是 SOTA** |
 
 ![图 2：R-form 的 rank-1 recovery 与 q-form 的面维数](../paper/figures/fig_face.png)
 
@@ -114,25 +114,26 @@ R̄ 为加权 Fréchet 均值，w_j 为 Laplace evidence 权重，未认证时�
 
 ![图 5：fold 处导数按 ν^(−1/2) 发散](../paper/figures/fig_fold.png)
 
-### 5.6 Cue-conditioned planar PnP：正结果与 SOTA（受控 benchmark）
+### 5.6 Cue-conditioned planar PnP：审计后的结果（不是 SOTA）
 
-按 SDPRLayers 的合成位姿估计协议（合成 PnP、噪声、旋转误差），加入 **task cue** 以隔离“分支选择”这一变量：4 点 planar PnP，400 个实例，normalized image noise 5e−4，cue 为带噪 heading（σ=0.25）。planar 目标有精确两重双覆盖，两支代数代价相同（~1e−15），point-estimate 层只能在不知道 task 的情况下任选一支；atomic 层先恢复两个物理原子，再用 cue 打分选择。
+按 SDPRLayers 的合成位姿估计协议，4 点 planar PnP，400 个实例，normalized image noise 5e−4，cue 为带噪 heading（σ=0.25）。审计发现 `exp_cue_benchmark.py` 的 `rot_from_R` 用错（`q2R` 返回标准 R 的转置），导致 cue-init local 与 OpenCV 基线的初始化错误；修复后重跑：
 
 | method | success（rot<0.1 rad） | median rot err | mean rot err |
 |---|---|---|---|
 | local KKT | 0.405 | 3.126 | 1.830 |
 | global-naive | 0.510 | 0.004 | 1.538 |
-| cue-init local（最强 point-estimate 基线） | 0.565 | 0.003 | 1.206 |
-| **atomic + cue** | **0.990** | **0.0016** | **0.032** |
+| cue-init local（修复后） | 0.990 | 0.0016 | 0.032 |
+| IPPE（OpenCV，修复后） | 0.995 | 0.0019 | 0.011 |
+| atomic + cue | 0.990 | 0.0016 | 0.032 |
 
-**读数**：point-estimate 层即使拿到 cue 作为初始化，仍有 43.5% 落入错误 basin；atomic 层因为暴露了 branch/atom 集，才能把 cue 用在“选择”而不是“初始化”上，成功率 99.0%。这是本文的**正结果**：在 cue-conditioned planar PnP 这个受控 benchmark 上达到 SOTA（99.0% vs 56.5%），平均旋转误差降低约 38×。**范围**：这是受控 planar/task-cue benchmark，不是通用 PnP SOTA；3D 非平面/真实机器人端到端仍未做。
+**读数**：无 cue 的 point-estimate 层确实失败 40–51%；但 cue-aware 基线与 atomic 一样能解析双覆盖（99.0–99.5%）。atomic **没有** accuracy SOTA；它多出来的是 face/branch certificate 与 abstain 合同。cue shuffle 后 atomic 掉到 54.25%（接近随机），说明它确实用了 cue；cue 噪声 0.25/0.5/0.8/1.5 时 atomic 与 cue-init local 同步为 99.0/97.0/91.0/73.5%，两者没有差别；true branch 在 top-2 中占 99%。**结论**：99% 是真实的分支解析，但不是 SOTA；上一轮 99 vs 56.5 的结论撤回。
 
 ## 6. 对 12 个研究问题的逐条回答
 
 | # | 问题 | 本文结论/证据 | 下一步 |
 |---|---|---|---|
 | 1 | 全局最优 QPEP 隐式微分 | 分支 KKT 导数在 certified stratum 正确（7.4e−6）；全局解映射集值；value gap 不是 derivative certificate。**独立复现** | verified dual/face extraction；Gröbner 全根 |
-| 2 | 局部最优梯度污染 | 1D 固定假设：hard/local 梯度恒 0，损失停在 4；selection 到 0。planar double cover 下 point-estimate 层 40–56% 失败；atomic+cue 99%。**独立复现** | 3D 非平面/端到端 |
+| 2 | 局部最优梯度污染 | 1D 固定假设：hard/local 梯度恒 0，损失停在 4；selection 到 0。planar double cover 下无 cue 的 point-estimate 层 40–51% 失败；cue-aware 基线/atomic 99%，atomic 无 SOTA。**独立复现** | 3D 非平面/端到端 |
 | 3 | 多全局最优的微分 | face–branch duality；`corank H=k`；tie 用三态/集合，不用单梯度；gauge/cheirality 过滤。**理论+数值** | face sampling/原子提取；Clarke/mixture 的偏差界 |
 | 4 | 不等式约束可微分化 | PSD+trace 投影可 water-filling；active-set/barrier 导数；未完整复现。**设计** | 实现并对比 FD；补表 |
 | 5 | 约束退化与梯度稳定性 | tie 1/m、fold ν^(−1/2)；KKT cond 623；LICQ 在球面自动。**数值+理论** | σ_min(K) vs gradient error；退化 PnP |
@@ -141,7 +142,7 @@ R̄ 为加权 Fréchet 均值，w_j 为 Laplace evidence 权重，未认证时�
 | 8 | 鲁棒可微分 QPEP | 鲁棒损失破坏二次结构；outlier 剪枝+face 证书是路线。**分析** | 加权 QPEP/鲁棒 SDP |
 | 9 | 时序 QPEP | 滑动窗口+运动先验；多分支随时间耦合。**分析** | 时序因子图 + face 动态规划 |
 | 10 | 位姿+尺度/标定 | sQPEP 的尺度扩展；可辨识性。**文献** | 尺度变量 + 面证书 |
-| 11 | 任务驱动 QPEP | **cue-conditioned planar PnP：atomic+cue 99.0% vs cue-init local 56.5%**；ASAD selection term 可训练 cue；3D 端到端未做。**部分正结果** | 4 点 planar + cue + MLP（见 §7） |
+| 11 | 任务驱动 QPEP | cue-conditioned planar PnP：atomic 99.0%，但 cue-init local 99.0%、IPPE 99.5%，**不是 SOTA**；ASAD 可训练 cue；3D 端到端未做。**部分/负** | 4 点 planar + cue + MLP（见 §7） |
 | 12 | 实时可微分 QPEP | 反向 5×5 便宜；forward SDP/多起点是瓶颈；无完整计时。**部分** | verified dual/warm-start/GPU |
 
 ## 7. 下一步（建议的最小实验集）
@@ -158,7 +159,8 @@ R̄ 为加权 Fréchet 均值，w_j 为 Laplace evidence 权重，未认证时�
 - **没有 verified dual**：face/rank/corank 是数值 SDP；不能称为严格 certificate；下一步做对偶 PSD 检查。
 - **前向是多起点**：不是 QPEP 全根；可能漏分支；face 诊断只在实验实例上。
 - **3D 端到端/不等式/3D 协方差未做**：1D synthetic 只是机制说明。
-- **正结果是受控 benchmark**：cue-conditioned planar PnP；不是通用 PnP SOTA，planar/task-cue 的设置需在论文中明确。
+- **99 vs 56.5 的 SOTA 结论已撤回**：R→q 转换 bug 使 cue-init local/opencv 基线失效；修复后 cue-aware 基线与 atomic 都 ~99%，atomic 无 accuracy SOTA。
+- **正结果是受控 benchmark**：cue-conditioned planar PnP；不是通用 PnP SOTA；atomic 的独特价值是 face/branch certificate 与 abstain，不是 accuracy。
 - **planar 面高维**：API 返回 AMBIGUOUS/VALUE-ONLY；需要 prior/cue 才能选物理分支。
 - **C2P/dQP 引用元数据**：部分为预印本/题名待核；正式投稿前需核对。
 - **旧版结论已废弃**：R-form “not solution-tight”、q-form “not rank-1”、1D “local gradient pollution” 的旧表述不再使用。
