@@ -26,7 +26,7 @@
 - **Theorem 3（no-free-lunch at ties/folds）**：tie 处不存在 exact+continuous+Lipschitz 选择；任何 exact+continuous 选择导数无界，付 `Ω(1/m)`；fold 付 `ν^(−1/2)`；值函数有 Clarke 次微分，解映射没有 Clarke Jacobian。
 
 ### Lean 形式化
-1-D tie 引理（`J(x;θ)=(x²−1)²+θx`：θ>0 时全局极小为负、θ<0 时为正，故不存在在 0 处取 ±1 的连续选择）**Lean 4 build 成功**：`lake build` 完成 8765 jobs，1-D tie 引理已 machine-checked（`lean/FaceStratum/Tie.lean`，Mathlib v4.34.0-rc2）；一般 SDP/KKT/IFT 的 face–stratum 定理仍是 paper proof。。一般 SDP/KKT/IFT 的 face–stratum 定理仍是论文证明；完整 Lean 形式化 SDP/KKT 是未来工作。
+1-D tie 引理（`J(x;θ)=(x²−1)²+θx`：θ>0 时全局极小为负、θ<0 时为正，故不存在在 0 处取 ±1 的连续选择）**Lean 4 build 成功**：`lake build` 完成 8766 jobs；1-D tie 引理（`lean/FaceStratum/Tie.lean`）与 value–face 的 rank 引理（`lean/FaceStratum/ValueFace.lean`：`WM=0 ⇒ range(M)⊆ker W`、`rank M≤dim ker W`）已 machine-checked；PSD 步骤 `tr(WM)=0 ⇒ WM=0` 仍由 paper 的谱定理证明；一般 SDP/KKT/IFT 的 face–stratum 定理仍是 paper proof。。一般 SDP/KKT/IFT 的 face–stratum 定理仍是论文证明；完整 Lean 形式化 SDP/KKT 是未来工作。
 
 **证据分级**：Theorem 1/2/3 的 paper 证明为“论文声称 + 推导”；1-D tie 为“独立复现（Lean）”；3 点遮挡 PnP 是“独立复现（数值）”，不是定理本身。
 

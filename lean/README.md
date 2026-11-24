@@ -10,6 +10,12 @@ a full Lean formalization of the SDP/KKT part is future work.
 **Verified**: `lake build` completed successfully (8765 jobs) with
 Mathlib v4.34.0-rc2; see `lake_build3.log`.
 
+## Contents
+
+- `FaceStratum/Tie.lean`: 1-D tie / no-free-lunch, machine-checked.
+- `FaceStratum/ValueFace.lean`: rank component of value-face separation (`WM=0` => `range(M) ⊆ ker W`, `rank M ≤ dim ker W`), machine-checked.
+- The PSD step `tr(WM)=0 => WM=0` is paper (spectral theorem); general SDP/KKT/IFT is future work.
+
 ## Build
 
 ```bash
