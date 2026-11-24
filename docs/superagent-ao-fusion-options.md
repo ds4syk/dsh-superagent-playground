@@ -1,6 +1,6 @@
 # SuperAgent × Agent Orchestrator：两套融合方案详解
 
-> 结论先行：A 是“把 SuperAgent 当 AO 的执行后端”，改动小、1 个 PR、可先跑通；B 是“把 AO 当 SuperAgent 的执行层”，更符合你最后一句，也更能发挥两边强项，但要 AO + SuperAgent 两侧改、2 个 PR。建议按 **先 A 打通链路，再 B 完成融合** 的顺序落地；最终形态是 B，A 的 `dshacp` 也是 B 里 AO worker 的一种 harness。
+> 结论先行：A 是“把 SuperAgent 当 AO 的执行后端”，改动小、1 个 PR、可先跑通；B 是“把 AO 当 SuperAgent 的执行层”，更符合你最后一句，也更能发挥两边强项，但要 AO + SuperAgent 两侧改、2 个 PR。**Kimi K3 与 GLM-5.4 独立给出的方案都判定 B**；最终形态是 B，A 的 `dshacp` 只是 B 里 worker 的一种 harness，放 Phase 2。
 
 ## 0. 两个系统各自是什么
 
@@ -155,13 +155,37 @@ SuperAgent 继续做它擅长的“工厂层”；AO 继续做它擅长的“执
 | 可立即验证 | 是（ao spawn --harness dsh） | 需要两侧联调 |
 | 最终形态 | 子能力 | 目标形态 |
 
-## 4. 推荐落地顺序
+## 4. 两个模型的独立意见
 
-1. **先做 A 的 `dsh` harness**：1 个 AO PR，先把 DSH/SuperAgent agent loop 跑进 AO 的 session/worktree/PR 闭环；这也是 B 里 worker 可选的 harness。
-2. **再做 B 的执行契约**：AO 加 `external_sessions` + 执行 API，SuperAgent 加 `AoExecutor`；把 Router/Ticket 真正接到 AO。
-3. **最后验证**：用一张真实 Ticket 跑通“SuperAgent Router → AO session/worktree → PR → Report → 原 thread 回复”，并做断点恢复/冲突/重复投递测试。
+### Kimi K3（直接 API，`kimi-k3`）
 
-这样既有一个可快速 review 的小 PR，又不会把目标形态做成半成品。
+- 方向：SuperAgent 在上，AO 作为可插拔 `Executor` 执行层；用户末句为准。
+- AO 侧：新增 `adapters/executor/superagentexec/`，提供 start/deliver/stop 三个 HTTP 端点；持久化 assignment 状态；start 以 `assignment.ID` 幂等；并发槽、崩溃恢复、Report 回调。
+- SuperAgent 侧：薄 `AoExecutor` + 组合根 patch。
+- 它明确说：把 Router 塞进 AO 等于重写 AO 核心；AO 的价值在执行侧。
+
+### GLM-5.4（直接 API，`glm-5.4`）
+
+- 方向：同样判定 B，并指出“魔改 AO”应解释为“把 AO 改造成合格的 Executor”，不是把 Router 搬进 AO。
+- AO 侧缺口只有约 20%：session 创建接受 `metadata` + `Idempotency-Key`；新增持久化 report 流（SSE，`since=seq` 可回放）；stop 携带 reason；chat 投递已有 `client_message_id` 去重；新增纯函数 `DeriveWorkerState(session facts, approve, PR/CI)`。
+- SuperAgent 侧：`AoExecutor` + ReportPump，core 零改动。
+- 它明确说：`dshacp` 只是“又一个 harness”，丢失 Router/Worker 语义，不构成融合，放 Phase 2。
+
+### 综合结论
+
+两者在方向、缝、SuperAgent 侧薄适配、AO 侧只做执行契约上一致。差异在 AO 侧实现：
+- Kimi：`external_sessions` 映射表 + 三个端点 + Report 回调；
+- GLM：session metadata + Idempotency-Key + 持久化 report 流（SSE）。
+
+MVP 取两者交集、先做最稳的：**`external_sessions` 幂等映射 + `GET execution` 状态投影 + `stop`**；Report 流先用轮询（`updatedAt` 去重），SSE 作为下一步。这样不需要一次引入事件日志和双端共享映射表，仍能跑通端到端。`dshacp` 放 Phase 2。
+
+## 5. 推荐落地顺序
+
+1. **B 的第一刀（AO PR 1）**：`external_sessions` 幂等映射 + `PUT/GET/POST stop` 执行契约 + `GET execution` 状态投影；SuperAgent 侧 `AoExecutor` 轮询这个视图。
+2. **B 的第二刀（SuperAgent patch）**：`AoExecutor` + ReportPump + 组合根选择器，用 AO 的契约跑通一张 Ticket。
+3. **B 的增强**：Report SSE（`since=seq`）、审批动作透传、断点续传；再评估 `dshacp` 作为 AO worker 的可选 harness。
+
+这样既符合两个模型的 B 判定，又用一个可 review 的 AO PR 先落地执行契约。
 
 ## 5. 需要 owner 确认的点
 
