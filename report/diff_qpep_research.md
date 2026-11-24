@@ -175,7 +175,7 @@ R̄ 为加权 Fréchet 均值，w_j 为 Laplace evidence 权重，未认证时�
 ### 5.9 Lean 与 10 轮 loop
 
 - Lean 4：1-D tie（`Tie.lean`）+ value–face rank（`ValueFace.lean`）machine-checked，`lake build` 8766 jobs（`lake_build7.log`）；PSD 与一般 SDP/KKT 是 paper proof。Lean 1-D 是“每个 θ 都精确 tie”的特例，不覆盖 Theorem 2(ii) 的 off-tie/Lipschitz 部分；Mathlib commit `85e3a25`。
-- 10 轮 loop 的实际状态见 `loop/ROUNDS.md`：R1–R8 完成（R8 为 fresh-context 对抗性自审），R9 应用审稿意见并更新 PR，R10 收尾。R8 发现 2 个 fatal（Theorem 2/3 的切换假设、损坏的 `\ref`）与多个 claim 过度；本版报告与论文已按这些发现修正。
+- 10 轮 loop 的实际状态见 `loop/ROUNDS.md`：R1–R8 完成（R8 为 fresh-context 对抗性自审），R9 完成（应用审稿意见、补 P3P/同起点消融、更新 PR），R10 收尾。R8 发现 2 个 fatal（Theorem 2/3 的切换假设、损坏的 `\ref`）与多个 claim 过度；本版报告与论文已按这些发现修正。
 
 ## 6. 对 12 个研究问题的逐条回答
 

@@ -12,8 +12,8 @@ Each round: goal → action → result → validation → next.
 | R6 | Lean additional lemma (PSD or 1-D derivative) | done (1-D + rank) |
 | R7 | Code/tests/README hygiene | partial: code + README, no test dir |
 | R8 | Fresh-context adversarial review (paper/report) | done (15 findings, 2 fatal) |
-| R9 | Apply R8 + P3P/same-start benchmark + PR | in progress |
-| R10 | Final packaging + Clash stop | pending |
+| R9 | Apply R8 + P3P/same-start benchmark + PR | done |
+| R10 | Final packaging + Clash stop | in progress |
 
 ## R1 — Verified dual / face certificate
 
