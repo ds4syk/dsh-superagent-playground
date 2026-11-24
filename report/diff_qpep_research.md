@@ -9,6 +9,27 @@
 >
 > **正确的层合同**：FCD / Atomic Pose Layers 返回 **CERTIFIED / AMBIGUOUS / VALUE-ONLY** 三态；只有在“单个物理原子 + m>0 + ν>0”时才发位姿与 KKT 导数；多原子时返回分支/原子集、margin 与 SO(3) 混合协方差；在 tie 处用 certificate-gated Gibbs/softmin，其**selection term** 是硬损失跳变的 mollified jump，不是 Clarke 次梯度。
 
+## 数学核心：Face–Stratum 定理（定理先行）
+
+> 论文的理论贡献不是某个 benchmark，而是把“可微全局层”的判据从 value/rank-one 换成 optimal-face/stratum。
+
+### 核心定理（Theorem 2）
+在 (A1) 强对偶/可达、(A2) 提升精确、(A3) 严格互补、(A4) 孤立物理全局极小 + SOSC/ACQ、(A5) 面可实现下，令 k 为不同物理全局原子数、m 为 tie margin、ν=σ_min(K)/σ_max(K)。则：
+1. **k=1, m>0, ν>0** ⇒ 全局解映射 C¹，且 `dq/dθ=−K⁻¹N`；
+2. **k≥2** 且原子互异 ⇒ 全局解集多原子，任何在 tie 外等于全局极小、在 tie 处连续的选择都不存在；
+3. **k=1, ν=0（fold）** ⇒ 不可微，分支导数按 `ν^(−1/2)` 发散。
+
+**证明骨架**：Lemma 1（face–branch: `range(X)=span{q_j q_jᵀ}`、`corank H=k`）+ KKT 隐函数定理（k=1, ν>0）+ tie 两侧极限的连续性矛盾（k≥2）+ 鞍结规范形（ν=0）。value gap/rank-one 对 (1) 既非必要也非充分；正确证书是 `(k,m,ν)`。
+
+### 两个配套结果
+- **Theorem 1（value–face separation）**：无噪声 QPEP 的 moment gap 恒为 0（J 是平方和）；任意最优 M 满足 `WM=0`，故 `range(M)⊆ker W`、`rank(M)≤dim ker W`。gap 是 vacuous；面维数才携带可辨识性。R-form 是 rank-one 但 sign/chirality；planar 是两原子；q-form 面秩 6–7。
+- **Theorem 3（no-free-lunch at ties/folds）**：tie 处不存在 exact+continuous+Lipschitz 选择；任何 exact+continuous 选择导数无界，付 `Ω(1/m)`；fold 付 `ν^(−1/2)`；值函数有 Clarke 次微分，解映射没有 Clarke Jacobian。
+
+### Lean 形式化
+1-D tie 引理（`J(x;θ)=(x²−1)²+θx`：θ>0 时全局极小为负、θ<0 时为正，故不存在在 0 处取 ±1 的连续选择）Lean 4 形式化文件已写（`lean/FaceStratum/Tie.lean`，Mathlib；本环境的 Mathlib 依赖构建尚未完成，build 命令见 `lean/README.md`）。一般 SDP/KKT/IFT 的 face–stratum 定理仍是论文证明；完整 Lean 形式化 SDP/KKT 是未来工作。
+
+**证据分级**：Theorem 1/2/3 的 paper 证明为“论文声称 + 推导”；1-D tie 为“独立复现（Lean）”；3 点遮挡 PnP 是“独立复现（数值）”，不是定理本身。
+
 ## 0. 口径与证据分级
 
 | 等级 | 含义 | 本报告例子 |
