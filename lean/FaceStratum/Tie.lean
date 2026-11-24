@@ -5,8 +5,8 @@ import Mathlib
 
 For `J x θ = (x^2 - 1)^2 + θ x`, the global minimizer is negative for `θ > 0`
 and positive for `θ < 0`.  Hence no continuous selection of the global
-minimizer can take either value `±1` at `θ = 0`: the exact-continuous-Lipschitz
-trilemma of Theorem 3 is already visible in one dimension.
+minimizer can take either value `±1` at `θ = 0`; the failure of continuity of
+an exact selection at a tie is already visible in one dimension.
 
 This file is the Lean-checked core of the 1-D tie lower bound.  The general
 face--stratum theorem is proved in the paper; a full Lean formalization of the
