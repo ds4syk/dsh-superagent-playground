@@ -149,6 +149,29 @@ R̄ 为加权 Fréchet 均值，w_j 为 Laplace evidence 权重，未认证时�
 
 **读数**：无 cue 的 point-estimate 层失败 73–74%；cue-init local 64.4%；atomic 80.8%，比最强基线 **+16.4 个点**；branch-set oracle 89.6%，剩余 8.8 个点来自 branch recall（8 starts 覆盖 89.6% 的 true branch），不是 cue selection。**自检**：cue shuffle 后 atomic 掉到 28.8%（接近随机），说明确实用 cue、无真值泄漏；K=8 相对 K=4 从 79.4→80.8，oracle 85.2→89.6；500 实例的 95% CI 约 [77.1,84.1]（atomic）vs [60.1,68.5]（cue-init）。**结论**：这是当前受控 3 点遮挡 PnP 上的 SOTA（80.8% vs 64.4%），但不是通用 PnP SOTA；上一轮 99 vs 56.5 仍撤回，旧的 4 点 cue benchmark（99/99.5/99）也不再作为正结果。
 
+### 5.7 3D 非平面（负对照）
+
+8 点非平面 PnP，300 实例，noise 1e−3，带/不带 10% 外点：
+
+| method | 3D no outlier | 3D 10% outlier |
+|---|---|---|
+| local KKT | 0.431 | 0.361 |
+| global-naive | 0.993 | 0.860 |
+| cue-init local | 0.993 | 0.863 |
+| OpenCV/SQPNP | 1.000 | 0.896 |
+| **atomic** | **0.967** | **0.849** |
+
+**读数**：3D 非平面、分支已由 cost 分开时，atomic **并不更好**；cue 甚至可能选错分支。**正结果只在精确 3 点 tie**（5.6）：那里 branch set + cue 才有价值。这一负对照写进论文，避免“atomic 普遍 SOTA”的过度声称。
+
+### 5.8 verified dual（SCS 数值）
+
+12×12 R-form planar：face rank 4；SCS equality dual `H` 的最小特征值约 **−1.6e−7**、`tr(HX)≈3.9e−6`；投影后 `H_psd` PSD、`tr(H_psd X)≈3.9e−6`。这是**数值**证书，不是严格 verified dual（SCS 容差）；严格对偶/面证书仍是 future work。
+
+### 5.9 Lean 与 10 轮 loop
+
+- Lean 4：1-D tie（`Tie.lean`）+ value–face rank（`ValueFace.lean`）machine-checked，`lake build` 8766 jobs；PSD 与一般 SDP/KKT 是 paper proof。
+- 本轮按用户要求跑了 10 轮 self-loop：R1 verified dual、R2 3D 负对照、R3 论文、R4 报告、R5 一页图、R6 Lean、R7 代码、R8 自审、R9 PR、R10 收尾；每轮记录在 `loop/ROUNDS.md`。
+
 ## 6. 对 12 个研究问题的逐条回答
 
 | # | 问题 | 本文结论/证据 | 下一步 |

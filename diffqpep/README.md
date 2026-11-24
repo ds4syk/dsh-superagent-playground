@@ -30,8 +30,17 @@
 | `experiments/exp_fold.py` | 1D fold / ν 发散 |
 | `experiments/exp1d.py` | 1D tie、fixed-hypothesis selection、Laplace vs 混合 |
 | `experiments/exp3d_gradient.py` | KKT vs 同分支 FD |
+| `experiments/exp_verified_dual.py` | SCS dual 投影/face rank（数值证书；非严格 verified dual） |
+| `experiments/exp_3d_benchmark.py` | 3D 非平面/外点负对照（atomic 不更好；正结果只在 3 点 tie） |
 
 旧版 `exp3d.py`/`test_rform.py`/`test_rank.py` 已删除：它们用了 last-row section，结果不可信。
+
+## 结果边界
+
+- 12×12 R-form 在 planar 上 face rank 4；SCS equality dual min eig ≈ −1.6e−7、tr(HX)≈3.9e−6，投影后 PSD；**数值**证书，不是严格 verified dual。
+- 3 点遮挡 PnP：atomic 80.8% vs cue-init 64.4%，oracle 89.6%——正结果只在该精确 tie。
+- 3D 非平面：atomic 0.967/0.849 vs global 0.993/0.860、OpenCV 1.000/0.896——**负对照**，atomic 不更好。
+- Lean 4：1-D tie + value–face rank 引理 machine-checked（8766 jobs）；PSD 与一般 SDP/KKT 是 paper proof。
 
 ## 运行（Slurm，遵守实验室规范）
 

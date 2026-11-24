@@ -34,8 +34,9 @@ ax=fig.add_subplot(gs[0,2])
 methods=['local','global','cue-init\nlocal','atomic','oracle']; vals=[26.4,27.0,64.4,80.8,89.6]
 cols=['#7aa6c2','#9dc3d8','#d08c60','#2b5d8a','#b56576']
 b=ax.bar(methods,vals,color=cols); ax.set_ylim(0,110); ax.set_ylabel('success (%)')
-ax.set_title('(c) 更难：3 点遮挡 PnP；atomic 80.8% vs 64.4%',fontsize=8.6)
+ax.set_title('(c) 3 点 tie 正结果；3D 负对照见文',fontsize=8.6)
 for bb,v in zip(b,vals): ax.text(bb.get_x()+bb.get_width()/2,v+2,'%.1f'%v,ha='center',fontsize=7.4)
+ax.text(0.02,0.06,'3D non-planar: atomic 96.7/84.9 vs global 99.3/86.0, OpenCV 100/89.6\n(exact 3-point tie is the positive case)',transform=ax.transAxes,fontsize=6.0,color='#6b6b6b')
 # d: fold
 ax=fig.add_subplot(gs[1,0])
 d=json.load(open(os.path.join(RES,'fold.json')))
