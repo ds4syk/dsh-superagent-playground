@@ -22,3 +22,10 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
+
+## SuperAgent 文档
+
+- **SuperAgent 功能清单**（2026-11）：六层功能地图与逐层说明：
+  [知识库](kb/superagent-features/00-总览.md) ·
+  [一页速览图](docs/visuals/2026-11-25-superagent-features.png) ·
+  [DOCX](deliverables/SuperAgent_功能清单_2026-11.docx)
