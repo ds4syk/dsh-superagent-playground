@@ -1,0 +1,18 @@
+⚠ [8763/8766] Replayed FaceStratum.Tie
+warning: FaceStratum/Tie.lean:36:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: FaceStratum/Tie.lean:52:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+✔ [8764/8766] Built FaceStratum.ValueFace (3.5s)
+✔ [8765/8766] Built FaceStratum (3.1s)
+Build completed successfully (8766 jobs).

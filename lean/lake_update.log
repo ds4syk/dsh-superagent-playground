@@ -1,0 +1,6 @@
+info: faceStratum: no previous manifest, creating one from scratch
+info: mathlib: cloning https://github.com/leanprover-community/mathlib4
+info: stderr:
+正克隆到 '/mnt/storage1/syk/.superagent-work/diff-geo-estimation-research-944391794a79/lean/.lake/packages/mathlib'...
+fatal: 无法访问 'https://github.com/leanprover-community/mathlib4/'：server certificate verification failed. CAfile: none CRLfile: none
+error: external command 'git' exited with code 128
