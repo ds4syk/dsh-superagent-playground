@@ -68,6 +68,33 @@ loc = run('local'); glob = run('global')
 print('final local th %.3f x %.3f branch_loss %.3f global_loss %.3f' % (loc[-1]['th'], loc[-1]['x'], loc[-1]['branch_loss'], loc[-1]['global_loss']))
 print('final global th %.3f x %.3f branch_loss %.3f global_loss %.3f' % (glob[-1]['th'], glob[-1]['x'], glob[-1]['branch_loss'], glob[-1]['global_loss']))
 
+def run_fixed(mode, steps=200, lr=0.02, th0=0.1, tau=0.05):
+    """Fixed-hypothesis selection model: costs f1=-th, f2=+th; losses L1=4, L2=0.
+    The branch losses are constant in th, so hard/local gradients are zero; only
+    the selection term can cross the tie."""
+    th = th0; hist = []
+    L1, L2 = 4.0, 0.0
+    for k in range(steps):
+        w1 = 1.0 / (1.0 + np.exp(-(2.0 * th) / tau))
+        w2 = 1.0 - w1
+        if mode == 'selection':
+            g = (L1 - L2) * w1 * w2 * (2.0) / tau
+        else:
+            g = 0.0  # hard global and local branch losses are constant in th
+        loss = L1 if (mode == 'local' or th > 0) else L2
+        hist.append(dict(th=float(th), branch_loss=float(loss), global_loss=float(loss),
+                         grad=float(g), w1=float(w1)))
+        th = th - lr * g
+    return hist
+
+fixed_local = run_fixed('local')
+fixed_hard = run_fixed('hard')
+sel = run_fixed('selection')
+print('final fixed_local th %.3f loss %.3f | fixed_hard th %.3f loss %.3f | selection th %.3f loss %.3f' % (
+    fixed_local[-1]['th'], fixed_local[-1]['global_loss'], fixed_hard[-1]['th'],
+    fixed_hard[-1]['global_loss'], sel[-1]['th'], sel[-1]['global_loss']))
+
+
 # 4) uncertainty and risk-sensitive action
 sigma = 0.5; th0 = 0.1
 xg = np.linspace(-2.2, 2.2, 4001)
@@ -104,7 +131,7 @@ print('optimal action mixture %.3f cost %.3f | laplace %.3f cost %.3f | mixture 
 
 out = dict(branch=dict(theta=th_grid.tolist(), x_glob=x_glob.tolist(), gap=gap.tolist(),
                        branch_costs=[[float(z[0][1]), float(z[1][1])] if len(z)==2 else None for z in costs]),
-           fd=fd, local=loc, global_=glob,
+           fd=fd, local=loc, global_=glob, selection=sel, fixed_local=fixed_local, fixed_hard=fixed_hard,
            uncertainty=dict(sigma=sigma, theta=th0, mean=float(mean), var=float(var),
                             laplace_w=[float(z) for z in w], laplace_modes=lap,
                             mixture_mean=float(mu_l), mixture_var=float(var_l),
@@ -128,6 +155,14 @@ plt.plot(steps, [h['global_loss'] for h in loc], label='local branch gradient')
 plt.plot(steps, [h['global_loss'] for h in glob], label='global branch gradient')
 plt.yscale('symlog', linthresh=1e-3); plt.xlabel('step'); plt.ylabel('global-branch loss')
 plt.legend(fontsize=8); plt.tight_layout(); plt.savefig(os.path.join(FIG, 'fig1d_pollution.png'), dpi=200); plt.close()
+
+plt.figure(figsize=(5.2, 3.2))
+steps = np.arange(len(sel))
+plt.plot(steps, [h['global_loss'] for h in sel], color='#2b5d8a', lw=2, label='selection-aware')
+plt.plot(steps, [h['global_loss'] for h in fixed_local], color='#7aa6c2', lw=1.5, label='local branch')
+plt.plot(steps, [h['global_loss'] for h in fixed_hard], color='#d08c60', lw=1.5, label='hard global branch')
+plt.xlabel('step'); plt.ylabel('global loss'); plt.legend(fontsize=7)
+plt.tight_layout(); plt.savefig(os.path.join(FIG, 'fig1d_selection.png'), dpi=200); plt.close()
 
 plt.figure(figsize=(5.2, 3.2))
 plt.plot(xg, p, label='posterior')

@@ -6,8 +6,8 @@
 \newcommand{\tr}{\operatorname{tr}}
 \newcommand{\vect}{\operatorname{vec}}
 \newcommand{\diag}{\operatorname{diag}}
-\newcommand{\SO}{\mathrm{SO}}
-\newcommand{\Loss}{\mathcal{L}}
+\newcommand{\corank}{\operatorname{corank}}
+\newcommand{\Log}{\operatorname{Log}}
 \newcommand{\bx}{\bm{x}}
 \newcommand{\bq}{\bm{q}}
 \newcommand{\bth}{\bm{\theta}}
@@ -17,232 +17,307 @@
 \newcommand{\bH}{\bm{H}}
 \newcommand{\bK}{\bm{K}}
 \newcommand{\bW}{\bm{W}}
-\newcommand{\bM}{\bm{M}}
-\newcommand{\bJ}{\bm{J}}
-\newcommand{\bA}{\bm{A}}
-\newcommand{\bp}{\bm{p}}
-\newcommand{\br}{\bm{r}}
-\newcommand{\bb}{\bm{b}}
-\newcommand{\be}{\bm{e}}
-\newcommand{\bX}{\bm{X}}
-\newcommand{\bQ}{\bm{Q}}
-\newcommand{\bdelta}{\bm{\delta}}
-\newcommand{\bB}{\bm{B}}
 
+\newcommand{\bA}{\bm{A}}
 \newcommand{\bI}{\bm{I}}
-\newcommand{\bz}{\bm{z}}
+\newcommand{\bX}{\bm{X}}
+\newcommand{\bM}{\bm{M}}
+\newcommand{\bN}{\bm{N}}
+\newcommand{\bQ}{\bm{Q}}
 \newcommand{\bg}{\bm{g}}
 \newcommand{\bh}{\bm{h}}
 \newcommand{\bc}{\bm{c}}
 \newcommand{\bG}{\bm{G}}
+\newcommand{\bp}{\bm{p}}
+\newcommand{\br}{\bm{r}}
+\newcommand{\bb}{\bm{b}}
+\newcommand{\be}{\bm{e}}
 \newcommand{\bzero}{\bm{0}}
+\newcommand{\Loss}{\mathcal{L}}
 \newcommand{\ie}{i.e.,}
 \newcommand{\eg}{e.g.,}
 \newcommand{\etal}{et al.}
 
-\title{Certifiably Differentiable Quadratic Pose Estimation:\\ Global Gradients, Gauge, and Branch-Aware Uncertainty}
+\title{Atomic Pose Layers: Selection-Aware Differentiation\\ for Quadratic Pose Estimation}
 \author{\IEEEauthorblockN{Anonymous Authors}\\
 \IEEEauthorblockA{Paper under review}}
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Quadratic pose estimation (QPEP) gives a unified quaternion formulation of PnP, hand--eye calibration, and registration. A differentiable QPEP layer could connect geometric perception to control, but differentiating a local solver returns the gradient of whichever stationary point the solver found. We show that the natural rotation-matrix semidefinite lift of QPEP is \emph{value-tight but not solution-tight}: its rank-one factor is not a rotation, so it cannot certify a pose. The quaternion formulation is quartic and avoids this chirality issue. We build a layer that couples a multi-start global solve with a moment lower bound, returns a computable optimality gap, and differentiates the selected global branch through the KKT system. We characterize the branch-switch points where central differences diverge and derive the Clarke generalized Jacobian of the value function. We further show that the Laplace covariance at the selected branch misses the between-branch variance, and propose a certificate-weighted mixture covariance. On PnP instances, the KKT derivative matches finite differences of the branch to $7\times10^{-6}$ (median). On a controlled rotation model, a local-branch gradient stalls while the global-branch loss remains $4.04$; the global gradient crosses the switch. The mixture covariance changes a risk-sensitive action, reducing the true expected cost from $2.77$ to $0.85$.
+Differentiable geometric layers return a pose and a gradient, but a global pose estimator is a set-valued map. Existing certifiable layers assume a tight, rank-one Shor relaxation. We show that quadratic pose estimation (QPEP) violates this assumption in two distinct ways. The rotation-matrix lift is tight in value and admits rank-one optima for generic PnP, but its optimal face is a sign/chirality double cover: the solver may return an improper antipode, and the ``$R=0$'' section is a recovery artifact, not a tightness failure. The planar PnP cost has an exact flip symmetry, so two poses with identical cost coexist and the optimal face is high-dimensional. The quaternion moment relaxation compounds this: on noiseless data its value is exactly zero by the sum-of-squares structure, so the value gap is vacuous; identifiability is encoded by the face dimension, not the gap. We introduce Face-Certified Differentiation (FCD), instantiated as Atomic Pose Layers: a tightness taxonomy, a face--branch duality, a branch--margin derivative certificate, a switch trilemma, and a three-state API. The layer recovers the face atoms, filters chirality, emits a pose and KKT derivative only for a single physical atom, and on a multi-atomic face applies a certificate-gated Gibbs/softmin whose gradient contains the missing selection term, the mollified jump of the discontinuous hard loss. Experiments on 3D PnP, planar double covers, 1D switch/fold, and KKT-versus-finite-difference validate the contract.
 \end{abstract}
 
 \section{Introduction}
-Quadratic pose estimation (QPEP) unifies a family of geometric problems---perspective-$n$-point (PnP), perspective-$n$-line, hand--eye calibration, point-to-plane registration, and multi-robot relative pose---as a quaternion-constrained polynomial optimization problem \cite{wu2022qpep}. The quaternion parameterization is attractive because it is global and singularity-free, and the QPEP algebraic solver can enumerate all stationary points and select the best one. This makes QPEP a natural geometric layer between perception and control: a network predicts measurements, the layer returns a pose, and a controller consumes the pose. Indeed, recent humanoid whole-body control stacks learn a differentiable world model and back-propagate control objectives through it \cite{liao2026supermimic}; a differentiable geometric estimator would extend that chain to the perception side.
+Quadratic pose estimation (QPEP) unifies PnP, hand--eye calibration, point-to-plane registration, and multi-robot relative pose as a quaternion-constrained polynomial problem \cite{wu2022qpep}. A differentiable QPEP layer is an attractive geometric front end for robot learning: a perception network predicts measurements, the layer returns a pose, and a controller or world model consumes it. The forward global solver, however, does not return a function: it returns one of several stationary branches. Existing differentiable optimization layers either differentiate a local solver \cite{amos2017optnet,pineda2022theseus,chen2020bpnp} or assume that a Shor relaxation is tight and rank-one \cite{holmes2025sdpr}. Neither assumption holds at a global switch.
 
-The obstacle is differentiability. The standard recipe---solve the KKT system of a local solver and apply the implicit function theorem---returns the derivative of the \emph{local} solution selected by the solver. QPEP's global solver instead selects the minimizer among all stationary points \cite{wu2022qpep}. When the local solver lands in a different basin, its gradient is the gradient of a different function: the solver residual can be zero while the downstream loss is far from the global optimum. This is not a numerical nuisance; it is a structural mismatch between the object being differentiated (a local branch) and the object being used (the global optimum).
+The central question of this paper is therefore not how to differentiate a solver, but \emph{what object carries a derivative}. We answer: the \emph{optimal face}, not the optimal value. The distinction has three consequences.
 
-Certifiable optimization offers a principled route. SDPRLayers \cite{holmes2025sdpr} back-propagates through a Shor relaxation of a homogeneous QCQP, using a dual certificate to prove global optimality and the QCQP KKT system to obtain the derivative. SE-Sync \cite{rosen2019sesync}, TEASER \cite{yang2021teaser}, and tightened relaxations \cite{dumbgen2024autotighten} follow the same certify-then-differentiate philosophy. Applying this recipe to QPEP, however, is not a matter of wrapping an existing solver. We identify two QPEP-specific obstructions.
+First, the rotation-matrix lift is routinely misdiagnosed. For generic PnP, the $12\times12$ lift is tight in value \emph{and} admits rank-one optima; its $13\times13$ homogenization adds a sign gauge, and the SDP may return an improper antipode. The frequently reported ``$1.73$ orthogonality error and $\det R=0$'' is not a relaxation error: it is the last row of a rank-two barycenter, which corresponds to $R=0$. A correct section recovers $\pm\bR_{\mathrm{gt}}$ with $\det=\pm1$. The real obstruction is chirality, not tightness.
 
-First, the natural rotation-matrix lift is \emph{value-tight but not solution-tight}. We formulate the QPEP algebraic cost in the rotation matrix $\bR\in\R^{3\times3}$ and translation $\bt$, impose $\bR^\top\bR=\bI$ as quadratic equalities, and solve the Shor relaxation. The relaxation value is essentially zero on noiseless data, but its solution has effective rank two; the best rank-one factor satisfies $\|\bR^\top\bR-\bI\|_F=1.73$ and $\det\bR=0$. The relaxation is mixing the true pose with a nonphysical zero-cost face. It therefore certifies a \emph{value}, not a pose, and cannot serve as a differentiable layer. The quaternion formulation avoids reflections and chirality, but its cost is quartic, not quadratic.
+Second, planar PnP has an exact two-fold flip symmetry: the true pose and its flip have identical algebraic cost. The optimal face is a double cover; a local solver returns one atom, a global solver returns a set, and no section is canonical. The face can be high-dimensional, and the value gap is zero. No gradient can choose between the two poses from the image alone; a prior or task cue is required.
 
-Second, the quaternion problem is quartic and its moment relaxation is also not rank-one. A Lasserre moment relaxation \cite{lasserre2001} gives a valid lower bound, and the gap to a feasible pose is a computable suboptimality certificate, but the moment matrix has effective rank four to ten. The layer can certify the value (up to the gap), not a unique global pose. This is a genuine limitation of the current SDP route, and it motivates a gap-aware layer rather than a rank-one certificate.
+Third, the quaternion moment relaxation is vacuous on noiseless data: because the QPEP cost is a sum of squares, its minimum is zero and the moment lower bound is zero. The gap carries no identifiability information. What does is the dimension of the optimal face and the nullspace of the cost Gram matrix. A ``gap-aware'' layer that reports $\Delta$ and treats $\Delta\le\tau$ as certified is therefore not a certificate: $\Delta$ is neither necessary nor sufficient for a derivative.
 
-This paper takes the gap-aware route and studies what can still be guaranteed. Our contributions are:
+We introduce Face-Certified Differentiation (FCD), a contract for differentiable global geometry. Its contributions are:
 \begin{itemize}
-\item We show the failure of the rotation-matrix Shor lift for QPEP (value-tight, solution-invalid) and explain why the quaternion formulation is necessary.
-\item We build a QPEP layer that couples a multi-start global solve with a moment lower bound, returns a computable optimality gap, and differentiates the selected global branch by the KKT system with a gauge-invariant SO(3) derivative.
-\item We characterize branch switches: the global solution map is piecewise smooth, one-sided derivatives are the branch Jacobians, central differences diverge as $O(1/h)$, and the value function has a Clarke generalized Jacobian given by the convex hull of the active branch derivatives. We also show that a local-branch gradient can be zero while the global loss is maximal.
-\item We show that the Laplace covariance at one branch underestimates the posterior variance near a switch, propose a certificate-weighted mixture covariance, and demonstrate the effect on a risk-sensitive action.
+\item \textbf{Tightness taxonomy and correct diagnosis.} We distinguish value-tight, rank-one-attainable, rank-one-returned, and unique relaxations. We show that the generic R-form is value- and solution-tight but sign/chirality-ambiguous; that the planar PnP face is a high-dimensional double cover; and that the noiseless q-form value gap is vacuous.
+\item \textbf{Face--branch duality.} Under strong duality, exactness, strict complementarity, and face realizability, the range of the SDP solution is the span of the active branch outer products, and $\corank\bH$ equals the number of active branches. SDPRLayers' $\corank\bH=1$ is the unique-branch special case.
+\item \textbf{Branch--margin derivative certificate.} On the stratum $\{k=1,m>0,\nu>0,\mathrm{SOSC},\mathrm{ACQ}\}$, the global solution map is $C^1$ and its derivative is the KKT branch derivative. The certificate does \emph{not} require tightness, rank one, or a small value gap.
+\item \textbf{Switch trilemma and three-state API.} No selection can be exact off the switch, continuous at the switch, and Lipschitz; the price is $\Omega(1/m)$. At a fold, the derivative blows up as $\nu^{-1/2}$. The layer exposes CERTIFIED, AMBIGUOUS, and VALUE-ONLY states; on a multi-atomic face it returns the physical atoms and a certificate-gated Gibbs/softmin gradient, whose selection term is the mollified jump, and never emits a silent single-branch gradient.
 \end{itemize}
 
 \section{Related Work}
-\paragraph{Global pose estimation.} QPEP \cite{wu2022qpep} derives the quaternion cost, enumerates all KKT roots with Gr\"obner bases, and estimates covariance via a semidefinite program. sQPEP \cite{xue2025sqpep} extends the framework to scale. Our work keeps the quaternion formulation and focuses on the solution map and its derivative, not on a faster forward solver.
+\paragraph{Global pose estimation.} QPEP \cite{wu2022qpep} derives the quaternion cost, enumerates all KKT roots with Gr\"obner bases, and estimates covariance via a semidefinite program; sQPEP \cite{xue2025sqpep} extends it to scale. These works provide a forward global solver but no derivative or branch certificate.
 
-\paragraph{Certifiable optimization and differentiable layers.} SDPRLayers \cite{holmes2025sdpr} differentiates a tight Shor relaxation of a homogeneous QCQP; the Cayley-map approach \cite{barfoot2025cayley} turns rotation estimation into a QCQP and extends it to trajectories. OptNet \cite{amos2017optnet} and Theseus \cite{pineda2022theseus} provide differentiable convex optimization layers. Our negative result shows why the generic QCQP route does not transfer directly to QPEP, and our positive result isolates what remains differentiable.
+\paragraph{Certifiable and differentiable layers.} SDPRLayers \cite{holmes2025sdpr} proves a correct Jacobian for a tight Shor QCQP under rank one and $\corank\bH=1$; the non-tight fallback has no guarantee, and multiple global optima are explicitly not handled. The Cayley-map approach \cite{barfoot2025cayley} removes reflections by parameterization and extends to trajectories; C2P \cite{tirado2024c2p} handles cheirality explicitly for relative pose. OptNet \cite{amos2017optnet}, Theseus \cite{pineda2022theseus}, and black-box QP differentiation \cite{magoon2025dqp} differentiate convex or local problems; BPnP \cite{chen2020bpnp} is the local PnP baseline whose failure mode motivates our face analysis. Entropic smoothing, perturbed optimizers \cite{berthet2020perturbed}, and black-box differentiation \cite{vlastelica2020blackbox} are the standard escapes from a non-differentiable argmin; FCD characterizes the price of smoothing as $\Omega(1/m)$ and, unlike a smoother, refuses to return a pose when the face is not a single physical atom.
 
-\paragraph{Uncertainty and control.} QPEP provides a covariance from a semidefinite program \cite{wu2022qpep}. That covariance is a local Laplace approximation at the selected pose; near a global switch the posterior is multimodal. We make the mixture explicit and propagate it to a risk-sensitive action, which is the perception-side analogue of uncertainty-aware control.
+\paragraph{Nonsmooth sensitivity.} The value function of a parametric program is locally Lipschitz and its Clarke subdifferential is the convex hull of active branch gradients; the solution map is not locally Lipschitz at a tie and has no Clarke Jacobian. We use this classical distinction (see \cite{clarke1983,luo1996,jongen2004}) not as a contribution but as the reason a \emph{face} contract is needed.
 
-\section{Quaternion QPEP and Its Global Solution Map}
-\subsection{Quaternion cost and exact translation elimination}
-Let $\bq=(q_0,q_1,q_2,q_3)\in\R^4$ be a unit quaternion and $\bR(\bq)$ its rotation matrix. For correspondence $i$, let $\bp_i\in\R^3$ and $(u_i,v_i)$ be normalized image coordinates. The algebraic PnP residual is
+\section{QPEP and the Optimal Face}
+\subsection{Quaternion cost and exact elimination}
+Let $\bq\in\R^4$ be a unit quaternion and $\bR(\bq)$ its rotation. For correspondence $i$, let $\bp_i\in\R^3$ and $(u_i,v_i)$ be normalized image coordinates. The algebraic residual is
 \begin{equation}
 \br_i(\bq,\bt)=
 \begin{bmatrix}
-u_i\,\be_3^\top(\bR(\bq)\bp_i+\bt)-\be_1^\top(\bR(\bq)\bp_i+\bt)\\
-v_i\,\be_3^\top(\bR(\bq)\bp_i+\bt)-\be_2^\top(\bR(\bq)\bp_i+\bt)
-\end{bmatrix},
+u_i\be_3^\top(\bR\bp_i+\bt)-\be_1^\top(\bR\bp_i+\bt)\\
+v_i\be_3^\top(\bR\bp_i+\bt)-\be_2^\top(\bR\bp_i+\bt)
+\end{bmatrix}.
 \end{equation}
-and $J(\bq,\bt)=\sum_i\|\br_i(\bq,\bt)\|^2$. For fixed $\bq$, $\br_i=\bA_i\bt+\bb_i(\bq)$ with $\bA_i\in\R^{2\times3}$ constant and $\bb_i(\bq)$ quadratic in $\bq$. Hence
+With $J=\sum_i\|\br_i\|^2$, fixed $\bq$ gives $\br_i=\bA_i\bt+\bb_i(\bq)$ with $\bA_i$ constant and $\bb_i$ quadratic. Hence
 \begin{align}
 \bG&=\sum_i\bA_i^\top\bA_i,\quad \bh(\bq)=\sum_i\bA_i^\top\bb_i(\bq),\\
-\bc(\bq)&=\sum_i\|\bb_i(\bq)\|^2,\quad \bt(\bq)=-\bG^{-1}\bh(\bq),\\
-J(\bq)&=\bc(\bq)-\bh(\bq)^\top\bG^{-1}\bh(\bq).
+J(\bq)&=\bc(\bq)-\bh(\bq)^\top\bG^{-1}\bh(\bq),\quad \bt(\bq)=-\bG^{-1}\bh(\bq),
 \end{align}
-The elimination is exact and polynomial: $J$ is a quartic polynomial in $\bq$, with no rational denominator. The constraint is $\bq^\top\bq=1$. The gauge $\bq\sim-\bq$ leaves $\bR(\bq)$ invariant.
-
-\subsection{Value certificates and the failure of the rotation-matrix lift}
-A lower bound on $\min_{\|\bq\|=1}J(\bq)$ can be obtained from a moment relaxation. Let $m(\bq)$ be the vector of monomials of degree at most two and let $\bW$ be the positive semidefinite Gram matrix of the residual coefficient vectors, so that $J(\bq)=m(\bq)^\top\bW m(\bq)$. The order-two relaxation is
-\begin{multline}
-L_{\rm mom}=\min_{\bM\succeq0}\ \langle\bW,\bM\rangle
-\ \text{s.t.}\ \bM_{00}=1,\ \sum_{i=0}^3\bM_{e_i,e_i}=1,\\
-L_{\bq^\top\bq-1}(\bM)=0,
-\label{eq:moment}
-\end{multline}
-where $L_{\bq^\top\bq-1}$ is the localizing matrix of the sphere constraint. For any feasible $\hat\bq$, $U=J(\hat\bq)$ is an upper bound, and
+a quartic in $\bq$ on the unit sphere. The KKT system is
 \begin{equation}
-\Delta=U-L_{\rm mom}\ge0
-\label{eq:gap}
-\end{equation}
-is a computable optimality gap. If $\Delta\le\tau$, $\hat\bq$ is $\tau$-globally optimal. The relaxation is a valid lower bound but its moment matrix is generally not rank one (effective rank four to ten in our experiments), so it certifies the value, not a unique pose.
-
-The rotation-matrix lift is more familiar but fails more severely. With $\bx=[\vect(\bR);\bt;1]\in\R^{13}$, the algebraic cost is quadratic, $J(\bx)=\bx^\top\bQ\bx$, subject to the six orthogonality equalities $\bR^\top\bR=\bI$ and the homogenization $\bx_{13}^2=1$. The Shor relaxation is
-\begin{equation}
-\min_{\bX\succeq0}\ \langle\bQ,\bX\rangle
-\ \text{s.t.}\ \langle\bA_{ab},\bX\rangle=\delta_{ab},\ \bX_{13,13}=1.
-\label{eq:rform}
-\end{equation}
-On noiseless instances the optimal value is $\approx10^{-9}$, but the solution has effective rank two and the extracted rank-one factor is not orthogonal ($\|\bR^\top\bR-\bI\|_F=1.73$, $\det\bR=0$). The relaxed problem contains a nonphysical zero-cost face; the value is tight but the solution is invalid. This is why we work with the quartic quaternion formulation.
-
-\subsection{KKT differentiation and the gauge}
-At a stationary point $(\bq,\lambda)$ of the quaternion problem,
-\begin{equation}
-\bg(\bq)-\lambda\bq=\bzero,\qquad \bq^\top\bq-1=0,\qquad \bg(\bq)=\nabla J(\bq).
+\nabla J(\bq)-\lambda\bq=\bzero,\qquad \bq^\top\bq=1,
 \label{eq:kkt}
 \end{equation}
-Differentiating \eqref{eq:kkt} with respect to a parameter $\bth$ gives
+with KKT matrix
 \begin{equation}
-\bK\begin{bmatrix}d\bq\\ d\lambda\end{bmatrix}
-=-\begin{bmatrix}\partial_{\bth}\bg\\0\end{bmatrix},\quad
 \bK=\begin{bmatrix}\nabla^2J-\lambda\bI&-\bq\\2\bq^\top&0\end{bmatrix}.
-\label{eq:kktdiff}
+\label{eq:K}
 \end{equation}
-Under the second-order sufficient condition on the tangent space, $\bK$ is nonsingular and $d\bq/d\bth$ is the derivative of the selected branch \cite{nocedal2006,dontchev2009}. The raw quaternion derivative flips sign under $\bq\mapsto-\bq$, but the rotation derivative
-\begin{equation}
-d\bR=\sum_{i=0}^3\frac{\partial\bR}{\partial q_i}\,dq_i,
-\qquad \bR^\top d\bR\in\mathfrak{so}(3),
-\label{eq:dR}
-\end{equation}
-is gauge invariant. We differentiate the physical output $(\bR,\bt)$, not the raw quaternion; any gauge-invariant loss then has a unique gradient.
+The gauge $\bq\sim-\bq$ leaves $\bR$ invariant; we differentiate the physical output.
 
-\subsection{Branch switches and local-gradient pollution}
-Assume that near $\bth_0$ the problem has finitely many smooth stationary branches $\bq_j(\bth)$ with strict local second-order conditions, and let $J_j(\bth)=J(\bq_j(\bth);\bth)$. The global solution is $\bq^\star(\bth)=\bq_{j^\star(\bth)}(\bth)$ with $j^\star(\bth)=\arg\min_j J_j(\bth)$.
+\subsection{Tightness taxonomy}
+Let $F(\bth)$ be the optimal face of a lifted SDP, $\bH$ its dual certificate, and $k$ the number of active branches. We distinguish:
+\begin{enumerate}
+\item \textbf{value-tight}: the SDP value equals the primal minimum;
+\item \textbf{rank-one-attainable}: $F$ contains at least one rank-one atom $xx^\top$;
+\item \textbf{rank-one-returned}: the solver returns such an atom;
+\item \textbf{unique}: $F$ is a single rank-one atom.
+\end{enumerate}
+Only the last class supports a single pose and a single derivative. The taxonomy separates three failure modes that the literature often conflates: a loose relaxation, a tight relaxation with a non-unique face, and a solver that returns an interior point of a non-unique face.
 
-\begin{proposition}[Branch switch]
-Suppose at $\bth^\star$ two branches tie, $J_1(\bth^\star)=J_2(\bth^\star)$, and $J_1'(\bth^\star)\neq J_2'(\bth^\star)$. Then the value function $V(\bth)=\min_j J_j(\bth)$ is continuous and piecewise smooth, with one-sided derivatives $J_1'$ and $J_2'$; its Clarke generalized Jacobian \cite{clarke1983} is the interval $[\min(J_1',J_2'),\max(J_1',J_2')]$. If $\bq_1(\bth^\star)\neq\bq_2(\bth^\star)$, the global solution map is discontinuous, and the central difference
+\subsection{R-form: tightness versus chirality}
+With $\bx=[\vect(\bR);\bt]\in\R^{12}$, the algebraic cost is $J(\bx)=\bx^\top\bQ\bx$ and the orthogonality constraints are $\bR^\top\bR=\bI$. The $12\times12$ Shor relaxation is
 \begin{equation}
-\frac{\bq^\star(\bth^\star+h)-\bq^\star(\bth^\star-h)}{2h}
-\label{eq:fd}
+\min_{\bX\succeq0}\langle\bQ,\bX\rangle
+\ \text{s.t.}\ \langle\bA_{ab},\bX\rangle=\delta_{ab}.
+\label{eq:rform}
 \end{equation}
-diverges as $O(1/h)$; the one-sided derivatives are the branch Jacobians $\bq_1'$ and $\bq_2'$.
+For generic PnP, we find $\mathrm{rank}(\bX^\star)=1$, $\|\bR^\top\bR-\bI\|_F\approx10^{-11}$, $\det\bR=\pm1$, and $\bx^\star=\pm\bx_{\mathrm{gt}}$. The cost is homogeneous of degree two in $(\vect\bR,\bt)$, so $\bx$ and $-\bx$ are indistinguishable; the SDP returns the antipode with probability one half, and $\det(-\bR)=-\det(\bR)$. This is a \emph{chirality/sign quotient}, not a tightness failure. The often-used $13\times13$ homogenization adds a coordinate with zero cost row; the SDP then returns a rank-two barycenter whose last row is the homogeneous unit vector. Taking that row yields $\bR=0$, hence the artifact $\|\bR^\top\bR-\bI\|_F=\sqrt3$ and $\det\bR=0$. A correct section (top eigenvector, or the 12-block) recovers the antipodal pose.
+
+\subsection{q-form: the noiseless gap is vacuous}
+Write $J(\bq)=m(\bq)^\top\bW m(\bq)$ with $m$ the degree-$\le2$ monomial vector and $\bW\succeq0$ the Gram matrix of the residual coefficients. On noiseless data $J(\bq_{\mathrm{gt}})=0$, so the moment lower bound is $0$; the value gap is zero for \emph{every} instance and carries no identifiability information. Any optimal moment matrix $\bM$ satisfies $\langle\bW,\bM\rangle=0$ with both PSD, hence $\bW\bM=0$ and $\mathrm{range}(\bM)\subseteq\ker\bW$. Consequently
+\begin{equation}
+\mathrm{rank}(\bM)\le\dim\ker\bW,
+\label{eq:ker}
+\end{equation}
+and the face dimension, not the gap, is the identifiability measure. On generic PnP we observe $\dim\ker\bW=6$--$7$ and numerical $\mathrm{rank}(\bM)=6$--$7$; the solver returns a non-extreme point of the face. The rank is not a certificate of non-existence of a rank-one optimum.
+
+\subsection{Face--branch duality}
+\begin{proposition}[Face--branch duality]
+Assume strong duality and attainability, an exact relaxation, strict complementarity $\ker\bH=\mathrm{range}(\bX)$, isolated global minima, and face realizability. Then
+\begin{multline}
+\mathrm{range}(\bX)=\mathrm{span}\{\bq_j\bq_j^\top: j\in J(\bth)\},\\
+\corank\bH=\dim\mathrm{span}\{\bq_j\}=k
+\label{eq:duality}
+\end{multline}
+generically. In particular $\corank\bH=1$ iff $k=1$; for $k=2$ the face is the segment $\bX=\omega\bq_1\bq_1^\top+(1-\omega)\bq_2\bq_2^\top$ and the same certificate certifies both branches.
 \end{proposition}
+The proof is the standard face argument: $\bH\bX=0$ with both PSD gives $\mathrm{range}(\bX)\subseteq\ker\bH$; strict complementarity gives equality; exactness and feasibility put each $\bq_j\bq_j^\top$ in the face; realizability gives the reverse inclusion; dimension counting gives the corank.
 
-\emph{Proof sketch.} On each branch the envelope theorem gives $V'=J_j'$; at the tie, the Clarke subdifferential of a pointwise minimum is the convex hull of the active gradients \cite{clarke1983}. The solution jump and the $O(1/h)$ central difference follow from the two distinct branch values at $\bth^\star$.
-
-The switch margin $\Delta J=|J_1-J_2|$ is computable from the candidate branches; it predicts when the derivative is unreliable. A local solver that returns $\bq_2$ at a point where $\bq_1$ is global produces the derivative of $\bq_2$, not of $\bq_1$. The error in a downstream loss $\Loss$ is $(\bq_1'-\bq_2')^\top\nabla_{\bq}\Loss$, which does not vanish as the solver residual goes to zero. In the one-dimensional example of Section~\ref{sec:exp}, the local gradient is zero while the global loss is $4.04$: the local solver is at its own optimum, but not at the global one.
-
-\subsection{Branch-aware uncertainty}
-Treat $J(\bq;\bth)$ as a negative log-likelihood at temperature $\sigma^2$. The Laplace covariance at branch $j$ is $\bS_j=\sigma^2(\bH_j^\dagger)$ on the tangent space, with $\bH_j=\nabla^2J(\bq_j)$. The Laplace evidence of branch $j$ is $w_j\propto \exp(-J_j/\sigma^2)\sqrt{\det\bS_j}$, and the mixture is
+\section{Atomic Face Certification and Differentiation}
+\subsection{Branch--margin derivative certificate}
+Define the tie margin and fold margin
 \begin{equation}
-\bS_{\rm mix}=\sum_j w_j\left(\bS_j+\bdelta_j\bdelta_j^\top\right),
-\quad \bdelta_j=\bq_j-\sum_k w_k\bq_k.
-\label{eq:mix}
+m(\bth)=\min_{j\notin J(\bth)}(J_j-J_{j^\star}),\qquad
+\nu(\bth)=\frac{\sigma_{\min}(\bK)}{\sigma_{\max}(\bK)}.
+\label{eq:margins}
 \end{equation}
-Near a tie, $\bS_{\rm mix}$ includes the between-branch term $\bdelta_j\bdelta_j^\top$, which the single-branch Laplace covariance omits. A risk-sensitive controller that uses $\bS_{\rm mix}$ inflates its safety margin exactly when the geometry is ambiguous.
+\begin{proposition}[Branch--margin derivative]
+On the open stratum
+$\mathcal{U}=\{k=1,\ m>0,\ \nu>0,\ \mathrm{SOSC},\ \mathrm{ACQ}\}$,
+the global solution map is $C^1$ and equals the selected branch, with
+\begin{equation}
+\frac{d\bq}{d\bth}=-\bK^{-1}\bN,
+\label{eq:ift}
+\end{equation}
+where $\bN$ is the derivative of the KKT residual. The statement uses no value gap, rank, or tightness assumption.
+\end{proposition}
+Thus a value certificate is neither necessary nor sufficient for a derivative certificate. The correct gate is the pair $(m,\nu)$ plus the face multiplicity $k$.
 
-\paragraph{Inequality constraints.} The QPEP covariance problem adds $\bS\succeq0$ and $\bq^\top\bS\bq\le\alpha$. Such constraints can be handled by an active-set KKT system: on the active manifold the derivative is again $-K^{-1}N$, with $K$ the KKT matrix of the constrained problem. At a weakly active constraint or a PSD boundary, $K$ becomes singular and the derivative is one-sided; a log-barrier $-\mu\log\det\bS$ would give a smooth path whose derivative converges as $\mu\to0$. The squared-slack form $g+s^2=0$ is also smooth, but it introduces a sign symmetry and a vanishing slack derivative at the boundary, so we prefer the barrier/active-set formulation. A full numerical validation of the inequality-constrained covariance layer is left to future work.
+\subsection{Switch trilemma and folds}
+\begin{proposition}[Switch trilemma]
+At a simple tie $\bth^\star$ with $\bq_1(\bth^\star)\neq\bq_2(\bth^\star)$, no selection can be (a) exact for $\bth\neq\bth^\star$, (b) continuous at $\bth^\star$, and (c) Lipschitz. Any selection satisfying (a) and (b) has
+\begin{equation}
+\sup_{0<|\bth-\bth^\star|<\epsilon}\left\|\frac{d\hat\bq}{d\bth}\right\|
+\ge \frac{\|\bq_1-\bq_2\|}{2\epsilon}\to\infty.
+\label{eq:trilemma}
+\end{equation}
+The value function has the Clarke subdifferential $[\min(J_1',J_2'),\max(J_1',J_2')]$; the solution map has no Clarke Jacobian. At a fold $\nu\to0$, the branch derivative diverges as $\nu^{-1/2}$.
+\end{proposition}
+Smoothing or entropic selection therefore pays $\Omega(1/m)$; unrolling differentiates a different map. This is a no-free-lunch statement for continuous differentiable global layers, not an implementation detail.
 
-\section{Experiments}\label{sec:exp}
-\paragraph{Setup.} We use synthetic PnP instances with $n=8$ points, normalized image coordinates, and noise levels $\{0,10^{-3},10^{-2}\}$, and a one-dimensional rotation model that isolates the branch-switch mechanism. The QPEP cost is built from \eqref{eq:kkt}; the global candidate is the best of 30 local solves (SLSQP on the sphere); the lower bound is \eqref{eq:moment} solved with SCS. All experiments run on CPU.
+\subsection{Three-state API}
+Given a lifted SDP and a numerical dual $\bH$:
+\begin{enumerate}
+\item \textbf{VALUE-ONLY}: if $\bH$ is not PSD to tolerance or $\bH\bX\not\approx0$, return only the bound; never a pose or derivative.
+\item \textbf{CERTIFIED}: if $\mathrm{rank}(\bX)=1$, the atom is physical (rotation, positive depth), and $m>0,\nu>0$, return the pose, the KKT derivative \eqref{eq:ift}, and $(m,\nu)$.
+\item \textbf{AMBIGUOUS}: if the face has multiple physical atoms, return the branch/atom set, the Jacobian set, the switch margin, and a branch-mixture covariance; do not collapse to one pose.
+\end{enumerate}
+The API is the main practical consequence: a geometric layer can say ``I do not know which branch'' instead of silently returning a wrong gradient.
 
-\paragraph{Value certificates.} Table~\ref{tab:cert} summarizes the certificate behavior. The rotation-matrix SDP \eqref{eq:rform} returns effective rank two, orthogonality residual $1.73$, and determinant zero on every instance; its objective is near zero but the recovered factor is not a pose. The quaternion moment bound \eqref{eq:moment} is tight on noiseless data (gap $\sim10^{-10}$), and the gap grows with noise (order three reduces it by roughly $3$--$7\times$). The moment matrix has effective rank four to ten, so it does not certify a unique pose. The layer reports $\Delta$ and treats $\Delta\le\tau$ as certified.
+\paragraph{Atomic selection-aware differentiation (ASAD).} For an ambiguous face, one may expose a temperature-annealed mixture of branch derivatives, $L_\tau=\sum_jw_jL_j$ with $w_j\propto e^{-J_j/\tau}$. Its gradient has the branch term and the selection term
+\begin{equation}
+\nabla L_\tau=\sum_jw_j\nabla L_j-\frac{1}{\tau}\sum_jw_j(L_j-\bar L)\nabla J_j.
+\label{eq:selection}
+\end{equation}
+The selection term is the mollified jump of the discontinuous hard loss; it is a decision under a prior or task cue, not a certificate. Pure Clarke (uniform weights, no selection term) is legal but not unique; the selection term is what can train a cue-conditioned measurement map. By Proposition~3 it pays $\Omega(1/m)$. On a fixed-hypothesis model whose branch losses are constant, so the local and hard-global branch gradients are identically zero, a 200-step descent leaves the hard/local loss at $4.00$; the selection-aware descent reaches $0.00$ (Table~\ref{tab:select}). This isolates the selection term from the branch derivative.
 
 \begin{table}[t]
 \centering
-\caption{Certificate behavior on PnP ($n=8$; median over 3 seeds). The rotation-matrix SDP is value-tight but not solution-tight; the quaternion moment bound is valid and gap-aware.}
-\label{tab:cert}
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabular}{lcccc}
+\caption{Fixed-hypothesis selection model: branch losses are constant, so local/hard branch gradients vanish; only the selection term moves $\theta$.}
+\label{tab:select}
+\begin{tabular}{lcc}
 \toprule
-noise & \multicolumn{2}{c}{rotation-matrix SDP} & \multicolumn{2}{c}{quaternion moment gap} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
- & eff. rank & orth. err & order 2 & order 3 \\
+mode & final global loss & final $\theta$ \\
 \midrule
-$0$ & 2 & 1.73 & $4\times10^{-11}$ & $4\times10^{-9}$ \\
-$10^{-3}$ & 2 & 1.73 & $7\times10^{-6}$ & $2\times10^{-6}$ \\
-$10^{-2}$ & 2 & 1.73 & $1.2\times10^{-3}$ & $1.8\times10^{-4}$ \\
+local branch & 4.00 & 0.100 \\
+hard global branch & 4.00 & 0.100 \\
+selection-aware & 0.00 & $-0.364$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Gradient correctness.} Table~\ref{tab:grad} compares \eqref{eq:kktdiff} with a central difference of the selected branch (the local solve is initialized at the branch point, so both sides differentiate the same branch). The median relative error is $3.9\times10^{-5}$ at $h=10^{-4}$ and $7.4\times10^{-6}$ at $h=10^{-5}$; at $h=10^{-6}$ roundoff dominates for ill-conditioned instances (KKT condition number up to $1.3\times10^4$). This validates the KKT derivative and also shows why a finite-difference layer is not a substitute: the usable step is problem dependent.
+\paragraph{Covariance.} On the ambiguous face we return a mixture on $\mathrm{SO}(3)$, not in raw quaternion coordinates:
+\begin{equation}
+\bS_{\rm mix}=\sum_jw_j\left(\bS_j+\Log(\bar\bR^\top\bR_j)\Log(\bar\bR^\top\bR_j)^\top\right),
+\label{eq:cov}
+\end{equation}
+with $\bar\bR$ the weighted Fr\'echet mean, $w_j$ Laplace-evidence weights, and an abstention mass when the face is not certified. Equation~\eqref{eq:cov} removes the spurious variance that a raw $\bq/\bR$ mixture would create for the gauge pair.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig_fcd.png}
+\caption{Atomic Pose Layers. The lifted SDP exposes an optimal face; a dual certificate gives its rank/corank and margins. Only a single physical atom is CERTIFIED; a multi-atomic face is AMBIGUOUS; a non-physical face is VALUE-ONLY.}
+\label{fig:fcd}
+\end{figure*}
+
+\section{Experiments}
+\paragraph{Setup.} We use synthetic PnP with $n=8$ points, noise $\{0,10^{-3},10^{-2}\}$, and a planar four-point target with an exact flip. The forward candidates are local SLSQP solves from deterministic and random starts; the SDP is solved with SCS. The KKT derivatives are differentiated with respect to a signed measurement perturbation. All experiments run on CPU; code and JSON are in the supplement.
+
+\paragraph{R-form and q-form diagnostics.} Table~\ref{tab:tax} and Table~\ref{tab:diag} summarize the corrected picture. For generic PnP the $12\times12$ lift returns a rank-one, orthogonal factor with $\det=\pm1$ and $\bx^\star=\pm\bx_{\mathrm{gt}}$; the $13\times13$ homogenization's last-row section is the $R=0$ artifact. On noiseless q-form data the value gap is exactly zero (vacuous); $\dim\ker\bW=6$--$7$ and the returned moment matrix has numerical rank $6$--$7$, so the face, not the gap, is the diagnostic.
+
+\begin{table}[t]
+\centering
+\caption{Tightness taxonomy on QPEP PnP. Only the last class supports a single pose and derivative.}
+\label{tab:tax}
+\setlength{\tabcolsep}{2.6pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+setting & value-tight & rank-1-attainable & rank-1-returned & unique & face \\
+\midrule
+generic R-form $12\times12$ & yes & yes & yes & no (sign) & 2 atoms \\
+generic R-form $13\times13$ & yes & yes & no (last row) & no & sign gauge \\
+generic q-form & yes (0) & yes & no (interior) & no (gauge) & rank 6--7 \\
+planar PnP & yes (0) & yes & no & no & high-dim, 2 poses \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_face.png}
+\caption{(a) The generic R-form $12\times12$ lift returns a rank-one orthogonal factor with $\det=\pm1$ and $\bx^\star=\pm\bx_{\mathrm{gt}}$; the $R=0$ artifact is a last-row section of the $13\times13$ homogenization. (b) The noiseless q-form gap is vacuous; the face dimension is the diagnostic.}
+\label{fig:face}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Corrected diagnostics (median over 3 seeds). The R-form is solution-tight for generic PnP; the q-form gap is vacuous on noiseless data.}
+\label{tab:diag}
+\setlength{\tabcolsep}{2.6pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+noise & \multicolumn{3}{c}{R-form $12\times12$} & \multicolumn{3}{c}{q-form} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+ & rank & $|\det|$ & $\|\bR^\top\bR-\bI\|_F$ & $\dim\ker\bW$ & rank $\bM$ & gap \\
+\midrule
+$0$ & 1 & 1 & $10^{-11}$ & 7 & 7 & $0$ (vacuous) \\
+$10^{-3}$ & 1 & 1 & $10^{-11}$ & 6 & 7 & numerical \\
+$10^{-2}$ & 1 & 1 & $10^{-11}$ & 6 & 6 & numerical \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Planar double cover.} A four-point planar target has two exact poses: the true branch and its flip, with costs $1.0\times10^{-15}$ and $1.0\times10^{-15}$ and pose errors $0$ and $\pi$. The local identity solve returns the true branch; the global solver returns a set. The planar $12\times12$ face has numerical rank $4$ and the q-form nullspace has dimension $10$; the value gap is zero. The API returns AMBIGUOUS, not a pose or a derivative. Figure~\ref{fig:cover} shows the two equal-cost branches.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_double_cover.png}
+\caption{Planar PnP double cover: the two branches have identical algebraic cost but poses differing by $\pi$. The face is multi-atomic; no image-only gradient can choose.}
+\label{fig:cover}
+\end{figure}
+
+\paragraph{Switch and fold.} On the 1D quartic $J(x;\theta)=(x^2-1)^2+\theta x$, the branches tie at $\theta=0$; the central difference across the tie grows as $1/h$, while the one-sided branch derivative is $1/8$ (Figure~\ref{fig:switch}(b)). At the fold $|\theta|=8/(3\sqrt3)=1.5396$, the stable branch disappears and the analytic derivative $|dx^\star/d\theta|$ grows as the distance to the fold decreases; the FD/analytic ratio follows the $\nu^{-1/2}$ prediction. The tie and fold are the two failure modes of the $(m,\nu)$ certificate.
+
+\paragraph{KKT versus finite difference.} Table~\ref{tab:kkt} compares \eqref{eq:ift} with a central difference of the same tracked branch. The median relative error is $7.4\times10^{-6}$ at $h=10^{-5}$; at $h=10^{-6}$ roundoff dominates for ill-conditioned instances (median condition number $623$). This validates the derivative on the certified stratum; it does not validate a branch that the solver did not select.
 
 \begin{table}[t]
 \centering
 \caption{Relative error of the KKT derivative against a central difference of the same branch (median over 6 PnP instances).}
-\label{tab:grad}
-\resizebox{\columnwidth}{!}{%
+\label{tab:kkt}
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lccc}
 \toprule
-$h$ & median $\|d\bR-d\bR_{\rm fd}\|/\|d\bR_{\rm fd}\|$ & max & median cond$(\bK)$ \\
+$h$ & median & max & median cond$(\bK)$ \\
 \midrule
 $10^{-3}$ & $3.9\times10^{-4}$ & $5.6\times10^{-4}$ & 623 \\
 $10^{-4}$ & $3.9\times10^{-5}$ & $5.6\times10^{-5}$ & 623 \\
 $10^{-5}$ & $7.4\times10^{-6}$ & $3.5\times10^{-4}$ & 623 \\
 $10^{-6}$ & $8.8\times10^{-4}$ & $3.2\times10^{-2}$ & 623 \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table}
 
-\paragraph{Branch switch and gradient pollution.} The controlled model is $J(x;\theta)=(x^2-1)^2+\theta x$ with $x\in\R$ and $x^\top x=1$ replaced by the two isolated minima at $x\approx\pm1$. At $\theta=0$ the branches tie; the branch values are $\pm\theta$ and the value is $-|\theta|$, so the global solution jumps from $+1$ to $-1$. Figure~\ref{fig:switch}(a) shows the switch; Figure~\ref{fig:switch}(b) shows that the central difference across the tie grows as $1/h$, while the one-sided branch derivative is $1/8$. This is the finite-difference signature of Proposition~1.
+\paragraph{Uncertainty.} On a synthetic two-mode posterior the single-branch Laplace variance is $0.030$ while the posterior variance is $0.805$ (a $27\times$ underestimate); the exact mixture variance is $0.898$. A one-step risk-sensitive action under the mixture costs $0.85$, while the single-mode action costs $2.77$ under the true mixture. We report this as a synthetic illustration of \eqref{eq:cov}, not as a 3D robot result.
 
-For the pollution experiment, the target is $x_{\rm target}=+1$ and the loss is $(x-1)^2$. We start at $\theta=0.1$; the global branch is $x\approx-1$ (loss $4.04$), while the local solver initialized at $+1$ stays at $x\approx+1$ (branch loss $0$). The local-branch gradient is $2(x-1)x'$ with $x'\approx-1/8$, which is small; the global-branch gradient is large and negative. After 200 gradient steps (Figure~\ref{fig:pol}(a)), the local gradient leaves the global-branch loss at $4.04$, while the global gradient crosses the switch and reaches $0$. The local solver is optimal for its own branch; that is precisely why its gradient cannot detect the global error. On planar PnP, an identity-initialized local solve returns a $180^\circ$-wrong pose on 4 of 10 seeds, while the multi-start global candidate is within $0.04$ rad of the ground truth, so the phenomenon is present in 3D as well.
-
-\paragraph{Uncertainty and risk-sensitive action.} At $\theta=0.1$ and $\sigma=0.5$, the posterior over the two modes has variance $0.805$. The Laplace variance at the global mode is $0.030$, a $27\times$ underestimate; the Laplace mixture (using the two modes) gives $0.898$, close to the posterior. For a one-step control with a quadratic cost inside $|z|\le1.5$ and a penalty outside, the mixture-risk action is $0.18$ with expected cost $0.85$; the single-mode Laplace action is $1.01$, whose cost under its own model is $0.03$ but whose \emph{true} mixture cost is $2.77$. The single-mode controller is overconfident exactly at the ambiguity.
-
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=0.86\textwidth]{figures/fig_method.png}
-\caption{The gap-aware differentiable QPEP layer. A global candidate is obtained by multi-start/algebraic search; a moment relaxation supplies a lower bound and a certificate gap; the selected branch is differentiated by the KKT system; the same candidates supply the branch-aware covariance and switch margin.}
-\label{fig:method}
-\end{figure*}
-
-\begin{figure}[!t]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/fig_switch.png}
-\caption{(a) Global QPEP solution switches at the tie $\theta=0$. (b) Central difference across the tie diverges as $1/h$; the one-sided branch derivative is $1/8$.}
+\caption{(a) Global solution switches at the tie. (b) Central difference across the tie diverges as $1/h$; the one-sided branch derivative is $1/8$.}
 \label{fig:switch}
 \end{figure}
 
-\begin{figure}[!t]
+\begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{figures/fig_pollution_control.png}
-\caption{(a) Local-branch gradient leaves the global-branch loss at $4.04$; the global-branch gradient crosses the switch and reaches zero. (b) Risk-sensitive action under the mixture covariance vs the single-mode Laplace covariance.}
-\label{fig:pol}
+\includegraphics[width=\columnwidth]{figures/fig_fold.png}
+\caption{At the fold $|\theta|=1.5396$ the disappearing branch's derivative diverges; this is the $\nu^{-1/2}$ failure mode, distinct from the $1/m$ tie.}
+\label{fig:fold}
 \end{figure}
 
 \section{Discussion and Limitations}
-\paragraph{Complexity and real-time.} The backward pass is one $5\times5$ linear solve per sample, so the derivative is cheap. The forward cost is dominated by the global candidates and the moment bound: in our CPU prototype, 30 SLSQP solves take tens of milliseconds per instance and the order-two moment bound takes 0.05--1 s. Warm-starting, a GPU SDP, or the algebraic QPEP solver would be needed for high-frequency control; the back-propagation is not the bottleneck.
-
-The experiments support three claims: the KKT derivative is correct for a \emph{given} branch; the global branch can be selected and a value gap can be reported; and the branch-aware covariance is materially different from the local Laplace covariance. They also expose three limitations. First, the quaternion moment relaxation is not solution-tight; the layer certifies a value, not a unique pose. A future layer could combine the moment bound with a certified branch-and-bound or an exhaustive Gr\"obner root set to close the gap. Second, the global candidate is a multi-start heuristic in this paper; a production layer should use the QPEP algebraic solver or a branch-and-bound with interval bounds. Third, the controlled one-dimensional experiment is not a robot deployment. The next step is a six-DoF manipulation or humanoid root-pose experiment in which the geometric layer feeds a differentiable world model and a policy, following the SuperMimic pipeline \cite{liao2026supermimic}. The algebraic QPEP cost also has planar/chirality ambiguities; the layer differentiates the global optimum of the \emph{given} cost, and a misspecified cost can still produce a globally optimal but physically wrong pose. This is a modeling issue, not a gradient issue, and it deserves a separate study.
+FCD changes the contract, not the solver. A geometric layer should report its tightness class, face, and margins; it should emit a pose and a derivative only when the face is a single physical atom. The experiments support four claims: the generic R-form is solution-tight but sign/chirality-ambiguous; the planar face is a high-dimensional double cover; the noiseless q-form gap is vacuous; and the KKT derivative is correct on the certified stratum but fails at ties/folds. They do not provide a 3D end-to-end control result, an inequality-constrained covariance layer, or a verified dual. The forward is a multi-start heuristic, not the QPEP Gr\"obner solver; the face rank/corank is numerical; and the covariance experiment is a 1D synthetic illustration. These are the natural next steps: verified duals and face extraction, a Gr\"obner branch set, SO(3) face covariance on 3D PnP, and a cue-conditioned end-to-end pose-servo task.
 
 \section{Conclusion}
-We studied what it means to differentiate a QPEP layer whose forward solve is global. The rotation-matrix Shor lift is value-tight but not solution-tight, so the generic certifiable-layer recipe does not transfer. The quaternion problem is quartic; its moment relaxation gives a gap-aware value certificate, and the KKT system gives the derivative of the selected branch, with a gauge-invariant SO(3) output. Branch switches explain the failure of local-solver gradients: the derivative is finite on each branch, but the global solution map jumps, and a local gradient can be zero while the global loss is maximal. The same candidates provide a branch-aware covariance that changes a risk-sensitive action. We hope this clarifies which guarantees a differentiable geometric estimator can offer, and which must be replaced by a gap-aware contract.
+Differentiability of a global geometric estimator is a property of its optimal face, not its optimal value. QPEP's R-form is tight but chirality-ambiguous; its planar cost has an exact double cover; its quaternion moment gap is vacuous. Face-Certified Differentiation exposes the face, certifies a derivative only on the unique physical stratum, and refuses a silent gradient when the face is ambiguous. We hope this contract replaces the rank-one certificate as the interface between certifiable geometry and robot learning.
 
-\clearpage
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 \end{document}
