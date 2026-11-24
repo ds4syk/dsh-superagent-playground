@@ -23,11 +23,11 @@ open scoped Topology
 def J (x θ : ℝ) : ℝ := (x ^ 2 - 1) ^ 2 + θ * x
 
 lemma J_neg_one (θ : ℝ) : J (-1) θ = -θ := by
-  simp [J]
+  unfold J
   ring
 
 lemma J_one (θ : ℝ) : J 1 θ = θ := by
-  simp [J]
+  unfold J
   ring
 
 /-- For `θ > 0` every global minimizer is negative. -/
@@ -66,7 +66,8 @@ lemma minimizer_pos {θ x : ℝ} (hθ : θ < 0) (hx : ∀ y, J x θ ≤ J y θ) 
 lemma eventually_pos_of_continuousAt {s : ℝ → ℝ} (h : ContinuousAt s 0) (h0 : s 0 = 1) :
     ∀ᶠ θ in 𝓝 (0 : ℝ), 0 < s θ := by
   have hdist : ∀ᶠ θ in 𝓝 (0 : ℝ), dist (s θ) 1 < (1 / 2 : ℝ) := by
-    simpa [h0] using (Metric.continuousAt_iff.mp h) (1 / 2) (by norm_num)
+    rw [Metric.eventually_nhds_iff]
+    simpa [Real.dist_eq, h0] using (Metric.continuousAt_iff.mp h) (1 / 2) (by norm_num)
   filter_upwards [hdist] with θ hθ
   rw [Real.dist_eq] at hθ
   have h1 : -(1 / 2 : ℝ) < s θ - 1 := (abs_lt.mp hθ).1
@@ -76,7 +77,8 @@ lemma eventually_pos_of_continuousAt {s : ℝ → ℝ} (h : ContinuousAt s 0) (h
 lemma eventually_neg_of_continuousAt {s : ℝ → ℝ} (h : ContinuousAt s 0) (h0 : s 0 = -1) :
     ∀ᶠ θ in 𝓝 (0 : ℝ), s θ < 0 := by
   have hdist : ∀ᶠ θ in 𝓝 (0 : ℝ), dist (s θ) (-1) < (1 / 2 : ℝ) := by
-    simpa [h0] using (Metric.continuousAt_iff.mp h) (1 / 2) (by norm_num)
+    rw [Metric.eventually_nhds_iff]
+    simpa [Real.dist_eq, h0] using (Metric.continuousAt_iff.mp h) (1 / 2) (by norm_num)
   filter_upwards [hdist] with θ hθ
   rw [Real.dist_eq] at hθ
   have h1 : s θ - (-1) < (1 / 2 : ℝ) := (abs_lt.mp hθ).2

@@ -199,7 +199,7 @@ The value function has the Clarke subdifferential $[\min(J_1',J_2'),\max(J_1',J_
 \end{theorem}
 Smoothing or entropic selection therefore pays $\Omega(1/m)$; unrolling differentiates a different map. This is a no-free-lunch statement for continuous differentiable global layers, not an implementation detail.
 
-\paragraph{Machine-checked 1-D core.} The 1-D tie lower bound (no continuous selection of the global minimizer of $(x^2-1)^2+\theta x$ at $\theta=0$) is formalized in Lean~4 with Mathlib in \texttt{lean/FaceStratum/Tie.lean}. The general face--stratum theorem is proved in this paper; a full Lean formalization of the SDP/KKT/IFT part is future work.
+\paragraph{Machine-checked 1-D core.} The 1-D tie lower bound (no continuous selection of the global minimizer of $(x^2-1)^2+\theta x$ at $\theta=0$) is machine-checked in Lean~4 with Mathlib (v4.34.0-rc2) in \texttt{lean/FaceStratum/Tie.lean}; \texttt{lake build} completed successfully (8765 jobs). The general face--stratum theorem is proved in this paper; a full Lean formalization of the SDP/KKT/IFT part is future work.
 
 \subsection{Three-state API}
 Given a lifted SDP and a numerical dual $\bH$:

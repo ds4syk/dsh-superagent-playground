@@ -11,7 +11,7 @@ plt.rcParams.update({'font.size':9.5,'axes.titlesize':10.5,'axes.labelsize':9.5,
 fig=plt.figure(figsize=(12.8,7.0))
 gs=fig.add_gridspec(2,3,height_ratios=[1.0,0.9],hspace=0.45,wspace=0.28)
 fig.suptitle('原子位姿层：可微性属于最优面，不属于最优值',fontsize=16.5,y=0.99,weight='bold')
-fig.text(0.5,0.90,'定理先行：可微性属于最优面；3 点遮挡 PnP 上 atomic 80.8% vs 64.4%；Lean 4 形式化 1-D tie。',ha='center',fontsize=9.5)
+fig.text(0.5,0.90,'定理先行：可微性属于最优面；3 点遮挡 PnP 上 atomic 80.8% vs 64.4%；Lean 4 机器检查 1-D tie。',ha='center',fontsize=9.5)
 # a: core theorem text
 ax=fig.add_subplot(gs[0,0]); ax.axis('off')
 ax.add_patch(FancyBboxPatch((0.01,0.03),0.98,0.94,boxstyle='round,pad=0.02,rounding_size=0.04',fc='#f7fafd',ec='#2b5d8a',lw=1,transform=ax.transAxes))
@@ -22,7 +22,7 @@ ax.text(0.07,0.57,r'$dq/d\theta=-K^{-1}N$；不需 tightness/gap',transform=ax.t
 ax.text(0.05,0.40,'多原子（k≥2）：',transform=ax.transAxes,fontsize=8.6,weight='bold')
 ax.text(0.07,0.27,'无 exact+continuous+Lipschitz',transform=ax.transAxes,fontsize=8.0)
 ax.text(0.07,0.14,r'tie $\Omega(1/m)$；fold $\nu^{-1/2}$',transform=ax.transAxes,fontsize=8.0)
-ax.text(0.05,0.02,'Lean 4：1-D tie 形式化（build 待完成）',transform=ax.transAxes,fontsize=7.6,color='#2b5d8a')
+ax.text(0.05,0.02,'Lean 4：1-D tie 已机器检查（8765 jobs）',transform=ax.transAxes,fontsize=7.6,color='#2b5d8a')
 # b: planar double cover
 ax=fig.add_subplot(gs[0,1])
 ax.bar(['真值','flip','local'], [1e-15,1e-15,3.5e-17], color=['#2b5d8a','#7aa6c2','#d08c60'])

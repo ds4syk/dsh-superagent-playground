@@ -7,6 +7,9 @@ selection of the global minimizer can take the value `±1` at `θ = 0`.
 The general face--stratum theorem (SDP/KKT/IFT/SOSC) is proved in the paper;
 a full Lean formalization of the SDP/KKT part is future work.
 
+**Verified**: `lake build` completed successfully (8765 jobs) with
+Mathlib v4.34.0-rc2; see `lake_build3.log`.
+
 ## Build
 
 ```bash
