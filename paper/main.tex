@@ -45,7 +45,7 @@
 \maketitle
 
 \begin{abstract}
-Differentiable geometric layers return a pose and a gradient, but a global pose estimator is a set-valued map. Existing certifiable layers assume a tight, rank-one Shor relaxation. We show that quadratic pose estimation (QPEP) violates this assumption in two distinct ways. The rotation-matrix lift is tight in value and admits rank-one optima for generic PnP, but its optimal face is a sign/chirality double cover: the solver may return an improper antipode, and the ``$R=0$'' section is a recovery artifact, not a tightness failure. The planar PnP cost has an exact flip symmetry, so two poses with identical cost coexist and the optimal face is high-dimensional. The quaternion moment relaxation compounds this: on noiseless data its value is exactly zero by the sum-of-squares structure, so the value gap is vacuous; identifiability is encoded by the face dimension, not the gap. We introduce Face-Certified Differentiation (FCD), instantiated as Atomic Pose Layers: a tightness taxonomy, a face--branch duality, a branch--margin derivative certificate, a switch trilemma, and a three-state API. The layer recovers the face atoms, filters chirality, emits a pose and KKT derivative only for a single physical atom, and on a multi-atomic face applies a certificate-gated Gibbs/softmin whose gradient contains the missing selection term, the mollified jump of the discontinuous hard loss. Experiments on 3D PnP, planar double covers, 1D switch/fold, and KKT-versus-finite-difference validate the contract.
+Differentiable geometric layers return a pose and a gradient, but a global pose estimator is a set-valued map. Existing certifiable layers assume a tight, rank-one Shor relaxation. We show that quadratic pose estimation (QPEP) violates this assumption in two distinct ways. The rotation-matrix lift is tight in value and admits rank-one optima for generic PnP, but its optimal face is a sign/chirality double cover: the solver may return an improper antipode, and the ``$R=0$'' section is a recovery artifact, not a tightness failure. The planar PnP cost has an exact flip symmetry, so two poses with identical cost coexist and the optimal face is high-dimensional. The quaternion moment relaxation compounds this: on noiseless data its value is exactly zero by the sum-of-squares structure, so the value gap is vacuous; identifiability is encoded by the face dimension, not the gap. We introduce Face-Certified Differentiation (FCD), instantiated as Atomic Pose Layers: a tightness taxonomy, a face--branch duality, a branch--margin derivative certificate, a switch trilemma, and a three-state API. The layer recovers the face atoms, filters chirality, emits a pose and KKT derivative only for a single physical atom, and on a multi-atomic face applies a certificate-gated Gibbs/softmin whose gradient contains the missing selection term, the mollified jump of the discontinuous hard loss. Experiments on 3D PnP, planar double covers, 1D switch/fold, and KKT-versus-finite-difference validate the contract. On a cue-conditioned planar PnP benchmark, atomic selection achieves $99.0\%$ branch success versus $56.5\%$ for the strongest cue-initialized point-estimate baseline.
 \end{abstract}
 
 \section{Introduction}
@@ -186,22 +186,7 @@ The API is the main practical consequence: a geometric layer can say ``I do not 
 \nabla L_\tau=\sum_jw_j\nabla L_j-\frac{1}{\tau}\sum_jw_j(L_j-\bar L)\nabla J_j.
 \label{eq:selection}
 \end{equation}
-The selection term is the mollified jump of the discontinuous hard loss; it is a decision under a prior or task cue, not a certificate. Pure Clarke (uniform weights, no selection term) is legal but not unique; the selection term is what can train a cue-conditioned measurement map. By Proposition~3 it pays $\Omega(1/m)$. On a fixed-hypothesis model whose branch losses are constant, so the local and hard-global branch gradients are identically zero, a 200-step descent leaves the hard/local loss at $4.00$; the selection-aware descent reaches $0.00$ (Table~\ref{tab:select}). This isolates the selection term from the branch derivative.
-
-\begin{table}[t]
-\centering
-\caption{Fixed-hypothesis selection model: branch losses are constant, so local/hard branch gradients vanish; only the selection term moves $\theta$.}
-\label{tab:select}
-\begin{tabular}{lcc}
-\toprule
-mode & final global loss & final $\theta$ \\
-\midrule
-local branch & 4.00 & 0.100 \\
-hard global branch & 4.00 & 0.100 \\
-selection-aware & 0.00 & $-0.364$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+The selection term is the mollified jump of the discontinuous hard loss; it is a decision under a prior or task cue, not a certificate. Pure Clarke (uniform weights, no selection term) is legal but not unique; the selection term is what can train a cue-conditioned measurement map. By Proposition~3 it pays $\Omega(1/m)$. On a fixed-hypothesis model whose branch losses are constant, so the local and hard-global branch gradients are identically zero, a 200-step descent leaves the hard/local loss at $4.00$; the selection-aware descent reaches $0.00$. This isolates the selection term from the branch derivative.
 
 \paragraph{Covariance.} On the ambiguous face we return a mixture on $\mathrm{SO}(3)$, not in raw quaternion coordinates:
 \begin{equation}
@@ -275,6 +260,25 @@ $10^{-2}$ & 1 & 1 & $10^{-11}$ & 6 & 6 & numerical \\
 \label{fig:cover}
 \end{figure}
 
+\paragraph{Cue-conditioned branch selection (positive result).} Following the synthetic pose-estimation protocol of SDPRLayers \cite{holmes2025sdpr}, we generate $400$ four-point planar PnP instances with normalized image noise $5\times10^{-4}$ and a noisy heading cue ($\sigma=0.25$). The planar target has the exact two-fold double cover of Figure~\ref{fig:cover}: the algebraic costs are identical, so a point-estimate layer must choose a branch without knowing which one is consistent with the task. Table~\ref{tab:cue} compares local-KKT, global-naive, a cue-initialized local solver (the strongest point-estimate cue baseline), and the atomic layer, which extracts both physical atoms from the face and scores them with the cue. The point-estimate layers select the wrong branch in $40$--$44\%$ of instances, and even the cue-initialized local solver fails in $43.5\%$; the atomic layer reaches $99.0\%$ success (rotation error $<0.1$ rad) with a mean error of $0.032$ rad versus $1.21$ rad for the strongest baseline. This is the positive consequence of the face contract: the cue is useful only if the layer exposes the branch set to apply it to.
+
+\begin{table}[t]
+\centering
+\caption{Cue-conditioned planar PnP ($400$ instances). Success: rotation error $<0.1$ rad.}
+\label{tab:cue}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccc}
+\toprule
+method & success & median err & mean err \\
+\midrule
+local KKT & 0.405 & 3.126 & 1.830 \\
+global-naive & 0.510 & 0.004 & 1.538 \\
+cue-init local & 0.565 & 0.003 & 1.206 \\
+\textbf{atomic + cue} & \textbf{0.990} & \textbf{0.0016} & \textbf{0.032} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \paragraph{Switch and fold.} On the 1D quartic $J(x;\theta)=(x^2-1)^2+\theta x$, the branches tie at $\theta=0$; the central difference across the tie grows as $1/h$, while the one-sided branch derivative is $1/8$ (Figure~\ref{fig:switch}(b)). At the fold $|\theta|=8/(3\sqrt3)=1.5396$, the stable branch disappears and the analytic derivative $|dx^\star/d\theta|$ grows as the distance to the fold decreases; the FD/analytic ratio follows the $\nu^{-1/2}$ prediction. The tie and fold are the two failure modes of the $(m,\nu)$ certificate.
 
 \paragraph{KKT versus finite difference.} Table~\ref{tab:kkt} compares \eqref{eq:ift} with a central difference of the same tracked branch. The median relative error is $7.4\times10^{-6}$ at $h=10^{-5}$; at $h=10^{-6}$ roundoff dominates for ill-conditioned instances (median condition number $623$). This validates the derivative on the certified stratum; it does not validate a branch that the solver did not select.
@@ -313,10 +317,10 @@ $10^{-6}$ & $8.8\times10^{-4}$ & $3.2\times10^{-2}$ & 623 \\
 \end{figure}
 
 \section{Discussion and Limitations}
-FCD changes the contract, not the solver. A geometric layer should report its tightness class, face, and margins; it should emit a pose and a derivative only when the face is a single physical atom. The experiments support four claims: the generic R-form is solution-tight but sign/chirality-ambiguous; the planar face is a high-dimensional double cover; the noiseless q-form gap is vacuous; and the KKT derivative is correct on the certified stratum but fails at ties/folds. They do not provide a 3D end-to-end control result, an inequality-constrained covariance layer, or a verified dual. The forward is a multi-start heuristic, not the QPEP Gr\"obner solver; the face rank/corank is numerical; and the covariance experiment is a 1D synthetic illustration. These are the natural next steps: verified duals and face extraction, a Gr\"obner branch set, SO(3) face covariance on 3D PnP, and a cue-conditioned end-to-end pose-servo task.
+FCD changes the contract, not the solver. A geometric layer should report its tightness class, face, and margins; it should emit a pose and a derivative only when the face is a single physical atom. The experiments support four claims: the generic R-form is solution-tight but sign/chirality-ambiguous; the planar face is a high-dimensional double cover; the noiseless q-form gap is vacuous; and the KKT derivative is correct on the certified stratum but fails at ties/folds. They do not provide a 3D end-to-end control result, an inequality-constrained covariance layer, or a verified dual; the positive benchmark is a controlled planar PnP task with a synthetic heading cue, not a general PnP SOTA claim. The forward is a multi-start heuristic, not the QPEP Gr\"obner solver; the face rank/corank is numerical; and the covariance experiment is a 1D synthetic illustration. These are the natural next steps: verified duals and face extraction, a Gr\"obner branch set, SO(3) face covariance on 3D PnP, and a cue-conditioned end-to-end pose-servo task.
 
 \section{Conclusion}
-Differentiability of a global geometric estimator is a property of its optimal face, not its optimal value. QPEP's R-form is tight but chirality-ambiguous; its planar cost has an exact double cover; its quaternion moment gap is vacuous. Face-Certified Differentiation exposes the face, certifies a derivative only on the unique physical stratum, and refuses a silent gradient when the face is ambiguous. We hope this contract replaces the rank-one certificate as the interface between certifiable geometry and robot learning.
+Differentiability of a global geometric estimator is a property of its optimal face, not its optimal value. QPEP's R-form is tight but chirality-ambiguous; its planar cost has an exact double cover; its quaternion moment gap is vacuous. Face-Certified Differentiation exposes the face, certifies a derivative only on the unique physical stratum, and refuses a silent gradient when the face is ambiguous. We hope this contract replaces the rank-one certificate as the interface between certifiable geometry and robot learning. On the cue-conditioned planar benchmark, the atomic layer resolves the exact double cover with $99.0\%$ success, versus $56.5\%$ for the strongest point-estimate baseline.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
