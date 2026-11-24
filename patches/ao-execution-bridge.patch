@@ -1,0 +1,2813 @@
+From e1301dd870bafb2ae1fde87e7f7c176a23b235f5 Mon Sep 17 00:00:00 2001
+From: ds4syk <350989528+ds4syk@users.noreply.github.com>
+Date: Wed, 25 Nov 2026 02:03:52 +0800
+Subject: [PATCH 1/2] =?UTF-8?q?feat(execution):=20=E4=B8=BA=E5=A4=96?=
+ =?UTF-8?q?=E9=83=A8=E7=BC=96=E6=8E=92=E5=99=A8=E6=8F=90=E4=BE=9B=E5=B9=82?=
+ =?UTF-8?q?=E7=AD=89=20session=20=E6=98=A0=E5=B0=84=E4=B8=8E=E6=89=A7?=
+ =?UTF-8?q?=E8=A1=8C=E7=8A=B6=E6=80=81=E6=8A=95=E5=BD=B1?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ backend/internal/daemon/daemon.go             |   4 +
+ backend/internal/domain/execution.go          |  21 +
+ backend/internal/httpd/api.go                 |   4 +
+ backend/internal/httpd/apispec/openapi.yaml   | 448 ++++++++++++++++++
+ .../internal/httpd/apispec/specgen/build.go   |  63 +++
+ backend/internal/httpd/controllers/dto.go     | 105 ++++
+ .../internal/httpd/controllers/execution.go   | 222 +++++++++
+ .../httpd/controllers/execution_test.go       | 160 +++++++
+ backend/internal/service/execution/service.go | 233 +++++++++
+ .../service/execution/service_test.go         | 315 ++++++++++++
+ .../sqlite/gen/external_sessions.sql.go       | 127 +++++
+ backend/internal/storage/sqlite/gen/models.go |  10 +
+ .../sqlite/migrate_burned_versions_test.go    |   1 +
+ .../migrations/0141_external_sessions.sql     |  33 ++
+ .../sqlite/queries/external_sessions.sql      |  23 +
+ .../sqlite/store/external_session_store.go    |  95 ++++
+ backend/sqlc.yaml                             |   8 +
+ docs/integrations/superagent.md               | 136 ++++++
+ frontend/src/api/schema.ts                    | 372 +++++++++++++++
+ 19 files changed, 2380 insertions(+)
+ create mode 100644 backend/internal/domain/execution.go
+ create mode 100644 backend/internal/httpd/controllers/execution.go
+ create mode 100644 backend/internal/httpd/controllers/execution_test.go
+ create mode 100644 backend/internal/service/execution/service.go
+ create mode 100644 backend/internal/service/execution/service_test.go
+ create mode 100644 backend/internal/storage/sqlite/gen/external_sessions.sql.go
+ create mode 100644 backend/internal/storage/sqlite/migrations/0141_external_sessions.sql
+ create mode 100644 backend/internal/storage/sqlite/queries/external_sessions.sql
+ create mode 100644 backend/internal/storage/sqlite/store/external_session_store.go
+ create mode 100644 docs/integrations/superagent.md
+
+diff --git a/backend/internal/daemon/daemon.go b/backend/internal/daemon/daemon.go
+index 8cd5a488b..22e4c6e8d 100644
+--- a/backend/internal/daemon/daemon.go
++++ b/backend/internal/daemon/daemon.go
+@@ -52,6 +52,7 @@ import (
+ 	browsersvc "github.com/aoagents/agent-orchestrator/backend/internal/service/browser"
+ 	chatsvc "github.com/aoagents/agent-orchestrator/backend/internal/service/chat"
+ 	devimportsvc "github.com/aoagents/agent-orchestrator/backend/internal/service/devimport"
++	execsvc "github.com/aoagents/agent-orchestrator/backend/internal/service/execution"
+ 	importsvc "github.com/aoagents/agent-orchestrator/backend/internal/service/importer"
+ 	notificationsvc "github.com/aoagents/agent-orchestrator/backend/internal/service/notification"
+ 	prsvc "github.com/aoagents/agent-orchestrator/backend/internal/service/pr"
+@@ -751,6 +752,8 @@ func Run() error {
+ 
+ 	bs.HostID = hostIdentity.HostID
+ 
++	executionSvc := execsvc.New(store, sessionSvc)
++
+ 	srv, err := httpd.NewWithDeps(cfg, log, termMgr, httpd.APIDeps{
+ 		Projects:           projectSvc,
+ 		HostID:             hostIdentity.HostID,
+@@ -760,6 +763,7 @@ func Run() error {
+ 		SystemChecks:       systemChecks,
+ 		Installer:          systemInstall,
+ 		Sessions:           sessionSvc,
++		Execution:          executionSvc,
+ 		DesktopWorkspaces:  sessionSvc,
+ 		PRs:                prActions,
+ 		Reviews:            reviewSvc,
+diff --git a/backend/internal/domain/execution.go b/backend/internal/domain/execution.go
+new file mode 100644
+index 000000000..a50def88d
+--- /dev/null
++++ b/backend/internal/domain/execution.go
+@@ -0,0 +1,21 @@
++package domain
++
++import "time"
++
++// ExternalSession is the durable link between an external orchestrator's work
++// item and the AO session that executes it. The orchestrator owns the work
++// item's lifecycle; AO owns the session, worktree, and PR/CI facts. ExternalRef
++// is the orchestrator's stable, globally unique id (namespaced by the
++// orchestrator, for example "superagent:tk_123"); AssignmentRef is the current
++// execution generation within that work item. RequestFingerprint covers the
++// immutable launch parameters, so a retry with a changed launch request is a
++// conflict rather than a silent reuse.
++type ExternalSession struct {
++	ExternalRef        string    `json:"externalRef"`
++	ProjectID          ProjectID `json:"projectId"`
++	SessionID          SessionID `json:"sessionId"`
++	AssignmentRef      string    `json:"assignmentRef"`
++	RequestFingerprint string    `json:"-"`
++	CreatedAt          time.Time `json:"createdAt"`
++	UpdatedAt          time.Time `json:"updatedAt"`
++}
+diff --git a/backend/internal/httpd/api.go b/backend/internal/httpd/api.go
+index 8f690b4e8..eb7fdab6b 100644
+--- a/backend/internal/httpd/api.go
++++ b/backend/internal/httpd/api.go
+@@ -26,6 +26,7 @@ type APIDeps struct {
+ 	CodexAccounts      controllers.CodexAccountService
+ 	Projects           projectsvc.Manager
+ 	Sessions           controllers.SessionService
++	Execution          controllers.ExecutionService
+ 	DesktopWorkspaces  controllers.DesktopWorkspaceService
+ 	Activity           controllers.ActivityRecorder
+ 	UsageHooks         controllers.UsageHookRecorder
+@@ -107,6 +108,7 @@ type API struct {
+ 	codexAccounts *controllers.CodexAccountsController
+ 	projects      *controllers.ProjectsController
+ 	sessions      *controllers.SessionsController
++	execution     *controllers.ExecutionController
+ 	desktop       *controllers.DesktopWorkspaceController
+ 	usage         *controllers.UsageController
+ 	prs           *controllers.PRsController
+@@ -149,6 +151,7 @@ func NewAPI(cfg config.Config, deps APIDeps) *API {
+ 			PreviewServer: deps.PreviewServer,
+ 			Capabilities:  deps.SessionCapabilities,
+ 		},
++		execution:     &controllers.ExecutionController{Svc: deps.Execution},
+ 		desktop:       &controllers.DesktopWorkspaceController{Svc: deps.DesktopWorkspaces},
+ 		usage:         &controllers.UsageController{Svc: deps.UsageSummary},
+ 		prs:           &controllers.PRsController{Svc: deps.PRs},
+@@ -188,6 +191,7 @@ func (a *API) Register(root chi.Router) {
+ 			a.codexAccounts.Register(r)
+ 			a.projects.Register(r)
+ 			a.sessions.Register(r)
++			a.execution.Register(r)
+ 			a.desktop.Register(r)
+ 			a.usage.Register(r)
+ 			a.prs.Register(r)
+diff --git a/backend/internal/httpd/apispec/openapi.yaml b/backend/internal/httpd/apispec/openapi.yaml
+index 989f85d9f..a13af1c7f 100644
+--- a/backend/internal/httpd/apispec/openapi.yaml
++++ b/backend/internal/httpd/apispec/openapi.yaml
+@@ -1216,6 +1216,197 @@ paths:
+       summary: Stream CDC events with durable replay
+       tags:
+       - events
++  /api/v1/execution/sessions:
++    get:
++      operationId: listExternalSessions
++      parameters:
++      - description: Project whose external sessions to list.
++        in: query
++        name: projectId
++        required: true
++        schema:
++          description: Project whose external sessions to list.
++          type: string
++      responses:
++        "200":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/ListExternalSessionsResponse'
++          description: OK
++        "400":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Bad Request
++        "500":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Internal Server Error
++        "501":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Not Implemented
++      summary: List a project's external work items and their execution state
++      tags:
++      - execution
++  /api/v1/execution/sessions/{externalRef}:
++    get:
++      operationId: getExternalSession
++      parameters:
++      - description: External orchestrator work-item id, e.g. superagent:tk_123.
++        in: path
++        name: externalRef
++        required: true
++        schema:
++          description: External orchestrator work-item id, e.g. superagent:tk_123.
++          type: string
++      responses:
++        "200":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/GetExternalSessionResponse'
++          description: OK
++        "404":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Not Found
++        "500":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Internal Server Error
++        "501":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Not Implemented
++      summary: Read an external work item's AO session and derived execution state
++      tags:
++      - execution
++    put:
++      operationId: ensureExternalSession
++      parameters:
++      - description: External orchestrator work-item id, e.g. superagent:tk_123.
++        in: path
++        name: externalRef
++        required: true
++        schema:
++          description: External orchestrator work-item id, e.g. superagent:tk_123.
++          type: string
++      requestBody:
++        content:
++          application/json:
++            schema:
++              $ref: '#/components/schemas/EnsureExternalSessionRequest'
++        required: true
++      responses:
++        "200":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/EnsureExternalSessionResponse'
++          description: OK
++        "201":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/EnsureExternalSessionResponse'
++          description: Created
++        "400":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Bad Request
++        "404":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Not Found
++        "409":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Conflict
++        "500":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Internal Server Error
++        "501":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Not Implemented
++      summary: Ensure one AO session for an external work item (idempotent)
++      tags:
++      - execution
++  /api/v1/execution/sessions/{externalRef}/stop:
++    post:
++      operationId: stopExternalSession
++      parameters:
++      - description: External orchestrator work-item id, e.g. superagent:tk_123.
++        in: path
++        name: externalRef
++        required: true
++        schema:
++          description: External orchestrator work-item id, e.g. superagent:tk_123.
++          type: string
++      requestBody:
++        content:
++          application/json:
++            schema:
++              $ref: '#/components/schemas/StopExternalSessionRequest'
++        required: true
++      responses:
++        "200":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/StopExternalSessionResponse'
++          description: OK
++        "400":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Bad Request
++        "404":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Not Found
++        "500":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Internal Server Error
++        "501":
++          content:
++            application/json:
++              schema:
++                $ref: '#/components/schemas/APIError'
++          description: Not Implemented
++      summary: Stop an external work item's AO session (idempotent)
++      tags:
++      - execution
+   /api/v1/identity:
+     get:
+       operationId: getIdentity
+@@ -9592,6 +9783,82 @@ components:
+         includeUsage:
+           type: boolean
+       type: object
++    EnsureExternalSessionRequest:
++      properties:
++        assignmentRef:
++          description: Current execution generation within the external work item.
++          maxLength: 256
++          type: string
++        branch:
++          maxLength: 256
++          type: string
++        displayName:
++          maxLength: 20
++          type: string
++        harness:
++          enum:
++          - claude-code
++          - codex
++          - aider
++          - opencode
++          - grok
++          - droid
++          - amp
++          - agy
++          - crush
++          - cursor
++          - qwen
++          - copilot
++          - goose
++          - auggie
++          - continue
++          - devin
++          - cline
++          - kimi
++          - muse
++          - kiro
++          - kilocode
++          - vibe
++          - pi
++          - kimchi
++          - omp
++          - prime-agent
++          - autohand
++          type: string
++        issueId:
++          type: string
++        mode:
++          enum:
++          - chat
++          - tui
++          type: string
++        model:
++          maxLength: 256
++          type: string
++        projectId:
++          type: string
++        prompt:
++          maxLength: 16384
++          type: string
++        requestFingerprint:
++          description: Stable hash of the immutable launch parameters. A changed fingerprint
++            for the same externalRef is a conflict.
++          maxLength: 256
++          type: string
++      required:
++      - projectId
++      - requestFingerprint
++      type: object
++    EnsureExternalSessionResponse:
++      properties:
++        created:
++          type: boolean
++        session:
++          $ref: '#/components/schemas/ExternalSessionView'
++      required:
++      - created
++      - session
++      type: object
+     EstimatedCostResponse:
+       properties:
+         cachedInputNanos:
+@@ -9651,6 +9918,152 @@ components:
+       - sessionId
+       - session
+       type: object
++    ExternalSessionExecutionView:
++      properties:
++        activity:
++          enum:
++          - active
++          - idle
++          - waiting_input
++          - blocked
++          - exited
++          type: string
++        activityAt:
++          format: date-time
++          type: string
++        branch:
++          type: string
++        displayStatus:
++          enum:
++          - Working
++          - Blocked
++          - Exited
++          - No signal
++          - Awaiting PR
++          - Fixing CI failures
++          - Addressing comments
++          - Needs review
++          - Review scheduled
++          - Reviewing
++          - Review pending
++          - Draft
++          - CI failing
++          - Commented
++          - Changes requested
++          - Needs human review
++          - Mergeable
++          - Approved
++          - Merged
++          - Closed without merge
++          - Terminated
++          type: string
++        isTerminated:
++          type: boolean
++        kanbanColumn:
++          enum:
++          - building
++          - validating
++          - needs_review
++          - ready
++          - archive
++          type: string
++        latestAssistantUpdate:
++          type: string
++        latestUserPrompt:
++          type: string
++        needsPerson:
++          description: True when AO is waiting on a human decision, approval, or input.
++          type: boolean
++        prs:
++          items:
++            $ref: '#/components/schemas/ExternalSessionPRView'
++          type: array
++        status:
++          enum:
++          - working
++          - pr_open
++          - draft
++          - ci_failed
++          - review_pending
++          - changes_requested
++          - approved
++          - mergeable
++          - merged
++          - needs_input
++          - exited
++          - idle
++          - terminated
++          - no_signal
++          type: string
++        updatedAt:
++          format: date-time
++          type: string
++        waitingReason:
++          enum:
++          - question
++          - approval
++          - input
++          type: string
++      required:
++      - status
++      - displayStatus
++      - kanbanColumn
++      - activity
++      - activityAt
++      - isTerminated
++      - needsPerson
++      - updatedAt
++      type: object
++    ExternalSessionPRView:
++      properties:
++        ci:
++          type: string
++        mergeability:
++          type: string
++        number:
++          type: integer
++        review:
++          type: string
++        state:
++          enum:
++          - draft
++          - open
++          - merged
++          - closed
++          type: string
++        url:
++          type: string
++      required:
++      - url
++      - number
++      - state
++      type: object
++    ExternalSessionView:
++      properties:
++        assignmentRef:
++          type: string
++        createdAt:
++          format: date-time
++          type: string
++        execution:
++          $ref: '#/components/schemas/ExternalSessionExecutionView'
++        externalRef:
++          type: string
++        projectId:
++          type: string
++        sessionId:
++          type: string
++        updatedAt:
++          format: date-time
++          type: string
++      required:
++      - externalRef
++      - projectId
++      - sessionId
++      - createdAt
++      - updatedAt
++      - execution
++      type: object
+     FirstTokenCoverageResponse:
+       properties:
+         covered:
+@@ -9667,6 +10080,13 @@ components:
+       - covered
+       - total
+       type: object
++    GetExternalSessionResponse:
++      properties:
++        session:
++          $ref: '#/components/schemas/ExternalSessionView'
++      required:
++      - session
++      type: object
+     GitHubRepositoryPreparation:
+       properties:
+         name:
+@@ -10043,6 +10463,15 @@ components:
+       required:
+       - sessions
+       type: object
++    ListExternalSessionsResponse:
++      properties:
++        sessions:
++          items:
++            $ref: '#/components/schemas/ExternalSessionView'
++          type: array
++      required:
++      - sessions
++      type: object
+     ListNotificationsResponse:
+       properties:
+         nextCursor:
+@@ -12146,6 +12575,22 @@ components:
+       required:
+       - providerTurnId
+       type: object
++    StopExternalSessionRequest:
++      properties:
++        reason:
++          maxLength: 512
++          type: string
++      type: object
++    StopExternalSessionResponse:
++      properties:
++        session:
++          $ref: '#/components/schemas/ExternalSessionView'
++        stopped:
++          type: boolean
++      required:
++      - stopped
++      - session
++      type: object
+     SubmitAgentHandoffRequest:
+       properties:
+         handoff:
+@@ -12872,6 +13317,9 @@ tags:
+   name: projects
+ - description: Agent session lifecycle and messaging
+   name: sessions
++- description: 'External-orchestrator execution bridge: idempotent session mapping
++    and derived state'
++  name: execution
+ - description: Pull-request actions (SCM lane)
+   name: prs
+ - description: Code-review runs and findings
+diff --git a/backend/internal/httpd/apispec/specgen/build.go b/backend/internal/httpd/apispec/specgen/build.go
+index 1bb14dce1..b56b22da6 100644
+--- a/backend/internal/httpd/apispec/specgen/build.go
++++ b/backend/internal/httpd/apispec/specgen/build.go
+@@ -64,6 +64,8 @@ func Build() ([]byte, error) {
+ 			"Project registry, configuration, and lifecycle administration"),
+ 		*(&openapi31.Tag{Name: "sessions"}).WithDescription(
+ 			"Agent session lifecycle and messaging"),
++		*(&openapi31.Tag{Name: "execution"}).WithDescription(
++			"External-orchestrator execution bridge: idempotent session mapping and derived state"),
+ 		*(&openapi31.Tag{Name: "prs"}).WithDescription(
+ 			"Pull-request actions (SCM lane)"),
+ 		*(&openapi31.Tag{Name: "reviews"}).WithDescription(
+@@ -143,6 +145,17 @@ func schemaName(_ reflect.Type, defaultName string) string {
+ // by projectOperations(). Add an entry when a new contract type is introduced;
+ // the drift test fails until the spec is regenerated, which flags the gap.
+ var schemaNames = map[string]string{ //nolint:gosec // Public OpenAPI type names include reset-credit contracts; no credential value is stored here.
++	"ControllersExternalRefParam":                          "ExternalRefParam",
++	"ControllersEnsureExternalSessionRequest":              "EnsureExternalSessionRequest",
++	"ControllersEnsureExternalSessionResponse":             "EnsureExternalSessionResponse",
++	"ControllersGetExternalSessionResponse":                "GetExternalSessionResponse",
++	"ControllersStopExternalSessionRequest":                "StopExternalSessionRequest",
++	"ControllersStopExternalSessionResponse":               "StopExternalSessionResponse",
++	"ControllersListExternalSessionsQuery":                 "ListExternalSessionsQuery",
++	"ControllersListExternalSessionsResponse":              "ListExternalSessionsResponse",
++	"ControllersExternalSessionView":                       "ExternalSessionView",
++	"ControllersExternalSessionExecutionView":              "ExternalSessionExecutionView",
++	"ControllersExternalSessionPRView":                     "ExternalSessionPRView",
+ 	"ControllersSettingsResponse":                          "SettingsResponse",
+ 	"ControllersDesktopWorkspaceLocationResponse":          "DesktopWorkspaceLocationResponse",
+ 	"ControllersUpdateSessionInterfaceRequest":             "UpdateSessionInterfaceRequest",
+@@ -1776,6 +1789,56 @@ func eventOperations() []operation {
+ // TestRouteSpecParity fails the build otherwise.
+ func projectOperations() []operation {
+ 	return []operation{
++		{
++			method: http.MethodPut, path: "/api/v1/execution/sessions/{externalRef}", id: "ensureExternalSession", tag: "execution",
++			summary:    "Ensure one AO session for an external work item (idempotent)",
++			pathParams: []any{controllers.ExternalRefParam{}},
++			reqBody:    controllers.EnsureExternalSessionRequest{},
++			resps: []respUnit{
++				{http.StatusOK, controllers.EnsureExternalSessionResponse{}},
++				{http.StatusCreated, controllers.EnsureExternalSessionResponse{}},
++				{http.StatusBadRequest, envelope.APIError{}},
++				{http.StatusConflict, envelope.APIError{}},
++				{http.StatusNotFound, envelope.APIError{}},
++				{http.StatusInternalServerError, envelope.APIError{}},
++				{http.StatusNotImplemented, envelope.APIError{}},
++			},
++		},
++		{
++			method: http.MethodGet, path: "/api/v1/execution/sessions/{externalRef}", id: "getExternalSession", tag: "execution",
++			summary:    "Read an external work item's AO session and derived execution state",
++			pathParams: []any{controllers.ExternalRefParam{}},
++			resps: []respUnit{
++				{http.StatusOK, controllers.GetExternalSessionResponse{}},
++				{http.StatusNotFound, envelope.APIError{}},
++				{http.StatusInternalServerError, envelope.APIError{}},
++				{http.StatusNotImplemented, envelope.APIError{}},
++			},
++		},
++		{
++			method: http.MethodPost, path: "/api/v1/execution/sessions/{externalRef}/stop", id: "stopExternalSession", tag: "execution",
++			summary:    "Stop an external work item's AO session (idempotent)",
++			pathParams: []any{controllers.ExternalRefParam{}},
++			reqBody:    controllers.StopExternalSessionRequest{},
++			resps: []respUnit{
++				{http.StatusOK, controllers.StopExternalSessionResponse{}},
++				{http.StatusBadRequest, envelope.APIError{}},
++				{http.StatusNotFound, envelope.APIError{}},
++				{http.StatusInternalServerError, envelope.APIError{}},
++				{http.StatusNotImplemented, envelope.APIError{}},
++			},
++		},
++		{
++			method: http.MethodGet, path: "/api/v1/execution/sessions", id: "listExternalSessions", tag: "execution",
++			summary:    "List a project's external work items and their execution state",
++			pathParams: []any{controllers.ListExternalSessionsQuery{}},
++			resps: []respUnit{
++				{http.StatusOK, controllers.ListExternalSessionsResponse{}},
++				{http.StatusBadRequest, envelope.APIError{}},
++				{http.StatusInternalServerError, envelope.APIError{}},
++				{http.StatusNotImplemented, envelope.APIError{}},
++			},
++		},
+ 		{
+ 			method: http.MethodGet, path: "/api/v1/projects", id: "listProjects", tag: "projects",
+ 			summary: "List all registered projects (active + degraded)",
+diff --git a/backend/internal/httpd/controllers/dto.go b/backend/internal/httpd/controllers/dto.go
+index eea001388..b254e4209 100644
+--- a/backend/internal/httpd/controllers/dto.go
++++ b/backend/internal/httpd/controllers/dto.go
+@@ -2648,3 +2648,108 @@ type MuteDeviceRequest struct {
+ type InstallIDParam struct {
+ 	InstallID string `path:"installId" description:"The device's stable install id."`
+ }
++
++/* ---- external execution ------------------------------------------------- */
++
++// ExternalRefParam is the {externalRef} path parameter for an external
++// orchestrator's stable work-item id. It is URL-safe and namespaced by the
++// orchestrator (for example "superagent:tk_123").
++type ExternalRefParam struct {
++	ExternalRef string `path:"externalRef" description:"External orchestrator work-item id, e.g. superagent:tk_123."`
++}
++
++// EnsureExternalSessionRequest is the body of PUT
++// /api/v1/execution/sessions/{externalRef}. It is idempotent per externalRef;
++// requestFingerprint covers the immutable launch parameters.
++type EnsureExternalSessionRequest struct {
++	ProjectID          domain.ProjectID    `json:"projectId"`
++	AssignmentRef      string              `json:"assignmentRef,omitempty" maxLength:"256" description:"Current execution generation within the external work item."`
++	RequestFingerprint string              `json:"requestFingerprint" maxLength:"256" description:"Stable hash of the immutable launch parameters. A changed fingerprint for the same externalRef is a conflict."`
++	IssueID            domain.IssueID      `json:"issueId,omitempty"`
++	Harness            domain.AgentHarness `json:"harness,omitempty" enum:"claude-code,codex,aider,opencode,grok,droid,amp,agy,crush,cursor,qwen,copilot,goose,auggie,continue,devin,cline,kimi,muse,kiro,kilocode,vibe,pi,kimchi,omp,prime-agent,autohand"`
++	Branch             string              `json:"branch,omitempty" maxLength:"256"`
++	Prompt             string              `json:"prompt,omitempty" maxLength:"16384"`
++	Model              string              `json:"model,omitempty" maxLength:"256"`
++	Mode               domain.SessionMode  `json:"mode,omitempty" enum:"chat,tui"`
++	DisplayName        string              `json:"displayName,omitempty" maxLength:"20"`
++}
++
++// ExternalSessionPRView is the compact PR fact an external orchestrator needs
++// to decide whether the work is ready, blocked on CI, or awaiting review.
++type ExternalSessionPRView struct {
++	URL          string                `json:"url"`
++	Number       int                   `json:"number"`
++	State        string                `json:"state" enum:"draft,open,merged,closed"`
++	CI           domain.CIState        `json:"ci,omitempty"`
++	Review       domain.ReviewDecision `json:"review,omitempty"`
++	Mergeability domain.Mergeability   `json:"mergeability,omitempty"`
++}
++
++// ExternalSessionExecutionView projects AO's derived session state. Nothing
++// here is stored separately: status, kanban column, and PR facts are derived at
++// read time, exactly as the panel derives them.
++type ExternalSessionExecutionView struct {
++	Status                domain.SessionStatus `json:"status" enum:"working,pr_open,draft,ci_failed,review_pending,changes_requested,approved,mergeable,merged,needs_input,exited,idle,terminated,no_signal"`
++	DisplayStatus         domain.DisplayStatus `json:"displayStatus" enum:"Working,Blocked,Exited,No signal,Awaiting PR,Fixing CI failures,Addressing comments,Needs review,Review scheduled,Reviewing,Review pending,Draft,CI failing,Commented,Changes requested,Needs human review,Mergeable,Approved,Merged,Closed without merge,Terminated"`
++	KanbanColumn          domain.KanbanColumn  `json:"kanbanColumn" enum:"building,validating,needs_review,ready,archive"`
++	Activity              domain.ActivityState `json:"activity" enum:"active,idle,waiting_input,blocked,exited"`
++	ActivityAt            time.Time            `json:"activityAt"`
++	IsTerminated          bool                 `json:"isTerminated"`
++	NeedsPerson           bool                 `json:"needsPerson" description:"True when AO is waiting on a human decision, approval, or input."`
++	WaitingReason         string               `json:"waitingReason,omitempty" enum:"question,approval,input"`
++	LatestAssistantUpdate string               `json:"latestAssistantUpdate,omitempty"`
++	LatestUserPrompt      string               `json:"latestUserPrompt,omitempty"`
++	Branch                string               `json:"branch,omitempty"`
++	PRs                   []ExternalSessionPRView `json:"prs,omitempty"`
++	UpdatedAt             time.Time            `json:"updatedAt"`
++}
++
++// ExternalSessionView is one external work item's durable mapping plus AO's
++// current execution projection.
++type ExternalSessionView struct {
++	ExternalRef   string                       `json:"externalRef"`
++	AssignmentRef string                       `json:"assignmentRef,omitempty"`
++	ProjectID     domain.ProjectID             `json:"projectId"`
++	SessionID     domain.SessionID             `json:"sessionId"`
++	CreatedAt     time.Time                    `json:"createdAt"`
++	UpdatedAt     time.Time                    `json:"updatedAt"`
++	Execution     ExternalSessionExecutionView `json:"execution"`
++}
++
++// EnsureExternalSessionResponse is the body of PUT
++// /api/v1/execution/sessions/{externalRef}. created is false when an existing
++// session was reused.
++type EnsureExternalSessionResponse struct {
++	Created bool                `json:"created"`
++	Session ExternalSessionView `json:"session"`
++}
++
++// GetExternalSessionResponse is the body of GET
++// /api/v1/execution/sessions/{externalRef}.
++type GetExternalSessionResponse struct {
++	Session ExternalSessionView `json:"session"`
++}
++
++// StopExternalSessionRequest is the body of POST
++// /api/v1/execution/sessions/{externalRef}/stop.
++type StopExternalSessionRequest struct {
++	Reason string `json:"reason,omitempty" maxLength:"512"`
++}
++
++// StopExternalSessionResponse reports whether this call performed a teardown.
++// stopped=false means the session was already terminated.
++type StopExternalSessionResponse struct {
++	Stopped bool                `json:"stopped"`
++	Session ExternalSessionView `json:"session"`
++}
++
++// ListExternalSessionsQuery filters the external-session list.
++type ListExternalSessionsQuery struct {
++	ProjectID domain.ProjectID `query:"projectId" required:"true" description:"Project whose external sessions to list."`
++}
++
++// ListExternalSessionsResponse is the body of GET
++// /api/v1/execution/sessions?projectId=…
++type ListExternalSessionsResponse struct {
++	Sessions []ExternalSessionView `json:"sessions"`
++}
+diff --git a/backend/internal/httpd/controllers/execution.go b/backend/internal/httpd/controllers/execution.go
+new file mode 100644
+index 000000000..d48cdf51a
+--- /dev/null
++++ b/backend/internal/httpd/controllers/execution.go
+@@ -0,0 +1,222 @@
++package controllers
++
++import (
++	"context"
++	"errors"
++	"io"
++	"net/http"
++	"strings"
++	"unicode/utf8"
++
++	"github.com/go-chi/chi/v5"
++
++	"github.com/aoagents/agent-orchestrator/backend/internal/domain"
++	"github.com/aoagents/agent-orchestrator/backend/internal/httpd/apispec"
++	"github.com/aoagents/agent-orchestrator/backend/internal/httpd/envelope"
++	"github.com/aoagents/agent-orchestrator/backend/internal/ports"
++	execsvc "github.com/aoagents/agent-orchestrator/backend/internal/service/execution"
++)
++
++// maxExternalEnsureBodyBytes bounds the ensure body. It carries a prompt but no
++// attachments, so the spawn route's multi-megabyte budget would be wasteful.
++const maxExternalEnsureBodyBytes = 64 << 10
++
++// ExecutionService is the bridge's command/read surface. The production
++// implementation is *execsvc.Service; tests use a fake.
++type ExecutionService interface {
++	Ensure(ctx context.Context, in execsvc.EnsureInput) (execsvc.Outcome, error)
++	Get(ctx context.Context, externalRef string) (execsvc.View, error)
++	List(ctx context.Context, project domain.ProjectID) ([]execsvc.View, error)
++	Stop(ctx context.Context, externalRef, reason string) (execsvc.View, bool, error)
++}
++
++// ExecutionController exposes the bridge an external orchestrator uses to run a
++// work item inside one AO project. It is a projection and idempotency layer over
++// the session service, not a second session API.
++type ExecutionController struct {
++	Svc ExecutionService
++}
++
++// Register mounts the execution routes under /api/v1.
++func (c *ExecutionController) Register(r chi.Router) {
++	r.Put("/execution/sessions/{externalRef}", c.ensure)
++	r.Get("/execution/sessions/{externalRef}", c.get)
++	r.Post("/execution/sessions/{externalRef}/stop", c.stop)
++	r.Get("/execution/sessions", c.list)
++}
++
++func (c *ExecutionController) ensure(w http.ResponseWriter, r *http.Request) {
++	if c.Svc == nil {
++		apispec.NotImplemented(w, r, "PUT", "/api/v1/execution/sessions/{externalRef}")
++		return
++	}
++	r.Body = http.MaxBytesReader(w, r.Body, maxExternalEnsureBodyBytes)
++	var in EnsureExternalSessionRequest
++	if err := decodeJSONStrict(r, &in); err != nil {
++		envelope.WriteAPIError(w, r, http.StatusBadRequest, "bad_request", "INVALID_JSON", "Invalid JSON body", nil)
++		return
++	}
++	mode, err := domain.ParseSessionMode(string(in.Mode))
++	if err != nil {
++		envelope.WriteAPIError(w, r, http.StatusBadRequest, "validation", "SESSION_MODE_INVALID", err.Error(), nil)
++		return
++	}
++	if len(in.Prompt) > maxPromptLen {
++		envelope.WriteAPIError(w, r, http.StatusBadRequest, "bad_request", "PROMPT_TOO_LONG", "Prompt must be 16 KiB or fewer", nil)
++		return
++	}
++	displayName := strings.TrimSpace(in.DisplayName)
++	if utf8.RuneCountInString(displayName) > maxDisplayNameLen {
++		envelope.WriteAPIError(w, r, http.StatusBadRequest, "bad_request", "DISPLAY_NAME_TOO_LONG", "displayName must be 20 characters or fewer", nil)
++		return
++	}
++	out, err := c.Svc.Ensure(r.Context(), execsvc.EnsureInput{
++		ExternalRef:        chi.URLParam(r, "externalRef"),
++		ProjectID:          in.ProjectID,
++		AssignmentRef:      in.AssignmentRef,
++		RequestFingerprint: in.RequestFingerprint,
++		Spawn: ports.SpawnConfig{
++			ProjectID:     in.ProjectID,
++			IssueID:       in.IssueID,
++			Kind:          domain.KindWorker,
++			Harness:       in.Harness,
++			Branch:        in.Branch,
++			Prompt:        in.Prompt,
++			RequestedMode: mode,
++			DisplayName:   displayName,
++			AgentConfig:   ports.AgentConfig{Model: in.Model},
++		},
++	})
++	if err != nil {
++		envelope.WriteError(w, r, err)
++		return
++	}
++	status := http.StatusOK
++	if out.Created {
++		status = http.StatusCreated
++	}
++	envelope.WriteJSON(w, status, EnsureExternalSessionResponse{
++		Created: out.Created,
++		Session: externalSessionView(execsvc.View{External: out.External, Session: out.Session}),
++	})
++}
++
++func (c *ExecutionController) get(w http.ResponseWriter, r *http.Request) {
++	if c.Svc == nil {
++		apispec.NotImplemented(w, r, "GET", "/api/v1/execution/sessions/{externalRef}")
++		return
++	}
++	view, err := c.Svc.Get(r.Context(), chi.URLParam(r, "externalRef"))
++	if err != nil {
++		envelope.WriteError(w, r, err)
++		return
++	}
++	envelope.WriteJSON(w, http.StatusOK, GetExternalSessionResponse{Session: externalSessionView(view)})
++}
++
++func (c *ExecutionController) stop(w http.ResponseWriter, r *http.Request) {
++	if c.Svc == nil {
++		apispec.NotImplemented(w, r, "POST", "/api/v1/execution/sessions/{externalRef}/stop")
++		return
++	}
++	var in StopExternalSessionRequest
++	if err := decodeJSONStrict(r, &in); err != nil && !errors.Is(err, io.EOF) {
++		envelope.WriteAPIError(w, r, http.StatusBadRequest, "bad_request", "INVALID_JSON", "Invalid JSON body", nil)
++		return
++	}
++	view, stopped, err := c.Svc.Stop(r.Context(), chi.URLParam(r, "externalRef"), in.Reason)
++	if err != nil {
++		envelope.WriteError(w, r, err)
++		return
++	}
++	envelope.WriteJSON(w, http.StatusOK, StopExternalSessionResponse{Stopped: stopped, Session: externalSessionView(view)})
++}
++
++func (c *ExecutionController) list(w http.ResponseWriter, r *http.Request) {
++	if c.Svc == nil {
++		apispec.NotImplemented(w, r, "GET", "/api/v1/execution/sessions")
++		return
++	}
++	project := domain.ProjectID(strings.TrimSpace(r.URL.Query().Get("projectId")))
++	if project == "" {
++		envelope.WriteAPIError(w, r, http.StatusBadRequest, "bad_request", "PROJECT_ID_REQUIRED", "projectId is required", nil)
++		return
++	}
++	views, err := c.Svc.List(r.Context(), project)
++	if err != nil {
++		envelope.WriteError(w, r, err)
++		return
++	}
++	out := make([]ExternalSessionView, 0, len(views))
++	for _, view := range views {
++		out = append(out, externalSessionView(view))
++	}
++	envelope.WriteJSON(w, http.StatusOK, ListExternalSessionsResponse{Sessions: out})
++}
++
++func externalSessionView(view execsvc.View) ExternalSessionView {
++	needsPerson, waitingReason := externalNeedsPerson(view.Session)
++	prs := make([]ExternalSessionPRView, 0, len(view.Session.PRs))
++	for _, pr := range view.Session.PRs {
++		prs = append(prs, ExternalSessionPRView{
++			URL:          pr.URL,
++			Number:       pr.Number,
++			State:        externalPRState(pr),
++			CI:           pr.CI,
++			Review:       pr.Review,
++			Mergeability: pr.Mergeability,
++		})
++	}
++	return ExternalSessionView{
++		ExternalRef:   view.External.ExternalRef,
++		AssignmentRef: view.External.AssignmentRef,
++		ProjectID:     view.External.ProjectID,
++		SessionID:     view.External.SessionID,
++		CreatedAt:     view.External.CreatedAt,
++		UpdatedAt:     view.External.UpdatedAt,
++		Execution: ExternalSessionExecutionView{
++			Status:                view.Session.Status,
++			DisplayStatus:         view.Session.DisplayStatus,
++			KanbanColumn:          view.Session.KanbanColumn,
++			Activity:              view.Session.Activity.State,
++			ActivityAt:            view.Session.Activity.LastActivityAt,
++			IsTerminated:          view.Session.IsTerminated,
++			NeedsPerson:           needsPerson,
++			WaitingReason:         waitingReason,
++			LatestAssistantUpdate: view.Session.Metadata.LatestAssistantUpdate,
++			LatestUserPrompt:      view.Session.Metadata.LatestUserPrompt,
++			Branch:                view.Session.Metadata.Branch,
++			PRs:                   prs,
++			UpdatedAt:             view.Session.UpdatedAt,
++		},
++	}
++}
++
++// externalNeedsPerson maps AO's derived session state to the one thing the
++// orchestrator must route to a person. CI failures and review changes are not
++// human waits: AO's worker handles them, so they stay out of this signal.
++func externalNeedsPerson(sess domain.Session) (bool, string) {
++	if sess.Status == domain.StatusNeedsInput {
++		return true, "question"
++	}
++	switch sess.Activity.State {
++	case domain.ActivityBlocked:
++		return true, "approval"
++	case domain.ActivityWaitingInput:
++		return true, "input"
++	}
++	return false, ""
++}
++
++func externalPRState(pr domain.PRFacts) string {
++	switch {
++	case pr.Draft:
++		return "draft"
++	case pr.Merged:
++		return "merged"
++	case pr.Closed:
++		return "closed"
++	default:
++		return "open"
++	}
++}
+diff --git a/backend/internal/httpd/controllers/execution_test.go b/backend/internal/httpd/controllers/execution_test.go
+new file mode 100644
+index 000000000..565eb0207
+--- /dev/null
++++ b/backend/internal/httpd/controllers/execution_test.go
+@@ -0,0 +1,160 @@
++package controllers_test
++
++import (
++	"context"
++	"encoding/json"
++	"io"
++	"log/slog"
++	"net/http"
++	"net/http/httptest"
++	"testing"
++	"time"
++
++	"github.com/aoagents/agent-orchestrator/backend/internal/config"
++	"github.com/aoagents/agent-orchestrator/backend/internal/domain"
++	"github.com/aoagents/agent-orchestrator/backend/internal/httpd"
++	"github.com/aoagents/agent-orchestrator/backend/internal/httpd/apierr"
++	"github.com/aoagents/agent-orchestrator/backend/internal/httpd/controllers"
++	execsvc "github.com/aoagents/agent-orchestrator/backend/internal/service/execution"
++	"github.com/aoagents/agent-orchestrator/backend/pkg/contract"
++)
++
++type fakeExecution struct {
++	ensureOut  execsvc.Outcome
++	ensureErr  error
++	getView    execsvc.View
++	getErr     error
++	stopView   execsvc.View
++	stopped    bool
++	stopErr    error
++	listViews  []execsvc.View
++	listErr    error
++	lastEnsure execsvc.EnsureInput
++	lastReason string
++}
++
++func (f *fakeExecution) Ensure(_ context.Context, in execsvc.EnsureInput) (execsvc.Outcome, error) {
++	f.lastEnsure = in
++	return f.ensureOut, f.ensureErr
++}
++
++func (f *fakeExecution) Get(context.Context, string) (execsvc.View, error) {
++	return f.getView, f.getErr
++}
++
++func (f *fakeExecution) List(context.Context, domain.ProjectID) ([]execsvc.View, error) {
++	return f.listViews, f.listErr
++}
++
++func (f *fakeExecution) Stop(_ context.Context, _ string, reason string) (execsvc.View, bool, error) {
++	f.lastReason = reason
++	return f.stopView, f.stopped, f.stopErr
++}
++
++func newExecutionServer(t *testing.T, svc controllers.ExecutionService) *httptest.Server {
++	t.Helper()
++	log := slog.New(slog.NewTextHandler(io.Discard, nil))
++	srv := httptest.NewServer(httpd.NewRouterWithControl(config.Config{}, log, nil, httpd.APIDeps{
++		Execution: svc,
++	}, httpd.ControlDeps{}))
++	t.Cleanup(srv.Close)
++	return srv
++}
++
++func executionView() execsvc.View {
++	now := time.Date(2026, 11, 25, 2, 0, 0, 0, time.UTC)
++	return execsvc.View{
++		External: domain.ExternalSession{
++			ExternalRef: "superagent:tk_1", ProjectID: "proj", SessionID: "proj-1",
++			AssignmentRef: "asg_1", CreatedAt: now, UpdatedAt: now,
++		},
++		Session: domain.Session{
++			SessionRecord: domain.SessionRecord{
++				ID: "proj-1", ProjectID: "proj", UpdatedAt: now,
++				Activity: domain.Activity{State: domain.ActivityBlocked, LastActivityAt: now},
++				Metadata: domain.SessionMetadata{LatestAssistantUpdate: "need approval"},
++			},
++			Status:        domain.StatusNeedsInput,
++			DisplayStatus: contract.DisplayBlocked,
++			KanbanColumn:  contract.KanbanBuilding,
++			PRs: []domain.PRFacts{{
++				URL: "https://github.com/acme/repo/pull/7", Number: 7, CI: contract.CIFailing,
++				Review: contract.ReviewChangesRequest, Mergeability: contract.MergeConflicting,
++			}},
++		},
++	}
++}
++
++func TestExecutionEnsureReturnsCreatedSession(t *testing.T) {
++	svc := &fakeExecution{ensureOut: execsvc.Outcome{
++		External: executionView().External, Session: executionView().Session, Created: true,
++	}}
++	srv := newExecutionServer(t, svc)
++	body, status, headers := doRequest(t, srv, "PUT", "/api/v1/execution/sessions/superagent:tk_1", `{"projectId":"proj","assignmentRef":"asg_1","requestFingerprint":"fp","prompt":"do it","displayName":"fix-login"}`)
++	assertJSON(t, headers)
++	if status != http.StatusCreated {
++		t.Fatalf("status = %d, want 201: %s", status, body)
++	}
++	var out controllers.EnsureExternalSessionResponse
++	if err := json.Unmarshal([]byte(body), &out); err != nil {
++		t.Fatalf("decode: %v", err)
++	}
++	if !out.Created || out.Session.ExternalRef != "superagent:tk_1" || out.Session.SessionID != "proj-1" {
++		t.Fatalf("response = %+v", out)
++	}
++	if !out.Session.Execution.NeedsPerson || out.Session.Execution.WaitingReason != "question" {
++		t.Fatalf("needsPerson = %+v, want question", out.Session.Execution)
++	}
++	if len(out.Session.Execution.PRs) != 1 || out.Session.Execution.PRs[0].State != "open" {
++		t.Fatalf("prs = %+v", out.Session.Execution.PRs)
++	}
++	if svc.lastEnsure.Spawn.ProjectID != "proj" || svc.lastEnsure.Spawn.DisplayName != "fix-login" {
++		t.Fatalf("ensure input = %+v", svc.lastEnsure)
++	}
++}
++
++func TestExecutionEnsureReusesExistingSession(t *testing.T) {
++	svc := &fakeExecution{ensureOut: execsvc.Outcome{
++		External: executionView().External, Session: executionView().Session, Created: false,
++	}}
++	srv := newExecutionServer(t, svc)
++	_, status, _ := doRequest(t, srv, "PUT", "/api/v1/execution/sessions/superagent:tk_1", `{"projectId":"proj","requestFingerprint":"fp"}`)
++	if status != http.StatusOK {
++		t.Fatalf("status = %d, want 200", status)
++	}
++}
++
++func TestExecutionGetUnknownIs404(t *testing.T) {
++	svc := &fakeExecution{getErr: apierr.NotFound("EXTERNAL_SESSION_NOT_FOUND", "Unknown external session")}
++	srv := newExecutionServer(t, svc)
++	body, status, headers := doRequest(t, srv, "GET", "/api/v1/execution/sessions/missing", "")
++	assertJSON(t, headers)
++	assertErrorCode(t, body, status, http.StatusNotFound, "EXTERNAL_SESSION_NOT_FOUND")
++}
++
++func TestExecutionStopIsIdempotentAndCarriesReason(t *testing.T) {
++	svc := &fakeExecution{stopView: executionView(), stopped: true}
++	srv := newExecutionServer(t, svc)
++	body, status, headers := doRequest(t, srv, "POST", "/api/v1/execution/sessions/superagent:tk_1/stop", `{"reason":"superseded"}`)
++	assertJSON(t, headers)
++	if status != http.StatusOK {
++		t.Fatalf("status = %d: %s", status, body)
++	}
++	if svc.lastReason != "superseded" {
++		t.Fatalf("reason = %q", svc.lastReason)
++	}
++	var out controllers.StopExternalSessionResponse
++	if err := json.Unmarshal([]byte(body), &out); err != nil {
++		t.Fatalf("decode: %v", err)
++	}
++	if !out.Stopped {
++		t.Fatalf("stopped = false")
++	}
++}
++
++func TestExecutionListRequiresProject(t *testing.T) {
++	srv := newExecutionServer(t, &fakeExecution{})
++	body, status, headers := doRequest(t, srv, "GET", "/api/v1/execution/sessions", "")
++	assertJSON(t, headers)
++	assertErrorCode(t, body, status, http.StatusBadRequest, "PROJECT_ID_REQUIRED")
++}
+diff --git a/backend/internal/service/execution/service.go b/backend/internal/service/execution/service.go
+new file mode 100644
+index 000000000..a6fb3bdc1
+--- /dev/null
++++ b/backend/internal/service/execution/service.go
+@@ -0,0 +1,233 @@
++// Package execution maps an external orchestrator's ticket/assignment lifecycle
++// onto AO sessions. SuperAgent owns the ticket, authorization and attention
++// layer; AO owns the session, worktree and PR/CI facts. This service is the
++// bridge's AO half: it makes session creation idempotent per external work item
++// and projects AO's derived session state back to the orchestrator.
++package execution
++
++import (
++	"context"
++	"fmt"
++	"strings"
++	"time"
++
++	"golang.org/x/sync/singleflight"
++
++	"github.com/aoagents/agent-orchestrator/backend/internal/domain"
++	"github.com/aoagents/agent-orchestrator/backend/internal/httpd/apierr"
++	"github.com/aoagents/agent-orchestrator/backend/internal/ports"
++	sessionsvc "github.com/aoagents/agent-orchestrator/backend/internal/service/session"
++)
++
++// Store is the durable mapping surface this service owns.
++type Store interface {
++	GetExternalSession(ctx context.Context, externalRef string) (domain.ExternalSession, bool, error)
++	CreateExternalSession(ctx context.Context, rec domain.ExternalSession) error
++	UpdateExternalSessionAssignment(ctx context.Context, externalRef, assignmentRef string, updatedAt time.Time) error
++	DeleteExternalSession(ctx context.Context, externalRef string) error
++	ListExternalSessionsByProject(ctx context.Context, project domain.ProjectID) ([]domain.ExternalSession, error)
++}
++
++// Sessions is the AO session lifecycle this service delegates to. It is the
++// concrete session service in production and a fake in tests.
++type Sessions interface {
++	Spawn(ctx context.Context, cfg ports.SpawnConfig) (domain.Session, int, int, error)
++	Get(ctx context.Context, id domain.SessionID) (domain.Session, error)
++	Kill(ctx context.Context, id domain.SessionID) (bool, error)
++	RollbackSpawn(ctx context.Context, id domain.SessionID) (sessionsvc.RollbackOutcome, error)
++}
++
++// Service is the external-execution bridge.
++type Service struct {
++	store    Store
++	sessions Sessions
++	now      func() time.Time
++	ensures  singleflight.Group
++}
++
++// New builds the service. store and sessions are required.
++func New(store Store, sessions Sessions) *Service {
++	return &Service{store: store, sessions: sessions, now: func() time.Time { return time.Now().UTC() }}
++}
++
++// EnsureInput asks AO to run one external work item's current assignment.
++// ExternalRef is the orchestrator's stable work-item id; AssignmentRef is the
++// execution generation within it; RequestFingerprint covers the immutable launch
++// parameters, so a changed launch request for the same ref is refused.
++type EnsureInput struct {
++	ExternalRef        string
++	ProjectID          domain.ProjectID
++	AssignmentRef      string
++	RequestFingerprint string
++	Spawn              ports.SpawnConfig
++}
++
++// Outcome is one ensured mapping plus whether this call created the session.
++type Outcome struct {
++	External domain.ExternalSession
++	Session  domain.Session
++	Created  bool
++}
++
++// View combines the durable mapping with AO's derived session read model.
++type View struct {
++	External domain.ExternalSession
++	Session  domain.Session
++}
++
++// Ensure returns the AO session for an external work item, creating it exactly
++// once. A repeated call with the same fingerprint reuses the session and only
++// advances assignment_ref; a different fingerprint is a conflict.
++func (s *Service) Ensure(ctx context.Context, in EnsureInput) (Outcome, error) {
++	in.ExternalRef = strings.TrimSpace(in.ExternalRef)
++	in.AssignmentRef = strings.TrimSpace(in.AssignmentRef)
++	in.RequestFingerprint = strings.TrimSpace(in.RequestFingerprint)
++	if in.ExternalRef == "" {
++		return Outcome{}, apierr.Invalid("EXTERNAL_REF_REQUIRED", "externalRef is required", nil)
++	}
++	if len(in.ExternalRef) > 256 {
++		return Outcome{}, apierr.Invalid("EXTERNAL_REF_TOO_LONG", "externalRef must be 256 characters or fewer", nil)
++	}
++	if in.RequestFingerprint == "" {
++		return Outcome{}, apierr.Invalid("REQUEST_FINGERPRINT_REQUIRED", "requestFingerprint is required", nil)
++	}
++	if in.ProjectID == "" {
++		return Outcome{}, apierr.Invalid("PROJECT_ID_REQUIRED", "projectId is required", nil)
++	}
++	if in.Spawn.ProjectID != "" && in.Spawn.ProjectID != in.ProjectID {
++		return Outcome{}, apierr.Invalid("PROJECT_MISMATCH", "spawn projectId must match the execution request", nil)
++	}
++	in.Spawn.ProjectID = in.ProjectID
++
++	result, err, _ := s.ensures.Do(in.ExternalRef, func() (any, error) {
++		return s.ensure(ctx, in)
++	})
++	if err != nil {
++		return Outcome{}, err
++	}
++	return result.(Outcome), nil
++}
++
++func (s *Service) ensure(ctx context.Context, in EnsureInput) (Outcome, error) {
++	existing, ok, err := s.store.GetExternalSession(ctx, in.ExternalRef)
++	if err != nil {
++		return Outcome{}, err
++	}
++	if ok {
++		return s.reuse(ctx, existing, in)
++	}
++
++	sess, _, _, err := s.sessions.Spawn(ctx, in.Spawn)
++	if err != nil {
++		return Outcome{}, err
++	}
++	now := s.now()
++	rec := domain.ExternalSession{
++		ExternalRef:        in.ExternalRef,
++		ProjectID:          in.ProjectID,
++		SessionID:          sess.ID,
++		AssignmentRef:      in.AssignmentRef,
++		RequestFingerprint: in.RequestFingerprint,
++		CreatedAt:          now,
++		UpdatedAt:          now,
++	}
++	if err := s.store.CreateExternalSession(ctx, rec); err != nil {
++		return s.recoverMappingConflict(ctx, sess.ID, in, err)
++	}
++	return Outcome{External: rec, Session: sess, Created: true}, nil
++}
++
++// reuse returns an existing mapping, advancing its assignment generation. A
++// changed launch fingerprint is a conflict rather than a silent reuse.
++func (s *Service) reuse(ctx context.Context, existing domain.ExternalSession, in EnsureInput) (Outcome, error) {
++	if existing.RequestFingerprint != in.RequestFingerprint {
++		return Outcome{}, apierr.Conflict("EXTERNAL_REF_CONFLICT",
++			"externalRef is already bound to a different launch request",
++			map[string]any{"sessionId": string(existing.SessionID), "projectId": string(existing.ProjectID)})
++	}
++	if existing.AssignmentRef != in.AssignmentRef {
++		now := s.now()
++		if err := s.store.UpdateExternalSessionAssignment(ctx, existing.ExternalRef, in.AssignmentRef, now); err != nil {
++			return Outcome{}, err
++		}
++		existing.AssignmentRef = in.AssignmentRef
++		existing.UpdatedAt = now
++	}
++	sess, err := s.sessions.Get(ctx, existing.SessionID)
++	if err != nil {
++		return Outcome{}, err
++	}
++	return Outcome{External: existing, Session: sess, Created: false}, nil
++}
++
++// recoverMappingConflict rolls back the session this call created when a
++// concurrent writer won the unique mapping, then returns the winner. The loser
++// of the race must never leave an orphan session behind.
++func (s *Service) recoverMappingConflict(ctx context.Context, spawned domain.SessionID, in EnsureInput, cause error) (Outcome, error) {
++	if _, rollbackErr := s.sessions.RollbackSpawn(ctx, spawned); rollbackErr != nil {
++		return Outcome{}, fmt.Errorf("record external session mapping: %w; rollback %s: %v", cause, spawned, rollbackErr)
++	}
++	winner, ok, readErr := s.store.GetExternalSession(ctx, in.ExternalRef)
++	if readErr != nil || !ok {
++		return Outcome{}, fmt.Errorf("record external session mapping: %w", cause)
++	}
++	return s.reuse(ctx, winner, in)
++}
++
++// Get projects the mapping and AO's derived session state.
++func (s *Service) Get(ctx context.Context, externalRef string) (View, error) {
++	rec, ok, err := s.store.GetExternalSession(ctx, strings.TrimSpace(externalRef))
++	if err != nil {
++		return View{}, err
++	}
++	if !ok {
++		return View{}, apierr.NotFound("EXTERNAL_SESSION_NOT_FOUND", "Unknown external session")
++	}
++	sess, err := s.sessions.Get(ctx, rec.SessionID)
++	if err != nil {
++		return View{}, err
++	}
++	return View{External: rec, Session: sess}, nil
++}
++
++// List projects every external session of a project, newest first.
++func (s *Service) List(ctx context.Context, project domain.ProjectID) ([]View, error) {
++	if project == "" {
++		return nil, apierr.Invalid("PROJECT_ID_REQUIRED", "projectId is required", nil)
++	}
++	recs, err := s.store.ListExternalSessionsByProject(ctx, project)
++	if err != nil {
++		return nil, err
++	}
++	out := make([]View, 0, len(recs))
++	for _, rec := range recs {
++		sess, err := s.sessions.Get(ctx, rec.SessionID)
++		if err != nil {
++			return nil, err
++		}
++		out = append(out, View{External: rec, Session: sess})
++	}
++	return out, nil
++}
++
++// Stop ends the external work item's AO session. It is idempotent: an already
++// terminated session is returned without a second teardown, and the mapping is
++// kept so a replaced orchestrator can still read the final state.
++func (s *Service) Stop(ctx context.Context, externalRef, reason string) (View, bool, error) {
++	view, err := s.Get(ctx, externalRef)
++	if err != nil {
++		return View{}, false, err
++	}
++	if view.Session.IsTerminated {
++		return view, false, nil
++	}
++	_ = strings.TrimSpace(reason)
++	if _, err := s.sessions.Kill(ctx, view.External.SessionID); err != nil {
++		return View{}, false, err
++	}
++	sess, err := s.sessions.Get(ctx, view.External.SessionID)
++	if err != nil {
++		return View{}, false, err
++	}
++	return View{External: view.External, Session: sess}, true, nil
++}
+diff --git a/backend/internal/service/execution/service_test.go b/backend/internal/service/execution/service_test.go
+new file mode 100644
+index 000000000..3fcf3bcc6
+--- /dev/null
++++ b/backend/internal/service/execution/service_test.go
+@@ -0,0 +1,315 @@
++package execution
++
++import (
++	"context"
++	"errors"
++	"fmt"
++	"sync"
++	"testing"
++	"time"
++
++	"github.com/aoagents/agent-orchestrator/backend/internal/domain"
++	"github.com/aoagents/agent-orchestrator/backend/internal/httpd/apierr"
++	"github.com/aoagents/agent-orchestrator/backend/internal/ports"
++	sessionsvc "github.com/aoagents/agent-orchestrator/backend/internal/service/session"
++)
++
++type fakeStore struct {
++	mu               sync.Mutex
++	mappings         map[string]domain.ExternalSession
++	createErr        error
++	hideBeforeCreate bool
++	createAttempted  bool
++	updates          []string
++}
++
++func newFakeStore() *fakeStore {
++	return &fakeStore{mappings: map[string]domain.ExternalSession{}}
++}
++
++func (s *fakeStore) GetExternalSession(_ context.Context, ref string) (domain.ExternalSession, bool, error) {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	rec, ok := s.mappings[ref]
++	if s.hideBeforeCreate && !s.createAttempted {
++		return domain.ExternalSession{}, false, nil
++	}
++	return rec, ok, nil
++}
++
++func (s *fakeStore) CreateExternalSession(_ context.Context, rec domain.ExternalSession) error {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	s.createAttempted = true
++	if s.createErr != nil {
++		return s.createErr
++	}
++	s.mappings[rec.ExternalRef] = rec
++	return nil
++}
++
++func (s *fakeStore) UpdateExternalSessionAssignment(_ context.Context, ref, assignment string, updatedAt time.Time) error {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	rec := s.mappings[ref]
++	rec.AssignmentRef = assignment
++	rec.UpdatedAt = updatedAt
++	s.mappings[ref] = rec
++	s.updates = append(s.updates, ref+"="+assignment)
++	return nil
++}
++
++func (s *fakeStore) DeleteExternalSession(_ context.Context, ref string) error {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	delete(s.mappings, ref)
++	return nil
++}
++
++func (s *fakeStore) ListExternalSessionsByProject(_ context.Context, project domain.ProjectID) ([]domain.ExternalSession, error) {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	var out []domain.ExternalSession
++	for _, rec := range s.mappings {
++		if rec.ProjectID == project {
++			out = append(out, rec)
++		}
++	}
++	return out, nil
++}
++
++type fakeSessions struct {
++	mu        sync.Mutex
++	spawned   []ports.SpawnConfig
++	killed    []domain.SessionID
++	rollbacks []domain.SessionID
++	sessions  map[domain.SessionID]domain.Session
++	next      int
++	spawnErr  error
++}
++
++func newFakeSessions() *fakeSessions {
++	return &fakeSessions{sessions: map[domain.SessionID]domain.Session{}}
++}
++
++func (f *fakeSessions) Spawn(_ context.Context, cfg ports.SpawnConfig) (domain.Session, int, int, error) {
++	f.mu.Lock()
++	defer f.mu.Unlock()
++	if f.spawnErr != nil {
++		return domain.Session{}, 0, 0, f.spawnErr
++	}
++	f.next++
++	id := domain.SessionID(fmt.Sprintf("proj-%d", f.next))
++	sess := domain.Session{
++		SessionRecord: domain.SessionRecord{ID: id, ProjectID: cfg.ProjectID, UpdatedAt: time.Now().UTC()},
++		Status:        domain.StatusWorking,
++	}
++	f.spawned = append(f.spawned, cfg)
++	f.sessions[id] = sess
++	return sess, 0, 0, nil
++}
++
++func (f *fakeSessions) Get(_ context.Context, id domain.SessionID) (domain.Session, error) {
++	f.mu.Lock()
++	defer f.mu.Unlock()
++	sess, ok := f.sessions[id]
++	if !ok {
++		return domain.Session{}, apierr.NotFound("SESSION_NOT_FOUND", "Unknown session")
++	}
++	return sess, nil
++}
++
++func (f *fakeSessions) Kill(_ context.Context, id domain.SessionID) (bool, error) {
++	f.mu.Lock()
++	defer f.mu.Unlock()
++	f.killed = append(f.killed, id)
++	sess := f.sessions[id]
++	sess.IsTerminated = true
++	f.sessions[id] = sess
++	return true, nil
++}
++
++func (f *fakeSessions) RollbackSpawn(_ context.Context, id domain.SessionID) (sessionsvc.RollbackOutcome, error) {
++	f.mu.Lock()
++	defer f.mu.Unlock()
++	f.rollbacks = append(f.rollbacks, id)
++	delete(f.sessions, id)
++	return sessionsvc.RollbackOutcome{Deleted: true}, nil
++}
++
++func spawnConfig(project domain.ProjectID) ports.SpawnConfig {
++	return ports.SpawnConfig{ProjectID: project, Harness: "claude-code", Prompt: "do it"}
++}
++
++func TestEnsureCreatesOnceAndAdvancesAssignment(t *testing.T) {
++	store, sessions := newFakeStore(), newFakeSessions()
++	svc := New(store, sessions)
++
++	first, err := svc.Ensure(context.Background(), EnsureInput{
++		ExternalRef: "superagent:tk_1", ProjectID: "proj", AssignmentRef: "asg_1",
++		RequestFingerprint: "fp", Spawn: spawnConfig("proj"),
++	})
++	if err != nil {
++		t.Fatalf("first ensure: %v", err)
++	}
++	if !first.Created || len(sessions.spawned) != 1 {
++		t.Fatalf("first ensure = %+v, spawned=%d; want created once", first, len(sessions.spawned))
++	}
++
++	second, err := svc.Ensure(context.Background(), EnsureInput{
++		ExternalRef: "superagent:tk_1", ProjectID: "proj", AssignmentRef: "asg_2",
++		RequestFingerprint: "fp", Spawn: spawnConfig("proj"),
++	})
++	if err != nil {
++		t.Fatalf("second ensure: %v", err)
++	}
++	if second.Created || len(sessions.spawned) != 1 {
++		t.Fatalf("second ensure = %+v, spawned=%d; want reuse", second, len(sessions.spawned))
++	}
++	if second.External.AssignmentRef != "asg_2" {
++		t.Fatalf("assignment = %q, want asg_2", second.External.AssignmentRef)
++	}
++}
++
++func TestEnsureRejectsChangedFingerprint(t *testing.T) {
++	store, sessions := newFakeStore(), newFakeSessions()
++	svc := New(store, sessions)
++	ctx := context.Background()
++	if _, err := svc.Ensure(ctx, EnsureInput{
++		ExternalRef: "ref", ProjectID: "proj", RequestFingerprint: "fp1", Spawn: spawnConfig("proj"),
++	}); err != nil {
++		t.Fatalf("seed ensure: %v", err)
++	}
++	_, err := svc.Ensure(ctx, EnsureInput{
++		ExternalRef: "ref", ProjectID: "proj", RequestFingerprint: "fp2", Spawn: spawnConfig("proj"),
++	})
++	var apiErr *apierr.Error
++	if !errors.As(err, &apiErr) || apiErr.Kind != apierr.KindConflict {
++		t.Fatalf("changed fingerprint error = %v, want conflict", err)
++	}
++	if len(sessions.spawned) != 1 {
++		t.Fatalf("spawned=%d, want no second spawn", len(sessions.spawned))
++	}
++}
++
++func TestEnsureRollsBackLostMappingRace(t *testing.T) {
++	store, sessions := newFakeStore(), newFakeSessions()
++	store.mappings["ref"] = domain.ExternalSession{
++		ExternalRef: "ref", ProjectID: "proj", SessionID: "proj-0",
++		RequestFingerprint: "fp", AssignmentRef: "winner",
++	}
++	sessions.sessions["proj-0"] = domain.Session{SessionRecord: domain.SessionRecord{ID: "proj-0", ProjectID: "proj"}}
++	store.createErr = errors.New("UNIQUE constraint failed")
++	store.hideBeforeCreate = true
++	svc := New(store, sessions)
++
++	got, err := svc.Ensure(context.Background(), EnsureInput{
++		ExternalRef: "ref", ProjectID: "proj", RequestFingerprint: "fp", Spawn: spawnConfig("proj"),
++	})
++	if err != nil {
++		t.Fatalf("ensure: %v", err)
++	}
++	if len(sessions.rollbacks) != 1 || sessions.rollbacks[0] != "proj-1" {
++		t.Fatalf("rollbacks = %v, want the spawned loser proj-1", sessions.rollbacks)
++	}
++	if got.External.SessionID != "proj-0" || got.Created {
++		t.Fatalf("winner = %+v, want existing proj-0", got)
++	}
++}
++
++func TestEnsureConcurrentSameRefCreatesOneSession(t *testing.T) {
++	store, sessions := newFakeStore(), newFakeSessions()
++	svc := New(store, sessions)
++	var wg sync.WaitGroup
++	for i := 0; i < 8; i++ {
++		wg.Add(1)
++		go func() {
++			defer wg.Done()
++			if _, err := svc.Ensure(context.Background(), EnsureInput{
++				ExternalRef: "ref", ProjectID: "proj", RequestFingerprint: "fp", Spawn: spawnConfig("proj"),
++			}); err != nil {
++				t.Errorf("ensure: %v", err)
++			}
++		}()
++	}
++	wg.Wait()
++	if len(sessions.spawned) != 1 {
++		t.Fatalf("spawned=%d, want exactly one", len(sessions.spawned))
++	}
++}
++
++func TestEnsureValidation(t *testing.T) {
++	svc := New(newFakeStore(), newFakeSessions())
++	for _, tc := range []struct {
++		name string
++		in   EnsureInput
++		code string
++	}{
++		{"missing ref", EnsureInput{ProjectID: "p", RequestFingerprint: "fp"}, "EXTERNAL_REF_REQUIRED"},
++		{"missing fingerprint", EnsureInput{ExternalRef: "r", ProjectID: "p"}, "REQUEST_FINGERPRINT_REQUIRED"},
++		{"missing project", EnsureInput{ExternalRef: "r", RequestFingerprint: "fp"}, "PROJECT_ID_REQUIRED"},
++	} {
++		t.Run(tc.name, func(t *testing.T) {
++			_, err := svc.Ensure(context.Background(), tc.in)
++			var apiErr *apierr.Error
++			if !errors.As(err, &apiErr) || apiErr.Code != tc.code {
++				t.Fatalf("error = %v, want %s", err, tc.code)
++			}
++		})
++	}
++}
++
++func TestStopIsIdempotent(t *testing.T) {
++	store, sessions := newFakeStore(), newFakeSessions()
++	svc := New(store, sessions)
++	ctx := context.Background()
++	out, err := svc.Ensure(ctx, EnsureInput{
++		ExternalRef: "ref", ProjectID: "proj", RequestFingerprint: "fp", Spawn: spawnConfig("proj"),
++	})
++	if err != nil {
++		t.Fatalf("ensure: %v", err)
++	}
++	if _, killed, err := svc.Stop(ctx, "ref", "superseded"); err != nil || !killed {
++		t.Fatalf("first stop killed=%v err=%v", killed, err)
++	}
++	if _, killed, err := svc.Stop(ctx, "ref", "superseded"); err != nil || killed {
++		t.Fatalf("second stop killed=%v err=%v, want idempotent no-op", killed, err)
++	}
++	if len(sessions.killed) != 1 || sessions.killed[0] != out.External.SessionID {
++		t.Fatalf("killed = %v, want one kill of %s", sessions.killed, out.External.SessionID)
++	}
++}
++
++func TestGetUnknownRef(t *testing.T) {
++	svc := New(newFakeStore(), newFakeSessions())
++	_, err := svc.Get(context.Background(), "missing")
++	var apiErr *apierr.Error
++	if !errors.As(err, &apiErr) || apiErr.Kind != apierr.KindNotFound {
++		t.Fatalf("error = %v, want not found", err)
++	}
++}
++
++func TestListProjectsExternalSessions(t *testing.T) {
++	store, sessions := newFakeStore(), newFakeSessions()
++	svc := New(store, sessions)
++	ctx := context.Background()
++	for _, ref := range []string{"a", "b"} {
++		if _, err := svc.Ensure(ctx, EnsureInput{
++			ExternalRef: ref, ProjectID: "proj", RequestFingerprint: "fp", Spawn: spawnConfig("proj"),
++		}); err != nil {
++			t.Fatalf("ensure %s: %v", ref, err)
++		}
++	}
++	if _, err := svc.Ensure(ctx, EnsureInput{
++		ExternalRef: "c", ProjectID: "other", RequestFingerprint: "fp", Spawn: spawnConfig("other"),
++	}); err != nil {
++		t.Fatalf("ensure other: %v", err)
++	}
++	got, err := svc.List(ctx, "proj")
++	if err != nil {
++		t.Fatalf("list: %v", err)
++	}
++	if len(got) != 2 {
++		t.Fatalf("listed %d, want 2", len(got))
++	}
++}
+diff --git a/backend/internal/storage/sqlite/gen/external_sessions.sql.go b/backend/internal/storage/sqlite/gen/external_sessions.sql.go
+new file mode 100644
+index 000000000..6841be929
+--- /dev/null
++++ b/backend/internal/storage/sqlite/gen/external_sessions.sql.go
+@@ -0,0 +1,127 @@
++// Code generated by sqlc. DO NOT EDIT.
++// versions:
++//   sqlc v1.31.1
++// source: external_sessions.sql
++
++package gen
++
++import (
++	"context"
++	"time"
++
++	"github.com/aoagents/agent-orchestrator/backend/internal/domain"
++)
++
++const createExternalSession = `-- name: CreateExternalSession :exec
++INSERT INTO external_sessions (
++    external_ref, project_id, session_id, assignment_ref, request_fingerprint, created_at, updated_at
++) VALUES (?, ?, ?, ?, ?, ?, ?)
++`
++
++type CreateExternalSessionParams struct {
++	ExternalRef        string
++	ProjectID          domain.ProjectID
++	SessionID          domain.SessionID
++	AssignmentRef      string
++	RequestFingerprint string
++	CreatedAt          time.Time
++	UpdatedAt          time.Time
++}
++
++func (q *Queries) CreateExternalSession(ctx context.Context, arg CreateExternalSessionParams) error {
++	_, err := q.db.ExecContext(ctx, createExternalSession,
++		arg.ExternalRef,
++		arg.ProjectID,
++		arg.SessionID,
++		arg.AssignmentRef,
++		arg.RequestFingerprint,
++		arg.CreatedAt,
++		arg.UpdatedAt,
++	)
++	return err
++}
++
++const deleteExternalSession = `-- name: DeleteExternalSession :exec
++DELETE FROM external_sessions WHERE external_ref = ?
++`
++
++func (q *Queries) DeleteExternalSession(ctx context.Context, externalRef string) error {
++	_, err := q.db.ExecContext(ctx, deleteExternalSession, externalRef)
++	return err
++}
++
++const getExternalSession = `-- name: GetExternalSession :one
++SELECT external_ref, project_id, session_id, assignment_ref, request_fingerprint, created_at, updated_at
++FROM external_sessions
++WHERE external_ref = ?
++`
++
++func (q *Queries) GetExternalSession(ctx context.Context, externalRef string) (ExternalSession, error) {
++	row := q.db.QueryRowContext(ctx, getExternalSession, externalRef)
++	var i ExternalSession
++	err := row.Scan(
++		&i.ExternalRef,
++		&i.ProjectID,
++		&i.SessionID,
++		&i.AssignmentRef,
++		&i.RequestFingerprint,
++		&i.CreatedAt,
++		&i.UpdatedAt,
++	)
++	return i, err
++}
++
++const listExternalSessionsByProject = `-- name: ListExternalSessionsByProject :many
++SELECT external_ref, project_id, session_id, assignment_ref, request_fingerprint, created_at, updated_at
++FROM external_sessions
++WHERE project_id = ?
++ORDER BY created_at DESC, external_ref
++`
++
++func (q *Queries) ListExternalSessionsByProject(ctx context.Context, projectID domain.ProjectID) ([]ExternalSession, error) {
++	rows, err := q.db.QueryContext(ctx, listExternalSessionsByProject, projectID)
++	if err != nil {
++		return nil, err
++	}
++	defer rows.Close()
++	items := []ExternalSession{}
++	for rows.Next() {
++		var i ExternalSession
++		if err := rows.Scan(
++			&i.ExternalRef,
++			&i.ProjectID,
++			&i.SessionID,
++			&i.AssignmentRef,
++			&i.RequestFingerprint,
++			&i.CreatedAt,
++			&i.UpdatedAt,
++		); err != nil {
++			return nil, err
++		}
++		items = append(items, i)
++	}
++	if err := rows.Close(); err != nil {
++		return nil, err
++	}
++	if err := rows.Err(); err != nil {
++		return nil, err
++	}
++	return items, nil
++}
++
++const updateExternalSessionAssignment = `-- name: UpdateExternalSessionAssignment :exec
++UPDATE external_sessions
++SET assignment_ref = ?, updated_at = ?
++WHERE external_ref = ?
++`
++
++type UpdateExternalSessionAssignmentParams struct {
++	AssignmentRef string
++	UpdatedAt     time.Time
++	ExternalRef   string
++}
++
++func (q *Queries) UpdateExternalSessionAssignment(ctx context.Context, arg UpdateExternalSessionAssignmentParams) error {
++	_, err := q.db.ExecContext(ctx, updateExternalSessionAssignment, arg.AssignmentRef, arg.UpdatedAt, arg.ExternalRef)
++	return err
++}
+diff --git a/backend/internal/storage/sqlite/gen/models.go b/backend/internal/storage/sqlite/gen/models.go
+index d46c77fcf..e718a325d 100644
+--- a/backend/internal/storage/sqlite/gen/models.go
++++ b/backend/internal/storage/sqlite/gen/models.go
+@@ -324,6 +324,16 @@ type ConversationTurn struct {
+ 	RetryOfTurnID        sql.NullString
+ }
+ 
++type ExternalSession struct {
++	ExternalRef        string
++	ProjectID          domain.ProjectID
++	SessionID          domain.SessionID
++	AssignmentRef      string
++	RequestFingerprint string
++	CreatedAt          time.Time
++	UpdatedAt          time.Time
++}
++
+ type ModelUsageEvent struct {
+ 	ID                       int64
+ 	BindingID                int64
+diff --git a/backend/internal/storage/sqlite/migrate_burned_versions_test.go b/backend/internal/storage/sqlite/migrate_burned_versions_test.go
+index 139b5109d..7dea02822 100644
+--- a/backend/internal/storage/sqlite/migrate_burned_versions_test.go
++++ b/backend/internal/storage/sqlite/migrate_burned_versions_test.go
+@@ -145,6 +145,7 @@ var shippedMigrations = map[int64]string{
+ 	138: "0138_usage_cache_creation_split.sql",
+ 	139: "0139_usage_acp_source.sql",
+ 	140: "0140_reconcile_acp_usage_schema.sql",
++	141: "0141_external_sessions.sql",
+ }
+ 
+ // burnedVersion reports version numbers that must never be (re)used: they
+diff --git a/backend/internal/storage/sqlite/migrations/0141_external_sessions.sql b/backend/internal/storage/sqlite/migrations/0141_external_sessions.sql
+new file mode 100644
+index 000000000..cee7aa382
+--- /dev/null
++++ b/backend/internal/storage/sqlite/migrations/0141_external_sessions.sql
+@@ -0,0 +1,33 @@
++-- Summary: durable mapping from an external orchestrator's work item to one AO session.
++--
++-- An external orchestrator (for example SuperAgent) owns the ticket/assignment
++-- lifecycle; AO owns the execution session, worktree, and PR/CI facts. This table
++-- is the only durable link between the two: it makes session creation idempotent
++-- across retries and daemon restarts, and it lets a replaced orchestrator find
++-- the session it already asked AO to run.
++--
++-- external_ref is the orchestrator's stable work-item id and is globally unique:
++-- orchestrators namespace their refs (for example "superagent:tk_123"). The
++-- session_id unique constraint keeps one AO session mapped to at most one
++-- external work item. request_fingerprint covers the immutable launch parameters;
++-- a different fingerprint for the same ref is a conflict, not a silent reuse.
++-- No CDC trigger is added: the row is orchestrator bookkeeping, not a session
++-- fact the Kanban reads.
++-- +goose Up
++-- +goose StatementBegin
++CREATE TABLE external_sessions (
++    external_ref        TEXT PRIMARY KEY,
++    project_id          TEXT NOT NULL REFERENCES projects (id),
++    session_id          TEXT NOT NULL UNIQUE REFERENCES sessions (id) ON DELETE CASCADE,
++    assignment_ref      TEXT NOT NULL DEFAULT '',
++    request_fingerprint TEXT NOT NULL,
++    created_at          TIMESTAMP NOT NULL,
++    updated_at          TIMESTAMP NOT NULL
++);
++CREATE INDEX idx_external_sessions_project ON external_sessions (project_id);
++-- +goose StatementEnd
++
++-- +goose Down
++-- +goose StatementBegin
++DROP TABLE external_sessions;
++-- +goose StatementEnd
+diff --git a/backend/internal/storage/sqlite/queries/external_sessions.sql b/backend/internal/storage/sqlite/queries/external_sessions.sql
+new file mode 100644
+index 000000000..190e4f922
+--- /dev/null
++++ b/backend/internal/storage/sqlite/queries/external_sessions.sql
+@@ -0,0 +1,23 @@
++-- name: GetExternalSession :one
++SELECT external_ref, project_id, session_id, assignment_ref, request_fingerprint, created_at, updated_at
++FROM external_sessions
++WHERE external_ref = ?;
++
++-- name: CreateExternalSession :exec
++INSERT INTO external_sessions (
++    external_ref, project_id, session_id, assignment_ref, request_fingerprint, created_at, updated_at
++) VALUES (?, ?, ?, ?, ?, ?, ?);
++
++-- name: UpdateExternalSessionAssignment :exec
++UPDATE external_sessions
++SET assignment_ref = ?, updated_at = ?
++WHERE external_ref = ?;
++
++-- name: DeleteExternalSession :exec
++DELETE FROM external_sessions WHERE external_ref = ?;
++
++-- name: ListExternalSessionsByProject :many
++SELECT external_ref, project_id, session_id, assignment_ref, request_fingerprint, created_at, updated_at
++FROM external_sessions
++WHERE project_id = ?
++ORDER BY created_at DESC, external_ref;
+diff --git a/backend/internal/storage/sqlite/store/external_session_store.go b/backend/internal/storage/sqlite/store/external_session_store.go
+new file mode 100644
+index 000000000..1040d0970
+--- /dev/null
++++ b/backend/internal/storage/sqlite/store/external_session_store.go
+@@ -0,0 +1,95 @@
++package store
++
++import (
++	"context"
++	"database/sql"
++	"errors"
++	"fmt"
++	"time"
++
++	"github.com/aoagents/agent-orchestrator/backend/internal/domain"
++	"github.com/aoagents/agent-orchestrator/backend/internal/storage/sqlite/gen"
++)
++
++// GetExternalSession returns the mapping for an external work item, or ok=false
++// when no orchestrator has claimed one.
++func (s *Store) GetExternalSession(ctx context.Context, externalRef string) (domain.ExternalSession, bool, error) {
++	row, err := s.qr.GetExternalSession(ctx, externalRef)
++	if errors.Is(err, sql.ErrNoRows) {
++		return domain.ExternalSession{}, false, nil
++	}
++	if err != nil {
++		return domain.ExternalSession{}, false, fmt.Errorf("get external session %q: %w", externalRef, err)
++	}
++	return externalSessionFromRow(row), true, nil
++}
++
++// CreateExternalSession records the mapping. The session_id unique constraint
++// keeps one AO session bound to one external work item; a duplicate returns the
++// database error unchanged so the caller can re-read the winner.
++func (s *Store) CreateExternalSession(ctx context.Context, rec domain.ExternalSession) error {
++	s.writeMu.Lock()
++	defer s.writeMu.Unlock()
++	if err := s.qw.CreateExternalSession(ctx, gen.CreateExternalSessionParams{
++		ExternalRef:        rec.ExternalRef,
++		ProjectID:          rec.ProjectID,
++		SessionID:          rec.SessionID,
++		AssignmentRef:      rec.AssignmentRef,
++		RequestFingerprint: rec.RequestFingerprint,
++		CreatedAt:          rec.CreatedAt,
++		UpdatedAt:          rec.UpdatedAt,
++	}); err != nil {
++		return fmt.Errorf("create external session %q: %w", rec.ExternalRef, err)
++	}
++	return nil
++}
++
++// UpdateExternalSessionAssignment advances the current assignment generation
++// without changing the session or its immutable launch fingerprint.
++func (s *Store) UpdateExternalSessionAssignment(ctx context.Context, externalRef, assignmentRef string, updatedAt time.Time) error {
++	s.writeMu.Lock()
++	defer s.writeMu.Unlock()
++	if err := s.qw.UpdateExternalSessionAssignment(ctx, gen.UpdateExternalSessionAssignmentParams{
++		AssignmentRef: assignmentRef,
++		UpdatedAt:     updatedAt,
++		ExternalRef:   externalRef,
++	}); err != nil {
++		return fmt.Errorf("update external session %q: %w", externalRef, err)
++	}
++	return nil
++}
++
++// DeleteExternalSession removes a mapping. It never touches the AO session.
++func (s *Store) DeleteExternalSession(ctx context.Context, externalRef string) error {
++	s.writeMu.Lock()
++	defer s.writeMu.Unlock()
++	if err := s.qw.DeleteExternalSession(ctx, externalRef); err != nil {
++		return fmt.Errorf("delete external session %q: %w", externalRef, err)
++	}
++	return nil
++}
++
++// ListExternalSessionsByProject returns the project's mappings, newest first.
++func (s *Store) ListExternalSessionsByProject(ctx context.Context, project domain.ProjectID) ([]domain.ExternalSession, error) {
++	rows, err := s.qr.ListExternalSessionsByProject(ctx, project)
++	if err != nil {
++		return nil, fmt.Errorf("list external sessions for %s: %w", project, err)
++	}
++	out := make([]domain.ExternalSession, 0, len(rows))
++	for _, row := range rows {
++		out = append(out, externalSessionFromRow(row))
++	}
++	return out, nil
++}
++
++func externalSessionFromRow(row gen.ExternalSession) domain.ExternalSession {
++	return domain.ExternalSession{
++		ExternalRef:        row.ExternalRef,
++		ProjectID:          row.ProjectID,
++		SessionID:          row.SessionID,
++		AssignmentRef:      row.AssignmentRef,
++		RequestFingerprint: row.RequestFingerprint,
++		CreatedAt:          row.CreatedAt,
++		UpdatedAt:          row.UpdatedAt,
++	}
++}
+diff --git a/backend/sqlc.yaml b/backend/sqlc.yaml
+index 92ef87369..3da8617e0 100644
+--- a/backend/sqlc.yaml
++++ b/backend/sqlc.yaml
+@@ -88,6 +88,14 @@ sql:
+             go_type:
+               import: "github.com/aoagents/agent-orchestrator/backend/internal/domain"
+               type: "SessionID"
++          - column: "external_sessions.project_id"
++            go_type:
++              import: "github.com/aoagents/agent-orchestrator/backend/internal/domain"
++              type: "ProjectID"
++          - column: "external_sessions.session_id"
++            go_type:
++              import: "github.com/aoagents/agent-orchestrator/backend/internal/domain"
++              type: "SessionID"
+           - column: "sessions.id"
+             go_type:
+               import: "github.com/aoagents/agent-orchestrator/backend/internal/domain"
+diff --git a/docs/integrations/superagent.md b/docs/integrations/superagent.md
+new file mode 100644
+index 000000000..dddea5758
+--- /dev/null
++++ b/docs/integrations/superagent.md
+@@ -0,0 +1,136 @@
++# SuperAgent 执行桥接契约
++
++> 面向外部编排器（当前是 DeepSeek SuperAgent）的 AO 执行接口。SuperAgent 保留 Router/Ticket/Mandate/注意力层；AO 只负责单个工作区内的 session、worktree、harness 与 PR/CI 事实。本文描述 AO 侧契约，不把 Ticket 概念引入 AO。
++
++## 1. 边界
++
++| 层 | 负责 |
++|---|---|
++| SuperAgent Router | 人类入口、Source、Trigger 去重、Policy/Authorization、Eval、Ticket、Mandate、Report、注意力 |
++| 桥接层（SuperAgent 侧） | workspace registry、`workspaceRef → AO projectId` 解析、`Ticket/Assignment → externalRef` 幂等键、Report 轮询、重试/恢复 |
++| AO | project、隔离 worktree、harness 会话、Chat/TUI、activity、PR/CI/review、Kanban 派生状态 |
++
++一个 **Ticket 只属于一个 workspace**。workspace 在 AO 里就是一个 project；跨 workspace 的请求拆成多个 Ticket。AO 不知道 Ticket，也不知道 workspace alias。
++
++## 2. 幂等键
++
++- `externalRef`：编排器生成的稳定工作项 id，全局唯一，建议带命名空间，例如 `superagent:tk_123`。
++- `assignmentRef`：同一工作项内的执行代次，例如 `asg_01`；重试时递增。
++- `requestFingerprint`：不可变启动参数的稳定哈希（project、harness、model、mode、branch、prompt、displayName）。同一 `externalRef` 换 fingerprint = `409 EXTERNAL_REF_CONFLICT`，不静默复用。
++
++同一 `externalRef` + 同一 fingerprint 重复 `PUT` 返回已有 session（`created=false`），只推进 `assignmentRef`。这保证 effect 重放、桥接重启、AO daemon 重启都不会重复创建 worktree。
++
++## 3. 接口
++
++### 3.1 Ensure
++
++`PUT /api/v1/execution/sessions/{externalRef}`
++
++```json
++{
++  "projectId": "mer",
++  "assignmentRef": "asg_01",
++  "requestFingerprint": "sha256:…",
++  "prompt": "……",
++  "displayName": "fix-login",
++  "harness": "claude-code",
++  "model": "sonnet-5",
++  "mode": "chat",
++  "branch": "agent/tk_123"
++}
++```
++
++返回 `201`（新建）或 `200`（复用）：
++
++```json
++{
++  "created": true,
++  "session": {
++    "externalRef": "superagent:tk_123",
++    "assignmentRef": "asg_01",
++    "projectId": "mer",
++    "sessionId": "mer-42",
++    "createdAt": "…",
++    "updatedAt": "…",
++    "execution": { "status": "working", "needsPerson": false, "…": "…" }
++  }
++}
++```
++
++### 3.2 State
++
++`GET /api/v1/execution/sessions/{externalRef}`
++
++返回同一个 `session` 形状。`execution` 是 AO 在读取时派生的，不落库：
++
++| 字段 | 含义 |
++|---|---|
++| `status`, `displayStatus`, `kanbanColumn` | AO 的派生状态（与面板同源） |
++| `activity` | `active/idle/waiting_input/blocked/exited` |
++| `isTerminated` | session 是否已终止 |
++| `needsPerson` + `waitingReason` | 是否在等人；`question/approval/input` |
++| `latestAssistantUpdate`, `latestUserPrompt` | 最近的 agent/人消息摘要 |
++| `prs[]` | PR URL、number、state、CI、review、mergeability |
++| `updatedAt` | 轮询去重依据 |
++
++`needsPerson` 只覆盖“人必须回答/批准/输入”；CI 失败和 review changes 不算，因为 AO 的 worker 会处理。
++
++### 3.3 Stop
++
++`POST /api/v1/execution/sessions/{externalRef}/stop`，body `{"reason":"superseded"}`。
++
++幂等：已终止返回 `200` + `stopped=false`；否则 kill session 并返回 `stopped=true`。worktree 不删除（AO 禁止强删 dirty worktree），由 AO 的 cleanup 策略处理。
++
++### 3.4 List / reconcile
++
++`GET /api/v1/execution/sessions?projectId=mer` 返回该 project 的全部外部工作项。桥接启动或 AO 重启后按 `externalRef` 逐个 `GET`，以 Assignment 为意图真相、session 为执行事实，恢复或标记失败。
++
++## 4. 投递输入
++
++AO 不新增投递路径。桥接用现有：
++
++`POST /api/v1/sessions/{sessionId}/conversation/messages`
++
++```json
++{"text":"……","clientMessageId":"input_01"}
++```
++
++`clientMessageId` 幂等；返回 `duplicate=true` 时不要重发。`state=queued|running` 表示已接收；`running` 才是 agent 已拾取。
++
++## 5. 状态映射（桥接侧）
++
++| SuperAgent | AO 事实 | 动作 |
++|---|---|---|
++| Assignment assigned | ensure 成功 | 不重复创建 |
++| Worker active | `status=working` 或 `activity=active` | 静默 |
++| Worker waiting | `status=idle` / `activity=idle` 且无未读输入 | `report waiting` |
++| Worker ready | PR 已开/已批准/可合并，且 turn 结束 | `report ready` + PR link |
++| Worker blocked | `needsPerson=true` | `report blocked` + 结构化 human_action |
++| Worker failed | 启动失败 / harness 非零退出 / `terminated` 且无 PR | `report failed` |
++| Worker dropped | stop 完成 | `report dropped` |
++| CI failed / review changes | PR facts | 作为 Input 投回同一 worker（AO 已有 auto-inject） |
++
++## 6. 工作区解析
++
++workspace registry 在桥接层，不在 AO：
++
++```yaml
++workspaces:
++  - ref: checkout
++    alias: 结算服务
++    repoURL: https://github.com/acme/checkout
++    aoProjectId: checkout
++    harness: claude-code
++    model: sonnet-5
++```
++
++- 新 workspace：人改配置 + 热加载；不在 Router 里自动注册未授权仓库。
++- 解析优先级：上游显式 workspaceRef → Source repo 命中 → 文本别名唯一命中 → 线程粘性（TTL） → 唯一启发 → 问一次。
++- 面向人的文案只用 alias（`[结算服务] 已开 PR…`），不暴露 worktree 路径或 projectId。
++
++## 7. 非目标
++
++- 不把 Policy/Mandate/Ticket/Source 搬进 AO。
++- 不让 AO 自动注册 workspace（权限模型在桥接层）。
++- 不做跨 workspace 的共享 session。
++- 首个 PR 不含 SSE/webhook；桥接用轮询 + `updatedAt` 去重，SSE 作为后续增强。
+diff --git a/frontend/src/api/schema.ts b/frontend/src/api/schema.ts
+index 76c9824d9..3098e73d5 100644
+--- a/frontend/src/api/schema.ts
++++ b/frontend/src/api/schema.ts
+@@ -532,6 +532,58 @@ export interface paths {
+         patch?: never;
+         trace?: never;
+     };
++    "/api/v1/execution/sessions": {
++        parameters: {
++            query?: never;
++            header?: never;
++            path?: never;
++            cookie?: never;
++        };
++        /** List a project's external work items and their execution state */
++        get: operations["listExternalSessions"];
++        put?: never;
++        post?: never;
++        delete?: never;
++        options?: never;
++        head?: never;
++        patch?: never;
++        trace?: never;
++    };
++    "/api/v1/execution/sessions/{externalRef}": {
++        parameters: {
++            query?: never;
++            header?: never;
++            path?: never;
++            cookie?: never;
++        };
++        /** Read an external work item's AO session and derived execution state */
++        get: operations["getExternalSession"];
++        /** Ensure one AO session for an external work item (idempotent) */
++        put: operations["ensureExternalSession"];
++        post?: never;
++        delete?: never;
++        options?: never;
++        head?: never;
++        patch?: never;
++        trace?: never;
++    };
++    "/api/v1/execution/sessions/{externalRef}/stop": {
++        parameters: {
++            query?: never;
++            header?: never;
++            path?: never;
++            cookie?: never;
++        };
++        get?: never;
++        put?: never;
++        /** Stop an external work item's AO session (idempotent) */
++        post: operations["stopExternalSession"];
++        delete?: never;
++        options?: never;
++        head?: never;
++        patch?: never;
++        trace?: never;
++    };
+     "/api/v1/identity": {
+         parameters: {
+             query?: never;
+@@ -3377,6 +3429,26 @@ export interface components {
+             accountIds?: string[];
+             includeUsage?: boolean;
+         };
++        EnsureExternalSessionRequest: {
++            /** @description Current execution generation within the external work item. */
++            assignmentRef?: string;
++            branch?: string;
++            displayName?: string;
++            /** @enum {string} */
++            harness?: "claude-code" | "codex" | "aider" | "opencode" | "grok" | "droid" | "amp" | "agy" | "crush" | "cursor" | "qwen" | "copilot" | "goose" | "auggie" | "continue" | "devin" | "cline" | "kimi" | "muse" | "kiro" | "kilocode" | "vibe" | "pi" | "kimchi" | "omp" | "prime-agent" | "autohand";
++            issueId?: string;
++            /** @enum {string} */
++            mode?: "chat" | "tui";
++            model?: string;
++            projectId: string;
++            prompt?: string;
++            /** @description Stable hash of the immutable launch parameters. A changed fingerprint for the same externalRef is a conflict. */
++            requestFingerprint: string;
++        };
++        EnsureExternalSessionResponse: {
++            created: boolean;
++            session: components["schemas"]["ExternalSessionView"];
++        };
+         EstimatedCostResponse: {
+             /** Format: int64 */
+             cachedInputNanos: null | number;
+@@ -3402,6 +3474,49 @@ export interface components {
+             session: components["schemas"]["ControllersSessionView"];
+             sessionId: string;
+         };
++        ExternalSessionExecutionView: {
++            /** @enum {string} */
++            activity: "active" | "idle" | "waiting_input" | "blocked" | "exited";
++            /** Format: date-time */
++            activityAt: string;
++            branch?: string;
++            /** @enum {string} */
++            displayStatus: "Working" | "Blocked" | "Exited" | "No signal" | "Awaiting PR" | "Fixing CI failures" | "Addressing comments" | "Needs review" | "Review scheduled" | "Reviewing" | "Review pending" | "Draft" | "CI failing" | "Commented" | "Changes requested" | "Needs human review" | "Mergeable" | "Approved" | "Merged" | "Closed without merge" | "Terminated";
++            isTerminated: boolean;
++            /** @enum {string} */
++            kanbanColumn: "building" | "validating" | "needs_review" | "ready" | "archive";
++            latestAssistantUpdate?: string;
++            latestUserPrompt?: string;
++            /** @description True when AO is waiting on a human decision, approval, or input. */
++            needsPerson: boolean;
++            prs?: components["schemas"]["ExternalSessionPRView"][];
++            /** @enum {string} */
++            status: "working" | "pr_open" | "draft" | "ci_failed" | "review_pending" | "changes_requested" | "approved" | "mergeable" | "merged" | "needs_input" | "exited" | "idle" | "terminated" | "no_signal";
++            /** Format: date-time */
++            updatedAt: string;
++            /** @enum {string} */
++            waitingReason?: "question" | "approval" | "input";
++        };
++        ExternalSessionPRView: {
++            ci?: string;
++            mergeability?: string;
++            number: number;
++            review?: string;
++            /** @enum {string} */
++            state: "draft" | "open" | "merged" | "closed";
++            url: string;
++        };
++        ExternalSessionView: {
++            assignmentRef?: string;
++            /** Format: date-time */
++            createdAt: string;
++            execution: components["schemas"]["ExternalSessionExecutionView"];
++            externalRef: string;
++            projectId: string;
++            sessionId: string;
++            /** Format: date-time */
++            updatedAt: string;
++        };
+         FirstTokenCoverageResponse: {
+             /**
+              * Format: int64
+@@ -3414,6 +3529,9 @@ export interface components {
+              */
+             total: number;
+         };
++        GetExternalSessionResponse: {
++            session: components["schemas"]["ExternalSessionView"];
++        };
+         GitHubRepositoryPreparation: {
+             name?: string;
+             owner?: string;
+@@ -3547,6 +3665,9 @@ export interface components {
+         ListCompactSessionUsageResponse: {
+             sessions: components["schemas"]["CompactSessionUsageResponse"][];
+         };
++        ListExternalSessionsResponse: {
++            sessions: components["schemas"]["ExternalSessionView"][];
++        };
+         ListNotificationsResponse: {
+             nextCursor?: string;
+             notifications: components["schemas"]["NotificationResponse"][];
+@@ -4346,6 +4467,13 @@ export interface components {
+             activityId?: string;
+             providerTurnId: string;
+         };
++        StopExternalSessionRequest: {
++            reason?: string;
++        };
++        StopExternalSessionResponse: {
++            session: components["schemas"]["ExternalSessionView"];
++            stopped: boolean;
++        };
+         SubmitAgentHandoffRequest: {
+             /** @description Structured, source-agent-authored handoff enrichment. */
+             handoff: unknown;
+@@ -6226,6 +6354,250 @@ export interface operations {
+             };
+         };
+     };
++    listExternalSessions: {
++        parameters: {
++            query: {
++                /** @description Project whose external sessions to list. */
++                projectId: string;
++            };
++            header?: never;
++            path?: never;
++            cookie?: never;
++        };
++        requestBody?: never;
++        responses: {
++            /** @description OK */
++            200: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["ListExternalSessionsResponse"];
++                };
++            };
++            /** @description Bad Request */
++            400: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Internal Server Error */
++            500: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Not Implemented */
++            501: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++        };
++    };
++    getExternalSession: {
++        parameters: {
++            query?: never;
++            header?: never;
++            path: {
++                /** @description External orchestrator work-item id, e.g. superagent:tk_123. */
++                externalRef: string;
++            };
++            cookie?: never;
++        };
++        requestBody?: never;
++        responses: {
++            /** @description OK */
++            200: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["GetExternalSessionResponse"];
++                };
++            };
++            /** @description Not Found */
++            404: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Internal Server Error */
++            500: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Not Implemented */
++            501: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++        };
++    };
++    ensureExternalSession: {
++        parameters: {
++            query?: never;
++            header?: never;
++            path: {
++                /** @description External orchestrator work-item id, e.g. superagent:tk_123. */
++                externalRef: string;
++            };
++            cookie?: never;
++        };
++        requestBody: {
++            content: {
++                "application/json": components["schemas"]["EnsureExternalSessionRequest"];
++            };
++        };
++        responses: {
++            /** @description OK */
++            200: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["EnsureExternalSessionResponse"];
++                };
++            };
++            /** @description Created */
++            201: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["EnsureExternalSessionResponse"];
++                };
++            };
++            /** @description Bad Request */
++            400: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Not Found */
++            404: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Conflict */
++            409: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Internal Server Error */
++            500: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Not Implemented */
++            501: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++        };
++    };
++    stopExternalSession: {
++        parameters: {
++            query?: never;
++            header?: never;
++            path: {
++                /** @description External orchestrator work-item id, e.g. superagent:tk_123. */
++                externalRef: string;
++            };
++            cookie?: never;
++        };
++        requestBody: {
++            content: {
++                "application/json": components["schemas"]["StopExternalSessionRequest"];
++            };
++        };
++        responses: {
++            /** @description OK */
++            200: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["StopExternalSessionResponse"];
++                };
++            };
++            /** @description Bad Request */
++            400: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Not Found */
++            404: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Internal Server Error */
++            500: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++            /** @description Not Implemented */
++            501: {
++                headers: {
++                    [name: string]: unknown;
++                };
++                content: {
++                    "application/json": components["schemas"]["APIError"];
++                };
++            };
++        };
++    };
+     getIdentity: {
+         parameters: {
+             query?: never;
+-- 
+2.34.1
+
+
+From 3b27432058961d0a0bd692a2f5a7e11bb855795d Mon Sep 17 00:00:00 2001
+From: ds4syk <350989528+ds4syk@users.noreply.github.com>
+Date: Wed, 25 Nov 2026 02:04:59 +0800
+Subject: [PATCH 2/2] =?UTF-8?q?feat(execution):=20=E5=A2=9E=E5=8A=A0?=
+ =?UTF-8?q?=E8=BD=AE=E8=AF=A2=20revision=20=E5=B9=B6=E9=87=8D=E6=96=B0?=
+ =?UTF-8?q?=E7=94=9F=E6=88=90=20API=20=E5=A5=91=E7=BA=A6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ backend/internal/httpd/apispec/openapi.yaml          | 4 ++++
+ backend/internal/httpd/controllers/dto.go            | 4 ++++
+ backend/internal/httpd/controllers/execution.go      | 1 +
+ backend/internal/httpd/controllers/execution_test.go | 3 +++
+ frontend/src/api/schema.ts                           | 2 ++
+ 5 files changed, 14 insertions(+)
+
+diff --git a/backend/internal/httpd/apispec/openapi.yaml b/backend/internal/httpd/apispec/openapi.yaml
+index a13af1c7f..cb2045d13 100644
+--- a/backend/internal/httpd/apispec/openapi.yaml
++++ b/backend/internal/httpd/apispec/openapi.yaml
+@@ -9978,6 +9978,9 @@ components:
+           items:
+             $ref: '#/components/schemas/ExternalSessionPRView'
+           type: array
++        revision:
++          format: int64
++          type: integer
+         status:
+           enum:
+           - working
+@@ -10013,6 +10016,7 @@ components:
+       - isTerminated
+       - needsPerson
+       - updatedAt
++      - revision
+       type: object
+     ExternalSessionPRView:
+       properties:
+diff --git a/backend/internal/httpd/controllers/dto.go b/backend/internal/httpd/controllers/dto.go
+index b254e4209..02c5bd0cd 100644
+--- a/backend/internal/httpd/controllers/dto.go
++++ b/backend/internal/httpd/controllers/dto.go
+@@ -2702,6 +2702,10 @@ type ExternalSessionExecutionView struct {
+ 	Branch                string               `json:"branch,omitempty"`
+ 	PRs                   []ExternalSessionPRView `json:"prs,omitempty"`
+ 	UpdatedAt             time.Time            `json:"updatedAt"`
++	// Revision is an opaque monotonic token for polling. It changes when the
++	// durable session or PR facts change; a client compares it with a state
++	// fingerprint to dedupe reports.
++	Revision int64 `json:"revision"`
+ }
+ 
+ // ExternalSessionView is one external work item's durable mapping plus AO's
+diff --git a/backend/internal/httpd/controllers/execution.go b/backend/internal/httpd/controllers/execution.go
+index d48cdf51a..8f06d8978 100644
+--- a/backend/internal/httpd/controllers/execution.go
++++ b/backend/internal/httpd/controllers/execution.go
+@@ -188,6 +188,7 @@ func externalSessionView(view execsvc.View) ExternalSessionView {
+ 			Branch:                view.Session.Metadata.Branch,
+ 			PRs:                   prs,
+ 			UpdatedAt:             view.Session.UpdatedAt,
++			Revision:              view.Session.UpdatedAt.UnixNano(),
+ 		},
+ 	}
+ }
+diff --git a/backend/internal/httpd/controllers/execution_test.go b/backend/internal/httpd/controllers/execution_test.go
+index 565eb0207..1768d3350 100644
+--- a/backend/internal/httpd/controllers/execution_test.go
++++ b/backend/internal/httpd/controllers/execution_test.go
+@@ -102,6 +102,9 @@ func TestExecutionEnsureReturnsCreatedSession(t *testing.T) {
+ 	if !out.Created || out.Session.ExternalRef != "superagent:tk_1" || out.Session.SessionID != "proj-1" {
+ 		t.Fatalf("response = %+v", out)
+ 	}
++	if out.Session.Execution.Revision == 0 {
++		t.Fatalf("revision = 0, want a non-zero polling token")
++	}
+ 	if !out.Session.Execution.NeedsPerson || out.Session.Execution.WaitingReason != "question" {
+ 		t.Fatalf("needsPerson = %+v, want question", out.Session.Execution)
+ 	}
+diff --git a/frontend/src/api/schema.ts b/frontend/src/api/schema.ts
+index 3098e73d5..0fc842b9f 100644
+--- a/frontend/src/api/schema.ts
++++ b/frontend/src/api/schema.ts
+@@ -3490,6 +3490,8 @@ export interface components {
+             /** @description True when AO is waiting on a human decision, approval, or input. */
+             needsPerson: boolean;
+             prs?: components["schemas"]["ExternalSessionPRView"][];
++            /** Format: int64 */
++            revision: number;
+             /** @enum {string} */
+             status: "working" | "pr_open" | "draft" | "ci_failed" | "review_pending" | "changes_requested" | "approved" | "mergeable" | "merged" | "needs_input" | "exited" | "idle" | "terminated" | "no_signal";
+             /** Format: date-time */
+-- 
+2.34.1
+
