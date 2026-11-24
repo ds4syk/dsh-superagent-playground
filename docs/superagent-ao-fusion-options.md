@@ -192,3 +192,45 @@ MVP 取两者交集、先做最稳的：**`external_sessions` 幂等映射 + `GE
 1. 生产部署：SuperAgent Router 与 AO daemon 是否在同一台机器？跨机时需要 base URL、认证和网络策略。
 2. SuperAgent 侧是否可以接受一个 fork/patch（`AoExecutor` + 组合根选择器）？还是只交付 AO 侧契约 + 适配说明。
 3. 是否同意“先 A 后 B”的顺序；如果只想先看 B，我可以直接做 B 的 AO 执行契约（PR 1），但联调要等 SuperAgent 侧 patch。
+
+## 6. 关键澄清：桥接层（2026-11-25 owner）
+
+Owner 补充了真正的目标：
+
+> SuperAgent 的要点在于人类入口与工作区的解耦，工作区不必成为人类的认知负担，从而人可以通过一个对话 agent 去管理多个工作区。在单个管理的工作区中，AO 的架构更具优势。问题在于怎么处理好其中的桥接层。
+
+这确认了 B，并把设计重心从“谁在上”转到“桥接层怎么切”：
+
+```
+一个人类对话入口（SuperAgent Router，Feishu/GitHub）
+        │  人只说“在 workspace X 做 Y”
+        ▼
+Workspace Registry（bridge 配置：workspaceRef → AO project/repo）
+        │
+        ▼
+SuperAgent Ticket（一个 Ticket 只属于一个 workspace）
+        │  Executor.start/deliver/stop
+        ▼
+AO Execution Contract（external_ref + project_id + session_id）
+        │
+        ▼
+AO 单工作区执行：project → worktree → harness session → PR/CI
+        │
+        ▼
+Report 回到同一对话（带 workspace 标签）
+```
+
+桥接层的四条不变量：
+
+1. **一个 Ticket 只属于一个 workspace**；跨 workspace 的请求拆成多个 Ticket，不共享 session。
+2. **workspaceRef → AO projectId 的解析是桥接层职责**：优先按 repo URL 匹配 AO project；未注册时返回 `blocked`，并给出“注册仓库/授权”的具体动作，不在 Router 里猜。
+3. **AO session 永远属于一个 project**：worktree、branch、PR 都在该 project 内；SuperAgent 不直接读 worktree 路径。
+4. **人的注意力只回入口**：所有 workspace 的 ready/blocked/failed 都回到最初的人类对话，带 workspace 标签；人不管理 worktree、分支、CI 页面。
+
+桥接层的最小实现（也是 MVP 的第一刀）：
+
+- AO 侧：`external_sessions` 以 `external_ref` 为幂等键，记录 `project_id` + `session_id`；`PUT/GET/stop` 执行契约；`GET execution` 返回 status/needsPerson/PR/CI。
+- SuperAgent 侧：`AoExecutor` 的 `start` 从 Ticket 上取 `workspaceRef`，经 Workspace Registry 解析为 `projectId`，再调 AO ensure；`deliver` 用 `clientMessageId`；`stop` 透传 reason；poller 把状态映射为 Report，回同一对话。
+- Workspace Registry 先放桥接层配置（`workspaceRef`、repo URL、AO projectId、默认 harness/model），不放进 SuperAgent 的 core；后续可做成 AO project 的自动发现。
+
+这样“人类入口与工作区解耦”和“单工作区内用 AO”同时成立：SuperAgent 只承担入口、授权、Ticket、注意力；AO 只承担单工作区的执行与 PR/CI 事实；桥接层只做解析、幂等和状态翻译。
