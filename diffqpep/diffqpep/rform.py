@@ -68,14 +68,18 @@ def solve(Q, p=None, eps_depth=None, eps=1e-9, max_iters=100000):
 
 
 def recover(X):
-    """Return (x, rank_ratio). Uses last row when it is a valid section."""
+    """Deprecated last-row section.
+
+    Only valid when X is rank one.  For a multi-atomic optimal face the last
+    row is the barycentric section (e.g. R=0 for the cheirality pair), not a
+    rank-one factor.  Use ``exp_correct``/``exp_double_cover`` atom extraction
+    instead.  Returns (None, rank_ratio) when X is not rank one.
+    """
     w = np.linalg.eigvalsh(X)
     rr = float(w[-1] / max(w[0], 1e-30))
-    if abs(X[12, 12]) > 1e-9:
-        x = X[12, :] / X[12, 12]
-        if x @ x > 1e-8 and abs(x[12] - 1.0) < 1e-6:
-            return x, rr
-    # top eigenvector, sign so x[12] > 0 if possible
+    rank = int(np.sum(w > 1e-6 * max(w[-1], 1e-30)))
+    if rank > 1:
+        return None, rr
     val, vec = np.linalg.eigh(X)
     x = vec[:, -1] * np.sqrt(max(val[-1], 0.0))
     if x[12] < 0:
