@@ -1,0 +1,81 @@
+{
+ "source": "https://models.dev/api.json",
+ "fetchedAt": "2026-11-26T01:52Z",
+ "fxUsdCny": 6.678179,
+ "note": "USD per 1M tokens. DeepSeek list price equals the official off-peak rate; official peak rate is 2x (Beijing weekday 09:00-12:00, 14:00-18:00). zhipuai-coding-plan entries are subscription plans billed at $0 per token.",
+ "providers": {
+  "deepseek": {
+   "deepseek-flash": {
+    "name": "DeepSeek V4.1 Flash 1017",
+    "input": 0.15,
+    "output": 0.6,
+    "reasoning": 0.6,
+    "cache_read": 0.003
+   },
+   "deepseek-v4-flash": {
+    "name": "DeepSeek V4 Flash",
+    "input": 0.15,
+    "output": 0.6,
+    "reasoning": 0.6,
+    "cache_read": 0.003
+   },
+   "deepseek-v4-pro": {
+    "name": "DeepSeek V4 Pro",
+    "input": 0.66,
+    "output": 1.98,
+    "reasoning": 1.98,
+    "cache_read": 0.022
+   }
+  },
+  "moonshotai-cn": {
+   "kimi-k3": {
+    "name": "Kimi K3",
+    "input": 2.9879,
+    "output": 14.9395,
+    "cache_read": 0.2988,
+    "cache_write": 2.9879
+   }
+  },
+  "zhipuai": {
+   "glm-5.3": {
+    "name": "GLM-5.3",
+    "input": 1.19516,
+    "output": 4.18306,
+    "cache_read": 0.29879,
+    "cache_write": 0
+   },
+   "glm-5.3-flash": {
+    "name": "GLM-5.3-Flash",
+    "input": 0.11952,
+    "output": 0.41831,
+    "cache_read": 0.03436,
+    "cache_write": 0
+   }
+  },
+  "zhipuai-coding-plan": {
+   "glm-5.4": {
+    "name": "GLM-5.4",
+    "input": 0,
+    "output": 0,
+    "cache_read": 0,
+    "cache_write": 0
+   }
+  },
+  "zai": {
+   "glm-5.3": {
+    "name": "GLM-5.3",
+    "input": 1.4,
+    "output": 4.4,
+    "cache_read": 0.26,
+    "cache_write": 0
+   },
+   "glm-5.3-flash": {
+    "name": "GLM-5.3-Flash",
+    "input": 0.15,
+    "output": 0.5,
+    "cache_read": 0.03,
+    "cache_write": 0
+   }
+  }
+ }
+}
