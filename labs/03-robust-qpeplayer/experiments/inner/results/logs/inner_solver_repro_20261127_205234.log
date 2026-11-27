@@ -1,0 +1,56 @@
+[inner] worktree: /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c
+[inner] out: /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/inner/results
+[inner] correctness N=20 ...
+[inner] correctness N=20 done
+[inner] timing N=20 ...
+[inner] timing N=20 done
+[inner] correctness N=100 ...
+[inner] correctness N=100 done
+[inner] timing N=100 ...
+[inner] timing N=100 done
+[inner] correctness N=500 ...
+[inner] correctness N=500 done
+[inner] timing N=500 ...
+[inner] timing N=500 done
+[inner] edge cases ...
+[inner] wrote /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/inner/results/inner_solver.json
+[inner] wrote /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/inner/results/inner_solver.png
+[inner] wrote /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/inner/results/inner_solver.md
+
+=== summary ===
+{
+  "verdict": {
+    "decision": "keep",
+    "correctness_gate": true,
+    "runtime_gate": true,
+    "max_rot_frob_diff": 1.0669009139588958e-14,
+    "max_cost_excess": 9.43689570931383e-16,
+    "success_identical_all": true,
+    "det_positive_all": true,
+    "speedup_by_n": {
+      "20": 0.940973312401884,
+      "100": 1.0189327921690343,
+      "500": 1.2845987705598934
+    },
+    "geo_speedup_p50": 1.0719226535304767,
+    "min_speedup_p50": 0.940973312401884,
+    "practical_note": "工程解读：p50 收益集中在 N=500（1.28×），最差档 N=20（0.94×，慢于基线）。小 N 下固定开销（权重校验 + det 检查 + 四元数→旋转矩阵）占主导；若内层主要用于 N≤100，收益在噪声内，是否采用取决于目标 N。"
+  },
+  "meta": {
+    "timestamp": "2026-11-27T20:52:37+08:00",
+    "host": "ls",
+    "python": "3.10.22",
+    "numpy": "2.2.6",
+    "platform": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35",
+    "cpu_count": 40,
+    "loadavg": [
+      28.45361328125,
+      26.671875,
+      23.7099609375
+    ],
+    "git_branch": "agent/three-paper-tracks-95244014fb3c",
+    "git_commit": "c4cca04",
+    "script": "/mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/inner/run_inner_solver.py",
+    "elapsed_s": 3.6638152599334717
+  }
+}

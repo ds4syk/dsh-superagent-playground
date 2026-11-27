@@ -1,0 +1,24 @@
+{
+  "dataset": "ModelNet10",
+  "split": "test",
+  "n_objects": 908,
+  "n_points": 2048,
+  "N": 200,
+  "sigma": 0.01,
+  "c": 0.05,
+  "n_trials": 50,
+  "p": [
+    0.0,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7
+  ],
+  "ransac_iters": 1000,
+  "seed": 20261127,
+  "data_file": "/mnt/storage1/syk/data/modelnet10/modelnet10_test_2048.npz",
+  "preprocessing": "area-weighted uniform surface sampling from OFF (prep_modelnet10.py)"
+}

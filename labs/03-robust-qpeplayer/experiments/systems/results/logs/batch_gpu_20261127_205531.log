@@ -1,0 +1,11 @@
+srun: job 3125 queued and waiting for resources
+srun: job 3125 has been allocated resources
+[gpu:float64] B=  1 N=100  batch p50=  42.491 ms  rot=7.6e-15 trans=9.7e-16
+[gpu:float64] B=  8 N=100  batch p50=  42.436 ms  rot=3.2e-15 trans=3.8e-16
+[gpu:float64] B= 32 N=100  batch p50=  42.370 ms  rot=8.5e-15 trans=7.5e-16
+[gpu:float64] B=128 N=100  batch p50=  44.841 ms  rot=8.8e-15 trans=1.3e-15
+[gpu:float64] B=  1 N=500  batch p50=  44.055 ms  rot=1.4e-15 trans=5.1e-16
+[gpu:float64] B=  8 N=500  batch p50=  43.633 ms  rot=5.2e-15 trans=7.6e-16
+[gpu:float64] B= 32 N=500  batch p50=  45.658 ms  rot=7.5e-15 trans=7.9e-16
+[gpu:float64] B=128 N=500  batch p50=  49.808 ms  rot=8.6e-15 trans=9.6e-16
+wrote /mnt/storage1/syk/.superagent-work/wt-p3-batch/labs/03-robust-qpeplayer/experiments/systems/results/batch_gnc.json, .md, .png
