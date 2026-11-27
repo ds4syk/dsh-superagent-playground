@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-"""Loader/adapter for the UTIAS In-The-Dark run format (documented, not yet
-exercised on real data because the archives could not be downloaded -- see
-README.md section 1 for the measured bandwidth blocker).
+"""Loader/adapter for the UTIAS In-The-Dark run format, exercised on the real
+run_000002 / run_000012 archives (see README.md for the GT protocol).
 
 Format implemented here (official docs + utiasASRL/vtr-dataset-tools):
 
@@ -14,15 +13,19 @@ Format implemented here (official docs + utiasASRL/vtr-dataset-tools):
       transforms_temporal.txt    # teach run, same column layout
       gps.txt, timestamps_gps.txt  (optional, 23/39 runs)
 
+Per-pair GT is NOT in the run directory: ``compose_inthedark.py`` composes it
+from this run's ``transforms_spatial.txt`` and the teach run's
+``transforms_temporal.txt``, then conjugates it into the camera frame with the
+official ``transform_camera_vehicle.txt``.
+
 The adapter returns exactly the frame dict that ``stereo_vo`` consumes
 (``left``/``right`` BGR images, ``P_L``/``P_R`` 3x4 projection matrices), so
 the KITTI stereo front-end and the robust layer run unchanged.
 
 Camera (official ``camera_parameters.txt``): 512x384, f=387.777, cx=257.446,
 cy=197.718, baseline=0.239965 m, no documented distortion model -> the images
-are assumed rectified.  ``verify_inthedark.py`` exists to check that
-assumption (row alignment of left/right correspondences) before any result is
-reported.
+are assumed rectified.  ``verify_inthedark.py`` checks that assumption on real
+data (median left/right row difference 0.56-0.58 px on runs 000002/000012).
 """
 from __future__ import annotations
 

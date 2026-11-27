@@ -1,0 +1,16 @@
+301->302 n=629 inl=77.9% depth=8.2m GNC rot=0.178 trans=0.013 fe=166ms
+302->303 n=608 inl=77.3% depth=8.0m GNC rot=0.100 trans=0.021 fe=166ms
+303->304 n=647 inl=81.8% depth=7.8m GNC rot=0.122 trans=0.023 fe=219ms
+304->305 n=658 inl=88.9% depth=7.2m GNC rot=0.077 trans=0.008 fe=243ms
+305->306 n=650 inl=88.2% depth=7.2m GNC rot=0.171 trans=0.020 fe=180ms
+306->307 n=663 inl=88.7% depth=7.2m GNC rot=0.130 trans=0.011 fe=164ms
+307->308 n=661 inl=89.7% depth=7.0m GNC rot=0.058 trans=0.007 fe=171ms
+308->309 n=637 inl=88.5% depth=7.1m GNC rot=0.057 trans=0.004 fe=165ms
+309->310 n=622 inl=89.4% depth=7.0m GNC rot=0.081 trans=0.010 fe=161ms
+310->311 n=617 inl=89.3% depth=6.7m GNC rot=0.060 trans=0.021 fe=164ms
+311->312 n=647 inl=90.6% depth=6.6m GNC rot=0.141 trans=0.014 fe=153ms
+312->313 n=599 inl=90.7% depth=6.2m GNC rot=0.123 trans=0.009 fe=153ms
+313->314 n=630 inl=84.1% depth=6.5m GNC rot=0.045 trans=0.003 fe=158ms
+314->315 n=639 inl=87.5% depth=6.7m GNC rot=0.092 trans=0.005 fe=155ms
+315->316 n=632 inl=87.7% depth=6.2m GNC rot=0.065 trans=0.005 fe=157ms
+wrote results/inthedark_run12_dense.json (15 pairs, 4.1s wall)

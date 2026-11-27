@@ -1,0 +1,16 @@
+200->201 n=394 inl=79.4% depth=7.1m GNC rot=0.113 trans=0.019 fe=157ms
+201->202 n=431 inl=81.2% depth=7.8m GNC rot=0.027 trans=0.029 fe=133ms
+202->203 n=468 inl=77.1% depth=7.3m GNC rot=0.065 trans=0.016 fe=132ms
+203->204 n=433 inl=82.2% depth=7.2m GNC rot=0.151 trans=0.024 fe=127ms
+204->205 n=439 inl=81.3% depth=7.2m GNC rot=0.060 trans=0.012 fe=133ms
+205->206 n=432 inl=81.7% depth=7.3m GNC rot=0.108 trans=0.021 fe=151ms
+206->207 n=456 inl=80.7% depth=7.5m GNC rot=0.061 trans=0.021 fe=127ms
+207->208 n=445 inl=77.8% depth=6.7m GNC rot=0.151 trans=0.012 fe=154ms
+208->209 n=475 inl=84.2% depth=6.3m GNC rot=0.078 trans=0.025 fe=212ms
+209->210 n=465 inl=83.2% depth=5.9m GNC rot=0.115 trans=0.015 fe=129ms
+210->211 n=439 inl=76.3% depth=6.8m GNC rot=0.072 trans=0.018 fe=135ms
+211->212 n=454 inl=78.4% depth=7.8m GNC rot=0.046 trans=0.017 fe=128ms
+212->213 n=414 inl=76.1% depth=7.1m GNC rot=0.135 trans=0.026 fe=123ms
+213->214 n=454 inl=78.9% depth=6.8m GNC rot=0.090 trans=0.022 fe=125ms
+214->215 n=459 inl=76.3% depth=7.9m GNC rot=0.057 trans=0.020 fe=134ms
+wrote results/inthedark_dense.json (15 pairs, 3.5s wall)

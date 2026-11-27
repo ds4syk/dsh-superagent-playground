@@ -1,0 +1,77 @@
+{
+  "worker": "p3b-inthedark-gt",
+  "branch": "opt/p3b-inthedark-gt",
+  "base_commit": "17d7ffc",
+  "date": "2026-11-27",
+  "scope": "real UTIAS In-The-Dark per-pair GT (composed from official transforms) + measured stereo/robust experiment on run_000002 and run_000012",
+  "status": "unblocked (daylight runs measured); night-time runs remain unmeasured",
+  "rounds": [
+    {
+      "round": 1,
+      "hypothesis": "The teach run's transforms_temporal.txt can only be obtained by downloading and unzipping the full 904,605,594 B run_000000.zip, which direct FTP cannot deliver in budget.",
+      "change": "Wrote fetch_zip_members.py: read the zip End-of-Central-Directory from a 128 KB tail range request, parse the 2,236 central-directory entries, then range-fetch just the wanted member (local header offset + deflate stream) and verify CRC32/size.",
+      "command": "python3 fetch_zip_members.py --url 'ftp://asrl3.utias.utoronto.ca/2020-vtr-dataset/UTIAS-In-The-Dark/run_000000.zip' --size 904605594 --member transforms_temporal.txt --member timestamps_images.txt --out-dir /mnt/storage1/syk/data/utias_in_the_dark/teach_meta",
+      "metric_before_after": "Before: 0 B of teach GT, run_000000.zip was a 245 KB partial download (not a valid archive); verify_inthedark.py raised KeyError on every consecutive pair. After: transforms_temporal.txt 315,463 B (CRC ok, deflate 128,820 B at lho=8411) + timestamps_images.txt 27,906 B extracted in 51.6 s; 1,116 teach temporal links; total transferred ~282 KB instead of 904.6 MB (~3,200x less).",
+      "decision": "keep - removes the bandwidth blocker entirely for metadata",
+      "keep": true,
+      "artifact": "experiments/real/inthedark/fetch_zip_members.py, /mnt/storage1/syk/data/utias_in_the_dark/teach_meta/"
+    },
+    {
+      "round": 2,
+      "hypothesis": "Composing repeat transforms_spatial (T_teach<-repeat) with teach transforms_temporal (T_teach_j+1<-teach_j) in the published vehicle frame yields correct per-pair GT for consecutive repeat vertices.",
+      "change": "Wrote compose_inthedark.py with both row readings ('ba': p_b=T_ba p_a, 'ab': transpose) and a reprojection test that triangulates SIFT left-right matches with the official 0.239965 m baseline, pushes them through the candidate pose and measures pixel error in the next left image.",
+      "command": "/mnt/storage1/syk/venvs/opencv/bin/python calibrate_convention.py --run /mnt/storage1/syk/data/utias_in_the_dark/run_000002 --teach /mnt/storage1/syk/data/utias_in_the_dark/teach_meta --start 0 --pairs 8",
+      "metric_before_after": "Before (intended protocol): expected sub-pixel agreement. After: 222.8 px ('ba') and 221.9 px ('ab') median reprojection, worse than identity (241.0 px) - composition alone was NOT validated, so the frame convention had to be diagnosed, not assumed.",
+      "decision": "keep the negative result as the diagnostic step that motivated round 3",
+      "keep": true,
+      "artifact": "experiments/real/inthedark/compose_inthedark.py, calibrate_convention.py"
+    },
+    {
+      "round": 3,
+      "hypothesis": "The published transforms are between vehicle frames, but the stereo front-end works in the camera frame; the official transform_camera_vehicle.txt must be applied as T_cam = E T_veh inv(E).",
+      "change": "Added to_camera()/load_camera_vehicle()/gt_pairs() and expanded the candidate space to {row reading} x {camera conjugation} x {direction}: cam_ba, cam_ab, cam_ba_inv, cam_ab_inv, veh_ba, identity.",
+      "command": "/mnt/storage1/syk/venvs/opencv/bin/python calibrate_convention.py --run .../run_000002 --teach .../teach_meta --start 0 --pairs 12 --out results/convention_calib_r2.json",
+      "metric_before_after": "Median reprojection over 12 calibration pairs: veh_ba 19.92 px, identity 8.64 px, cam_ba_inv 16.60 px, cam_ab_inv 16.88 px, cam_ab 4.38 px -> cam_ba 0.56 px. cam_ba is 35.6x better than the unconjugated vehicle frame, 29.6x better than the inverse direction and 7.8x better than the transposed row reading; 98-99% of matches fall under 2 px.",
+      "decision": "keep - cam_ba is the unique winner across all 12 pairs; convention fixed by geometry, not by assumption",
+      "keep": true,
+      "artifact": "results/convention_calib_r2.json, compose_inthedark.py (to_camera, gt_pairs)"
+    },
+    {
+      "round": 4,
+      "hypothesis": "The reprojection residuals of round 2 (~220 px for every candidate) were a property of the data rather than of my measurement code.",
+      "change": "Diffed reproj_residual against a hand-rolled inline check: the vb pixel was indexed with the stereo-subset index (kb) into the full keypoint array instead of B['uv'][kb]; fixed by caching uv = pl[i_l[kept]].",
+      "command": "/mnt/storage1/syk/venvs/opencv/bin/python verify_inthedark.py --run .../run_000002 --pairs 8 --out results/verify_run_000002.json",
+      "metric_before_after": "Before fix: every candidate 200-250 px and identity 'best' - a false 'GT is broken' signal. After fix: GT 0.25-1.32 px, inverse 12-22 px, identity 6-11 px, vehicle-frame 14-27 px. Recorded because it is exactly the kind of bug that would otherwise have produced a wrong 'blocked' verdict.",
+      "decision": "keep (bug fix + regression evidence in the verify JSON)",
+      "keep": true,
+      "artifact": "results/verify_run_000002.json, results/verify_run_000012.json"
+    },
+    {
+      "round": 5,
+      "hypothesis": "Repeat vertices matched to the same teach vertex (teach delta 0) have no resolvable relative pose and must be dropped (90 of 1,086 consecutive pairs in run_000002).",
+      "change": "Realised both frames were registered into the same teach frame j, so p_rep_{i+1} = inv(M_{i+1}) M_i p_rep_i is exact without any teach leg; implemented and tested 6 such pairs geometrically.",
+      "command": "/mnt/storage1/syk/venvs/opencv/bin/python compose_inthedark.py (delta-0 branch) + reprojection probe",
+      "metric_before_after": "Before: 90/1,086 pairs (8.3%) marked 'same teach vertex: unobservable'. After: 0.75-1.15 px median reprojection with 97-100% of matches under 2 px on the sampled delta-0 pairs; skipped pairs 90 -> 0, so all 1,086 consecutive pairs of run_000002 have GT.",
+      "decision": "keep - recovers 8.3% of pairs with measurable accuracy",
+      "keep": true,
+      "artifact": "compose_inthedark.py (jb == ja branch), results/verify_run_000002.json"
+    },
+    {
+      "round": 6,
+      "hypothesis": "In-The-Dark stereo images (512x384, f=387.777, baseline 0.239965 m) can be fed to the unchanged KITTI stereo front-end and robust layer to produce a real success-rate number.",
+      "change": "Rewrote run_inthedark.py to use gt_pairs() and ran 15 consecutive pairs on run_000002 with dense SGBM and with sparse triangulation, plus 15 pairs on run_000012 with dense SGBM.",
+      "command": "/mnt/storage1/syk/venvs/opencv/bin/python run_inthedark.py --run .../run_000002 --start 200 --pairs 15 --fe dense --out results/inthedark_dense.json (and --fe sparse; run_000012 --start 300)",
+      "metric_before_after": "Before: no In-The-Dark number existed at all (script raised on missing GT). After (dense, run_000002): natural inliers 79.4% [76.1,84.2], 445 correspondences/pair, median depth 7.2 m, GNC-GM 0.078 deg / 0.020 m, success@0.1 m/5 deg 100%, 3.6 s for 15 pairs. Sparse: 66.7% inliers, 0.103 deg / 0.011 m, 100% success, 3.7 s. run_000012 dense: 88.5% inliers, 0.092 deg / 0.010 m, 100% success, 4.0 s. Naive Kabsch stays at 40-47% success, so the robust layer is what converts the outliers.",
+      "decision": "keep",
+      "keep": true,
+      "artifact": "results/inthedark_{dense,sparse,run12_dense}.json, results/inthedark_main.md"
+    }
+  ],
+  "limitations": [
+    "Both measured runs are daylight (left-image mean intensity median 133/131, visible sky; official metadata lists run_000002 as morning/sunny). This validates the archive format, calibration, GT protocol and pipeline on real In-The-Dark data, but it is NOT a night-time robustness result.",
+    "The front-end is the hand-written SIFT + StereoSGBM/sparse stereo front-end (stereo_vo.py), not the SDPR VGG/UNet front-end.",
+    "GT is the official registration output (place recognition + ICP); its own per-pair noise is ~0.3-1.4 px equivalent, so 0.01-0.02 m errors are at the GT noise floor.",
+    "15 consecutive pairs per configuration, one deterministic instance per pair, no injected outliers and no trials.",
+    "run_000012 contains one spatial match that jumps backwards (teach vertex -1106); those non-consecutive jumps are skipped by max_teach_jump=4."
+  ]
+}
