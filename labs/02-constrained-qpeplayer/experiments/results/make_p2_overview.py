@@ -14,6 +14,7 @@ Run directly on the login node (no Slurm):
 """
 import json
 import math
+import os
 import statistics as st
 from pathlib import Path
 
@@ -25,6 +26,10 @@ import matplotlib.pyplot as plt
 
 HERE = Path(__file__).resolve().parent
 EXP = HERE.parent                                   # .../experiments
+# Where the SDPRLayers-style baseline JSONs live.  In the merged tree they are
+# in results/; while the baseline subagent runs in a parallel worktree they can
+# be read from there with P2_BASE_DIR=<that worktree>/experiments/results .
+BASE_DIR = Path(os.environ.get("P2_BASE_DIR", str(EXP / "results")))
 RAW_MAIN = EXP / "results" / "raw_main.json"
 RIGOROUS = EXP / "results" / "rigorous_real.json"
 OUT = HERE / "fig_p2_overview.png"
@@ -102,7 +107,8 @@ raw = json.load(open(RAW_MAIN))
 main = {p: raw["main"][f"p{p}"]["recs"] for p in PS}
 
 # ---------------------------------------------------------------- panel (a),(b)
-fig, axes = plt.subplots(1, 3, figsize=(15.2, 4.4))
+fig, _ax = plt.subplots(2, 2, figsize=(15.2, 9.2))
+axes = _ax.ravel()
 ax = axes[0]
 n = len(METHODS)
 width = 0.8 / n
@@ -200,10 +206,72 @@ ax.grid(axis="y", alpha=0.3)
 ax.legend([plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in slots],
           [lab for _, lab, _ in slots], fontsize=6.6, loc="upper left", framealpha=0.9)
 
+# ------------------------------------------------------------------- panel (d)
+# SDP block dimension / solve time: our 14x14 hard relaxation (the certificate
+# of record, which is also a hard-constrained layer) versus the SDPRLayers-style
+# slack lifting (14+p)x(14+p).  Times are medians over the per-p JSON records;
+# nothing is rescaled or fitted.
+ax = axes[3]
+BASE_PS = [8, 16, 32, 64]
+b_p, b_hard, b_slack = [], [], []
+for p_ in BASE_PS:
+    f = BASE_DIR / f"baseline_sdpr_synth_p{p_}.json"
+    if not f.exists():
+        continue
+    try:
+        d = json.load(open(f))
+    except Exception:
+        continue
+    recs = [r for r in d.get("recs", []) if "error" not in r]
+
+    def _t(rec, kind):
+        for k in (kind, kind + "_sdp"):
+            v = rec.get(k)
+            if isinstance(v, dict) and v.get("time_ms") is not None:
+                return float(v["time_ms"])
+        return None
+
+    hh = [t for t in (_t(r, "hard") for r in recs) if t]
+    ss = [t for t in (_t(r, "slack") for r in recs) if t]
+    if not hh or not ss:
+        continue
+    b_p.append(p_)
+    b_hard.append(st.median(hh))
+    b_slack.append(st.median(ss))
+
+if len(b_p) >= 2:
+    x = np.arange(len(b_p))
+    w = 0.36
+    ax.bar(x - w / 2, b_hard, w, color="#2e7d32", alpha=0.85,
+           label="14×14 hard (ours)")
+    ax.bar(x + w / 2, b_slack, w, color="#8e24aa", alpha=0.85,
+           label="(14+p)×(14+p) SDPRLayers+slack")
+    for xi, hv, sv in zip(x, b_hard, b_slack):
+        ax.text(xi - w / 2, hv * 1.12, f"{hv:.0f}", ha="center", va="bottom",
+                fontsize=6.0, color="#1b5e20")
+        ax.text(xi + w / 2, sv * 1.12, f"{sv:.0f}", ha="center", va="bottom",
+                fontsize=6.0, color="#4a148c")
+    ax.set_yscale("log")
+    ax.set_ylim(20.0, max(b_slack) * 1.8)
+    ax.set_yticks([20, 30, 50, 100, 200, 500, 1000])
+    from matplotlib.ticker import ScalarFormatter
+    ax.yaxis.set_major_formatter(ScalarFormatter())
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"p={p_}\n{14 + p_}² vs 14²" for p_ in b_p], fontsize=7.0)
+    ax.set_ylabel("median SDP wall-clock (ms, log)")
+    ax.set_title("(d) certificate/layer SDP: block size and solve time")
+    ax.grid(axis="y", alpha=0.3, which="both")
+    ax.legend(fontsize=7.2, loc="upper left", framealpha=0.9)
+else:
+    ax.text(0.5, 0.5, "SDPRLayers re-implementation\nnot available in results/",
+            ha="center", va="center", fontsize=8, color="#777")
+    ax.set_axis_off()
+
 fig.text(0.01, 0.005,
          "source: experiments/results/raw_main.json (a,b); "
          "experiments/real/*/results/raw.json (c); "
-         "results/rigorous_real.json (c, green bars when present)",
+         "results/rigorous_real.json (c, green bars when present); "
+         "results/baseline_sdpr_synth_p*.json (d)",
          fontsize=6.5, color="#555")
 fig.tight_layout(rect=(0, 0.025, 1, 1))
 fig.savefig(OUT, dpi=200, facecolor="white", bbox_inches="tight", pad_inches=0.12)
