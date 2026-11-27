@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "phase": "P3b (paper2 / QPEP-GPU engineering + consistency)",
+    "date": "2026-11-27",
+    "worktree": "/mnt/storage1/syk/.superagent-work/wt-p3b-paper2",
+    "branch": "opt/p3b-paper2",
+    "head": "17d7ffc",
+    "scope": "experiments/qpep_gpu/, experiments/real/{inthedark,kitti_stereo,threedmatch_full,kitti_odom} pointers, paper/draft.md §5, experiments/README.md, repro_audit.py; no theory/, verify/, labs/EXPERIMENTS.md, AGENTS.md, deliverables/; no commit/push",
+    "python": "/home/syk/miniconda3/envs/WM/bin/python",
+    "note": "before/after values are measured unless the field says blocked; no number is typed from memory"
+  },
+  "rounds": [
+    {
+      "id": 1,
+      "hypothesis": "The hand-written 4x4 Jacobi eigensolver is numerically equivalent to cuSOLVER/eigh and can be the capture-safe GPU path.",
+      "change": "Ran the extended probe on the GPU debug allocation; static-jacobi disagreed with the NumPy reference. Derived the Givens rotation sign for G=[[c,s],[-s,c]] (tan(2 theta)=2*apq/(aqq-app)) and fixed `gpu_solver.eigh4_jacobi`.",
+      "command": "/home/syk/miniconda3/envs/WM/bin/python probe.py --force-cpu --B 1,8,32 --N 100 --dtypes float64 --repeats 2; plus an in-process CPU repro of the buggy sign (results/logs/jacobi_bug_cpu_repro.txt); full grid: probe.py --force-cpu --repeats 5",
+      "before": "buggy static-jacobi, B=8,N=100,float64, CPU in-process reproduction: max|dR|_F=1.80, max|dt|=0.94, n_mu match 0.50 (half the instances follow a different schedule)",
+      "after": "static-jacobi B=1/8/32,N=100: max|dR|_F 3.9e-16..7.5e-16, n_mu match 1.00, success 1.00; full CPU grid float64 max|dR|_F=1.64e-15, float32 worst 8.34e-7, n_mu match 1.00, 0 failures across 70 rows",
+      "verdict": "keep",
+      "artifact": "experiments/qpep_gpu/gpu_solver.py, experiments/qpep_gpu/results/qpep_gpu.json, experiments/qpep_gpu/results/logs/jacobi_bug_cpu_repro.txt"
+    },
+    {
+      "id": 2,
+      "hypothesis": "A full grid (B={1,8,32,128,512}, N={100,500}, float64/float32) with machine-readable output is needed to compare eager dynamic, static-shape and CUDA-graph paths; the old probe's 3 print-only configs are insufficient.",
+      "change": "Rewrote `probe.py`: NumPy correctness oracle, eager dynamic, static-eigh/static-jacobi, CUDA-graph wrappers, success vs GT, n_mu equality, dtype stability flag, sync-bracketed p50/p95; writes qpep_gpu.{json,md,png}.",
+      "command": "sbatch --partition=gpu --gres=gpu:1 --time=00:20:00 ... probe.py --out results (job 3171; GPU blocked) and the same script --force-cpu --repeats 5",
+      "before": "3 configs (B=1,8,32; N=100/500 mixed), stdout only, no JSON/MD/PNG, no success/n_mu aggregate, no float32 check",
+      "after": "20 (B,N,dtype) cells x (numpy-ref + dynamic + static-eigh + static-jacobi) = 70 rows, 0 errors, JSON+MD+PNG in results/; dtype stable=True for float64 and float32; GPU rows blocked (see round 3)",
+      "verdict": "keep (GPU rows blocked, not reverted)",
+      "artifact": "experiments/qpep_gpu/probe.py, experiments/qpep_gpu/results/qpep_gpu.{json,md,png}, results/logs/qpep_cpu_validation.log"
+    },
+    {
+      "id": 3,
+      "hypothesis": "CUDA-graph capture of the static-shape 4x4 eigen GNC is feasible on an RTX 5090, and graph-eigh vs graph-jacobi can be timed at B up to 512.",
+      "change": "Submitted the GPU probe under Slurm (sbatch, gpu partition, gres=gpu:1, 20 min) and monitored squeue/scontrol; no GPU was free, so no capture was attempted and the CPU validation was run instead.",
+      "command": "sbatch --partition=gpu --gres=gpu:1 --time=00:20:00 --ntasks=1 --cpus-per-task=2 --wrap='.../python probe.py --out results'; squeue -u syk; scontrol show job 3171; scontrol show node ls",
+      "before": "no GPU p50/p95; no CUDA-graph error evidence",
+      "after": "BLOCKED: node ls Gres=gpu:3, AllocTRES gres/gpu=3; jobs 3151/3094/3086 (user cyr) RUNNING for the whole session; job 3171 was PENDING StartTime=2026-11-28T21:34 and was cancelled after recording the state; duplicate job 3170 (main workspace) also PENDING StartTime=2026-11-28T21:23. Exact graph error is therefore None (graph never captured), not a reported failure. Slurm state saved in results/logs/slurm_gpu_3171_state.txt.",
+      "verdict": "keep (blocked documentation; job cancelled, no orphan)",
+      "artifact": "experiments/qpep_gpu/results/qpep_gpu.md (STATUS block), results/logs/qpep_cpu_validation.log"
+    },
+    {
+      "id": 4,
+      "hypothesis": "Paper header/abstract/§5.5/§5.8/conclusion are internally consistent about dataset counts, the In-The-Dark block, the stereo fallback and the RANSAC budget.",
+      "change": "Rewrote the status line (4 3DMatch scenes, 2 KITTI drives, stereo fallback), qualified the 22-32x claim as fixed-1000 RANSAC with the adaptive regime, labelled the stereo result rotation-positive/translation-negative, and distinguished In-The-Dark download blockage from a scientific negative; updated §5.8 and §6.",
+      "command": "grep -n 'two 3DMatch scenes\\|KITTI drive 0001\\|22.32\\u00d7 faster' paper/draft.md; grep -c TODO paper/draft.md",
+      "before": "header said 'two 3DMatch scenes, KITTI drive 0001' while §5 reported four scenes and two drives; abstract said '22-32x faster' without the fixed/adaptive qualification; abstract/conclusion omitted the stereo translation negative and called In-The-Dark 'future work'",
+      "after": "header matches §5 (4 scenes / 2 drives / stereo fallback / In-The-Dark blocked); abstract and conclusion name fixed-budget RANSAC and the adaptive reversal, the stereo 0% @0.1 m result and the download block; 0 TODO in draft",
+      "verdict": "keep",
+      "artifact": "paper/draft.md (title block, abstract, §5.5, §5.6, §5.8, §6, §7)"
+    },
+    {
+      "id": 5,
+      "hypothesis": "The experiments README still tells a reader that real data and GPU engineering were not done, and hides the KITTI stereo fallback after the gap list.",
+      "change": "Updated §0 status table (§12 real subsets, In-The-Dark blocked, 8-scene/odometry scaffolded-not-run, 40-root not implemented, GPU probe pointer), fixed §10 e2e wording, expanded §12 rows (2 KITTI drives, stereo fallback, In-The-Dark, 8-scene, odometry), added qpep_gpu/qpep_scope pointers in §13, updated §15 gaps, and moved the fallback to §16.",
+      "command": "grep -n '未做\\|单 drive\\|GPU 批处理未做\\|12.1' experiments/README.md",
+      "before": "§0 said real data/In-The-Dark/QPEP/GPU '未做'; §10 said 'In-The-Dark 未做'; KITTI row said '单 drive'; §15 said GPU batching '未做'; fallback section was a misplaced §12.1 after §15",
+      "after": "status table lists measured subsets + blocked/scaffolded items; KITTI row is two drives; stereo fallback is §16 with pointer from §12; §15 names the 8-scene/odometry/40-root/GPU gaps; stale phrases 0",
+      "verdict": "keep",
+      "artifact": "experiments/README.md"
+    },
+    {
+      "id": 6,
+      "hypothesis": "The repro audit does not cover the phase-3 result JSONs (stereo, odometry direction check, 8-scene manifests/pairs, GPU probe, phase-3 rounds), so a partial run could pass unnoticed.",
+      "change": "Extended `EXPECTED_JSON` from 27 to 38 entries (11 new files) with required top-level keys, kept `EXPECTED_JSONL` at 11 (no new JSONL was produced by these runs), reran the audit.",
+      "command": "/home/syk/miniconda3/envs/WM/bin/python repro_audit.py",
+      "before": "27 JSON + 11 JSONL checks; new dirs absent from audit; exit 0 but incomplete coverage",
+      "after": "38 JSON + 11 JSONL checks, all ok; overall PASS, exit 0; hashes/versions/HEAD recorded in REPRO_AUDIT.{json,md}",
+      "verdict": "keep",
+      "artifact": "experiments/repro_audit.py, experiments/REPRO_AUDIT.{json,md}"
+    }
+  ]
+}

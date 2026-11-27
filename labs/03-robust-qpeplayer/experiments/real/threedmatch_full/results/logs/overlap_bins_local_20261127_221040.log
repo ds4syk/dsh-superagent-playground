@@ -1,0 +1,11 @@
+[scan] 7-scenes-redkitchen: 506 pairs, bins {'low': 200, 'mid': 277, 'high': 29}, overlap median 0.538 (3.5s)
+[scan] sun3d-home_at-home_at_scan1_2013_jan_1: 156 pairs, bins {'low': 66, 'mid': 79, 'high': 11}, overlap median 0.534 (4.5s)
+[scan] sun3d-hotel_uc-scan3: 226 pairs, bins {'low': 88, 'mid': 126, 'high': 12}, overlap median 0.543 (6.3s)
+[scan] sun3d-home_md-home_md_scan9_2012_sep_30: 208 pairs, bins {'low': 68, 'mid': 104, 'high': 36}, overlap median 0.591 (7.5s)
+[scan] sun3d-hotel_umd-maryland_hotel1: 104 pairs, bins {'low': 39, 'mid': 59, 'high': 6}, overlap median 0.536 (8.3s)
+[scan] sun3d-hotel_umd-maryland_hotel3: 54 pairs, bins {'low': 21, 'mid': 33, 'high': 0}, overlap median 0.533 (8.8s)
+[scan] sun3d-mit_76_studyroom-76-1studyroom2: 292 pairs, bins {'low': 102, 'mid': 159, 'high': 31}, overlap median 0.552 (11.0s)
+[scan] sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika: 77 pairs, bins {'low': 22, 'mid': 39, 'high': 16}, overlap median 0.602 (11.5s)
+selected 69 pairs across 8 scenes (11.6s)
+[run] 7-scenes-redkitchen bin=low: 11.4s, rows=720
+[run] 7-scenes-redkitchen bin=mid: 22.3s, rows=1440

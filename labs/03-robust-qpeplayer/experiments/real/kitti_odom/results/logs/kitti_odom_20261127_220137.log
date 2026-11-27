@@ -1,0 +1,47 @@
+seq 00: 4541 GT frames, 20 clouds, sizes 0:33536, 1:33261, 453:27409, 454:27780, 906:28096, 907:28482, 1359:26907, 1360:26599, 1812:26559, 1813:26703, 2265:34633, 2266:34608, 2718:25825, 2719:25142, 3171:27758, 3172:27425, 3624:24095, 3625:24112, 4077:31506, 4078:31704
+  pair (0, 1): base=1000, natural inlier=92.6%, |t|=0.86 m (31.0 km/h), rot=0.14 deg
+  pair (453, 454): base=1000, natural inlier=92.4%, |t|=0.79 m (28.4 km/h), rot=0.11 deg
+  pair (906, 907): base=1000, natural inlier=92.8%, |t|=0.94 m (33.9 km/h), rot=0.06 deg
+  pair (1359, 1360): base=1000, natural inlier=93.2%, |t|=0.66 m (23.8 km/h), rot=0.15 deg
+  pair (1812, 1813): base=1000, natural inlier=95.3%, |t|=0.70 m (25.4 km/h), rot=0.38 deg
+  pair (2265, 2266): base=1000, natural inlier=96.3%, |t|=0.55 m (19.7 km/h), rot=0.57 deg
+  pair (2718, 2719): base=1000, natural inlier=96.1%, |t|=0.63 m (22.8 km/h), rot=0.17 deg
+  pair (3171, 3172): base=1000, natural inlier=92.2%, |t|=1.07 m (38.5 km/h), rot=0.29 deg
+  pair (3624, 3625): base=1000, natural inlier=91.9%, |t|=1.27 m (45.7 km/h), rot=0.13 deg
+  pair (4077, 4078): base=1000, natural inlier=93.8%, |t|=1.25 m (44.9 km/h), rot=0.33 deg
+  00 random   p=0.0 (4s)
+  00 random   p=0.1 (5s)
+  00 random   p=0.2 (6s)
+  00 random   p=0.3 (8s)
+  00 random   p=0.4 (9s)
+  00 random   p=0.5 (11s)
+  00 random   p=0.6 (12s)
+  00 random   p=0.7 (14s)
+  00 coherent p=0.0 (15s)
+  00 coherent p=0.1 (16s)
+  00 coherent p=0.2 (18s)
+  00 coherent p=0.3 (19s)
+  00 coherent p=0.4 (21s)
+  00 coherent p=0.5 (22s)
+  00 coherent p=0.6 (23s)
+  00 coherent p=0.7 (25s)
+  00 boundary p=0.0 (26s)
+  00 boundary p=0.1 (27s)
+  00 boundary p=0.2 (29s)
+  00 boundary p=0.3 (30s)
+  00 boundary p=0.4 (31s)
+  00 boundary p=0.5 (33s)
+  00 boundary p=0.6 (34s)
+  00 boundary p=0.7 (36s)
+seq 00 motion pairs done (59s)
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/.superagent-work/wt-p3b-kitti-odom/labs/03-robust-qpeplayer/experiments/real/kitti_odom/run_kitti_odom.py", line 342, in <module>
+    main()
+  File "/mnt/storage1/syk/.superagent-work/wt-p3b-kitti-odom/labs/03-robust-qpeplayer/experiments/real/kitti_odom/run_kitti_odom.py", line 253, in main
+    clouds2 = K.load_clouds(seq, need, voxel=VOXEL, max_range=30.0)
+  File "/mnt/storage1/syk/.superagent-work/wt-p3b-kitti-odom/labs/03-robust-qpeplayer/experiments/real/kitti_odom/load_kitti_odom.py", line 104, in load_clouds
+    out[int(i)] = voxel_downsample(read_velodyne(seq, i, max_range=max_range), voxel)
+  File "/mnt/storage1/syk/.superagent-work/wt-p3b-kitti-odom/labs/03-robust-qpeplayer/experiments/real/kitti_odom/load_kitti_odom.py", line 69, in read_velodyne
+    arr = np.fromfile(path, dtype=np.float32).reshape(-1, 4)
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/storage1/syk/data/kitti_odom/sequences/00/velodyne/002270.bin'
+srun: error: ls: task 0: Exited with exit code 1

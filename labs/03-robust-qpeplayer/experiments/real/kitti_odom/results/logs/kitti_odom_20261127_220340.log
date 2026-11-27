@@ -1,0 +1,139 @@
+seq 00: 4541 GT frames, 20 clouds, sizes 0:33536, 1:33261, 453:27409, 454:27780, 906:28096, 907:28482, 1359:26907, 1360:26599, 1812:26559, 1813:26703, 2265:34633, 2266:34608, 2718:25825, 2719:25142, 3171:27758, 3172:27425, 3624:24095, 3625:24112, 4077:31506, 4078:31704
+  pair (0, 1): base=1000, natural inlier=92.6%, |t|=0.86 m (31.0 km/h), rot=0.14 deg
+  pair (453, 454): base=1000, natural inlier=92.4%, |t|=0.79 m (28.4 km/h), rot=0.11 deg
+  pair (906, 907): base=1000, natural inlier=92.8%, |t|=0.94 m (33.9 km/h), rot=0.06 deg
+  pair (1359, 1360): base=1000, natural inlier=93.2%, |t|=0.66 m (23.8 km/h), rot=0.15 deg
+  pair (1812, 1813): base=1000, natural inlier=95.3%, |t|=0.70 m (25.4 km/h), rot=0.38 deg
+  pair (2265, 2266): base=1000, natural inlier=96.3%, |t|=0.55 m (19.7 km/h), rot=0.57 deg
+  pair (2718, 2719): base=1000, natural inlier=96.1%, |t|=0.63 m (22.8 km/h), rot=0.17 deg
+  pair (3171, 3172): base=1000, natural inlier=92.2%, |t|=1.07 m (38.5 km/h), rot=0.29 deg
+  pair (3624, 3625): base=1000, natural inlier=91.9%, |t|=1.27 m (45.7 km/h), rot=0.13 deg
+  pair (4077, 4078): base=1000, natural inlier=93.8%, |t|=1.25 m (44.9 km/h), rot=0.33 deg
+  00 random   p=0.0 (2s)
+  00 random   p=0.1 (3s)
+  00 random   p=0.2 (5s)
+  00 random   p=0.3 (6s)
+  00 random   p=0.4 (8s)
+  00 random   p=0.5 (10s)
+  00 random   p=0.6 (11s)
+  00 random   p=0.7 (14s)
+  00 coherent p=0.0 (15s)
+  00 coherent p=0.1 (17s)
+  00 coherent p=0.2 (18s)
+  00 coherent p=0.3 (20s)
+  00 coherent p=0.4 (21s)
+  00 coherent p=0.5 (22s)
+  00 coherent p=0.6 (24s)
+  00 coherent p=0.7 (26s)
+  00 boundary p=0.0 (28s)
+  00 boundary p=0.1 (29s)
+  00 boundary p=0.2 (31s)
+  00 boundary p=0.3 (33s)
+  00 boundary p=0.4 (34s)
+  00 boundary p=0.5 (36s)
+  00 boundary p=0.6 (38s)
+  00 boundary p=0.7 (40s)
+seq 00 motion pairs done (66s)
+  gap 2: pair 0-2 base=1000, natural inlier=77.9%, |t|=1.72 m, rot=0.28 deg
+  gap 4: pair 0-4 base=1000, natural inlier=73.1%, |t|=3.44 m, rot=0.56 deg
+  gap 8: pair 0-8 base=1000, natural inlier=70.2%, |t|=6.88 m, rot=1.11 deg
+  gap 2: pair 1513-1515 base=1000, natural inlier=93.0%, |t|=2.49 m, rot=0.19 deg
+  gap 4: pair 1513-1517 base=1000, natural inlier=89.9%, |t|=4.94 m, rot=0.43 deg
+  gap 8: pair 1513-1521 base=1000, natural inlier=71.5%, |t|=9.62 m, rot=0.59 deg
+  gap 2: pair 3027-3029 base=1000, natural inlier=93.8%, |t|=2.13 m, rot=0.35 deg
+  gap 4: pair 3027-3031 base=1000, natural inlier=90.3%, |t|=4.29 m, rot=0.65 deg
+  gap 8: pair 3027-3035 base=1000, natural inlier=89.6%, |t|=8.68 m, rot=1.35 deg
+seq 00 table done (92s, total 92s)
+seq 05: 2761 GT frames, 20 clouds, sizes 0:33759, 1:34028, 275:29839, 276:30136, 550:31485, 551:31120, 825:35030, 826:34653, 1100:32176, 1101:32554, 1375:31174, 1376:31084, 1650:32733, 1651:32443, 1925:35135, 1926:34688, 2200:34197, 2201:34018, 2475:34978, 2476:35205
+  pair (0, 1): base=1000, natural inlier=91.6%, |t|=0.57 m (20.4 km/h), rot=0.16 deg
+  pair (275, 276): base=1000, natural inlier=93.7%, |t|=0.85 m (30.5 km/h), rot=0.21 deg
+  pair (550, 551): base=1000, natural inlier=93.7%, |t|=0.43 m (15.4 km/h), rot=1.19 deg
+  pair (825, 826): base=1000, natural inlier=91.2%, |t|=0.67 m (24.1 km/h), rot=0.69 deg
+  pair (1100, 1101): base=1000, natural inlier=93.1%, |t|=0.94 m (33.9 km/h), rot=0.64 deg
+  pair (1375, 1376): base=1000, natural inlier=93.3%, |t|=0.94 m (34.0 km/h), rot=0.11 deg
+  pair (1650, 1651): base=1000, natural inlier=94.3%, |t|=1.09 m (39.3 km/h), rot=0.17 deg
+  pair (1925, 1926): base=1000, natural inlier=92.4%, |t|=1.10 m (39.4 km/h), rot=0.24 deg
+  pair (2200, 2201): base=1000, natural inlier=91.9%, |t|=1.13 m (40.6 km/h), rot=0.38 deg
+  pair (2475, 2476): base=1000, natural inlier=92.7%, |t|=1.10 m (39.6 km/h), rot=0.24 deg
+  05 random   p=0.0 (4s)
+  05 random   p=0.1 (6s)
+  05 random   p=0.2 (7s)
+  05 random   p=0.3 (8s)
+  05 random   p=0.4 (10s)
+  05 random   p=0.5 (11s)
+  05 random   p=0.6 (13s)
+  05 random   p=0.7 (14s)
+  05 coherent p=0.0 (16s)
+  05 coherent p=0.1 (17s)
+  05 coherent p=0.2 (19s)
+  05 coherent p=0.3 (20s)
+  05 coherent p=0.4 (21s)
+  05 coherent p=0.5 (23s)
+  05 coherent p=0.6 (24s)
+  05 coherent p=0.7 (26s)
+  05 boundary p=0.0 (28s)
+  05 boundary p=0.1 (29s)
+  05 boundary p=0.2 (31s)
+  05 boundary p=0.3 (32s)
+  05 boundary p=0.4 (33s)
+  05 boundary p=0.5 (35s)
+  05 boundary p=0.6 (36s)
+  05 boundary p=0.7 (38s)
+seq 05 motion pairs done (62s)
+  gap 2: pair 0-2 base=1000, natural inlier=89.8%, |t|=1.13 m, rot=0.25 deg
+  gap 4: pair 0-4 base=1000, natural inlier=87.7%, |t|=2.25 m, rot=0.56 deg
+  gap 8: pair 0-8 base=1000, natural inlier=87.7%, |t|=4.56 m, rot=0.97 deg
+  gap 2: pair 920-922 base=1000, natural inlier=91.3%, |t|=1.32 m, rot=2.00 deg
+  gap 4: pair 920-924 base=1000, natural inlier=88.6%, |t|=2.71 m, rot=3.49 deg
+  gap 8: pair 920-928 base=1000, natural inlier=89.5%, |t|=5.65 m, rot=4.52 deg
+  gap 2: pair 1840-1842 base=1000, natural inlier=94.0%, |t|=0.70 m, rot=3.31 deg
+  gap 4: pair 1840-1844 base=1000, natural inlier=92.9%, |t|=1.45 m, rot=6.96 deg
+  gap 8: pair 1840-1848 base=1000, natural inlier=91.9%, |t|=3.09 m, rot=14.68 deg
+seq 05 table done (91s, total 183s)
+seq 07: 1101 GT frames, 20 clouds, sizes 0:30081, 1:30118, 109:25320, 110:24253, 218:26015, 219:27315, 327:38110, 328:38386, 436:32860, 437:33147, 545:33589, 546:33863, 654:31270, 655:31561, 763:30618, 764:30339, 872:29070, 873:29134, 981:25706, 982:25916
+  pair (0, 1): base=1000, natural inlier=99.6%, |t|=0.09 m (3.3 km/h), rot=0.37 deg
+  pair (109, 110): base=1000, natural inlier=93.1%, |t|=0.74 m (26.5 km/h), rot=0.20 deg
+  pair (218, 219): base=1000, natural inlier=96.0%, |t|=0.81 m (29.2 km/h), rot=0.33 deg
+  pair (327, 328): base=1000, natural inlier=94.1%, |t|=0.30 m (10.9 km/h), rot=2.74 deg
+  pair (436, 437): base=1000, natural inlier=88.9%, |t|=0.77 m (27.9 km/h), rot=0.12 deg
+  pair (545, 546): base=1000, natural inlier=91.3%, |t|=0.85 m (30.5 km/h), rot=2.01 deg
+  pair (654, 655): base=1000, natural inlier=94.5%, |t|=0.11 m (4.1 km/h), rot=0.46 deg
+  pair (763, 764): base=1000, natural inlier=92.5%, |t|=0.74 m (26.5 km/h), rot=1.60 deg
+  pair (872, 873): base=1000, natural inlier=93.9%, |t|=0.96 m (34.5 km/h), rot=0.09 deg
+  pair (981, 982): base=1000, natural inlier=95.0%, |t|=0.60 m (21.6 km/h), rot=0.12 deg
+  07 random   p=0.0 (4s)
+  07 random   p=0.1 (6s)
+  07 random   p=0.2 (7s)
+  07 random   p=0.3 (9s)
+  07 random   p=0.4 (11s)
+  07 random   p=0.5 (13s)
+  07 random   p=0.6 (15s)
+  07 random   p=0.7 (18s)
+  07 coherent p=0.0 (19s)
+  07 coherent p=0.1 (21s)
+  07 coherent p=0.2 (23s)
+  07 coherent p=0.3 (25s)
+  07 coherent p=0.4 (27s)
+  07 coherent p=0.5 (29s)
+  07 coherent p=0.6 (31s)
+  07 coherent p=0.7 (33s)
+  07 boundary p=0.0 (34s)
+  07 boundary p=0.1 (36s)
+  07 boundary p=0.2 (38s)
+  07 boundary p=0.3 (39s)
+  07 boundary p=0.4 (41s)
+  07 boundary p=0.5 (42s)
+  07 boundary p=0.6 (44s)
+  07 boundary p=0.7 (45s)
+seq 07 motion pairs done (72s)
+  gap 2: pair 0-2 base=1000, natural inlier=99.2%, |t|=0.19 m, rot=0.77 deg
+  gap 4: pair 0-4 base=1000, natural inlier=96.2%, |t|=0.39 m, rot=1.73 deg
+  gap 8: pair 0-8 base=1000, natural inlier=95.1%, |t|=0.92 m, rot=5.15 deg
+  gap 2: pair 367-369 base=1000, natural inlier=92.6%, |t|=1.87 m, rot=0.41 deg
+  gap 4: pair 367-371 base=1000, natural inlier=91.2%, |t|=3.79 m, rot=0.74 deg
+  gap 8: pair 367-375 base=1000, natural inlier=89.4%, |t|=7.73 m, rot=0.36 deg
+  gap 2: pair 734-736 base=1000, natural inlier=93.2%, |t|=0.29 m, rot=2.34 deg
+  gap 4: pair 734-738 base=1000, natural inlier=93.7%, |t|=0.63 m, rot=5.07 deg
+  gap 8: pair 734-742 base=1000, natural inlier=89.7%, |t|=1.45 m, rot=11.43 deg
+seq 07 table done (96s, total 279s)
+wrote /mnt/storage1/syk/.superagent-work/wt-p3b-kitti-odom/labs/03-robust-qpeplayer/experiments/real/kitti_odom/results/kitti_odom.json (7200 raw trials, 120 pooled rows, 855 motion rows)

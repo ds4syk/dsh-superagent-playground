@@ -1,0 +1,36 @@
+[scan] 7-scenes-redkitchen: 506 pairs, bins {'low': 200, 'mid': 277, 'high': 29}, overlap median 0.538 (4.7s)
+[scan] sun3d-home_at-home_at_scan1_2013_jan_1: 156 pairs, bins {'low': 66, 'mid': 79, 'high': 11}, overlap median 0.534 (5.7s)
+[scan] sun3d-hotel_uc-scan3: 226 pairs, bins {'low': 88, 'mid': 126, 'high': 12}, overlap median 0.543 (7.5s)
+[scan] sun3d-home_md-home_md_scan9_2012_sep_30: 208 pairs, bins {'low': 68, 'mid': 104, 'high': 36}, overlap median 0.591 (9.4s)
+[scan] sun3d-hotel_umd-maryland_hotel1: 104 pairs, bins {'low': 39, 'mid': 59, 'high': 6}, overlap median 0.536 (10.5s)
+[scan] sun3d-hotel_umd-maryland_hotel3: 54 pairs, bins {'low': 21, 'mid': 33, 'high': 0}, overlap median 0.533 (11.1s)
+[scan] sun3d-mit_76_studyroom-76-1studyroom2: 292 pairs, bins {'low': 102, 'mid': 159, 'high': 31}, overlap median 0.552 (13.6s)
+[scan] sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika: 77 pairs, bins {'low': 22, 'mid': 39, 'high': 16}, overlap median 0.602 (14.2s)
+selected 69 pairs across 8 scenes (14.2s)
+[run] 7-scenes-redkitchen bin=low: 11.0s, rows=600
+[run] 7-scenes-redkitchen bin=mid: 23.8s, rows=1200
+[run] 7-scenes-redkitchen bin=high: 35.3s, rows=1800
+[run] sun3d-home_at-home_at_scan1_2013_jan_1 bin=low: 48.2s, rows=2400
+[run] sun3d-home_at-home_at_scan1_2013_jan_1 bin=mid: 59.0s, rows=3000
+[run] sun3d-home_at-home_at_scan1_2013_jan_1 bin=high: 68.4s, rows=3600
+[run] sun3d-hotel_uc-scan3 bin=low: 80.8s, rows=4200
+[run] sun3d-hotel_uc-scan3 bin=mid: 91.3s, rows=4800
+[run] sun3d-hotel_uc-scan3 bin=high: 101.1s, rows=5400
+[run] sun3d-home_md-home_md_scan9_2012_sep_30 bin=low: 110.9s, rows=6000
+[run] sun3d-home_md-home_md_scan9_2012_sep_30 bin=mid: 120.7s, rows=6600
+[run] sun3d-home_md-home_md_scan9_2012_sep_30 bin=high: 132.8s, rows=7200
+[run] sun3d-hotel_umd-maryland_hotel1 bin=low: 145.4s, rows=7800
+[run] sun3d-hotel_umd-maryland_hotel1 bin=mid: 155.2s, rows=8400
+[run] sun3d-hotel_umd-maryland_hotel1 bin=high: 164.5s, rows=9000
+[run] sun3d-hotel_umd-maryland_hotel3 bin=low: 173.0s, rows=9600
+[run] sun3d-hotel_umd-maryland_hotel3 bin=mid: 182.2s, rows=10200
+[run] sun3d-hotel_umd-maryland_hotel3 bin=high: 182.2s, rows=10200
+[run] sun3d-mit_76_studyroom-76-1studyroom2 bin=low: 191.6s, rows=10800
+[run] sun3d-mit_76_studyroom-76-1studyroom2 bin=mid: 201.3s, rows=11400
+[run] sun3d-mit_76_studyroom-76-1studyroom2 bin=high: 209.9s, rows=12000
+[run] sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika bin=low: 219.1s, rows=12600
+[run] sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika bin=mid: 228.4s, rows=13200
+[run] sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika bin=high: 237.6s, rows=13800
+/mnt/storage1/syk/.superagent-work/wt-p3b-threedmatch-full2/labs/03-robust-qpeplayer/experiments/real/threedmatch_full/run_overlap_bins.py:265: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rho, p = spearmanr(x, y)
+wrote /mnt/storage1/syk/.superagent-work/wt-p3b-threedmatch-full2/labs/03-robust-qpeplayer/experiments/real/threedmatch_full/results/overlap_bins.{json,md,png} (253.4s)

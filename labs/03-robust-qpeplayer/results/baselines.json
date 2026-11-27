@@ -1,0 +1,518 @@
+{
+ "protocol": {
+  "date": "2026-11-27",
+  "host": "ls (single node, CPU)",
+  "task": "synthetic 3D-3D robust registration",
+  "n_points": 100,
+  "n_trials": 20,
+  "p_list": [
+   0.0,
+   0.3,
+   0.5,
+   0.7
+  ],
+  "outlier_type": "random (uniform in [-2,2]^3)",
+  "noise_sigma": 0.01,
+  "gm_scale_c": 0.05,
+  "success": "rot < 5 deg AND trans < 0.1 m",
+  "instances": "identical SeedSequence([20261127,103,0,100p,trial]) for every method (N=100)",
+  "timing_note": "single-process CPU; Theseus time is solver-only (objective construction, ~6 ms/trial, excluded); GNC/RANSAC time includes the whole call"
+ },
+ "methods": {
+  "Kabsch": {
+   "kind": "closed-form least squares",
+   "robust": false,
+   "init": "n/a",
+   "source": "experiments/synthetic/common.py:kabsch"
+  },
+  "RANSAC-1000": {
+   "kind": "3-point RANSAC + Kabsch refit",
+   "robust": true,
+   "init": "n/a",
+   "source": "common.solve_ransac(adaptive=False), 1000 iters"
+  },
+  "RANSAC-adaptive": {
+   "kind": "3-point RANSAC + Kabsch refit",
+   "robust": true,
+   "init": "n/a",
+   "source": "common.solve_ransac(adaptive=True), cap 1000"
+  },
+  "IRLS-GM": {
+   "kind": "IRLS on GM kernel",
+   "robust": true,
+   "init": "identity/Kabsch"
+  },
+  "GNC-GM": {
+   "kind": "GNC on GM kernel + weighted-Kabsch inner",
+   "robust": true,
+   "init": "all-ones Kabsch"
+  },
+  "Theseus-GM[gt]": {
+   "kind": "Theseus LM on per-point GM residuals",
+   "robust": true,
+   "init": "ground truth"
+  },
+  "Theseus-GM[rand]": {
+   "kind": "Theseus LM on per-point GM residuals",
+   "robust": true,
+   "init": "uniform random rotation, t~U(-1,1)^3"
+  },
+  "SDPR-SCS": {
+   "kind": "Shor SDP relaxation of weighted 3D-3D LS (13-dim QCQP); with W_i=I and unit weights this is the *same* LS objective as Kabsch, verified max |rot diff| 1.5e-5 deg over 80 trials",
+   "robust": false,
+   "init": "n/a (convex relaxation)"
+  }
+ },
+ "cells": {
+  "0.0": {
+   "Kabsch": {
+    "success": 1.0,
+    "rot_median_deg": 0.09071818370969573,
+    "trans_median_m": 0.0012857164389111484,
+    "time_ms_p50": 0.04987185820937157,
+    "time_ms_p95": 0.08633693214505915
+   },
+   "RANSAC-1000": {
+    "success": 1.0,
+    "rot_median_deg": 0.09071818370969573,
+    "trans_median_m": 0.0012857164389111484,
+    "time_ms_p50": 0.19720429554581642,
+    "time_ms_p95": 0.4085648572072388
+   },
+   "RANSAC-adaptive": {
+    "success": 1.0,
+    "rot_median_deg": 0.09071818370969573,
+    "trans_median_m": 0.0012857164389111484,
+    "time_ms_p50": 0.1785589847713709,
+    "time_ms_p95": 0.2549949567764998
+   },
+   "IRLS-GM": {
+    "success": 1.0,
+    "rot_median_deg": 0.1008005408215252,
+    "trans_median_m": 0.001316848485316088,
+    "time_ms_p50": 1.8557950388640165,
+    "time_ms_p95": 1.9403035985305905
+   },
+   "GNC-GM": {
+    "success": 1.0,
+    "rot_median_deg": 0.10080051923870798,
+    "trans_median_m": 0.001316848445446335,
+    "time_ms_p50": 0.42357249185442924,
+    "time_ms_p95": 0.4893546691164376
+   },
+   "Theseus-GM[gt]": {
+    "success": 1.0,
+    "rot_median_deg": 0.10079979759414397,
+    "trans_median_m": 0.0013168196211470608,
+    "time_ms_p50": 127.17994884587824,
+    "time_ms_p95": 202.79143773950636,
+    "iters_median": 5.0,
+    "n_max_iters": 0,
+    "n_fail_status": 0
+   },
+   "Theseus-GM[rand]": {
+    "success": 1.0,
+    "rot_median_deg": 0.10079935816886115,
+    "trans_median_m": 0.0013168084258930266,
+    "time_ms_p50": 358.3896162454039,
+    "time_ms_p95": 565.8457294572145,
+    "iters_median": 14.5,
+    "n_max_iters": 0,
+    "n_fail_status": 0
+   },
+   "SDPR-SCS": {
+    "success": 1.0,
+    "rot_median_deg": 0.09071826874157732,
+    "trans_median_m": 0.0012857167264186996,
+    "time_ms_p50": 12.460605008527637,
+    "time_ms_p95": 18.797795870341364,
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success_over_attempts": 1.0
+   }
+  },
+  "0.3": {
+   "Kabsch": {
+    "success": 0.0,
+    "rot_median_deg": 9.512267136910548,
+    "trans_median_m": 0.15841613150927653,
+    "time_ms_p50": 0.06297766231000423,
+    "time_ms_p95": 0.08627355564385654
+   },
+   "RANSAC-1000": {
+    "success": 1.0,
+    "rot_median_deg": 0.1184640273256278,
+    "trans_median_m": 0.0018799803573414423,
+    "time_ms_p50": 56.22179270721972,
+    "time_ms_p95": 71.37555920053273
+   },
+   "RANSAC-adaptive": {
+    "success": 1.0,
+    "rot_median_deg": 0.1184640273256278,
+    "trans_median_m": 0.0018799803573414423,
+    "time_ms_p50": 1.117844134569168,
+    "time_ms_p95": 1.4111741911619902
+   },
+   "IRLS-GM": {
+    "success": 1.0,
+    "rot_median_deg": 0.11686163480472103,
+    "trans_median_m": 0.001977850689225382,
+    "time_ms_p50": 1.8926199991255999,
+    "time_ms_p95": 2.496370696462691
+   },
+   "GNC-GM": {
+    "success": 1.0,
+    "rot_median_deg": 0.11686152284701085,
+    "trans_median_m": 0.0019778498127068535,
+    "time_ms_p50": 1.7075324431061745,
+    "time_ms_p95": 2.248189342208207
+   },
+   "Theseus-GM[gt]": {
+    "success": 1.0,
+    "rot_median_deg": 0.11684707965647181,
+    "trans_median_m": 0.0019777222692868284,
+    "time_ms_p50": 118.18022490479052,
+    "time_ms_p95": 130.02410067711028,
+    "iters_median": 5.0,
+    "n_max_iters": 0,
+    "n_fail_status": 0
+   },
+   "Theseus-GM[rand]": {
+    "success": 0.8,
+    "rot_median_deg": 0.11686567934318215,
+    "trans_median_m": 0.002495072932892805,
+    "time_ms_p50": 401.81457228027284,
+    "time_ms_p95": 745.7290850114078,
+    "iters_median": 17.5,
+    "n_max_iters": 0,
+    "n_fail_status": 0
+   },
+   "SDPR-SCS": {
+    "success": 0.0,
+    "rot_median_deg": 9.512266947560336,
+    "trans_median_m": 0.1584161314776955,
+    "time_ms_p50": 12.844897340983152,
+    "time_ms_p95": 18.875346635468308,
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success_over_attempts": 0.0
+   }
+  },
+  "0.5": {
+   "Kabsch": {
+    "success": 0.0,
+    "rot_median_deg": 21.63346808170202,
+    "trans_median_m": 0.25814288138873087,
+    "time_ms_p50": 0.054144999012351036,
+    "time_ms_p95": 0.06597936153411865
+   },
+   "RANSAC-1000": {
+    "success": 1.0,
+    "rot_median_deg": 0.1369758001810803,
+    "trans_median_m": 0.0014305076767505936,
+    "time_ms_p50": 54.885367630049586,
+    "time_ms_p95": 55.823359778150916
+   },
+   "RANSAC-adaptive": {
+    "success": 1.0,
+    "rot_median_deg": 0.1369758001810803,
+    "trans_median_m": 0.0014305076767505936,
+    "time_ms_p50": 2.9929219745099545,
+    "time_ms_p95": 3.063519485294819
+   },
+   "IRLS-GM": {
+    "success": 1.0,
+    "rot_median_deg": 0.13991109565595747,
+    "trans_median_m": 0.0018660208793198163,
+    "time_ms_p50": 1.888804603368044,
+    "time_ms_p95": 1.9652201561257245
+   },
+   "GNC-GM": {
+    "success": 1.0,
+    "rot_median_deg": 0.13991106427906297,
+    "trans_median_m": 0.0018660206582397764,
+    "time_ms_p50": 1.716069644317031,
+    "time_ms_p95": 1.7782500479370356
+   },
+   "Theseus-GM[gt]": {
+    "success": 1.0,
+    "rot_median_deg": 0.13988975608091408,
+    "trans_median_m": 0.0018657196963761233,
+    "time_ms_p50": 121.93555384874344,
+    "time_ms_p95": 269.9252229649574,
+    "iters_median": 4.5,
+    "n_max_iters": 0,
+    "n_fail_status": 0
+   },
+   "Theseus-GM[rand]": {
+    "success": 0.55,
+    "rot_median_deg": 0.2367661373313042,
+    "trans_median_m": 0.0028302995318909142,
+    "time_ms_p50": 665.1822205167264,
+    "time_ms_p95": 1431.1257193330678,
+    "iters_median": 27.5,
+    "n_max_iters": 0,
+    "n_fail_status": 0
+   },
+   "SDPR-SCS": {
+    "success": 0.0,
+    "rot_median_deg": 21.633468091627677,
+    "trans_median_m": 0.2581428813057921,
+    "time_ms_p50": 13.268714072182775,
+    "time_ms_p95": 21.887530502863243,
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success_over_attempts": 0.0
+   }
+  },
+  "0.7": {
+   "Kabsch": {
+    "success": 0.0,
+    "rot_median_deg": 31.381113830779483,
+    "trans_median_m": 0.34510742719445586,
+    "time_ms_p50": 0.05386257544159889,
+    "time_ms_p95": 0.07011534180492164
+   },
+   "RANSAC-1000": {
+    "success": 1.0,
+    "rot_median_deg": 0.20817538608693842,
+    "trans_median_m": 0.0028213453282313478,
+    "time_ms_p50": 54.899345617741346,
+    "time_ms_p95": 57.15680955909194
+   },
+   "RANSAC-adaptive": {
+    "success": 1.0,
+    "rot_median_deg": 0.20817538608693842,
+    "trans_median_m": 0.0028213453282313478,
+    "time_ms_p50": 14.059684937819839,
+    "time_ms_p95": 14.508646959438924
+   },
+   "IRLS-GM": {
+    "success": 1.0,
+    "rot_median_deg": 0.21218389844129326,
+    "trans_median_m": 0.0029053307994267924,
+    "time_ms_p50": 1.9153871107846498,
+    "time_ms_p95": 2.0712208701297645
+   },
+   "GNC-GM": {
+    "success": 1.0,
+    "rot_median_deg": 0.21218393303399838,
+    "trans_median_m": 0.002905330384987404,
+    "time_ms_p50": 1.7253004480153322,
+    "time_ms_p95": 1.8257512943819172
+   },
+   "Theseus-GM[gt]": {
+    "success": 1.0,
+    "rot_median_deg": 0.21217181272929192,
+    "trans_median_m": 0.0029049838801097063,
+    "time_ms_p50": 121.0339399985969,
+    "time_ms_p95": 179.95433516334745,
+    "iters_median": 5.0,
+    "n_max_iters": 0,
+    "n_fail_status": 0
+   },
+   "Theseus-GM[rand]": {
+    "success": 0.25,
+    "rot_median_deg": 101.11530660047367,
+    "trans_median_m": 0.6371305217516021,
+    "time_ms_p50": 669.52815791592,
+    "time_ms_p95": 2039.176251715981,
+    "iters_median": 25.5,
+    "n_max_iters": 0,
+    "n_fail_status": 0
+   },
+   "SDPR-SCS": {
+    "success": 0.0,
+    "rot_median_deg": 31.381114418639456,
+    "trans_median_m": 0.3451074272702412,
+    "time_ms_p50": 13.040360994637012,
+    "time_ms_p95": 20.4677822533995,
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success_over_attempts": 0.0
+   }
+  }
+ },
+ "n_points_scaling": {
+  "20": {
+   "0.0": {
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success": 1.0,
+    "success_over_attempts": 1.0,
+    "rot_median": 0.2321779580473079,
+    "rot_p90": 0.4242471251147344,
+    "trans_median": 0.003347953755158961,
+    "trans_p90": 0.005109309947443918,
+    "time_ms_p50": 11.534055694937706,
+    "time_ms_p95": 49.00974929332782
+   },
+   "0.3": {
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success": 0.0,
+    "success_over_attempts": 0.0,
+    "rot_median": 27.497562586697597,
+    "rot_p90": 51.00554330509421,
+    "trans_median": 0.289709580809803,
+    "trans_p90": 0.501044745652495,
+    "time_ms_p50": 11.264972854405642,
+    "time_ms_p95": 14.29808498360217
+   },
+   "0.5": {
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success": 0.0,
+    "success_over_attempts": 0.0,
+    "rot_median": 37.87654231888189,
+    "rot_p90": 76.75799118557754,
+    "trans_median": 0.47051500921030565,
+    "trans_p90": 0.6331892242382714,
+    "time_ms_p50": 12.798175914213061,
+    "time_ms_p95": 18.365025962702934
+   },
+   "0.7": {
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success": 0.0,
+    "success_over_attempts": 0.0,
+    "rot_median": 55.37907992131559,
+    "rot_p90": 115.12455310861625,
+    "trans_median": 0.4238713134214701,
+    "trans_p90": 0.7821924082209002,
+    "time_ms_p50": 12.525771744549274,
+    "time_ms_p95": 15.031315060332417
+   }
+  },
+  "50": {
+   "0.0": {
+    "n_trials": 12,
+    "n_ok": 12,
+    "scs_failure_rate": 0.0,
+    "success": 1.0,
+    "success_over_attempts": 1.0,
+    "rot_median": 0.16101534691026603,
+    "rot_p90": 0.29146196497111054,
+    "trans_median": 0.0019412874407696134,
+    "trans_p90": 0.0030871625192064275,
+    "time_ms_p50": 11.958296643570065,
+    "time_ms_p95": 12.64011855237186
+   },
+   "0.3": {
+    "n_trials": 12,
+    "n_ok": 12,
+    "scs_failure_rate": 0.0,
+    "success": 0.0,
+    "success_over_attempts": 0.0,
+    "rot_median": 12.962094797954885,
+    "rot_p90": 17.53118722431533,
+    "trans_median": 0.20725453409745564,
+    "trans_p90": 0.3418278364360225,
+    "time_ms_p50": 10.904411319643259,
+    "time_ms_p95": 14.392030634917317
+   },
+   "0.5": {
+    "n_trials": 12,
+    "n_ok": 12,
+    "scs_failure_rate": 0.0,
+    "success": 0.0,
+    "success_over_attempts": 0.0,
+    "rot_median": 24.696139606198496,
+    "rot_p90": 60.686974139671484,
+    "trans_median": 0.3647688052218603,
+    "trans_p90": 0.5176054688235866,
+    "time_ms_p50": 11.098178569227457,
+    "time_ms_p95": 25.910990545526133
+   },
+   "0.7": {
+    "n_trials": 12,
+    "n_ok": 12,
+    "scs_failure_rate": 0.0,
+    "success": 0.0,
+    "success_over_attempts": 0.0,
+    "rot_median": 48.692347328500205,
+    "rot_p90": 108.57645708050187,
+    "trans_median": 0.48145138593523246,
+    "trans_p90": 0.6012478253843506,
+    "time_ms_p50": 13.365179300308228,
+    "time_ms_p95": 15.22504596505314
+   }
+  },
+  "100": {
+   "0.0": {
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success": 1.0,
+    "success_over_attempts": 1.0,
+    "rot_median": 0.09071826874157732,
+    "rot_p90": 0.17176413919545408,
+    "trans_median": 0.0012857167264186996,
+    "trans_p90": 0.00234739767352119,
+    "time_ms_p50": 12.460605008527637,
+    "time_ms_p95": 18.797795870341364
+   },
+   "0.3": {
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success": 0.0,
+    "success_over_attempts": 0.0,
+    "rot_median": 9.512266947560336,
+    "rot_p90": 17.625027771903426,
+    "trans_median": 0.1584161314776955,
+    "trans_p90": 0.24315007648156434,
+    "time_ms_p50": 12.844897340983152,
+    "time_ms_p95": 18.875346635468308
+   },
+   "0.5": {
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success": 0.0,
+    "success_over_attempts": 0.0,
+    "rot_median": 21.633468091627677,
+    "rot_p90": 28.271086851026023,
+    "trans_median": 0.2581428813057921,
+    "trans_p90": 0.3982095618565387,
+    "time_ms_p50": 13.268714072182775,
+    "time_ms_p95": 21.887530502863243
+   },
+   "0.7": {
+    "n_trials": 20,
+    "n_ok": 20,
+    "scs_failure_rate": 0.0,
+    "success": 0.0,
+    "success_over_attempts": 0.0,
+    "rot_median": 31.381114418639456,
+    "rot_p90": 76.2685719602461,
+    "trans_median": 0.3451074272702412,
+    "trans_p90": 0.4764016530412689,
+    "time_ms_p50": 13.040360994637012,
+    "time_ms_p95": 20.4677822533995
+   }
+  }
+ },
+ "notes": [
+  "Theseus-GM[gt] starts at the ground-truth pose, so 100% success is a local-basin/preservation check, not global recovery.",
+  "Theseus-GM[rand] is the informative Theseus number: it hits local minima at p>=0.3 (success 0.80/0.55/0.25).",
+  "SDPR-SCS with W_i=I and unit weights minimises the same least-squares objective as Kabsch; paired per-trial errors agree to 1.5e-5 deg / 1.3e-9 m over 80 trials.  It is a correctness/availability check of the SDPR forward path, not an independent robust method.  A distinct SDPR baseline needs non-identity W_i (POLI) and/or a RANSAC front end.",
+  "SCS forward failure rate was 0/208 across N=20/50/100 at eps=1e-9; failures at p>=0.3 are wrong poses, not exceptions.",
+  "Pyatov/POLI/BPnP are out of scope for this 3D-3D table; see availability.md for exact reasons.",
+  "Only 20 trials/cell: Wilson 95% CI for Theseus-GM[rand] at p=0.3/0.5/0.7 is [0.58,0.92]/[0.34,0.74]/[0.11,0.47].  GNC-GM is 20/20, CI [0.84,1.00]; p=0.3 intervals overlap, so the 16/20 vs 20/20 gap is not significant at 95%; p=0.5/0.7 are separated."
+ ],
+ "sources": {
+  "reference": "experiments/baselines/results/reference_n20.json",
+  "theseus": "experiments/baselines/results/theseus.json",
+  "sdpr": "experiments/baselines/results/sdpr_forward.json",
+  "sdpr_kabsch_equiv": "experiments/baselines/results/sdpr_kabsch_equiv.json"
+ }
+}

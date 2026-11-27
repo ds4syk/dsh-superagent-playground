@@ -1,0 +1,9 @@
+7-scenes-redkitchen: fragments=60 pairs=506 forward median NN=0.5094 m, inverse=0.0453 m, j->i on 100% of pairs
+sun3d-home_at-home_at_scan1_2013_jan_1: fragments=60 pairs=156 forward median NN=0.3765 m, inverse=0.0700 m, j->i on 100% of pairs
+sun3d-hotel_uc-scan3: fragments=55 pairs=226 forward median NN=0.4125 m, inverse=0.0431 m, j->i on 100% of pairs
+sun3d-home_md-home_md_scan9_2012_sep_30: fragments=60 pairs=208 forward median NN=0.2804 m, inverse=0.0344 m, j->i on 100% of pairs
+sun3d-hotel_umd-maryland_hotel1: fragments=57 pairs=104 forward median NN=0.4254 m, inverse=0.0496 m, j->i on 100% of pairs
+sun3d-hotel_umd-maryland_hotel3: fragments=37 pairs=54 forward median NN=0.6313 m, inverse=0.0527 m, j->i on 100% of pairs
+sun3d-mit_76_studyroom-76-1studyroom2: fragments=66 pairs=292 forward median NN=0.5186 m, inverse=0.0465 m, j->i on 100% of pairs
+sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika: fragments=38 pairs=77 forward median NN=0.7454 m, inverse=0.0597 m, j->i on 100% of pairs
+wrote /mnt/storage1/syk/.superagent-work/wt-p3b-threedmatch-full2/labs/03-robust-qpeplayer/experiments/real/threedmatch_full/results/verify_gt_direction_full.json
