@@ -1,0 +1,37 @@
+\documentclass[a4paper,twocolumn,10pt]{ctexart}
+\input{preamble}
+\begin{document}
+\pagestyle{plain}
+\zihao{5}
+
+\title{\zihao{2}\bfseries Robust-QPEPLayer：面向无RANSAC鲁棒位姿估计的曲率修正隐式微分}
+\author{\zihao{4} 第一作者\quad 第二作者\\[2pt] \zihao{5}（[单位名称]，[城市] [邮编]）}
+\date{}
+\maketitle
+
+\begin{abstract}
+\zihao{-5}
+\input{sections/00_abstract}
+\end{abstract}
+
+\noindent{\zihao{-5}\textbf{关键词：}鲁棒位姿估计；可微优化；Black--Rangarajan对偶；渐进非凸；隐式微分}
+
+\noindent{\zihao{-5}\textbf{中图分类号：}TP242\quad\textbf{文献标志码：}A}
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_formulation}
+\input{sections/04_method}
+\input{sections/05_experiments}
+\input{sections/06_discussion}
+\input{sections/07_conclusion}
+
+\input{sections/09_references}
+
+% ---------------------------------------------------------------- appendix
+% 不计入六页正文限制。\newpage 使边界显式，附录起始页码即正文页数
+% （用 \pageref{app:start} 核对）。
+\newpage
+\input{sections/08_appendix}
+
+\end{document}

@@ -1,0 +1,28 @@
+\section{问题建模与符号}
+\label{sec:formulation}
+
+令$\mathcal{M}=\mathbb{S}^3\times\mathbb{R}^3$，$z=(\mathbf{q},\mathbf{t})$且$\mathbf{q}^\top\mathbf{q}=1$。对$i=1,\dots,N$，令$\mathbf{p}_i\in\mathbb{R}^3$为模型点，$\mathbf{y}_i\in\mathbb{R}^3$为观测，$W_i\in\mathbb{S}^3_{++}$为正定权重。3D--3D残差及其平方加权范数为
+\begin{equation}
+\begin{aligned}
+\mathbf{r}_i(z,\theta)&=R(\mathbf{q})\mathbf{p}_i+\mathbf{t}-\mathbf{y}_i,\\
+e_i(z,\theta)&=\|\mathbf{r}_i\|_{W_i}^2=\mathbf{r}_i^\top W_i\mathbf{r}_i\ge0,
+\end{aligned}
+\end{equation}
+其中$\theta$汇集该层的参数（对应、特征，以及可选的权重）。记$\mathbf{u}_i=R(\mathbf{q})\mathbf{p}_i$，$J_i=\partial\mathbf{u}_i/\partial\mathbf{q}\in\mathbb{R}^{3\times4}$；由于$\mathbf{u}_i$关于$\mathbf{q}$是二次齐次的，Euler定理给出$J_i\mathbf{q}=2\mathbf{u}_i$。
+
+鲁棒代价为$F_{\mathrm{rob}}(z;\theta)=\sum_{i=1}^N\rho(e_i(z;\theta))$，其中Geman--McClure核为
+\begin{equation}
+\begin{aligned}
+\rho(e)&=\frac{c^2e}{c^2+e},\qquad
+\rho'(e)=\frac{c^4}{(c^2+e)^2},\\
+\rho''(e)&=-\frac{2c^4}{(c^2+e)^3}.
+\end{aligned}
+\end{equation}
+GNC代理为$\rho_\mu(e)=\mu c^2e/(\mu c^2+e)$，$\mu\ge1$。BR对偶变量为$w_i\in[0,1]$，对偶势为$\psi_\mu(w)=\mu c^2(\sqrt{w}-1)^2$。记$g_i$与$H_i$为$e_i$在$\mathcal{M}$上的黎曼梯度与Hessian \cite{absil2008}，$g_i^E,H_i^E$为它们在$\mathbb{R}^7$中的欧氏对应量。$P=I_4-\mathbf{q}\mathbf{q}^\top$为$\mathbf{q}$处的切投影；$\Pi=\diag(P,I_3)$；$B=\diag(B_q,I_3)$为正交切基，其中$B_q\in\mathbb{R}^{4\times3}$张成$\{\mathbf{q}\}^{\perp}$。驻点映射为
+\begin{equation}
+\Phi(z,\theta)=\sum_i\rho'(e_i(z,\theta))\,g_i(z,\theta)\in T_z\mathcal{M}.
+\label{eq:phi}
+\end{equation}
+在$\mu=1$处的GNC不动点满足$w_i=\rho'(e_i)$且$\Phi=0$；精确导数由$H_{\mathrm{rob}}\,\mathrm{d}z+\partial_\theta\Phi\,\mathrm{d}\theta=0$得到。
+
+\noindent\textbf{假设。}(A1) $e_i\in C^2$且所有导数连续；$W_i$位于$\mathbb{S}^3_{++}$的紧子集中。(A2) 加权QPEP由代数求解器全局求解（QPEP式枚举全部KKT根；数值失败会被报告而非隐藏）——这是代数全局假设，不是凸认证。(A3) 在关注点处加权极小点唯一且$H_{\mathrm{rob}}$可逆；对严格局部极小点我们将其加强为$H_{\mathrm{rob}}\succ0$。(A4) 参数光滑地进入；主要推导假设$W_i$固定，$W_i(\theta)$的扩展见附录~A。(A5) $N\ge3$，$\sum_iw_iW_i\succ0$，且3D点不共线。

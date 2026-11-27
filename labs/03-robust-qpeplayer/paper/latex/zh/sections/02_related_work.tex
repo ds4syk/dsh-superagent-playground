@@ -1,0 +1,8 @@
+\section{相关工作}
+\label{sec:related}
+
+\noindent\textbf{可认证与全局位姿层。}SDPRLayers \cite{holmes2025sdpr}把一个齐次QCQP提升为Shor半定规划，认证秩一最优性，并用隐式选择论证对原始KKT系统求微分。其保证以紧性为条件；其真实数据流程使用RANSAC与干净样本，且其半定规划随变量数增长。QPEP \cite{wu2022qpep}消去平移，用Gr\"obner基求解一个四次系统，返回带协方差的代数全局位姿，但没有梯度层。我们把QPEP的标量权重$4\times4$特化用作\emph{子程序}，并添加鲁棒外循环与精确反向；我们不声称鲁棒代价的可认证全局最优性。
+
+\noindent\textbf{局部可微优化。}Theseus \cite{pineda2022theseus}在Lie群上提供可微非线性最小二乘，支持隐式微分与直接损失最小化。它把鲁棒核作为软代价加以支持，但其不动点是惩罚目标的局部驻点，不暴露重降曲率修正，且核是作为标量权重施加，而非通过BR对偶。BPnP \cite{chen2020bpn}通过隐函数定理穿过PnP求解器反传，没有外点机制。EPro-PnP \cite{chen2022epropnp}用Boltzmann分布建模位姿歧义；它互补但方差大，且不是重降$M$估计器。Pyatov等 \cite{pyatov2024robust}把鲁棒两视图几何视为带可学习匹配置信权重的隐式层，属2D--2D范围；我们的是$\mathbb{S}^3\times\mathbb{R}^3$上的度量3D--3D位姿，并有显式二阶理论。POLI \cite{poli2026}学习逐点高斯几何，可提供各向异性$W_i$；它是前端表示而非鲁棒位姿层，而我们的$W_i$可以是POLI的椭球。
+
+\noindent\textbf{鲁棒估计与隐式层。}BR对偶 \cite{black1996br}统一了外点过程与鲁棒统计，并给出我们所使用的对偶形式。GNC由Yang等 \cite{yang2020gnc}与TEASER \cite{yang2020teaser}在空间感知中推广，后者把GNC-TLS与可认证的旋转子问题结合；我们的内层问题是完整的6-DoF QPEP，贡献在于\emph{可微}不动点。GM、Cauchy、Welsch与TLS核都是经典核 \cite{geman1985}，其BR对偶见附录~C。RANSAC \cite{fischler1981ransac}是不可微的替代方案，比较时始终注明其预算。无Jacobian反传 \cite{fung2022jfb}用廉价近似替代逆Jacobian求解；冻结鲁棒权重是一种类似的“幻影梯度”，但我们的一维命题表明它可能符号错误。黎曼Hessian公式是嵌入流形的标准公式 \cite{absil2008}。最接近的可微鲁棒层是Pyatov等，最接近的鲁棒全局求解器是TEASER/GNC，最接近的位姿层是SDPRLayers；我们的区别点在于带曲率修正的精确鲁棒不动点微分、黎曼约束项、一维符号翻转定理、$O(\|\mathbf{r}\|^{-4})$界，以及恒定维数的QPEP内层求解器。
