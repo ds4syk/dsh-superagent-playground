@@ -1,5 +1,7 @@
 # P1 real-data two-mode experiment (BOP LINEMOD eggbox/glue)
 
+> **Correction (2026-11-27 phase-4).** The `Laplace rot err` column and the summary line below use the *unprojected* 9-vector mean, which is not a rotation; the valid projected chordal mean is in `pose_error.md` (median **44.24 deg** vs the unprojected 58.28 deg; bias direction unchanged).
+
 tau=0.01, plane RANSAC band=2.5 mm, n_points=900, mode enumeration n_starts=384, MC n=400, timings on login-node CPU.
 
 ## A. Real bimodal bearing cost on the dominant planar face

@@ -72,3 +72,13 @@ cd labs/01-laplace-qpeplayer/experiments/real/linemod
 - 真实图像前端（2D 检测/描述子）与 ADD(-S)/ADD-S AUC 精度表：未接，不能声称。
 - In-The-Dark 双目矩阵加权子问题：未做（P1-EXP-03）。
 - 对称群轨道平均（Q15）作为 loss 的消融：未做；本目录的两个构造都不依赖 Q15 的结论。
+
+## 7. Theseus 外部基线（2026-11-27 补）
+
+P1 的「双模 + Laplace」需要一个**不枚举模式**的局部优化参照：`run_theseus_baseline.py` 在**同一个** `C(R,t)=Σ‖P_i^⊥(R p_i+t)‖²` 上跑 Theseus LM（复用 P3 `baselines/theseus_cost.py` + `run_theseus.py` 的模式：解析 Jacobian、LM+稠密 Cholesky、GT/随机初始化、20 trials），细节见 [`THESEUS_BASELINE.md`](THESEUS_BASELINE.md)、数据见 [`results/theseus_baseline.md`](results/theseus_baseline.md)。
+
+```bash
+/mnt/storage1/syk/venvs/theseus/bin/python run_theseus_baseline.py   # ~9 s, 370 次 LM
+```
+
+一句话结论：GT 初始化能逐帧回到 P1 的 hard-argmin 模式（局部收敛），但冷启动/多启动大多进入 flip 或面朝后的伪极小（多启动 11/40 命中 GT），且无 z>0 约束时这些伪极小的代价可与物理模式近简并、在 2/15 帧更低 —— 局部优化替代不了模式枚举，这个基线是**诚实的负结果**而不是精度 claim。

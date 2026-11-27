@@ -64,6 +64,20 @@ def main():
              None),  # jump table is in the .md, not the JSON
         fact("scorer theta_f", ["1.3185", "1.318"], "theory/results/scorer_fold.json", lambda: sc["six_d"]["theta_f"]),
     ]
+    pe = load("real/linemod/results/pose_error.json")["aggregate"]
+    facts += [
+        fact("real laplace rot", ["44.24", "44.2"], "real/linemod/results/pose_error.json",
+             lambda: pe["rot_deg"]["laplace"]["median"]),
+        fact("real hard adds", ["3.7", "3.74"], "real/linemod/results/pose_error.json",
+             lambda: pe["adds_m"]["hard"]["median"] * 1000.0),
+        fact("real lap adds", ["13.9", "13.94"], "real/linemod/results/pose_error.json",
+             lambda: pe["adds_m"]["laplace"]["median"] * 1000.0),
+    ]
+    rc = load("results/rootcount_fast.json")
+    facts += [
+        fact("roots 40", ["40 complex projective", "40 个复射影"], "results/rootcount_fast.json",
+             lambda: [c["n_projective_roots"] for c in rc["cases"]]),
+    ]
     tm = load("real/linemod/results/two_mode.json")
     a = tm["part_a"]
     facts += [

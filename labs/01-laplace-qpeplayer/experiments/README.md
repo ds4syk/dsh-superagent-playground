@@ -70,7 +70,7 @@ srun --partition=cpu --time=00:40:00 --ntasks=1 \
 
 旧「对称标注混合」构造是负结果（mm/m 单位 + 共享 t 消去两个原因，见 `real/linemod/README.md`）。替代构造 `run_two_mode.py` 在 **15/15 帧** eggbox/glue 上得到真实双峰代价（真实深度 bearing + 最近 mesh 顶点 + 主平面片 RANSAC + $z>0$ 过滤）：$K=2$、$\Delta J\in[1.25\times10^{-4},2.56\times10^{-3}]$、错误模式 Laplace 权重 0.45–0.61。
 
-诚实结论：**真实近简并处 Laplace 不是精度优势**——hard argmin 中位旋转误差 2.06°（1/15 帧失败），Laplace 后验均值中位 58.3°（被错误模式拉偏）。同一真实几何上的受控横截交叉（两个标注各自消去平移）给出 Laplace 解析梯度 rel **1.9e-10–1.8e-9**，MC **9e-5–1.7e-1**。详见 `real/linemod/results/two_mode.md`。
+诚实结论：**真实近简并处 Laplace 不是精度优势**——hard argmin 中位旋转误差 2.06°（1/15 帧失败），Laplace 后验均值中位 44.24°（投影 chordal mean；旧的 58.28° 是未投影 9-vector 值，不是 geodesic 误差）（被错误模式拉偏）。同一真实几何上的受控横截交叉（两个标注各自消去平移）给出 Laplace 解析梯度 rel **1.9e-10–1.8e-9**，MC **9e-5–1.7e-1**。详见 `real/linemod/results/two_mode.md`。
 
 ## 6. Q2/Q13 修订：满 20D 等价，上游 17D 严格更松（2026-11-27）
 
@@ -142,3 +142,11 @@ srun --partition=cpu --time=00:40:00 --ntasks=1 \
 - P1 级（非 P0）仍 open：Q4（精确充要条件）、Q8（$\tau$ 学习/尺度）、Q11（重根梯度）、Q12（EPro 公平对比）、Q14（措辞）、Q15（群轨道平均）。
 
 ![P1 补充证明后的主表/消融](../../../docs/visuals/2026-11-27-p1-theory.png)
+
+## 8. 真实数据位姿误差 / ADD-S 与外部基线（phase-4, 2026-11-27）
+
+- **位姿误差 / ADD-S（15 帧）**：`real/linemod/run_pose_error.py`，结果 `real/linemod/results/pose_error.{md,json,png}`。hard argmin 旋转中位 **2.06° [1.47,3.49]**、ADD-S 中位 **3.7 mm [3.0,4.3]**；Laplace（**投影 chordal mean**）中位 **44.24° [33.90,46.87]**、ADD-S **13.9 mm [10.3,20.2]**，配对偏差 +36.9° [+27.2,+44.9]；MC 同 estimand（seed SD 1.011°）。**旧的 58.28° 是未投影 9-vector mean，不是 geodesic 误差**；`two_mode.md` 顶部已加更正块。ADD-S 用 1000 mesh 查询点 vs **完整 GT mesh** KD-tree（与 full-vs-full 差 ≤0.51 mm）。
+- **经典基线**：`real/linemod/run_classical_baselines.py`（sdpr env 的 cv2 5.0）。同 15 帧、同一 RANSAC 平面对应；SQPNP 中位 2.04°/ADD-S 4.6 mm（15/15 真模式），EPnP 2.05°（12/15），IPPE 2.21°（15/15），LM(identity) 106°（3/15）、LM(GT) 2.06°。**前向求解器，不是可微层；LM 不是 BPnP**。见 `results/classical_baselines.md`。
+- **Theseus 基线**：`real/linemod/run_theseus_baseline.py`（theseus venv，复用 P3 `theseus_cost/run_theseus` 模式）。目标对账 1.1e-13；GT init 2.06°/15-15；identity 178.82°/1-15；random 100/300 GT；8-init multistart 11/40。**局部优化器无枚举/物理过滤，无 z>0 时存在面朝后伪极小（2/15 帧代价更低）**；见 `results/theseus_baseline.md`、`THESEUS_BASELINE.md`。
+- **40 根计数**：`roots/run_rootcount_fast.py`（total-degree homotopy，4 chart 取并）：**4/4 实例 40 个复射影根**（80 仿射根），实射影 26/12/12/20、极小 5/2/2/4，残差 ≤1.2e-13，24 s；**数值完整性，不是符号商环上界**。见 `results/rootcount_fast.md`。
+- 一页图：`real/linemod/results/real_summary.png`（P1 vs 经典/局部基线，旋转误差与 ADD-S 中位+CI）。

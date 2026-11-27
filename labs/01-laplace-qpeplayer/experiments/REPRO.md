@@ -1,7 +1,7 @@
 # P1 实验套件复现报告（REPRO）
 
 > 日期：2026-11-27（第二轮，P1-Q2/Q13 + sdp 组） · 工作区：`wt-p1-repro2`（branch `opt/p1-repro2`，HEAD `3fa99be`）
-> 范围：`labs/01-laplace-qpeplayer/experiments/` 下 8 个实验脚本（6 个默认 + `sdp/run_6point_check.py` + LINEMOD）的 clean-cwd 可执行性、输出落盘位置、墙钟时间、确定性与脆弱点；`run_all.sh` 新增可选 `--with-sdp` / `--with-sdp-upstream` 组；phase-3 再新增 `--with-scorer`（P1-Q5c 的 1D+6D Scorer 延拓，~21 s），`--with-sdp` 同时跑 6 点检查 + 证书 + Q2 图。
+> 范围：`labs/01-laplace-qpeplayer/experiments/` 下 8 个实验脚本（6 个默认 + `sdp/run_6point_check.py` + LINEMOD）的 clean-cwd 可执行性、输出落盘位置、墙钟时间、确定性与脆弱点；`run_all.sh` 新增可选 `--with-sdp` / `--with-sdp-upstream` 组；phase-4 再新增 `--with-roots`（40 根计数，~24 s）、`--with-pose-error`（真实 ADD-S/位姿误差，~7 s）、`--with-classical`（cv2 经典基线，需 sdpr env，~3.4 s）、`--with-theseus`（Theseus，需 theseus venv，~9 s）；phase-3 再新增 `--with-scorer`（P1-Q5c 的 1D+6D Scorer 延拓，~21 s），`--with-sdp` 同时跑 6 点检查 + 证书 + Q2 图。
 > 本轮**只改了 `run_all.sh`、本文件与两个 README**（`experiments/README.md`、`labs/01-laplace-qpeplayer/README.md`），没有修改任何现有 `.py`、没有 commit、没有 push；发现的问题只记录在本文件并给出最小修复建议。
 
 ## 0. 一分钟结论
@@ -11,7 +11,11 @@
 | 6 个快速脚本 clean-cwd（空目录）执行 | **全部通过**，rc=0，无 cwd 残留文件 |
 | `--with-sdp` 追加 6 点物理反例检查/证书/Q2 图 | **通过**，rc=0，`six_point.*`、`six_point_cert.*`、`q2_summary.*` 落到副本 `sdp/results/`，并归档到 `outputs/sdp_results/`；三脚本合计 **3.8 s**（phase-3 实测 1.36+1.38+1.11 s） |
 | `--with-scorer` 追加 P1-Q5c Scorer 延拓 | **通过**，rc=0，`scorer_fold.json/.md/.png` 落到副本 `theory/results/`；脚本 **20.8 s**，`scorer_fold.json` 非计时字段与已提交一致 |
-| 墙钟（本轮同机、串行） | 默认 **35.1 s**；`--with-sdp` **34.9–39.0 s**（phase-3 加证书+图后仍 34.9 s）；`--with-linemod --with-sdp` **43.0 s**；`--with-sdp --with-scorer` **55.4 s**（脚本净和，随同机负载 ±10%–20%） |
+| `--with-roots` 追加 40 根快速计数 | **通过**，rc=0，`rootcount_fast.json/.md`；脚本 **24.0 s**，非计时字段与已提交一致 |
+| `--with-pose-error` 追加真实 ADD-S/位姿误差 | **通过**，rc=0，`pose_error.*`；脚本 **6.6 s** |
+| `--with-classical` 追加 cv2 经典基线 | **通过**，rc=0，`classical_baselines.*`；脚本 **3.4 s**（sdpr env） |
+| `--with-theseus` 追加 Theseus LM 基线 | **通过**，rc=0，`theseus_baseline.*`；脚本 **~9 s**（theseus venv） |
+| 墙钟（本轮同机、串行） | phase-4 `--with-roots --with-pose-error --with-classical` **64.6 s**（9 脚本全 ok）；默认 **35.1 s**；`--with-sdp` **34.9–39.0 s**（phase-3 加证书+图后仍 34.9 s）；`--with-linemod --with-sdp` **43.0 s**；`--with-sdp --with-scorer` **55.4 s**（脚本净和，随同机负载 ±10%–20%） |
 | 输出落盘 | 全部写到脚本自身位置对应的 `results/` / `theory/results/` / `sdp/results/`，与 cwd 无关 |
 | 确定性（6 点检查跑两次 + 已提交结果对比） | **通过**：`six_point.json` 两次运行**字节完全一致**（sha256 相同），且与提交基线非计时字段一致；`run_main` 上一轮两跑逐位相同，本轮 3 次 harness 运行均与提交基线一致 |
 | 已提交 `results/`、`sdp/results/` 是否被覆盖 | **否**：harness 在临时副本里跑；运行前后 sha256 manifest 不变 |
@@ -32,6 +36,10 @@ EXP=/mnt/storage1/syk/.superagent-work/wt-p1-repro2/labs/01-laplace-qpeplayer/ex
 "$EXP/run_all.sh"                    # 快速合成 + theory 套件（默认）
 "$EXP/run_all.sh" --with-sdp         # 追加 6 点检查 + 证书 + Q2 图（约 4 s）
 "$EXP/run_all.sh" --with-scorer      # 追加 P1-Q5c Scorer 1D+6D 延拓（约 21 s）
+"$EXP/run_all.sh" --with-roots       # 追加 40 根快速计数（约 24 s）
+"$EXP/run_all.sh" --with-pose-error  # 追加真实 ADD-S/位姿误差（约 7 s）
+"$EXP/run_all.sh" --with-classical   # 追加 cv2 经典基线（需 sdpr env，约 3.4 s）
+"$EXP/run_all.sh" --with-theseus     # 追加 Theseus 基线（需 theseus venv，约 9 s）
 "$EXP/run_all.sh" --with-linemod     # 追加 real/linemod（需要 BOP LINEMOD）
 "$EXP/run_all.sh" --no-compare       # 跳过与已提交结果的数值比对
 PYTHON=/path/to/python P1_STEP_TIMEOUT=1200 "$EXP/run_all.sh"   # 换解释器/超时
