@@ -23,16 +23,22 @@
 * 证书：与 run_main 完全相同的一次 shor_bound(enforce_ineq=True)，
   certified = 可行(≤1e-6) 且 J−Shor ≤ 1e-6 且 SDP tight(λ2/λ1 ≤ 1e-6)。
 
-两个 SCP 变体
+三个 SCP 变体
 -------------
-  scp         单起点（上段），主 baseline；
-  scp_restart 若 scp 未认证（或不可行），最多再试 2 个扰动初值
-              （q0+0.35·N(0,I₄) 归一化、t0+0.02·N(0,I₃)，与 ALM 内层起点同一风格），
-              取"可行且 J 最小"的解。用来区分"SCP 局部收敛失败"与"初值落进错误盆地"。
+  scp          单起点（上段），主 baseline；
+  scp_restart  若 scp 未认证（或不可行），最多再试 2 个扰动初值
+               （q0+0.35·N(0,I₄) 归一化、t0+0.02·N(0,I₃)，与 ALM 内层起点同一风格），
+               取"可行且 J 最小"的解；
+  scp_restart3 同上但最多 3 个额外扰动初值（本轮 S34：多一次起点，检验镜像初值能否救回）。
+  两个重启变体用来区分"SCP 局部收敛失败"与"初值落进错误盆地"。
 
-运行：srun --partition=cpu --time=00:30:00 --ntasks=1 \
-      /home/syk/miniconda3/envs/sdpr/bin/python run_scp.py
-环境变量：QPE_SCP_TRIALS（默认 50）、QPE_SCP_P（默认 "8,16,32"）、QPE_SCP_MAX_ITER（默认 100）。
+压力档：3 档（σ=0.02/bias=0.12、σ=0.03/bias=0.18、σ=0.05/bias=0.25），默认各 20 trials；
+报告 SCP vs ALM 的 cert/feasible/time 以及失败模式计数（见 md 表 3b）。
+
+运行：/home/syk/miniconda3/envs/sdpr/bin/python run_scp.py
+环境变量：QPE_SCP_TRIALS（默认 50）、QPE_SCP_P（默认 "8,16,32"）、QPE_SCP_MAX_ITER（默认 100）、
+          QPE_SCP_NOISE_TRIALS（每档压力 trial 数，默认 20）、
+          QPE_SCP_STRESS_TAGS（逗号分隔，只跑指定档）、QPE_SCP_STRESS=0（跳过压力档）。
 """
 import os
 
@@ -61,9 +67,21 @@ N_TRIALS = int(os.environ.get("QPE_SCP_TRIALS", "50"))
 MAX_ITER = int(os.environ.get("QPE_SCP_MAX_ITER", "100"))
 NOISE, BIAS_Z = 0.01, 0.08          # 主比较单元格（与主表一致）
 N_NOISE_TRIALS = int(os.environ.get("QPE_SCP_NOISE_TRIALS", "20"))
-# 高噪声/偏差压力档：主表 unc 镜像率 18%（无约束热启动更容易落进 cheirality 镜像盆地），
-# 用来检验 SCP 单起点认证率对初值的敏感性。
-STRESS = dict(tag="n020_b120", p=16, noise=0.02, bias_z=0.12, n=N_NOISE_TRIALS)
+# 高噪声/偏差压力档（3 档）：主表 unc 镜像率 18%（σ=0.02/bias=0.12），
+# 无约束热启动越容易落进 cheirality 镜像盆地，用来检验 SCP 单起点认证率对初值的敏感性。
+# 新增两档 σ=0.03/bias=0.18、σ=0.05/bias=0.25（本轮 S34）。
+STRESS_CELLS = [
+    dict(tag="n020_b120", p=16, noise=0.02, bias_z=0.12, n=N_NOISE_TRIALS),
+    dict(tag="n030_b180", p=16, noise=0.03, bias_z=0.18, n=N_NOISE_TRIALS),
+    dict(tag="n050_b250", p=16, noise=0.05, bias_z=0.25, n=N_NOISE_TRIALS),
+]
+_tags = [v for v in os.environ.get("QPE_SCP_STRESS_TAGS", "").split(",") if v]
+if _tags:
+    STRESS_CELLS = [c for c in STRESS_CELLS if c["tag"] in _tags]
+if os.environ.get("QPE_SCP_STRESS", "1") == "0":
+    STRESS_CELLS = []
+RESTART_EXTRA = 2                   # scp_restart：最多 2 个额外扰动起点（上一轮 baseline）
+RESTART3_EXTRA = 3                  # scp_restart3：最多 3 个额外扰动起点（本轮新增）
 LAM_SOFT = 1e3
 
 
@@ -406,15 +424,30 @@ def run_trial(ins, do_fd_check=False):
     t0 = time.perf_counter()
     scr = scp_with_restarts(M0, D0, G0, A, B, qu, tu, shor,
                             rng=np.random.default_rng(7000 + seed),
-                            n_extra=2, max_iter=MAX_ITER)
+                            n_extra=RESTART_EXTRA, max_iter=MAX_ITER)
     rec["scp_restart"] = RM.metrics(ins, scr["q"], scr["t"], A, B, M0, D0, G0, J=scr["J"])
     rec["scp_restart"].update(time_ms=1e3 * (time.perf_counter() - t0),
                               n_starts=scr["n_starts"], run_Js=scr["run_Js"],
                               run_viols=scr["run_viols"], run_iters=scr["run_iters"],
-                              run_converged=scr["run_converged"])
+                              run_converged=scr["run_converged"],
+                              iters=scr["iters"], converged=scr["converged"],
+                              phase=scr["phase"])
+
+    # --- SCP + 3 重启（本轮 S34：多一次扰动起点，看镜像初值能否被救回）---
+    t0 = time.perf_counter()
+    scr3 = scp_with_restarts(M0, D0, G0, A, B, qu, tu, shor,
+                             rng=np.random.default_rng(7300 + seed),
+                             n_extra=RESTART3_EXTRA, max_iter=MAX_ITER)
+    rec["scp_restart3"] = RM.metrics(ins, scr3["q"], scr3["t"], A, B, M0, D0, G0, J=scr3["J"])
+    rec["scp_restart3"].update(time_ms=1e3 * (time.perf_counter() - t0),
+                               n_starts=scr3["n_starts"], run_Js=scr3["run_Js"],
+                               run_viols=scr3["run_viols"], run_iters=scr3["run_iters"],
+                               run_converged=scr3["run_converged"],
+                               iters=scr3["iters"], converged=scr3["converged"],
+                               phase=scr3["phase"])
 
     # --- 统一认证口径（与 run_main 逐字一致）---
-    for name in ("unc", "soft", "proj", "alm", "scp", "scp_restart"):
+    for name in ("unc", "soft", "proj", "alm", "scp", "scp_restart", "scp_restart3"):
         m = rec[name]
         m["feasible"] = bool(m["viol"] <= 1e-6)
         m["cert_gap"] = float(m["J"] - shor)
@@ -441,7 +474,7 @@ def med_iqr(xs):
 
 def summarize(recs):
     out = {}
-    for name in ("unc", "soft", "proj", "alm", "scp", "scp_restart"):
+    for name in ("unc", "soft", "proj", "alm", "scp", "scp_restart", "scp_restart3"):
         ms = [r[name] for r in recs]
         out[name] = dict(
             pen_mm=med_iqr([m["pen_mm"] for m in ms]),
@@ -464,16 +497,47 @@ def summarize(recs):
         [m["time_solver_ms"] / max(m["time_ms"], 1e-9) for m in sc]))
     out["scp"]["restore_share"] = float(np.median(
         [m["time_restore_ms"] / max(m["time_ms"], 1e-9) for m in sc]))
-    out["scp_restart"]["n_starts_mean"] = float(np.mean([r["scp_restart"]["n_starts"] for r in recs]))
-    out["scp_restart"]["rescued"] = float(np.mean(
-        [r["scp_restart"]["n_starts"] > 1 for r in recs]))
+    for name in ("scp_restart", "scp_restart3"):
+        out[name]["n_starts_mean"] = float(np.mean([r[name]["n_starts"] for r in recs]))
+        out[name]["rescued"] = float(np.mean([r[name]["n_starts"] > 1 for r in recs]))
     out["sdp"] = dict(value_med=float(np.median([r["sdp"]["value"] for r in recs])),
                       time_ms=med_iqr([r["sdp"]["time_ms"] for r in recs]),
                       tight=float(np.mean([r["sdp"]["tight"] for r in recs])),
                       sound_vs_alm=float(np.mean([r["sdp"]["sound_vs_alm"] for r in recs])))
     out["mirror_rate"] = float(np.mean([r["unc"]["mirror"] for r in recs]))
+    out["failures"] = {name: fail_modes(recs, name)
+                       for name in ("scp", "scp_restart", "scp_restart3")}
     out["n"] = len(recs)
     return out
+
+
+def fail_modes(recs, name):
+    """SCP 失败 trial 的失败模式计数（同一 trial 可同时命中 mirror_init）。
+
+    主分类互斥且和 = n_failed：infeasible > nonconverged > suboptimal_converged。
+    `mirror_init`  = 无约束热启动本身是 cheirality 镜像解（depth_min<0）；
+    `output_mirror`= SCP 输出的解仍在相机后方（depth_min<0）；
+    `at_max_iter`  = 跑到 max_iter 上限（与 nonconverged 高度重叠）。
+    """
+    fails = [r for r in recs if "error" not in r and not r[name]["certified"]]
+    if not fails:
+        return dict(n=0, infeasible=0, nonconverged=0, suboptimal_converged=0,
+                    mirror_init=0, output_mirror=0, at_max_iter=0,
+                    iters_med=float("nan"), cert_gap_med=float("nan"))
+    infeas = [r for r in fails if r[name]["viol"] > 1e-6]
+    nonconv = [r for r in fails if r[name]["viol"] <= 1e-6
+               and not r[name].get("converged", False)]
+    subopt = [r for r in fails if r[name]["viol"] <= 1e-6
+              and r[name].get("converged", False) and r[name]["cert_gap"] > 1e-6]
+    return dict(
+        n=len(fails), infeasible=len(infeas), nonconverged=len(nonconv),
+        suboptimal_converged=len(subopt),
+        mirror_init=int(sum(r["unc"]["mirror"] for r in fails)),
+        output_mirror=int(sum(r[name]["depth_min_mm"] < 0.0 for r in fails)),
+        at_max_iter=int(sum(r[name].get("iters", 0) >= MAX_ITER for r in fails)),
+        iters_med=float(np.median([r[name].get("iters", 0) for r in fails])),
+        cert_gap_med=float(np.median([r[name]["cert_gap"] for r in fails])),
+    )
 
 
 def run_cell(p, noise, bias_z, n_trials, tag):
@@ -495,12 +559,17 @@ def run_cell(p, noise, bias_z, n_trials, tag):
     good = [r for r in recs if "error" not in r]
     summ = summarize(good)
     log("  ---- %s summary (n=%d) ----" % (tag, len(good)))
-    for name in ("unc", "soft", "proj", "alm", "scp", "scp_restart"):
+    for name in ("unc", "soft", "proj", "alm", "scp", "scp_restart", "scp_restart3"):
         ss = summ[name]
-        log("   %-11s pen=%7.2f mm rot=%5.2f deg trans=%6.2f mm feas=%3.0f%% cert=%3.0f%% "
+        log("   %-12s pen=%7.2f mm rot=%5.2f deg trans=%6.2f mm feas=%3.0f%% cert=%3.0f%% "
             "time=%6.1f ms"
             % (name, ss["pen_mm"]["median"], ss["rot_deg"]["median"], ss["trans_mm"]["median"],
                100 * ss["feasible"], 100 * ss["certified"], ss["time_ms"]["median"]))
+    for name in ("scp", "scp_restart", "scp_restart3"):
+        f = summ["failures"][name]
+        log("   fail[%s] n=%d (infes=%d nonconv=%d subopt=%d) mirror_init=%d output_mirror=%d"
+            % (name, f["n"], f["infeasible"], f["nonconverged"], f["suboptimal_converged"],
+               f["mirror_init"], f["output_mirror"]))
     return dict(tag=tag, p=p, noise=noise, bias_z=bias_z, n=len(good), summary=summ, recs=recs)
 
 
@@ -517,7 +586,8 @@ def main():
         % (os.environ.get("OMP_NUM_THREADS"), os.environ.get("OPENBLAS_NUM_THREADS"),
            os.environ.get("MKL_NUM_THREADS"), cp.__version__))
     raw = dict(config=dict(p=P_LIST, n_trials=N_TRIALS, noise=NOISE, bias_z=BIAS_Z,
-                           stress=STRESS,
+                           stress_cells=STRESS_CELLS,
+                           restart_extra=RESTART_EXTRA, restart3_extra=RESTART3_EXTRA,
                            max_iter=MAX_ITER, kappa=1e4, r0=0.05, rmax=0.5, rmin=1e-6,
                            tol_feas=1e-10, solver="CLARABEL",
                            soft_lam=LAM_SOFT, threads=int(os.environ.get("OMP_NUM_THREADS", "1")),
@@ -532,13 +602,13 @@ def main():
             json.dump(raw, f, indent=1, default=float)
         log("  [saved] scp_baseline.json (%.1fs)" % (time.perf_counter() - t_start))
 
-    # 高噪声/偏差压力档（默认 p=16, n=20）
-    if STRESS["n"] > 0:
+    # 高噪声/偏差压力档（默认 p=16, n=20；3 档）
+    for cell in STRESS_CELLS:
         log("\n--- stress %s (p=%d noise=%.3f bias=%.3f, n=%d) ---"
-            % (STRESS["tag"], STRESS["p"], STRESS["noise"], STRESS["bias_z"], STRESS["n"]))
-        key = "%s_p%d" % (STRESS["tag"], STRESS["p"])
-        raw["stress"][key] = run_cell(STRESS["p"], STRESS["noise"], STRESS["bias_z"],
-                                       STRESS["n"], STRESS["tag"])
+            % (cell["tag"], cell["p"], cell["noise"], cell["bias_z"], cell["n"]))
+        key = "%s_p%d" % (cell["tag"], cell["p"])
+        raw["stress"][key] = run_cell(cell["p"], cell["noise"], cell["bias_z"],
+                                      cell["n"], cell["tag"])
         with open(os.path.join(RES, "scp_baseline.json"), "w") as f:
             json.dump(raw, f, indent=1, default=float)
         log("  [saved] scp_baseline.json (%.1fs)" % (time.perf_counter() - t_start))
@@ -553,6 +623,7 @@ def write_md(raw):
     P = raw["config"]["p"]
     cells = raw["cells"]
     stress = raw.get("stress") or {}
+    cfg = raw["config"]
     L = []
     A = L.append
     A("# B4 baseline：dQP + 局部线性化（SCP）vs ALM / 投影 / 软惩罚")
@@ -560,21 +631,25 @@ def write_md(raw):
     A("> 由 `experiments/code/run_scp.py` 自动生成；**不要手改**。逐 trial 原始数据在 "
       "`scp_baseline.json`。")
     A("")
+    cells_desc = "；".join("p=%d, noise=%.3f, bias=%.3f, n=%d"
+                           % (c["p"], c["noise"], c["bias_z"], c["n"]) for c in cfg["stress_cells"])
     A("设置：合成桌面 PnP，主比较 p ∈ %s，noise=%.3f，bias_z=%.3f，每格 %d trials"
-      "（seed=trial，与主表共享场景）；压力档 p=%d，noise=%.3f，bias_z=%.3f，%d trials。"
+      "（seed=trial，与主表共享场景）；压力档 %d 档：%s。"
       "四种主表方法参数与主表一致（unc 48 起点 / soft λ=1e3、14 起点 / proj 4 起点 / "
       "ALM rho0=10、6 起点）。"
-      % (P, raw["config"]["noise"], raw["config"]["bias_z"], raw["config"]["n_trials"],
-         raw["config"]["stress"]["p"], raw["config"]["stress"]["noise"],
-         raw["config"]["stress"]["bias_z"], raw["config"]["stress"]["n"]))
+      % (P, cfg["noise"], cfg["bias_z"], cfg["n_trials"],
+         len(cfg["stress_cells"]), cells_desc if cells_desc else "无"))
     A("")
     A("SCP 实现：切空间 δ=(δω,δt) 上精确一/二阶展开（解析梯度/Hessian，"
       "含四元数二阶项；有限差分自检见文末），trust region + 弹性松弛，"
       "restore→optimize 两阶段，cvxpy/CLARABEL 解 SOCP，max_iter=%d，κ=1e4，r0=%.2f。"
-      % (raw["config"]["max_iter"], raw["config"]["r0"]))
+      % (cfg["max_iter"], cfg["r0"]))
     A("证书与主表同一口径：可行(viol≤1e-6) 且 J−Shor≤1e-6 且 SDP tight(λ₂/λ₁≤1e-6)。"
-      "`scp_restart` 是诊断变体：仅在单起点结果未认证时，最多再加 2 个扰动初值"
-      "（q0+0.35·N(0,I₄) 归一化、t0+0.02·N(0,I₃)）。")
+      "两个诊断变体都只在单起点结果未认证时追加扰动初值（q0+0.35·N(0,I₄) 归一化、"
+      "t0+0.02·N(0,I₃)）：`scp_restart` 最多再 %d 个（共 ≤%d 起点），"
+      "`scp_restart3` 最多再 %d 个（共 ≤%d 起点）。"
+      % (cfg["restart_extra"], cfg["restart_extra"] + 1,
+         cfg["restart3_extra"], cfg["restart3_extra"] + 1))
     A("")
 
     def table(cell_map, title):
@@ -587,7 +662,9 @@ def write_md(raw):
             s = c["summary"]
             for name, label in (("unc", "Unconstrained"), ("soft", "Soft λ=1e3"),
                                 ("proj", "Post-hoc proj"), ("alm", "ALM-QPEP (ours)"),
-                                ("scp", "SCP (single start)"), ("scp_restart", "SCP + restarts")):
+                                ("scp", "SCP (single start)"),
+                                ("scp_restart", "SCP + %d restarts" % cfg["restart_extra"]),
+                                ("scp_restart3", "SCP + %d restarts" % cfg["restart3_extra"])):
                 m = s[name]
                 A("| %s | %s | %.2f [%.2f, %.2f] | %.2f | %.2f | %.0f%% | %.0f%% | %s |"
                   % (key, label, m["pen_mm"]["median"], m["pen_mm"]["q1"], m["pen_mm"]["q3"],
@@ -596,13 +673,14 @@ def write_md(raw):
         A("")
 
     table(cells, "## 表 1. 主比较（noise=%.3f, bias_z=%.3f，n=%d）"
-          % (raw["config"]["noise"], raw["config"]["bias_z"], raw["config"]["n_trials"]))
+          % (cfg["noise"], cfg["bias_z"], cfg["n_trials"]))
     if stress:
-        table(stress, "## 表 1b. 压力档（高噪声/偏差；无约束镜像初值比例更高）")
+        table(stress, "## 表 1b. 压力档（%d 档高噪声/偏差；无约束镜像初值比例更高）"
+              % len(cfg["stress_cells"]))
 
     A("## 表 2. SCP 内部：迭代 / 收敛 / 耗时构成 / 重启")
     A("")
-    A("| 格 | iters (median [IQR]) | converged | QP solve / total | restore / total | 重启触发率 | 平均起点数 | 被重启救回 |")
+    A("| 格 | iters (median [IQR]) | converged | QP solve / total | restore / total | 重启触发率 | 平均起点数 | 被 +%d 重启救回 |" % cfg["restart_extra"])
     A("|---|---|---|---|---|---|---|---|")
     rows = list(cells.items()) + list(stress.items())
     for key, c in rows:
@@ -615,10 +693,31 @@ def write_md(raw):
              100 * s["scp_restart"]["rescued"], s["scp_restart"]["n_starts_mean"], n_resc))
     A("")
 
-    A("## 表 3. SCP 失败 trial（J 高于 Shor 或不可行）")
+    A("## 表 2b. 重启变体：认证率 / 起点数 / 救回 / 代价")
     A("")
-    A("| 格 | seed | unc mirror | SCP J | ALM J | Shor | J_SCP−Shor | viol | iters | converged | restart J | restart 起点 |")
-    A("|---|---|---|---|---|---|---|---|---|---|---|---|")
+    A("| 格 | SCP 认证 | +%d 重启认证 | +%d 重启认证 | 平均起点 +%d | 平均起点 +%d | 救回 (+%d) | 救回 (+%d) | time +%d ms | time +%d ms |" %
+      (cfg["restart_extra"], cfg["restart3_extra"], cfg["restart_extra"], cfg["restart3_extra"],
+       cfg["restart_extra"], cfg["restart3_extra"], cfg["restart_extra"], cfg["restart3_extra"]))
+    A("|---|---|---|---|---|---|---|---|---|---|")
+    for key, c in rows:
+        s = c["summary"]
+        recs_g = [r for r in c["recs"] if "error" not in r]
+        resc2 = sum(1 for r in recs_g if r["scp_restart"]["n_starts"] > 1
+                    and r["scp_restart"]["certified"] and not r["scp"]["certified"])
+        resc3 = sum(1 for r in recs_g if r["scp_restart3"]["n_starts"] > 1
+                    and r["scp_restart3"]["certified"] and not r["scp"]["certified"])
+        A("| %s | %.0f%% | %.0f%% | %.0f%% | %.2f | %.2f | %d | %d | %s | %s |"
+          % (key, 100 * s["scp"]["certified"], 100 * s["scp_restart"]["certified"],
+             100 * s["scp_restart3"]["certified"], s["scp_restart"]["n_starts_mean"],
+             s["scp_restart3"]["n_starts_mean"], resc2, resc3,
+             fmt_ms(s["scp_restart"]["time_ms"]), fmt_ms(s["scp_restart3"]["time_ms"])))
+    A("")
+
+    A("## 表 3. SCP 单起点失败 trial（J 高于 Shor 或不可行）")
+    A("")
+    A("| 格 | seed | unc mirror | SCP J | ALM J | Shor | J_SCP−Shor | viol | iters | converged | +%d J | +%d J | +%d 起点 |" %
+      (cfg["restart_extra"], cfg["restart3_extra"], cfg["restart3_extra"]))
+    A("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     nfail = 0
     for key, c in rows:
         for r in c["recs"]:
@@ -626,32 +725,52 @@ def write_md(raw):
                 continue
             nfail += 1
             m = r["scp"]
-            A("| %s | %d | %s | %.6f | %.6f | %.6f | %.2e | %.1e | %d | %s | %.6f | %d |"
+            A("| %s | %d | %s | %.6f | %.6f | %.6f | %.2e | %.1e | %d | %s | %.6f | %.6f | %d |"
               % (key, r["seed"], "yes" if r["unc"]["mirror"] else "no",
                  m["J"], r["alm"]["J"], r["sdp"]["value"], m["cert_gap"], m["viol"],
                  m["iters"], "yes" if m["converged"] else "no",
-                 r["scp_restart"]["J"], r["scp_restart"]["n_starts"]))
+                 r["scp_restart"]["J"], r["scp_restart3"]["J"],
+                 r["scp_restart3"]["n_starts"]))
     if nfail == 0:
-        A("| — | — | — | — | — | — | — | — | — | — | — | — |")
+        A("| — | — | — | — | — | — | — | — | — | — | — | — | — |")
+    A("")
+
+    A("## 表 3b. 失败模式计数（按方法变体；主分类互斥且和 = n）")
+    A("")
+    A("| 格 | 变体 | n 失败 | 不可行 | 未收敛 | 收敛但次优 | 初值镜像 | 输出镜像 | 撞 max_iter | iters 中位 | J−Shor 中位 |")
+    A("|---|---|---|---|---|---|---|---|---|---|---|")
+    for key, c in rows:
+        for name, label in (("scp", "SCP"), ("scp_restart", "+%d" % cfg["restart_extra"]),
+                            ("scp_restart3", "+%d" % cfg["restart3_extra"])):
+            f = c["summary"]["failures"][name]
+            A("| %s | %s | %d | %d | %d | %d | %d | %d | %d | %.0f | %.2e |"
+              % (key, label, f["n"], f["infeasible"], f["nonconverged"],
+                 f["suboptimal_converged"], f["mirror_init"], f["output_mirror"],
+                 f["at_max_iter"], f["iters_med"], f["cert_gap_med"]))
+    A("")
+    A("（`初值镜像` = 无约束热启动 depth_min<0；`输出镜像` = SCP 输出解 depth_min<0；"
+      "两者可同时命中，故不加进主分类。）")
     A("")
 
     A("## 表 4. 证书与健康度")
     A("")
-    A("| 格 | SDP tight | SDP sound(vs ALM) | ALM 认证 | SCP 认证 | SCP+重启 认证 | unc mirror 率 | max viol (ALM) | max viol (SCP) |")
-    A("|---|---|---|---|---|---|---|---|---|")
+    A("| 格 | SDP tight | SDP sound(vs ALM) | ALM 认证 | SCP 认证 | +%d 认证 | +%d 认证 | unc mirror 率 | max viol (ALM) | max viol (SCP) |" %
+      (cfg["restart_extra"], cfg["restart3_extra"]))
+    A("|---|---|---|---|---|---|---|---|---|---|")
     for key, c in rows:
         s = c["summary"]
-        A("| %s | %.0f%% | %.0f%% | %.0f%% | %.0f%% | %.0f%% | %.0f%% | %.1e | %.1e |"
+        A("| %s | %.0f%% | %.0f%% | %.0f%% | %.0f%% | %.0f%% | %.0f%% | %.0f%% | %.1e | %.1e |"
           % (key, 100 * s["sdp"]["tight"], 100 * s["sdp"]["sound_vs_alm"],
              100 * s["alm"]["certified"], 100 * s["scp"]["certified"],
-             100 * s["scp_restart"]["certified"], 100 * s["mirror_rate"],
-             s["alm"]["viol_max"], s["scp"]["viol_max"]))
+             100 * s["scp_restart"]["certified"], 100 * s["scp_restart3"]["certified"],
+             100 * s["mirror_rate"], s["alm"]["viol_max"], s["scp"]["viol_max"]))
     A("")
 
     # ---- 结论（数字全部来自本 JSON）----
     s_all = [cells["p%d" % p]["summary"] for p in P]
     scp_cert = [s["scp"]["certified"] for s in s_all]
     scr_cert = [s["scp_restart"]["certified"] for s in s_all]
+    scr3_cert = [s["scp_restart3"]["certified"] for s in s_all]
     alm_cert = [s["alm"]["certified"] for s in s_all]
     scp_time = [s["scp"]["time_ms"]["median"] for s in s_all]
     alm_time = [s["alm"]["time_ms"]["median"] for s in s_all]
@@ -660,10 +779,17 @@ def write_md(raw):
     fails = [(key, r) for key, c in rows for r in c["recs"]
              if "error" not in r and not r["scp"]["certified"]]
     n_mirror = sum(1 for _, r in fails if r["unc"]["mirror"])
-    n_other = len(fails) - n_mirror
-    n_resc = sum(1 for key, c in rows for r in c["recs"]
-                 if "error" not in r and r["scp_restart"]["n_starts"] > 1
-                 and r["scp_restart"]["certified"] and not r["scp"]["certified"])
+    n_outmirror = sum(1 for _, r in fails if r["scp"]["depth_min_mm"] < 0.0)
+    n_resc2 = sum(1 for key, c in rows for r in c["recs"]
+                  if "error" not in r and r["scp_restart"]["n_starts"] > 1
+                  and r["scp_restart"]["certified"] and not r["scp"]["certified"])
+    n_resc3 = sum(1 for key, c in rows for r in c["recs"]
+                  if "error" not in r and r["scp_restart3"]["n_starts"] > 1
+                  and r["scp_restart3"]["certified"] and not r["scp"]["certified"])
+    stress_cert = [(key, c["summary"]["scp"]["certified"],
+                    c["summary"]["scp_restart3"]["certified"],
+                    c["summary"]["alm"]["certified"], c["summary"]["mirror_rate"])
+                   for key, c in stress.items()]
     A("## 结论")
     A("")
     A("1. **精度与可行性**：SCP 与 ALM 同档——p=%d 上 SCP pen 中位 %.2f mm、rot %.2f°、"
@@ -672,61 +798,72 @@ def write_md(raw):
          sm["scp"]["trans_mm"]["median"], sm["alm"]["pen_mm"]["median"],
          sm["alm"]["rot_deg"]["median"], sm["alm"]["trans_mm"]["median"],
          100 * sm["scp"]["feasible"], 100 * sm["alm"]["feasible"]))
-    A("2. **认证率**：主比较上 SCP 单起点 %s，ALM %s。"
-      % (" / ".join("%.0f%%" % (100 * c) for c in scp_cert),
+    A("2. **认证率（主比较）**：SCP 单起点 %s，+%d 重启 %s，+%d 重启 %s，ALM %s。"
+      % (" / ".join("%.0f%%" % (100 * c) for c in scp_cert), cfg["restart_extra"],
+         " / ".join("%.0f%%" % (100 * c) for c in scr_cert), cfg["restart3_extra"],
+         " / ".join("%.0f%%" % (100 * c) for c in scr3_cert),
          " / ".join("%.0f%%" % (100 * c) for c in alm_cert)))
     if len(fails) == 0:
         A("   本轮主比较与压力档中 SCP **没有**认证失败 trial——在这批合成实例上单起点 SCP "
           "与 ALM 认证率持平，不能声称 ALM 在认证率上占优。")
     else:
         A("   全部 %d 个失败 trial 中 %d 个的 SCP 初值就是无约束 cheirality 镜像解"
-          "（depth_min<0、rot err≈180°），%d 个是其它局部收敛/迭代上限。"
-          "因此差距只在这类初值上出现，而不是普遍性差距。"
-          % (len(fails), n_mirror, n_other))
-    if stress:
-        kS = list(stress)[0]
-        sS = stress[kS]["summary"]
-        A("   压力档（noise=%.3f/bias=%.3f，unc 镜像率 %.0f%%）上 SCP 认证 %.0f%%、"
-          "ALM 认证 %.0f%% —— 镜像初值比例升高时 SCP 单起点的脆弱性被放大，"
-          "这是**初值敏感性**，不是凸层不可行。"
-          % (raw["config"]["stress"]["noise"], raw["config"]["stress"]["bias_z"],
-             100 * sS["mirror_rate"], 100 * sS["scp"]["certified"],
-             100 * sS["alm"]["certified"]))
-    A("3. **速度**：SCP 单起点中位 %s ms vs ALM %s ms（p=%s）；"
+          "（depth_min<0、rot err≈180°），%d 个的 SCP 输出仍在相机后方；"
+          "失败不是普遍性的，而是集中在镜像初值/局部收敛这两类（逐类计数见表 3b）。"
+          % (len(fails), n_mirror, n_outmirror))
+    if stress_cert:
+        A("3. **压力档（%d 档）**：" % len(stress_cert))
+        for key, c1, c3, ca, mr in stress_cert:
+            A("   - %s：unc 镜像率 %.0f%%，SCP 单起点认证 %.0f%%、+%d 重启 %.0f%%、ALM %.0f%%。"
+              % (key, 100 * mr, 100 * c1, cfg["restart3_extra"], 100 * c3, 100 * ca))
+        A("   镜像初值比例升高时 SCP 单起点的脆弱性被放大，这是**初值敏感性**，"
+          "不是凸层不可行；ALM 在同一批实例上保持 %.0f%%–%.0f%%。"
+          % (100 * min(x[3] for x in stress_cert), 100 * max(x[3] for x in stress_cert)))
+    # 失败模式聚合
+    fmod = dict(n=0, infeasible=0, nonconverged=0, suboptimal_converged=0,
+                mirror_init=0, output_mirror=0, at_max_iter=0)
+    for key, c in rows:
+        f = c["summary"]["failures"]["scp"]
+        for k in fmod:
+            fmod[k] += f[k]
+    A("4. **失败模式**：SCP 单起点共 %d 个失败（主比较 + 压力档）：不可行 %d、未收敛 %d、"
+      "收敛但次优 %d；其中初值是镜像解 %d、输出仍镜像 %d、撞 max_iter %d。"
+      % (fmod["n"], fmod["infeasible"], fmod["nonconverged"],
+         fmod["suboptimal_converged"], fmod["mirror_init"], fmod["output_mirror"],
+         fmod["at_max_iter"]))
+    A("5. **重启变体**：主比较认证率 %s → +%d %s → +%d %s（救回 %d / %d 个失败 trial，"
+      "平均起点数 %.2f / %.2f）；压力档 +%d 变体的认证率为 %s。"
+      "把初值当超参调能补上**部分**差距，但补不回来的失败说明存在真正的局部收敛/迭代上限，"
+      "不是「随便扰动一下」能解决的。"
+      % (" / ".join("%.0f%%" % (100 * c) for c in scp_cert), cfg["restart_extra"],
+         " / ".join("%.0f%%" % (100 * c) for c in scr_cert), cfg["restart3_extra"],
+         " / ".join("%.0f%%" % (100 * c) for c in scr3_cert), n_resc2, n_resc3,
+         np.mean([s["scp_restart"]["n_starts_mean"] for s in s_all]),
+         np.mean([s["scp_restart3"]["n_starts_mean"] for s in s_all]),
+         cfg["restart3_extra"],
+         " / ".join("%.0f%%" % (100 * x[2]) for x in stress_cert) if stress_cert else "—"))
+    A("6. **速度**：SCP 单起点中位 %s ms vs ALM %s ms（p=%s）；"
       "SCP 约 %.0f%% 的墙钟花在 cvxpy/CLARABEL 的 SOCP 上、%.0f%% 在 restore 阶段。"
       "注意这只说明「本实现下 SCP 更快」，SCP 没有 ALM 那种与 p 无关的先验常数维复杂度论证。"
       % (" / ".join("%.0f" % t for t in scp_time), " / ".join("%.0f" % t for t in alm_time),
          ",".join(str(x) for x in P), 100 * sm["scp"]["solver_share"],
          100 * sm["scp"]["restore_share"]))
-    if n_resc > 0:
-        A("4. **SCP + 重启**：主比较认证率 %s → %s（%d 个失败 trial 被额外起点救回；"
-          "平均起点数 %.2f）。也就是说把初值当超参调可以补上这部分差距，代价是失败时多花 ~%.0f ms。"
-          % (" / ".join("%.0f%%" % (100 * c) for c in scp_cert),
-             " / ".join("%.0f%%" % (100 * c) for c in scr_cert), n_resc,
-             np.mean([s["scp_restart"]["n_starts_mean"] for s in s_all]),
-             sm["scp"]["time_ms"]["median"]))
-    else:
-        A("4. **SCP + 重启**：主比较认证率 %s → %s，"
-          "本轮的失败没有被 2 个扰动初值救回（平均起点数 %.2f）。"
-          "这说明失败不是「随便扰动一下初值」能解决的局部收敛问题；"
-          "ALM 的内层多起点是在 ALM 增广二次型上重解，机制不同。"
-          % (" / ".join("%.0f%%" % (100 * c) for c in scp_cert),
-             " / ".join("%.0f%%" % (100 * c) for c in scr_cert),
-             np.mean([s["scp_restart"]["n_starts_mean"] for s in s_all])))
     A("")
-    A("**判定（keep / revert）**：keep `run_scp.py` 作为 B4 baseline。"
+    A("**判定（keep / revert）**：keep `run_scp.py` 及本轮 3 档压力表 + 3 重启变体。"
       "在这些合成实例上 SCP **可行、精度同档、中位更快**，是必须报告的强 baseline；"
-      "ALM 的差异化不在本批次的认证率数值上，而在："
-      "(a) 对 cheirality 镜像初值的鲁棒性（高噪声档差异见表 1b/表 3）；"
+      "即使 SCP 在压力档输给 ALM，这张表也要保留（诚实报告失败模式）。"
+      "ALM 的差异化在于："
+      "(a) 对 cheirality 镜像初值的鲁棒性（表 1b/表 3b）；"
       "(b) 运行时与 p 无关的先验常数维结构（SCP 需要 trust-region/restore 调参，且每次迭代解 SOCP）；"
       "(c) ALM 的证书/反向（FB、rank-deficiency）理论链与后验证书，而 SCP 的证书只验证"
-      "「它恰好找到的那个点」。论文中必须同时报告 SCP 的收敛率/迭代数与认证率，"
+      "「它恰好找到的那个点」。论文中必须同时报告 SCP 的收敛率/迭代数、失败模式与认证率，"
       "不能只报 runtime 或只报精度。")
     A("")
     A("## Caveats")
     A("")
-    A("- 本机 40 核多用户共享（测量时 load ~20–35），所有计时为单线程墙钟；"
-      "绝对毫秒随负载漂移。SCP 与 ALM 在同一进程、同一实例上顺序测量，相对比较可用。")
+    A("- 本机 40 核多用户共享（本轮测量在 login node、load ~20–23，Slurm 被他人占满），"
+      "所有计时为单线程墙钟；绝对毫秒随负载漂移。SCP 与 ALM 在同一进程、同一实例上顺序测量，"
+      "相对比较可用。")
     A("- SCP 用 cvxpy/CLARABEL 解 SOCP，ALM 用 scipy BFGS 多起点；两者实现栈不同，"
       "「更快」只对本实现成立（公平性说明见 protocol B4：算法层面对比）。")
     mr_main = [100 * cells["p%d" % p]["summary"]["mirror_rate"] for p in P]
@@ -736,7 +873,7 @@ def write_md(raw):
       "本文件实测 unc 镜像率：主比较 %s%s（主表 50-trial 高噪声档为 18%%）。"
       % (("%.0f%%" % min(mr_main)) if min(mr_main) == max(mr_main)
          else ("%.0f%%–%.0f%%" % (min(mr_main), max(mr_main))),
-         "，压力档 %.0f%%" % max(mr_stress) if mr_stress else ""))
+         "，压力档 %.0f%%–%.0f%%" % (min(mr_stress), max(mr_stress)) if mr_stress else ""))
     A("- 只测前向 + 证书，不含反向（FB）与真实数据；合成实例的底面是平面，"
       "p≥16 后精度饱和，SCP 的精度优势/劣势在这类实例上不可分辨。")
     A("")
@@ -755,12 +892,16 @@ def write_md(raw):
                  max(fd["constraint_jac_rel_err"], fd["generic_constraint_jac_rel_err"]),
                  fd["hess_dir_rel_err_max"], fd["hess_cross_rel_err_max"]))
     A("")
-    A("复现：")
+    A("## 复现")
     A("")
     A("```bash")
-    A("srun --partition=cpu --time=00:30:00 --ntasks=1 \\")
-    A("  /home/syk/miniconda3/envs/sdpr/bin/python \\")
-    A("  experiments/code/run_scp.py")
+    A("cd labs/02-constrained-qpeplayer/experiments/code")
+    A("# 全量（主比较 3×50 + 3 档压力 ×20）：")
+    A("/home/syk/miniconda3/envs/sdpr/bin/python run_scp.py")
+    A("# 小跑 / 单档：")
+    A("QPE_SCP_TRIALS=5 QPE_SCP_NOISE_TRIALS=3 \\")
+    A("QPE_SCP_STRESS_TAGS=n030_b180 /home/syk/miniconda3/envs/sdpr/bin/python run_scp.py")
+    A("# 只跑主比较（跳过压力档）：QPE_SCP_STRESS=0 ... run_scp.py")
     A("```")
     with open(os.path.join(RES, "scp_baseline.md"), "w") as f:
         f.write("\n".join(L) + "\n")

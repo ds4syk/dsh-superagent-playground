@@ -1,0 +1,215 @@
++ BOP_MAX_FRAMES=15 BOP_MAX_IMG=2 BOP_OBJ_IDS=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 RIGOROUS_ONLY=1
++ nice -n 10 /home/syk/miniconda3/envs/sdpr/bin/python /mnt/storage1/syk/.superagent-work/wt-p2b-rigorous/labs/02-constrained-qpeplayer/experiments/real/bop/run_bop.py lm
+dataset lm frames ['000001', '000002', '000003', '000004', '000005', '000006', '000007', '000008', '000009', '000010', '000011', '000012', '000013', '000014', '000015'] objects [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] max_img 2 plane_calib always
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000001 15 1 10.0 base J=1.355105e-04 value=1.571366e-04 rig=1.321344e-04 schur=1.355068e-04(A) t=2.08s
+  rig 000001 15 1 10.0 rlt J=1.355105e-04 value=1.355113e-04 rig=1.354905e-04 schur=1.355104e-04(A) t=0.43s
+  rig 000001 15 1 10.0 brlt J=1.355105e-04 value=1.543276e-04 rig=1.326857e-04 schur=1.355061e-04(A) t=3.64s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000001 15 1 20.0 base J=1.841997e-04 value=1.828651e-04 rig=1.755600e-04 schur=1.751100e-04(A) t=2.45s
+  rig 000001 15 1 20.0 rlt J=1.841997e-04 value=1.760115e-04 rig=1.759593e-04 schur=1.759993e-04(A) t=0.32s
+  rig 000001 15 1 20.0 brlt J=1.841997e-04 value=1.829563e-04 rig=1.823817e-04 schur=1.827383e-04(A) t=3.08s
+  rig 000001 15 1 30.0 base J=1.221876e-04 value=1.197206e-04 rig=1.196978e-04 schur=1.197179e-04(A) t=0.66s
+  rig 000001 15 1 30.0 rlt J=1.221876e-04 value=1.197250e-04 rig=1.196663e-04 schur=1.197077e-04(A) t=0.26s
+  rig 000001 15 1 30.0 brlt J=1.221876e-04 value=1.221336e-04 rig=1.220982e-04 schur=1.221332e-04(A) t=0.82s
+  rig 000001 19 1 10.0 base J=1.257331e-04 value=1.257331e-04 rig=1.257131e-04 schur=1.257331e-04(A) t=1.00s
+  rig 000001 19 1 10.0 rlt J=1.257331e-04 value=1.257178e-04 rig=1.256974e-04 schur=1.257174e-04(A) t=0.55s
+  rig 000001 19 1 10.0 brlt J=1.257331e-04 value=1.257327e-04 rig=1.257126e-04 schur=1.257325e-04(A) t=2.66s
+  rig 000001 19 1 20.0 base J=1.376601e-04 value=1.376141e-04 rig=1.375939e-04 schur=1.376138e-04(A) t=1.71s
+  rig 000001 19 1 20.0 rlt J=1.376601e-04 value=1.376178e-04 rig=1.375666e-04 schur=1.376022e-04(A) t=3.24s
+  rig 000001 19 1 20.0 brlt J=1.376601e-04 value=1.376600e-04 rig=1.376399e-04 schur=1.376598e-04(A) t=1.12s
+  rig 000001 19 1 30.0 base J=1.408855e-04 value=1.404685e-04 rig=1.404484e-04 schur=1.404683e-04(A) t=0.91s
+  rig 000001 19 1 30.0 rlt J=1.408855e-04 value=1.404677e-04 rig=1.403909e-04 schur=1.404377e-04(A) t=0.42s
+  rig 000001 19 1 30.0 brlt J=1.408855e-04 value=1.408855e-04 rig=1.408655e-04 schur=1.408854e-04(A) t=2.48s
+frame 000001 done
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000002 3 2 10.0 base J=1.282885e-04 value=1.229770e-04 rig=1.229151e-04 schur=1.229764e-04(A) t=1.65s
+  rig 000002 3 2 10.0 rlt J=1.282885e-04 value=9.931311e-04 rig=-1.203397e-04 schur=-4.120841e-04(A) t=3.01s
+  rig 000002 3 2 10.0 brlt J=1.282885e-04 value=6.823043e-04 rig=-1.253851e-03 schur=-2.796801e-04(A) t=2.89s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000002 3 2 20.0 base J=1.590116e-04 value=1.446864e-04 rig=1.445239e-04 schur=1.446649e-04(A) t=1.67s
+  rig 000002 3 2 20.0 rlt J=1.590116e-04 value=3.499449e-04 rig=1.084489e-04 schur=1.412740e-04(A) t=2.76s
+  rig 000002 3 2 20.0 brlt J=1.590116e-04 value=2.730454e-04 rig=1.417525e-04 schur=1.565138e-04(A) t=3.81s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000002 3 2 30.0 base J=2.178728e-04 value=1.771642e-04 rig=1.770672e-04 schur=1.771589e-04(A) t=1.88s
+  rig 000002 3 2 30.0 rlt J=2.178728e-04 value=1.771683e-04 rig=1.771478e-04 schur=1.771682e-04(A) t=1.43s
+  rig 000002 3 2 30.0 brlt J=2.178728e-04 value=2.156280e-04 rig=2.155870e-04 schur=2.156288e-04(A) t=1.38s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000002 8 2 10.0 base J=1.632631e-04 value=1.553677e-04 rig=1.552499e-04 schur=1.553393e-04(A) t=1.75s
+  rig 000002 8 2 10.0 rlt J=1.632631e-04 value=1.553711e-04 rig=1.553475e-04 schur=1.553707e-04(A) t=0.75s
+  rig 000002 8 2 10.0 brlt J=1.632631e-04 value=-2.666812e-01 rig=-2.779896e-01 schur=-2.771218e-01(A) t=2.95s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000002 8 2 20.0 base J=1.551379e-04 value=1.522580e-04 rig=1.520840e-04 schur=1.522132e-04(A) t=1.71s
+  rig 000002 8 2 20.0 rlt J=1.551379e-04 value=1.522611e-04 rig=1.522349e-04 schur=1.522605e-04(A) t=1.63s
+  rig 000002 8 2 20.0 brlt J=1.551379e-04 value=3.653244e-04 rig=1.194314e-04 schur=1.065813e-04(A) t=2.69s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000002 8 2 30.0 base J=1.966951e-04 value=1.875043e-04 rig=1.873798e-04 schur=1.874760e-04(A) t=1.75s
+  rig 000002 8 2 30.0 rlt J=1.966951e-04 value=1.875105e-04 rig=1.874695e-04 schur=1.875072e-04(A) t=0.37s
+  rig 000002 8 2 30.0 brlt J=1.966951e-04 value=3.660427e-04 rig=1.571940e-04 schur=1.850579e-04(A) t=2.94s
+frame 000002 done
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000003 0 3 10.0 base J=2.030181e-04 value=1.964669e-04 rig=1.963187e-04 schur=1.964669e-04(A) t=1.57s
+  rig 000003 0 3 10.0 rlt J=2.030181e-04 value=1.964740e-04 rig=1.964532e-04 schur=1.964733e-04(A) t=1.84s
+  rig 000003 0 3 10.0 brlt J=2.030181e-04 value=2.030186e-04 rig=2.029981e-04 schur=2.030181e-04(A) t=0.79s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000003 0 3 20.0 base J=2.266154e-04 value=1.626519e-04 rig=1.623547e-04 schur=1.626518e-04(A) t=1.68s
+  rig 000003 0 3 20.0 rlt J=2.266154e-04 value=1.626681e-04 rig=1.626442e-04 schur=1.626638e-04(A) t=0.67s
+  rig 000003 0 3 20.0 brlt J=2.266154e-04 value=2.266164e-04 rig=2.265954e-04 schur=2.266154e-04(A) t=1.47s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000003 0 3 30.0 base J=3.042016e-04 value=1.601831e-04 rig=1.593407e-04 schur=1.597466e-04(A) t=1.92s
+  rig 000003 0 3 30.0 rlt J=3.042016e-04 value=1.602020e-04 rig=1.601761e-04 schur=1.602019e-04(A) t=0.25s
+  rig 000003 0 3 30.0 brlt J=3.042016e-04 value=2.700095e-04 rig=2.699771e-04 schur=2.699964e-04(A) t=0.96s
+  rig 000003 11 3 10.0 base J=8.007974e-05 value=8.007970e-05 rig=8.005968e-05 schur=8.007967e-05(A) t=0.09s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000003 11 3 10.0 rlt J=8.007974e-05 value=2.803570e-04 rig=6.097024e-05 schur=7.925636e-05(A) t=2.81s
+  rig 000003 11 3 10.0 brlt J=8.007974e-05 value=8.007986e-05 rig=8.005974e-05 schur=8.007973e-05(A) t=2.18s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000003 11 3 20.0 base J=9.666039e-05 value=9.591019e-05 rig=9.583744e-05 schur=9.591001e-05(A) t=1.61s
+  rig 000003 11 3 20.0 rlt J=9.666039e-05 value=9.591477e-05 rig=9.589457e-05 schur=9.591461e-05(A) t=0.19s
+  rig 000003 11 3 20.0 brlt J=9.666039e-05 value=9.665989e-05 rig=9.663971e-05 schur=9.665971e-05(A) t=0.72s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000003 11 3 30.0 base J=9.620399e-05 value=8.253410e-05 rig=8.194899e-05 schur=8.253127e-05(A) t=1.71s
+  rig 000003 11 3 30.0 rlt J=9.620399e-05 value=3.396585e-04 rig=4.072175e-05 schur=7.882965e-05(A) t=3.32s
+  rig 000003 11 3 30.0 brlt J=9.620399e-05 value=9.618984e-05 rig=9.616588e-05 schur=9.618654e-05(A) t=0.58s
+frame 000003 done
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000004 20 4 10.0 base J=1.014326e-04 value=9.067844e-05 rig=9.030719e-05 schur=9.058135e-05(A) t=2.67s
+  rig 000004 20 4 10.0 rlt J=1.014326e-04 value=9.068304e-05 rig=9.065961e-05 schur=9.068302e-05(A) t=0.40s
+  rig 000004 20 4 10.0 brlt J=1.014326e-04 value=1.014329e-04 rig=1.014126e-04 schur=1.014326e-04(A) t=0.67s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000004 20 4 20.0 base J=5.525983e-05 value=5.120209e-05 rig=5.115575e-05 schur=5.120208e-05(A) t=1.77s
+  rig 000004 20 4 20.0 rlt J=5.525983e-05 value=5.120564e-05 rig=5.118500e-05 schur=5.120512e-05(A) t=1.27s
+  rig 000004 20 4 20.0 brlt J=5.525983e-05 value=5.525935e-05 rig=5.523923e-05 schur=5.525921e-05(A) t=0.63s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000004 20 4 30.0 base J=1.774391e-04 value=9.070489e-05 rig=9.057785e-05 schur=9.070338e-05(A) t=2.04s
+  rig 000004 20 4 30.0 rlt J=1.774391e-04 value=9.071528e-05 rig=9.069556e-05 schur=9.071555e-05(A) t=0.18s
+  rig 000004 20 4 30.0 brlt J=1.774391e-04 value=1.495543e-04 rig=1.479230e-04 schur=1.494645e-04(A) t=2.91s
+  rig 000004 27 4 10.0 base J=1.602159e-04 value=1.602160e-04 rig=1.601959e-04 schur=1.602158e-04(A) t=0.06s
+  rig 000004 27 4 10.0 rlt J=1.602159e-04 value=1.602161e-04 rig=1.601959e-04 schur=1.602158e-04(A) t=0.50s
+  rig 000004 27 4 10.0 brlt J=1.602159e-04 value=1.602158e-04 rig=1.601958e-04 schur=1.602158e-04(A) t=1.59s
+  rig 000004 27 4 20.0 base J=1.787933e-04 value=1.787924e-04 rig=1.787721e-04 schur=1.787921e-04(A) t=1.25s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000004 27 4 20.0 rlt J=1.787933e-04 value=-5.081207e-02 rig=-5.959014e-02 schur=-6.022645e-02(A) t=2.94s
+  rig 000004 27 4 20.0 brlt J=1.787933e-04 value=1.787933e-04 rig=1.787733e-04 schur=1.787933e-04(A) t=1.91s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000004 27 4 30.0 base J=1.199757e-04 value=1.151934e-04 rig=1.151609e-04 schur=1.151930e-04(A) t=1.69s
+  rig 000004 27 4 30.0 rlt J=1.199757e-04 value=1.152029e-04 rig=1.151355e-04 schur=1.151922e-04(A) t=0.31s
+  rig 000004 27 4 30.0 brlt J=1.199757e-04 value=2.313737e-04 rig=1.015733e-04 schur=1.142377e-04(A) t=3.55s
+frame 000004 done
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000005 0 5 10.0 base J=2.076069e-04 value=1.808084e-04 rig=1.805617e-04 schur=1.808084e-04(A) t=1.56s
+  rig 000005 0 5 10.0 rlt J=2.076069e-04 value=-1.575410e-01 rig=-2.370074e-01 schur=-2.267216e-01(A) t=3.44s
+  rig 000005 0 5 10.0 brlt J=2.076069e-04 value=2.076068e-04 rig=2.075868e-04 schur=2.076068e-04(A) t=1.75s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000005 0 5 20.0 base J=2.763408e-04 value=2.055476e-04 rig=2.052709e-04 schur=2.055476e-04(A) t=1.69s
+  rig 000005 0 5 20.0 rlt J=2.763408e-04 value=2.055732e-04 rig=2.055504e-04 schur=2.055725e-04(A) t=1.28s
+  rig 000005 0 5 20.0 brlt J=2.763408e-04 value=5.342024e-04 rig=2.292018e-04 schur=2.664711e-04(A) t=3.79s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000005 0 5 30.0 base J=6.699244e-04 value=2.709515e-04 rig=2.706355e-04 schur=2.709515e-04(A) t=1.65s
+  rig 000005 0 5 30.0 rlt J=6.699244e-04 value=2.709828e-04 rig=2.709629e-04 schur=2.709829e-04(A) t=0.34s
+  rig 000005 0 5 30.0 brlt J=6.699244e-04 value=6.383980e-04 rig=6.383709e-04 schur=6.383920e-04(A) t=0.45s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000005 5 5 10.0 base J=1.983150e-04 value=1.981770e-04 rig=1.981215e-04 schur=1.981769e-04(A) t=1.74s
+  rig 000005 5 5 10.0 rlt J=1.983150e-04 value=4.367389e-04 rig=1.663352e-04 schur=1.485375e-04(A) t=2.78s
+  rig 000005 5 5 10.0 brlt J=1.983150e-04 value=1.983150e-04 rig=1.982950e-04 schur=1.983149e-04(A) t=3.10s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000005 5 5 20.0 base J=1.975553e-04 value=1.952955e-04 rig=1.949350e-04 schur=1.952945e-04(A) t=1.62s
+  rig 000005 5 5 20.0 rlt J=1.975553e-04 value=5.904463e-03 rig=-1.079528e-01 schur=-1.319570e-01(A) t=2.87s
+  rig 000005 5 5 20.0 brlt J=1.975553e-04 value=-1.063500e-02 rig=-3.191708e-02 schur=-3.899383e-02(A) t=3.21s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000005 5 5 30.0 base J=1.792833e-04 value=1.788245e-04 rig=1.787192e-04 schur=1.788240e-04(A) t=1.78s
+  rig 000005 5 5 30.0 rlt J=1.792833e-04 value=1.788312e-04 rig=1.787547e-04 schur=1.788187e-04(A) t=1.83s
+  rig 000005 5 5 30.0 brlt J=1.792833e-04 value=1.792830e-04 rig=1.792627e-04 schur=1.792827e-04(A) t=2.76s
+frame 000005 done
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000006 0 6 10.0 base J=2.330209e-04 value=2.342573e-04 rig=2.235912e-04 schur=2.227732e-04(A) t=1.88s
+  rig 000006 0 6 10.0 rlt J=2.330209e-04 value=2.239956e-04 rig=2.239750e-04 schur=2.239952e-04(A) t=0.36s
+  rig 000006 0 6 10.0 brlt J=2.330209e-04 value=2.261645e-04 rig=2.261397e-04 schur=2.261592e-04(A) t=1.16s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000006 0 6 20.0 base J=2.275136e-04 value=2.153069e-04 rig=2.120155e-04 schur=2.118576e-04(A) t=1.79s
+  rig 000006 0 6 20.0 rlt J=2.275136e-04 value=2.121962e-04 rig=2.121424e-04 schur=2.121791e-04(A) t=2.36s
+  rig 000006 0 6 20.0 brlt J=2.275136e-04 value=2.129899e-04 rig=2.129689e-04 schur=2.129889e-04(A) t=0.65s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000006 0 6 30.0 base J=1.719264e-04 value=1.183889e-04 rig=1.092966e-04 schur=1.087134e-04(A) t=2.00s
+  rig 000006 0 6 30.0 rlt J=1.719264e-04 value=1.102357e-04 rig=1.101829e-04 schur=1.102194e-04(A) t=0.75s
+  rig 000006 0 6 30.0 brlt J=1.719264e-04 value=1.151838e-04 rig=1.151620e-04 schur=1.151827e-04(A) t=0.69s
+  rig 000006 9 6 10.0 base J=2.015765e-04 value=2.015781e-04 rig=2.015565e-04 schur=2.015765e-04(A) t=0.37s
+  rig 000006 9 6 10.0 rlt J=2.015765e-04 value=2.015785e-04 rig=2.015565e-04 schur=2.015765e-04(A) t=0.83s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000006 9 6 10.0 brlt J=2.015765e-04 value=-1.335865e-01 rig=-1.487574e-01 schur=-1.559146e-01(A) t=3.10s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000006 9 6 20.0 base J=1.413900e-04 value=1.555650e-04 rig=1.409661e-04 schur=1.399614e-04(A) t=1.83s
+  rig 000006 9 6 20.0 rlt J=1.413900e-04 value=1.412301e-04 rig=1.411834e-04 schur=1.412175e-04(A) t=1.09s
+  rig 000006 9 6 20.0 brlt J=1.413900e-04 value=1.413882e-04 rig=1.413681e-04 schur=1.413880e-04(A) t=2.87s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000006 9 6 30.0 base J=1.726704e-04 value=1.833918e-04 rig=1.717216e-04 schur=1.715085e-04(A) t=1.65s
+  rig 000006 9 6 30.0 rlt J=1.726704e-04 value=1.721856e-04 rig=1.721654e-04 schur=1.721853e-04(A) t=0.42s
+  rig 000006 9 6 30.0 brlt J=1.726704e-04 value=1.861315e-04 rig=1.703732e-04 schur=1.726446e-04(A) t=3.26s
+frame 000006 done
+  rig 000007 10 7 10.0 base J=8.256570e-05 value=8.256569e-05 rig=8.254569e-05 schur=8.256567e-05(A) t=0.07s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000007 10 7 10.0 rlt J=8.256570e-05 value=-8.967262e-02 rig=-1.039282e-01 schur=-1.044591e-01(A) t=3.24s
+  rig 000007 10 7 10.0 brlt J=8.256570e-05 value=8.256570e-05 rig=8.254570e-05 schur=8.256568e-05(A) t=0.93s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000007 10 7 20.0 base J=6.520200e-05 value=5.720480e-05 rig=5.706718e-05 schur=5.714159e-05(A) t=1.82s
+  rig 000007 10 7 20.0 rlt J=6.520200e-05 value=5.720796e-05 rig=5.718585e-05 schur=5.720558e-05(A) t=0.35s
+  rig 000007 10 7 20.0 brlt J=6.520200e-05 value=6.520201e-05 rig=6.518200e-05 schur=6.520198e-05(A) t=0.78s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000007 10 7 30.0 base J=1.055258e-04 value=9.265887e-05 rig=9.262853e-05 schur=9.265873e-05(A) t=1.84s
+  rig 000007 10 7 30.0 rlt J=1.055258e-04 value=9.265801e-05 rig=9.260318e-05 schur=9.264292e-05(A) t=0.36s
+  rig 000007 10 7 30.0 brlt J=1.055258e-04 value=1.055201e-04 rig=1.054993e-04 schur=1.055193e-04(A) t=1.89s
+  rig 000007 11 7 10.0 base J=7.284352e-05 value=7.284355e-05 rig=7.282352e-05 schur=7.284352e-05(A) t=0.04s
+  rig 000007 11 7 10.0 rlt J=7.284352e-05 value=7.284293e-05 rig=7.282290e-05 schur=7.284290e-05(A) t=0.45s
+  rig 000007 11 7 10.0 brlt J=7.284352e-05 value=7.284352e-05 rig=7.282352e-05 schur=7.284352e-05(A) t=2.18s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000007 11 7 20.0 base J=1.074192e-04 value=1.061978e-04 rig=1.061644e-04 schur=1.061967e-04(A) t=1.75s
+  rig 000007 11 7 20.0 rlt J=1.074192e-04 value=1.061982e-04 rig=1.061782e-04 schur=1.061982e-04(A) t=0.17s
+  rig 000007 11 7 20.0 brlt J=1.074192e-04 value=1.074192e-04 rig=1.073992e-04 schur=1.074192e-04(A) t=0.86s
+  rig 000007 11 7 30.0 base J=8.500793e-05 value=8.488077e-05 rig=8.484466e-05 schur=8.488054e-05(A) t=1.00s
+  rig 000007 11 7 30.0 rlt J=8.500793e-05 value=8.488121e-05 rig=8.486121e-05 schur=8.488119e-05(A) t=0.17s
+  rig 000007 11 7 30.0 brlt J=8.500793e-05 value=8.500782e-05 rig=8.498779e-05 schur=8.500778e-05(A) t=0.37s
+frame 000007 done
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000008 4 8 10.0 base J=1.858238e-04 value=1.767840e-04 rig=1.764636e-04 schur=1.767838e-04(A) t=1.64s
+  rig 000008 4 8 10.0 rlt J=1.858238e-04 value=1.768037e-04 rig=1.767818e-04 schur=1.768031e-04(A) t=0.20s
+  rig 000008 4 8 10.0 brlt J=1.858238e-04 value=-4.122763e-02 rig=-6.521759e-02 schur=-6.759877e-02(A) t=2.87s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  rig 000008 4 8 20.0 base J=1.400737e-04 value=1.130152e-04 rig=1.126816e-04 schur=1.130152e-04(A) t=1.58s
+  rig 000008 4 8 20.0 rlt J=1.400737e-04 value=5.796877e-04 rig=2.808049e-05 schur=8.953207e-05(A) t=2.81s

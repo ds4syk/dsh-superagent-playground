@@ -65,6 +65,21 @@ FRAMES = sorted([d.name for d in (ROOT / "test").iterdir() if d.is_dir()])[:int(
 OBJ_IDS = [int(x) for x in os.environ["BOP_OBJ_IDS"].split(",")] if os.environ.get("BOP_OBJ_IDS") else None
 PLANE_CALIB = os.environ.get("BOP_PLANE_CALIB", "always")
 SEED = int(os.environ.get("BOP_SEED", "20261127"))
+# RIGOROUS_ONLY=1: replay the *exact* same instance/solver RNG stream (so J,
+# A, B, q_alm are bit-identical to raw.json) but replace the two solver-value
+# certificates by rigorous ones (dual repair + P2-Cert Schur) and dump the
+# instance matrices to <OUT>/rigorous/ for offline analyses.  It does NOT
+# overwrite raw.json / meta.json / main_table.md.
+RIGOROUS_ONLY = os.environ.get("RIGOROUS_ONLY") == "1"
+CERT_CONFIGS = [("base", {}), ("rlt", {"add_rlt": True}),
+                ("brlt", {"add_bound_rlt": True})]
+CERT_KEYS = ["value", "rigorous", "status", "time_s", "ratio", "dual_shift",
+             "dual_lam_min", "dual_n_negative_lam", "dual_method",
+             "n_eq", "n_ineq", "feas_ineq", "eq_resid",
+             "rigorous_schur", "schur_case", "schur_lambda0",
+             "schur_delta_min", "schur_delta_round", "schur_lam_min_H13",
+             "schur_lam_min_Htt", "schur_lam_min_S10", "schur_Rt",
+             "schur_tt_cond", "schur_time_s"]
 
 
 def wilson(k, n, z=1.959963984540054):
@@ -83,6 +98,23 @@ def mcnemar_exact(a, b):
     if a + b == 0:
         return 1.0, a, b
     return float(binomtest(a, a + b, 0.5).pvalue), a, b
+
+
+def _cert_summary(res):
+    """JSON-safe subset of a certificate result dict."""
+    out = {}
+    for k in CERT_KEYS:
+        v = res.get(k)
+        if v is None:
+            out[k] = None
+        elif isinstance(v, str):
+            out[k] = v
+        else:
+            try:
+                out[k] = float(v)
+            except (TypeError, ValueError):
+                out[k] = str(v)
+    return out
 
 
 def load_model(obj_id):
@@ -253,6 +285,10 @@ def main():
           "max_img", MAX_IMG, "plane_calib", PLANE_CALIB, flush=True)
     models = {oid: load_model(oid) for oid in obj_ids}
     rows = []
+    rig_rows = []
+    rig_arrays = {k: [] for k in ("M0", "D0", "G0", "A", "B", "q_alm", "t_alm",
+                                  "q_unc", "t_unc", "q_gt", "t_gt",
+                                  "plane_n", "plane_d")}
     t_plane_all, t_solve_all, t_cert_all, t_cert_rlt_all = [], [], [], []
     n_poses = 0
     for frame in FRAMES:
@@ -352,43 +388,97 @@ def main():
                                          viol=viol, time_ms=t_solve * 1000.0 / 4.0,
                                          J=core.obj_value(q, tt, M0, D0, G0)))
                     # certificate for ALM only (slow)
-                    t0 = time.perf_counter()
-                    try:
-                        sres = shor_bound(M0, D0, G0, A, B)
-                        val = float(sres["value"])
-                    except Exception as ex:
-                        print("cert fail", ex)
-                        val = float("nan")
-                    t_cert = time.perf_counter() - t0
-                    t0 = time.perf_counter()
-                    try:
-                        sres_rlt = shor_bound(M0, D0, G0, A, B, add_rlt=True)
-                        val_rlt = float(sres_rlt["value"])
-                    except Exception as ex:
-                        print("cert RLT fail", ex)
-                        val_rlt = float("nan")
-                    t_cert_rlt = time.perf_counter() - t0
-                    for rr in rows[-4:]:
-                        rr["shor"] = val
-                        rr["cert"] = bool(np.isfinite(val) and (rr["J"] - val <= 1e-6) and rr["feas"])
-                        rr["shor_rlt"] = val_rlt
-                        rr["cert_rlt"] = bool(np.isfinite(val_rlt) and (rr["J"] - val_rlt <= 1e-6) and rr["feas"])
-                        # two-sided diagnostics: a sound lower bound needs Shor <= J, so the
-                        # one-sided flags above are an upper bound on the sound cert rate.
-                        rr["shor_minus_J"] = float(val - rr["J"]) if np.isfinite(val) else float("nan")
-                        rr["gap_two_sided"] = float(abs(rr["J"] - val)) if np.isfinite(val) else float("nan")
-                        rr["cert_two_sided"] = bool(np.isfinite(val) and abs(rr["J"] - val) <= 1e-6 and rr["feas"])
-                        rr["shor_rlt_minus_J"] = float(val_rlt - rr["J"]) if np.isfinite(val_rlt) else float("nan")
-                        rr["gap_rlt_two_sided"] = float(abs(rr["J"] - val_rlt)) if np.isfinite(val_rlt) else float("nan")
-                        rr["cert_rlt_two_sided"] = bool(np.isfinite(val_rlt) and abs(rr["J"] - val_rlt) <= 1e-6 and rr["feas"])
-                        rr["time_plane_s"] = t_plane
-                        rr["time_cert_s"] = t_cert
-                        rr["time_cert_rlt_s"] = t_cert_rlt
+                    if RIGOROUS_ONLY:
+                        # same instance as raw.json; rigorous bounds only
+                        t_cert = float("nan")
+                        t_cert_rlt = float("nan")
+                        certs = {}
+                        for cname, cflags in CERT_CONFIGS:
+                            try:
+                                res = shor_bound(M0, D0, G0, A, B,
+                                                 repair_dual=True, schur=True,
+                                                 solver="SCS", eps=1e-9,
+                                                 max_iters=50000, **cflags)
+                            except Exception as ex:      # keep the row, mark it
+                                print("rig cert fail", cname, ex, flush=True)
+                                res = dict(status="error:%s" % ex)
+                            certs[cname] = _cert_summary(res)
+                            print("  rig", frame, img, oid, bias_px, cname,
+                                  "J=%.6e value=%.6e rig=%.6e schur=%.6e(%s) t=%.2fs"
+                                  % (rows[-1]["J"], certs[cname].get("value", float("nan")),
+                                     certs[cname].get("rigorous", float("nan")),
+                                     certs[cname].get("rigorous_schur", float("nan")),
+                                     certs[cname].get("schur_case"),
+                                     certs[cname].get("time_s", float("nan"))), flush=True)
+                        rig_rows.append(dict(
+                            frame=frame, img=img, obj=oid, bias_px=bias_px,
+                            J=float(rows[-1]["J"]), viol=float(rows[-1]["viol"]),
+                            solve_time_s=float(t_solve),
+                            plane_time_s=float(t_plane),
+                            certs=certs))
+                        for k, v in (("M0", M0), ("D0", D0), ("G0", G0), ("A", A),
+                                     ("B", B), ("q_alm", q_a), ("t_alm", t_a),
+                                     ("q_unc", q_u), ("t_unc", t_u),
+                                     ("q_gt", core.q_from_R(R)), ("t_gt", t),
+                                     ("plane_n", n), ("plane_d", d)):
+                            rig_arrays[k].append(np.asarray(v, dtype=float))
+                    else:
+                        t0 = time.perf_counter()
+                        try:
+                            sres = shor_bound(M0, D0, G0, A, B)
+                            val = float(sres["value"])
+                        except Exception as ex:
+                            print("cert fail", ex)
+                            val = float("nan")
+                        t_cert = time.perf_counter() - t0
+                        t0 = time.perf_counter()
+                        try:
+                            sres_rlt = shor_bound(M0, D0, G0, A, B, add_rlt=True)
+                            val_rlt = float(sres_rlt["value"])
+                        except Exception as ex:
+                            print("cert RLT fail", ex)
+                            val_rlt = float("nan")
+                        t_cert_rlt = time.perf_counter() - t0
+                        for rr in rows[-4:]:
+                            rr["shor"] = val
+                            rr["cert"] = bool(np.isfinite(val) and (rr["J"] - val <= 1e-6) and rr["feas"])
+                            rr["shor_rlt"] = val_rlt
+                            rr["cert_rlt"] = bool(np.isfinite(val_rlt) and (rr["J"] - val_rlt <= 1e-6) and rr["feas"])
+                            # two-sided diagnostics: a sound lower bound needs Shor <= J, so the
+                            # one-sided flags above are an upper bound on the sound cert rate.
+                            rr["shor_minus_J"] = float(val - rr["J"]) if np.isfinite(val) else float("nan")
+                            rr["gap_two_sided"] = float(abs(rr["J"] - val)) if np.isfinite(val) else float("nan")
+                            rr["cert_two_sided"] = bool(np.isfinite(val) and abs(rr["J"] - val) <= 1e-6 and rr["feas"])
+                            rr["shor_rlt_minus_J"] = float(val_rlt - rr["J"]) if np.isfinite(val_rlt) else float("nan")
+                            rr["gap_rlt_two_sided"] = float(abs(rr["J"] - val_rlt)) if np.isfinite(val_rlt) else float("nan")
+                            rr["cert_rlt_two_sided"] = bool(np.isfinite(val_rlt) and abs(rr["J"] - val_rlt) <= 1e-6 and rr["feas"])
+                            rr["time_plane_s"] = t_plane
+                            rr["time_cert_s"] = t_cert
+                            rr["time_cert_rlt_s"] = t_cert_rlt
                     t_plane_all.append(t_plane); t_solve_all.append(t_solve)
                     t_cert_all.append(t_cert); t_cert_rlt_all.append(t_cert_rlt)
         print("frame", frame, "done", flush=True)
     wall = time.perf_counter() - wall0
+    if RIGOROUS_ONLY:
+        rigdir = OUT / "rigorous"
+        rigdir.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(rigdir / "rigorous_arrays.npz",
+                            **{k: np.asarray(v) for k, v in rig_arrays.items()})
+        meta = dict(dataset=DATASET, frames=FRAMES, max_img=MAX_IMG,
+                    obj_ids=obj_ids, plane_calib=PLANE_CALIB, seed=SEED,
+                    n_poses=len(rig_rows), wall_s=wall,
+                    configs=[c for c, _ in CERT_CONFIGS],
+                    solver="SCS", eps=1e-9, max_iters=50000,
+                    schur=True, repair_dual=True,
+                    source="run_bop.py RIGOROUS_ONLY=1 (exact RNG replay)")
+        json.dump(dict(meta=meta, rows=rig_rows),
+                  open(rigdir / "rigorous_rows.json", "w"), indent=2,
+                  default=float)
+        print("wrote", rigdir, "poses", len(rig_rows), "wall %.1f s" % wall,
+              flush=True)
+        return
     json.dump(rows, open(OUT / "raw.json", "w"), indent=2, default=float)
+
     meta = dict(dataset=DATASET, frames=FRAMES, max_img=MAX_IMG, obj_ids=obj_ids,
                 plane_calib=PLANE_CALIB, seed=SEED, n_trials=len(rows) // 4,
                 n_poses=n_poses, wall_s=wall,

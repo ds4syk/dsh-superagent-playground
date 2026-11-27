@@ -3,61 +3,46 @@ B4 SCP baseline | p=[8, 16, 32] trials/p=50 noise=0.010 bias_z=0.080 max_iter=10
 threads: OMP=1 OPENBLAS=1 MKL=1 | cvxpy=1.5.4
 
 --- main p=8 (noise=0.010 bias=0.080, n=50) ---
-  [p8] 10/50 (9.4s)  scp_cert_so_far=90% scp_viol_max=0.0e+00
-  [p8] 20/50 (17.2s)  scp_cert_so_far=95% scp_viol_max=0.0e+00
-  [p8] 30/50 (25.4s)  scp_cert_so_far=97% scp_viol_max=0.0e+00
-  [p8] 40/50 (33.2s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
-  [p8] 50/50 (41.4s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
+  [p8] 10/50 (13.8s)  scp_cert_so_far=90% scp_viol_max=0.0e+00
+  [p8] 20/50 (22.9s)  scp_cert_so_far=95% scp_viol_max=0.0e+00
+  [p8] 30/50 (31.9s)  scp_cert_so_far=97% scp_viol_max=0.0e+00
+  [p8] 40/50 (42.0s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
+  [p8] 50/50 (51.9s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
   ---- p8 summary (n=50) ----
-   unc         pen= 103.02 mm rot= 5.30 deg trans= 97.90 mm feas=  0% cert=  0% time= 127.9 ms
-   soft        pen=   0.01 mm rot= 4.86 deg trans= 10.93 mm feas= 42% cert=  0% time= 113.7 ms
-   proj        pen=   0.00 mm rot= 4.16 deg trans=  9.10 mm feas=100% cert=  0% time=  13.8 ms
-   alm         pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert=100% time= 218.1 ms
-   scp         pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 130.1 ms
-   scp_restart pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 130.4 ms
-  [saved] scp_baseline.json (41.4s)
+   unc          pen= 103.02 mm rot= 5.30 deg trans= 97.90 mm feas=  0% cert=  0% time= 133.6 ms
+   soft         pen=   0.01 mm rot= 4.86 deg trans= 10.93 mm feas= 42% cert=  0% time= 116.3 ms
+   proj         pen=   0.00 mm rot= 4.16 deg trans=  9.10 mm feas=100% cert=  0% time=  14.0 ms
+   alm          pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert=100% time= 225.8 ms
+   scp          pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 133.8 ms
+   scp_restart  pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 132.1 ms
+   scp_restart3 pen=   0.00 mm rot= 4.17 deg trans= 10.85 mm feas=100% cert= 98% time= 133.8 ms
+   fail[scp] n=1 (infes=0 nonconv=1 subopt=0) mirror_init=1 output_mirror=0
+   fail[scp_restart] n=1 (infes=0 nonconv=1 subopt=0) mirror_init=1 output_mirror=0
+   fail[scp_restart3] n=1 (infes=0 nonconv=1 subopt=0) mirror_init=1 output_mirror=0
+  [saved] scp_baseline.json (52.0s)
 
 --- main p=16 (noise=0.010 bias=0.080, n=50) ---
-  [p16] 10/50 (10.4s)  scp_cert_so_far=90% scp_viol_max=0.0e+00
-  [p16] 20/50 (19.8s)  scp_cert_so_far=95% scp_viol_max=0.0e+00
-  [p16] 30/50 (29.7s)  scp_cert_so_far=97% scp_viol_max=0.0e+00
-  [p16] 40/50 (37.8s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
-  [p16] 50/50 (45.8s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
+  [p16] 10/50 (12.5s)  scp_cert_so_far=90% scp_viol_max=0.0e+00
+  [p16] 20/50 (23.7s)  scp_cert_so_far=95% scp_viol_max=0.0e+00
+  [p16] 30/50 (32.9s)  scp_cert_so_far=97% scp_viol_max=0.0e+00
+  [p16] 40/50 (41.9s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
+  [p16] 50/50 (51.1s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
   ---- p16 summary (n=50) ----
-   unc         pen= 103.02 mm rot= 5.30 deg trans= 97.90 mm feas=  0% cert=  0% time= 130.9 ms
-   soft        pen=   0.00 mm rot= 6.62 deg trans= 13.00 mm feas= 38% cert=  0% time= 114.4 ms
-   proj        pen=   0.00 mm rot= 4.16 deg trans=  9.10 mm feas=100% cert=  0% time=  14.3 ms
-   alm         pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert=100% time= 239.2 ms
-   scp         pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 135.2 ms
-   scp_restart pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 133.8 ms
-  [saved] scp_baseline.json (87.3s)
+   unc          pen= 103.02 mm rot= 5.30 deg trans= 97.90 mm feas=  0% cert=  0% time= 126.7 ms
+   soft         pen=   0.00 mm rot= 6.62 deg trans= 13.00 mm feas= 38% cert=  0% time= 111.4 ms
+   proj         pen=   0.00 mm rot= 4.16 deg trans=  9.10 mm feas=100% cert=  0% time=  14.2 ms
+   alm          pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert=100% time= 212.1 ms
+   scp          pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 129.2 ms
+   scp_restart  pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 130.0 ms
+   scp_restart3 pen=   0.00 mm rot= 4.17 deg trans= 10.85 mm feas=100% cert= 98% time= 130.0 ms
+   fail[scp] n=1 (infes=0 nonconv=1 subopt=0) mirror_init=1 output_mirror=0
+   fail[scp_restart] n=1 (infes=0 nonconv=1 subopt=0) mirror_init=1 output_mirror=0
+   fail[scp_restart3] n=1 (infes=0 nonconv=1 subopt=0) mirror_init=1 output_mirror=0
+  [saved] scp_baseline.json (103.1s)
 
 --- main p=32 (noise=0.010 bias=0.080, n=50) ---
-  [p32] 10/50 (10.7s)  scp_cert_so_far=90% scp_viol_max=0.0e+00
-  [p32] 20/50 (19.6s)  scp_cert_so_far=95% scp_viol_max=0.0e+00
-  [p32] 30/50 (28.7s)  scp_cert_so_far=97% scp_viol_max=0.0e+00
-  [p32] 40/50 (37.1s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
-  [p32] 50/50 (46.4s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
-  ---- p32 summary (n=50) ----
-   unc         pen= 103.02 mm rot= 5.30 deg trans= 97.90 mm feas=  0% cert=  0% time= 132.3 ms
-   soft        pen=   0.00 mm rot= 6.97 deg trans= 12.33 mm feas= 42% cert=  0% time= 117.4 ms
-   proj        pen=   0.00 mm rot= 4.16 deg trans=  9.10 mm feas=100% cert=  0% time=  14.2 ms
-   alm         pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert=100% time= 232.0 ms
-   scp         pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 142.2 ms
-   scp_restart pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 143.3 ms
-  [saved] scp_baseline.json (133.7s)
-
---- stress n020_b120 (p=16 noise=0.020 bias=0.120, n=20) ---
-  [n020_b120] 10/20 (14.1s)  scp_cert_so_far=70% scp_viol_max=0.0e+00
-  [n020_b120] 20/20 (22.5s)  scp_cert_so_far=85% scp_viol_max=0.0e+00
-  ---- n020_b120 summary (n=20) ----
-   unc         pen= 189.13 mm rot=11.98 deg trans=178.38 mm feas=  0% cert=  0% time= 124.2 ms
-   soft        pen=   0.02 mm rot=11.21 deg trans= 16.38 mm feas= 30% cert=  0% time= 102.9 ms
-   proj        pen=   0.00 mm rot= 9.08 deg trans= 11.43 mm feas=100% cert=  0% time=  14.4 ms
-   alm         pen=   0.00 mm rot= 5.25 deg trans= 12.65 mm feas=100% cert=100% time= 226.4 ms
-   scp         pen=   0.00 mm rot= 5.43 deg trans= 13.07 mm feas=100% cert= 85% time= 147.0 ms
-   scp_restart pen=   0.00 mm rot= 5.43 deg trans= 12.65 mm feas=100% cert= 85% time= 143.9 ms
-  [saved] scp_baseline.json (156.2s)
-  [saved] scp_baseline.md
-
-完成：156.2s
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+  [p32] 10/50 (13.3s)  scp_cert_so_far=90% scp_viol_max=0.0e+00
+  [p32] 20/50 (22.7s)  scp_cert_so_far=95% scp_viol_max=0.0e+00
+  [p32] 30/50 (32.0s)  scp_cert_so_far=97% scp_viol_max=0.0e+00

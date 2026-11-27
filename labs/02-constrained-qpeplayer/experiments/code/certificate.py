@@ -34,6 +34,30 @@ Schur 补求最小平移 c 使 S + c·P ⪰ 0（P = diag(1_{0..9},0,0,0,1)，它
   add_box_rlt   : 两个已证单侧因子的乘积 >= 0（线性于 X）
 
 参考：J 是 ALM 前向的可行点目标值（J* <= J），`gap = J - bound`。
+
+P2-Cert（Schur / 13 维零升维）严格下界
+----------------------------------------
+`schur=True` 时在同一个 SDP 解上另算一条下界（不重解）。把 14 维提升向量
+写成 y14 = F y13，F = [I13; e_tr^T]（最后一行的 e_tr^T 由 e_tr^T v2 = 1
+提供），y13 = [v2; t]。用**同一个**对偶点 (y, λ) 组装 S'（14×14），
+    S' = Q + Σ μ̃_j (g_j矩阵) - Σ Γ̃_ij (g_i g_j 矩阵)
+         + y_0 D10 + y_13 E1313 + y_1 E1 + Σ λ_k (Veronese 矩阵),
+    μ̃ = max(λ_g, 0), Γ̃ = max(λ_rlt, 0),
+    H13 = F^T S' F  (13×13),  H13 = [[H_RR, H_Rt],[H_Rt^T, H_tt]].
+（等价写法 S' = Q + Σμ̃g - ΣΓ̃g_ig_j - λ_0 A_0 - Σλ_k B_k，其中
+ λ_0 = -(y_0+y_13+y_1) 是三个 b=1 等式的对偶常数；Veronese 的 b=0。）
+对任意可行 y13（||v2||=1）：
+    f(y) >= λ_0 + y13^T H13 y13 .
+* Case A（H_tt ≻ 0，以 Cholesky 成功为准）：min_t 用 Schur 补
+  S10 = H_RR - H_Rt H_tt^{-1} H_Rt^T，δmin = min(0, λmin(S10))，
+  d_sound = λ_0 + δmin - δround（δround 取 1e-12·(||S10||_F + 条件项)，
+  并用 Cholesky 检验 S10-(δmin-δround)I ≻ 0）。
+* Case B（H_tt 非 PD）：用 box_bounds 证出的 ||t|| <= R_t，
+  δ13 = min(0, λmin(H13))，d_sound = λ_0 + (1+R_t^2)(δ13-δround)；
+  若 R_t 无法证出（某分量 ±inf）则记 case="B_noRt"、d_sound=nan。
+与 `_dual_repair`（要求 S+cP ⪰ 0、对偶目标减 2c）相比，Schur 路径不需要
+全局 PSD，只需 t 块 PD + v 块在球面上的最小特征值，通常更紧。两者的合法性
+都只依赖 (μ̃>=0, Γ̃>=0, 浮点舍入)，与求解器是否收敛无关。
 """
 import time
 
@@ -468,10 +492,123 @@ def _dual_repair(Qtot, eq_specs, ineq_specs, cons, delta=1e-8):
                 dual_n_negative_lam=int(np.sum(lam_raw < 0)), dual_method=method)
 
 
+def _f_matrix(n=N):
+    """F: 13 -> 14,  y14 = F y13,  y13=[v2;t]；最后一行 e_tr^T 给 y14_14=e_tr^T v2。
+
+    e_tr 与 `_base_eq_specs` 完全一致：前 4 个分量为 1（v2 的对角块），因此
+    y14_14 = q0^2+q1^2+q2^2+q3^2 = ||q||^2 = 1。注意**不是**前 10 个分量。
+    """
+    F = np.zeros((n, n - 1))
+    F[: n - 1, :] = np.eye(n - 1)
+    e_tr = np.zeros(n)
+    e_tr[:4] = 1.0
+    F[n - 1, :] = e_tr[: n - 1]
+    return F
+
+
+def _cholesky_ok(M):
+    try:
+        np.linalg.cholesky(_sym(M))
+        return True
+    except np.linalg.LinAlgError:
+        return False
+
+
+def _schur_repair(Qtot, eq_specs, ineq_specs, cons, A, B, delta=1e-12,
+                  round_scale=1e-12):
+    """P2-Cert：由同一对偶点组装的 13×13 Schur 严格下界（见模块 docstring）。
+
+    返回 dict：rigorous_schur, schur_case, schur_lambda0, schur_delta_min,
+    schur_delta_round, schur_lam_min_H13, schur_lam_min_Htt, schur_lam_min_S10,
+    schur_Rt, schur_tt_cond, schur_time_s。
+    仅当所有等式/不等式乘子取自求解器对偶；任何 (μ>=0, Γ>=0) 都合法，
+    所以与求解器是否 dual-feasible 无关。
+    """
+    t0 = time.perf_counter()
+    m_eq = len(eq_specs)
+    m_in = len(ineq_specs)
+    n = Qtot.shape[0]
+    out = dict(rigorous_schur=float("nan"), schur_case="no-duals",
+               schur_lambda0=float("nan"), schur_delta_min=float("nan"),
+               schur_delta_round=float("nan"), schur_lam_min_H13=float("nan"),
+               schur_lam_min_Htt=float("nan"), schur_lam_min_S10=float("nan"),
+               schur_Rt=float("nan"), schur_tt_cond=float("nan"),
+               schur_time_s=float("nan"))
+    try:
+        y = np.array([float(cons[1 + k].dual_value) for k in range(m_eq)])
+        lam_raw = np.array([float(cons[1 + m_eq + k].dual_value) for k in range(m_in)])
+    except (TypeError, ValueError):
+        return out
+    if not (np.all(np.isfinite(y)) and np.all(np.isfinite(lam_raw))):
+        out["schur_case"] = "nonfinite-duals"
+        return out
+    lam = np.maximum(lam_raw, 0.0)
+    S = Qtot.copy()
+    for (Amat, b), yy in zip(eq_specs, y):
+        if yy != 0.0:
+            S = S + yy * Amat
+    for (M, _), ll in zip(ineq_specs, lam):
+        if ll != 0.0:
+            S = S + ll * M
+    S = _sym(S)
+    # b=1 的等式：D10, E1313, E1；Veronese 的 b=0。对偶常数 λ0 = -Σ y_k b_k。
+    lambda0 = float(-sum(yy * b for (Amat, b), yy in zip(eq_specs, y)))
+    F = _f_matrix(n)
+    H = _sym(F.T @ S @ F)
+    H_RR = H[:10, :10]
+    H_Rt = H[:10, 10:]
+    H_tt = _sym(H[10:, 10:])
+    ev_tt = np.linalg.eigvalsh(H_tt)
+    out.update(schur_lambda0=lambda0, schur_lam_min_Htt=float(ev_tt[0]),
+               schur_lam_min_H13=float(np.linalg.eigvalsh(H)[0]))
+    if ev_tt[0] > 0.0 and _cholesky_ok(H_tt):
+        # ---- Case A: H_tt ≻ 0 ----
+        out["schur_tt_cond"] = float(ev_tt[-1] / max(ev_tt[0], 1e-300))
+        S10 = _sym(H_RR - H_Rt @ np.linalg.solve(H_tt, H_Rt.T))
+        lmin10 = float(np.linalg.eigvalsh(S10)[0])
+        delta_min = min(0.0, lmin10)
+        # 舍入预算：||S10|| 的 1e-12 + H_tt 求逆的条件项
+        cond_term = (np.linalg.norm(H_Rt, "fro") ** 2 / max(ev_tt[0], 1e-300))
+        dround = round_scale * (np.linalg.norm(S10, "fro")
+                                + np.linalg.norm(H_RR, "fro") + cond_term) + delta
+        # Cholesky 检验 S10 - (δmin - δround) I ≻ 0；不够就加大 dround
+        target = S10 - (delta_min - dround) * np.eye(10)
+        it = 0
+        while not _cholesky_ok(target) and it < 12:
+            dround *= 10.0
+            target = S10 - (delta_min - dround) * np.eye(10)
+            it += 1
+        out.update(rigorous_schur=float(lambda0 + delta_min - dround),
+                   schur_case="A", schur_delta_min=float(delta_min),
+                   schur_delta_round=float(dround), schur_lam_min_S10=lmin10,
+                   schur_time_s=time.perf_counter() - t0)
+        if not _cholesky_ok(target):     # 极端病态：标记，界仍按公式给出
+            out["schur_case"] = "A_unverified"
+        return out
+    # ---- Case B: H_tt 非 PD，需要已证 ||t|| <= R_t ----
+    lo, hi = box_bounds(A, B, n)
+    t_lo, t_hi = lo[10:13], hi[10:13]
+    if not (np.all(np.isfinite(t_lo)) and np.all(np.isfinite(t_hi))):
+        out.update(schur_case="B_noRt", schur_time_s=time.perf_counter() - t0)
+        return out
+    Rt = float(np.sqrt(np.sum(np.maximum(np.abs(t_lo), np.abs(t_hi)) ** 2)))
+    lam13 = float(np.linalg.eigvalsh(H)[0])
+    delta13 = min(0.0, lam13)
+    dround = round_scale * np.linalg.norm(H, "fro") + delta
+    while not _cholesky_ok(H - (delta13 - dround) * np.eye(13)) and dround < 1e6 * delta:
+        dround *= 10.0
+    dsound = lambda0 + (1.0 + Rt ** 2) * (delta13 - dround)
+    out.update(rigorous_schur=float(dsound), schur_case="B", schur_Rt=float(Rt),
+               schur_delta_min=float(delta13), schur_delta_round=float(dround),
+               schur_time_s=time.perf_counter() - t0)
+    return out
+
+
 def shor_bound(M0, D0, G0, A, B, mu=None, add_veronese=True, enforce_ineq=True,
                add_rlt=False, add_bounds=False, add_bound_rlt=False,
                add_box_rlt=False,
                repair_dual=False, repair_delta=1e-8,
+               schur=False, schur_delta=1e-12, schur_round_scale=1e-12,
                solver="SCS", eps=1e-9, max_iters=20000, time_limit=None,
                verbose=False):
     """min <Qh,X> s.t. X⪰0, X[13,13]=1, e_tr^T v2=1, ||v2||^2=1, Veronese, g_j<=0。
@@ -582,6 +719,13 @@ def shor_bound(M0, D0, G0, A, B, mu=None, add_veronese=True, enforce_ineq=True,
         out.update(rigorous=float("nan"), dual_obj=float("nan"),
                    dual_shift=float("nan"), dual_lam_min=float("nan"),
                    dual_n_negative_lam=-1, dual_method="off")
+    if schur:
+        if mu is None and enforce_ineq:
+            out.update(_schur_repair(Qtot, eq_specs, ineq_specs, cons, A, B,
+                                     delta=schur_delta,
+                                     round_scale=schur_round_scale))
+        else:
+            out.update(rigorous_schur=float("nan"), schur_case="off")
     if verbose:
         print(out, flush=True)
     return out

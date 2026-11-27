@@ -4,12 +4,16 @@
 Panels (all values recomputed from the raw trial records, no hand-typed numbers):
   (a) feasible (bars) and certified (markers) rate vs p, four methods;
   (b) penetration median [IQR] vs p, four methods (symlog y so 0 is visible);
-  (c) real-data ALM certification, 14x14 Shor base vs + zero-dimensional RLT
-      (LM, LM-O, YCB; YCB RLT not run -> n/a).
+  (c) real-data ALM certification at n=90/72/84: one-sided Shor flag
+      (an upper bound), the two-sided |J-Shor|<=1e-6 test (necessary only),
+      and -- when results/rigorous_real.json exists -- the rigorous
+      P2-Cert Schur-repair lower bound (sound by construction).
 
-Run:  /home/syk/miniconda3/bin/python make_p2_overview.py
+Run directly on the login node (no Slurm):
+    nice -n 10 /home/syk/miniconda3/bin/python make_p2_overview.py
 """
 import json
+import math
 import statistics as st
 from pathlib import Path
 
@@ -22,6 +26,7 @@ import matplotlib.pyplot as plt
 HERE = Path(__file__).resolve().parent
 EXP = HERE.parent                                   # .../experiments
 RAW_MAIN = EXP / "results" / "raw_main.json"
+RIGOROUS = EXP / "results" / "rigorous_real.json"
 OUT = HERE / "fig_p2_overview.png"
 
 METHODS = [("unc", "Unconstrained QPEP", "#7f7f7f"),
@@ -30,6 +35,12 @@ METHODS = [("unc", "Unconstrained QPEP", "#7f7f7f"),
            ("alm", "ALM-QPEP (ours)", "#2e7d32")]
 PS = [8, 16, 32, 64]
 
+REAL = {
+    "linemod": ("LM", EXP / "real" / "linemod" / "results" / "raw.json"),
+    "lmo": ("LM-O", EXP / "real" / "bop" / "results" / "lmo" / "raw.json"),
+    "ycbv": ("YCB-V", EXP / "real" / "bop" / "results" / "ycbv" / "raw.json"),
+}
+
 
 def quantile(vals, p):
     vals = sorted(vals)
@@ -37,6 +48,54 @@ def quantile(vals, p):
     lo = int(h)
     hi = min(lo + 1, len(vals) - 1)
     return vals[lo] + (h - lo) * (vals[hi] - vals[lo])
+
+
+def wilson(k, n, z=1.96):
+    """95% Wilson score interval for a binomial proportion."""
+    if n == 0:
+        return (0.0, 0.0)
+    p = k / n
+    den = 1.0 + z * z / n
+    centre = (p + z * z / (2.0 * n)) / den
+    half = z * math.sqrt(max(0.0, p * (1.0 - p) / n + z * z / (4.0 * n * n))) / den
+    return (max(0.0, centre - half), min(1.0, centre + half))
+
+
+def _num(node, *names):
+    for nm in names:
+        if isinstance(node, dict) and nm in node and node[nm] is not None:
+            return float(node[nm])
+    return None
+
+
+def rig_counts(key, rj):
+    """Pull (k, n) of rigorously certified ALM rows for one dataset.
+
+    The rigorous pass writes `results/rigorous_real.json` as
+      {"datasets": {key: {"configs": {"base"|"rlt"|"brlt":
+          {"n":.., "cert_schur":.., "rate_schur":.., ...}}}}}
+    The P2-Cert bound is `rigorous_schur` (13-dim Schur repair), so we report
+    `cert_schur` on the `brlt` config (the strongest sound cut family).
+    Falls back to a few simpler shapes, and returns None if absent.
+    """
+    ds = rj.get("datasets", {})
+    node = ds.get(key, {})
+    cfg = node.get("configs", {}) if isinstance(node, dict) else {}
+    for name in ("brlt", "base", "rlt"):
+        s = cfg.get(name)
+        if isinstance(s, dict):
+            k = _num(s, "cert_schur", "cert_dual_repair", "k", "cert", "certified")
+            n = _num(s, "n", "n_trials", "total")
+            if k is not None and n:
+                return int(round(k)), int(round(n))
+    # generic fallbacks for alternative aggregations
+    node = rj.get(key, node)
+    if isinstance(node, dict):
+        k = _num(node, "k", "cert", "certified", "n_cert", "cert_schur")
+        n = _num(node, "n", "n_trials", "total")
+        if k is not None and n:
+            return int(round(k)), int(round(n))
+    return None
 
 
 raw = json.load(open(RAW_MAIN))
@@ -88,52 +147,66 @@ ax.text(0.98, 0.04, "median at p=64:  unc 103.02 · soft 0.00\n"
 
 # ------------------------------------------------------------------- panel (c)
 ax = axes[2]
-ci = json.load(open(HERE / "real_cert_ci_baseline.json"))
-datasets = ["linemod", "lmo", "ycbv"]
-names = ["LM", "LM-O", "YCB-V"]
-x = np.arange(len(datasets))
-w = 0.36
+rig = {}
+if RIGOROUS.exists():
+    rj = json.load(open(RIGOROUS))
+    for key in REAL:
+        rc = rig_counts(key, rj)
+        if rc is not None:
+            rig[key] = rc
 
-
-def _bar(i, key, offset, color, hatch=None):
-    d = ci[key]
-    b = d["base" if offset < 0 else "rlt"]
-    if b["rate"] is None:
-        ax.bar(i + offset, 100, w, color="none", edgecolor=color,
-               hatch="////", linewidth=0.8)
-        return None
-    v = 100 * b["rate"]
-    ax.bar(i + offset, v, w, color=color, hatch=hatch, alpha=0.85 if hatch is None else 1.0)
-    lo, hi = 100 * b["ci95"][0], 100 * b["ci95"][1]
-    ax.errorbar(i + offset, v, yerr=[[v - lo], [hi - v]], fmt="none",
-                ecolor="black", elinewidth=1.0, capsize=3, zorder=6)
-    ax.text(i + offset, hi + 1.5, f"{v:.0f}%\n({b['k']}/{b['n']})",
-            ha="center", va="bottom", fontsize=7)
-    return (lo, hi)
-
+keys = list(REAL)
+x = np.arange(len(keys))
+w = 0.26
+slots = [(-w, "one-sided Shor\n(upper bound)", "#9e9e9e"),
+         (0.0, "two-sided |J−Shor|\n(necessary only)", "#2b6cb0"),
+         (+w, "rigorous P2-Cert\n(Schur repair, sound)", "#2e7d32")]
 
 ax.axhline(0, color="black", lw=0.6)
-for i, key in enumerate(datasets):
-    _bar(i, key, -w / 2, "#7f7f7f")
-    if ci[key]["rlt"]["rate"] is None:
-        # YCB +RLT: not run
-        ax.text(i + w / 2, 45, "n/a\n(not run)", ha="center", va="center",
-                fontsize=7.0, color="#2e7d32")
+for i, key in enumerate(keys):
+    rows = json.load(open(REAL[key][1]))
+    alm = [r for r in rows if r["method"] == "ALM-QPEP"]
+    nn = len(alm)
+    one = sum(bool(r.get("cert")) for r in alm)
+    two = sum(bool(r.get("cert_two_sided")) for r in alm)
+    for off, k in ((-w, one), (0.0, two)):
+        v = 100.0 * k / nn
+        lo, hi = wilson(k, nn)
+        ax.bar(i + off, v, w * 0.92, color=slots[0][2] if off < 0 else slots[1][2],
+               alpha=0.85)
+        ax.errorbar(i + off, v, yerr=[[v - 100 * lo], [100 * hi - v]], fmt="none",
+                    ecolor="black", elinewidth=1.0, capsize=3, zorder=6)
+        ax.text(i + off, 100 * hi + 1.5, f"{v:.0f}%\n({k}/{nn})",
+                ha="center", va="bottom", fontsize=6.8)
+    if key in rig:
+        k, nn = rig[key]
+        v = 100.0 * k / nn
+        lo, hi = wilson(k, nn)
+        ax.bar(i + w, v, w * 0.92, color=slots[2][2], alpha=0.85)
+        ax.errorbar(i + w, v, yerr=[[v - 100 * lo], [100 * hi - v]], fmt="none",
+                    ecolor="black", elinewidth=1.0, capsize=3, zorder=6)
+        ax.text(i + w, 100 * hi + 1.5, f"{v:.0f}%\n({k}/{nn})",
+                ha="center", va="bottom", fontsize=6.8)
     else:
-        _bar(i, key, +w / 2, "#2e7d32")
+        ax.bar(i + w, 0, w * 0.92, color="none", edgecolor=slots[2][2],
+               hatch="////", linewidth=0.8)
+        ax.text(i + w, 20, "pending\n(rigorous)", ha="center", va="center",
+                fontsize=6.6, color=slots[2][2])
+
 ax.set_xticks(x)
-ax.set_xticklabels([f"{nm}\n(n={ci[k]['n_trials']})" for nm, k in zip(names, datasets)])
+ax.set_xticklabels([f"{REAL[k][0]}\n(n={len([r for r in json.load(open(REAL[k][1])) if r['method'] == 'ALM-QPEP'])})"
+                    for k in keys])
 ax.set_ylabel("ALM certified rate (%)")
 ax.set_ylim(-4, 112)
-ax.set_title("(c) real-data certification, base vs +RLT (95% Wilson CI)")
+ax.set_title("(c) real-data certification: upper bound, necessary test, rigorous")
 ax.grid(axis="y", alpha=0.3)
-ax.legend([plt.Rectangle((0, 0), 1, 1, color="#7f7f7f"),
-           plt.Rectangle((0, 0), 1, 1, color="#2e7d32")],
-          ["14×14 Shor", "+ 0-dim RLT"], fontsize=7.2, loc="upper left")
+ax.legend([plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in slots],
+          [lab for _, lab, _ in slots], fontsize=6.6, loc="upper left", framealpha=0.9)
 
 fig.text(0.01, 0.005,
          "source: experiments/results/raw_main.json (a,b); "
-         "experiments/real/*/results/raw.json + results/real_cert_ci_baseline.json (c)",
+         "experiments/real/*/results/raw.json (c); "
+         "results/rigorous_real.json (c, green bars when present)",
          fontsize=6.5, color="#555")
 fig.tight_layout(rect=(0, 0.025, 1, 1))
 fig.savefig(OUT, dpi=200, facecolor="white", bbox_inches="tight", pad_inches=0.12)

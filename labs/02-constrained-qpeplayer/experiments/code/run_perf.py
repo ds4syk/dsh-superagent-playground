@@ -48,7 +48,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import qpep_core as C
 import cvxpy as cp
-from certificate import shor_bound, _veronese_constraints
+from certificate import shor_bound, _veronese_specs
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES = os.path.join(HERE, "..", "results")
@@ -189,6 +189,16 @@ def c14_matrix(A, B):
     Cm[:10, :] = A.T
     Cm[10:13, :] = B.T
     return Cm
+
+
+def _veronese_constraints(X, n):
+    """36 条 2×2 子式的 cvxpy 等式（与旧 certificate._veronese_constraints 同矩阵）。
+
+    certificate.py 在 commit 1897da9 把它改成返回矩阵 spec 的 `_veronese_specs`；
+    这里按同一批矩阵重建约束，使本脚本在新 certificate.py 上仍可运行
+    （2026-11-27 修复：原 import 在 HEAD 上 ImportError）。
+    """
+    return [cp.trace(M @ X) == 0.0 for M, _ in _veronese_specs(n)]
 
 
 def build_param_shor_problem(p):

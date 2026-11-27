@@ -33,6 +33,23 @@ os.makedirs(RES, exist_ok=True)
 N_TRIALS = int(os.environ.get("QPE_TRIALS", "50"))
 LAM_MAIN = 1e3
 LAM_PARETO = [1.0, 10.0, 100.0, 1e3, 1e4]
+# 证书缓存开关（默认关，逐位复现历史主表）：QPE_CERT_CACHE=1 时用
+# cert_cache.ShorCache（固定 p 编译一次 + warm start），数值与冷解差 ≤1e-9，
+# 见 results/perf_cert_cache.md；关闭时仍调用 certificate.shor_bound。
+CERT_CACHE = os.environ.get("QPE_CERT_CACHE", "0") == "1"
+_CERT_CACHES = {}
+
+
+def cert_bound(M0, D0, G0, A, B):
+    """证书 SDP：默认冷解；QPE_CERT_CACHE=1 时按 p 复用参数化问题 + warm start。"""
+    if not CERT_CACHE:
+        return shor_bound(M0, D0, G0, A, B, enforce_ineq=True)
+    import cert_cache
+    p = A.shape[0]
+    cache = _CERT_CACHES.get(p)
+    if cache is None:
+        cache = _CERT_CACHES[p] = cert_cache.ShorCache(p)
+    return cache.solve(M0, D0, G0, A, B)
 
 MAIN_P = [int(v) for v in os.environ.get("QPE_MAIN_P", "8,16,32,64").split(",") if v]
 NOISE_CELLS = [
@@ -117,10 +134,11 @@ def run_trial(ins, want_sdp=True):
     # --- 证书（与实例有关，与方法是哪一个无关）---
     if want_sdp:
         t0 = time.perf_counter()
-        sd = shor_bound(M0, D0, G0, A, B, enforce_ineq=True)
+        sd = cert_bound(M0, D0, G0, A, B)
         dt_sdp = time.perf_counter() - t0
         rec["sdp"] = dict(value=sd["value"], ratio=sd["ratio"], lam1=sd["lam1"],
                           status=sd["status"], time_ms=1e3 * dt_sdp,
+                          cached=bool(CERT_CACHE),
                           tight=bool(sd["ratio"] <= 1e-6),
                           sound=bool(sd["value"] <= ok["J"] + 1e-7))
         # 每个方法的 certified = 可行 且 (J - Shor) <= 1e-6
@@ -211,10 +229,13 @@ def main():
     log("=" * 100)
     log("Constrained-QPEPLayer main experiment  |  N_TRIALS=%d  LAM_MAIN=%g" % (N_TRIALS, LAM_MAIN))
     log("p ∈ %s ; noise cells %s" % (MAIN_P, [c["tag"] for c in NOISE_CELLS]))
+    log("cert SDP: %s" % ("参数化缓存 + warm start (QPE_CERT_CACHE=1)" if CERT_CACHE
+                          else "certificate.shor_bound 冷解（默认）"))
     t_start = time.perf_counter()
 
     raw = dict(config=dict(n_trials=N_TRIALS, lam_main=LAM_MAIN, lam_pareto=LAM_PARETO,
                            main_p=MAIN_P, noise_cells=NOISE_CELLS,
+                           cert_cache=CERT_CACHE,
                            split=C.P_SPLIT, box=[C.BOX_HX, C.BOX_HY, C.BOX_HZ],
                            H_TAB=C.H_TAB, zmin=C.ZMIN, tau=C.TAU,
                            alpha_deg=float(np.degrees(C.ALPHA)), N_pts=C.N_PTS),

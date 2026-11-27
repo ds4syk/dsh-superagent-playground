@@ -166,7 +166,12 @@ def kkt_eval_batch(X, M):
     for a, (p, r) in enumerate(_CROSS):
         term1[:, p, r] += 2.0 * SQRT2 * W[:, 4 + a]
         term1[:, r, p] += 2.0 * SQRT2 * W[:, 4 + a]
-    Jqq = 2.0 * np.einsum('nip,ij,njq->npq', Jv, M, Jv) + term1 \
+    # Jqq = 2 Jv^T M Jv.  Contracting the fixed M on the left first (batched
+    # matmul / BLAS) is mathematically identical to the 3-operand einsum but
+    # avoids evaluating M in the middle of the (n,10,4) tensor: ~3x faster
+    # per enumeration at exact parity (see results/perf_quartic.md).
+    MJ = np.matmul(M, Jv)                              # (n,10,4) = M @ Jv per path
+    Jqq = 2.0 * np.matmul(Jv.transpose(0, 2, 1), MJ) + term1 \
         - 2.0 * lam[:, None, None] * _EYE4
     F = np.empty((n, 5), dtype=dt)
     F[:, :4] = gq - 2.0 * lam[:, None] * q

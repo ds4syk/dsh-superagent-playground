@@ -234,6 +234,220 @@ $$
 
 ---
 
+## 2A. 用户新证明（2026-11-27）：根结构二分与严格对偶修复
+
+> **来源与证据分级。** 本节收录两份**用户提供**的证明：定理 **P2-1b**（Feishu 文档 `RhzDwI1RKinQsekHDhUcjOVenHL` §III）与定理 **P2-Cert**（同文档 §IV），日期 2026-11-27。原证明的代数验证（Rabinowitsch 饱和 + $\mathbb F_{32003}$ 精确 Gröbner 基）由用户完成，**本仓库未复跑**；本节只做记号统一、证明梗概与接口说明，不改变其数学内容。
+>
+> 因此本节出现的根数 $4/12/16/32/40$、多余交度 $36/28/24/8/0$、$15$ 元/ $12$ 元/ $17$ 元 Gröbner 阶梯、$16\times16$ 饱和作用矩阵等**代数数字，唯一来源是用户证明**（Feishu 文档），不是本仓库的实验测量值；任何引用都必须同时标注 "user-supplied proof, 2026-11-27"。本仓库独立复现的只有其中两个可数值检验的推论：(i) 通用随机 $\mathbf M$ 的 $40$ 个射影根；(ii) P2 退化 $\mathbf M^{\rm red}_{\mathcal A}$ 的 $16$–$18$ 个实根（当前 24 实例 JSON；用户证明引 15–16；见 §2.6.4）。凡本仓库未测的数字，正文一律写明"用户证明"。
+
+### 2.6 定理 P2-1b（复/实根结构二分；新增，用户证明）
+
+#### 2.6.1 陈述
+
+> **定理 P2-1b（complex/real root-structure dichotomy）**
+> 设 $\mathbf M\in\mathbb S^{10}$，$f(\mathbf q)=\mathbf v_2(\mathbf q)^\top\mathbf M\,\mathbf v_2(\mathbf q)$，在复射影二次曲面
+> $$
+> \mathbb S^3_{\mathbb C}=\{\mathbf q\in\mathbb C^4:\ \mathbf q^\top\mathbf q=1\}
+> $$
+> 上考虑 KKT 系统
+> $$
+> \nabla f(\mathbf q)=\lambda\mathbf q,\qquad \mathbf q^\top\mathbf q=1, \qquad\text{模去 }\mathbf q\leftrightarrow-\mathbf q . \tag{2.6}
+> $$
+> 记 $N_{\mathbb C}(\mathbf M)$ 为 $\mathbb S^3_{\mathbb C}/\{\pm1\}$ 上**孤立复射影根**的个数（对应 $2N_{\mathbb C}$ 个仿射根），$N_{\mathbb R}(\mathbf M)\le N_{\mathbb C}(\mathbf M)$ 为其中实射影根的个数。则"退化"必须严格分成两类，它们的根数行为相反：
+
+**(I) 类型 I：单纯矩阵秩亏，不降低复根数。** 若 $\operatorname{rank}(\mathbf M)=9$ 且 $\mathbf M\mathbf e_{\rm tr}=\mathbf 0$（PnP 型，例如 $\mathbf y_i=\mathbf 0$、$d=0$、$\mu=0$ 时的 $\mathbf M^{\rm red}_{\mathcal A}$），或 $\mathbf M=\mathbf A_9^\top\mathbf A_9$ 为任意一般秩 9 对称阵，则
+$$
+N_{\mathbb C}(\mathbf M)=40,
+$$
+且与通用满秩 $\mathbf M$ 共享**完全相同的 15 元 grevlex Gröbner 首项阶梯**。其原因是**恒等平移不变性**：对任意 $\alpha\in\mathbb R$，平移
+$$
+\mathbf M\longmapsto\mathbf M+\alpha\mathbf I_{10}\quad\text{或}\quad \mathbf M\longmapsto\mathbf M+\alpha\,\mathbf e_{\rm tr}\mathbf e_{\rm tr}^\top
+$$
+把 $f$ 变为 $f+\alpha(\mathbf q^\top\mathbf q)^2$，故 $\nabla f\mapsto\nabla f+4\alpha(\mathbf q^\top\mathbf q)\mathbf q$；在 $\mathbf q^\top\mathbf q=1$ 上全部临界点**纹丝不动**，只有 $\lambda\mapsto\lambda+4\alpha$。因此秩 9 不是临界点系统的代数退化。
+
+**(II) 类型 II：各向同性 3D–3D（Horn）底座 + 同一法向的平面约束，复根数真正坍缩。** 设底座为各向同性 3D–3D 配准（$\mathbf W_i=w_i\mathbf I_3$），并附加 $k$ 条**共享同一平面法向** $\mathbf n\in\mathbb S^2$ 的活跃平面非穿透约束
+$$
+g_j(\mathbf q,\mathbf t)=-\mathbf n^\top\big(\mathbf R(\mathbf q)\mathbf v_j+\mathbf t\big)-d\le0,\qquad j=1,\dots,k .
+$$
+则缩减目标在 $\mathbb S^3$ 上严格具有低秩 Hopf-向量结构
+$$
+J_{\mathcal A}^{\rm red}(\mathbf q)=(\mathbf q^\top\mathbf q)\,(\mathbf q^\top\mathbf K\mathbf q)+\mathbf w(\mathbf q)^\top\boldsymbol\Sigma_{\mathcal A}\mathbf w(\mathbf q),\qquad
+\mathbf w(\mathbf q):=\mathbf R(\mathbf q)^\top\mathbf n\in\mathbb R^3,\qquad \|\mathbf w(\mathbf q)\|_2^2=(\mathbf q^\top\mathbf q)^2 . \tag{2.7}
+$$
+记 $\lambda_1\ge\lambda_2\ge\lambda_3$ 为 $\boldsymbol\Sigma_{\mathcal A}$ 的特征值、$\mathbf u_i$ 为对应特征向量，则纯四次部分的**有效秩**满足
+$$
+r_{\rm eff}\le\min(k,2),\qquad
+J_{\mathcal A}^{\rm red}(\mathbf q)\equiv(\mathbf q^\top\mathbf q)(\mathbf q^\top\mathbf K\mathbf q)+(\lambda_1-\lambda_3)(\mathbf u_1^\top\mathbf w)^2+(\lambda_2-\lambda_3)(\mathbf u_2^\top\mathbf w)^2 \pmod{(\mathbf q^\top\mathbf q)^2}. \tag{2.8}
+$$
+在复二次曲面 $\mathcal Q=\{\mathbf q^\top\mathbf q=0\}\subset\mathbb{CP}^3\cong\mathbb{CP}^1_L\times\mathbb{CP}^1_R$ 上，向量方程 $\mathbf w(\mathbf q)=\mathbf 0$ 切出一条 **1 维复直纹线**（Hopf 纤维）
+$$
+\mathcal L_{\mathbf n}=\{\mathbf q\in\mathcal Q:\ \mathbf w(\mathbf q)=\mathbf 0\}\cong\mathbb{CP}^1\subset\mathcal Q . \tag{2.9}
+$$
+在整条 $\mathcal L_{\mathbf n}$ 上同时有 $\mathbf q^\top\mathbf q=0$ 与 $\mathbf w(\mathbf q)=\mathbf 0$，故
+$$
+\nabla J_{\mathcal A}^{\rm red}(\mathbf q)=2(\mathbf q^\top\mathbf K\mathbf q)\,\mathbf q\quad\text{于 }\mathcal L_{\mathbf n}\text{ 上处处成立},
+$$
+即 $\mathcal L_{\mathbf n}$ 是临界点方程组 (2.6) 的**正维多余交分量**，不属于孤立根。
+
+此时 $\mathbb S^3_{\mathbb C}$ 上的孤立复射影根数谱系为（多余交度 = 直纹线吃掉的根数，$N_{\mathbb C}=40-\text{多余交度}$）：
+
+| 情形 | 底座 / 约束 | 多余交度 | $N_{\mathbb C}$ | 仿射根 $2N_{\mathbb C}$ | 代数对象 |
+|---|---|---|---|---|---|
+| $k=0$ | 纯各向同性 3D–3D（Horn），无平面约束 | 36 | **4** | 8 | Davenport $4\times4$ 特征问题 |
+| $k=1$ | 单平面 1 条活跃约束（$r_{\rm eff}=1$） | 28 | **12** | 24 | 12 元 Gröbner 基 |
+| $k\ge2$ | 单平面任意 $k=2,3,\dots,p$ 条活跃约束（$r_{\rm eff}=2$） | 24 | **16** | 32 | 17 元 Gröbner 基 / $16\times16$ 饱和作用矩阵 |
+| 双法向 | 两条不同法向平面（$\mathbf n_1\nparallel\mathbf n_2$，如桌面 + 手性正深度） | 8 | **32** | 64 | — |
+| 各向异性 / PnP | 各向异性 3D–3D 或 PnP 底座 + 任意平面约束（无公共直纹线） | 0 | **40** | 80 | 通用 15 元模板 |
+
+**验证方式（用户完成，本仓库未复跑）**：在 $\mathbb F_{32003}$ 上对临界点理想做**Rabinowitsch 饱和**
+$$
+u_{\rm sat}\,(1+q_1^2+q_2^2+q_3^2)-1=0,
+$$
+即用辅助变量 $u_{\rm sat}$ 把 $\mathcal Q$ 上的多余分量饱和掉，再以 grevlex 精确计算商环维数与首项阶梯。该计算给出上表的 $4/12/16/32/40$ 与对应的 15/12/17 元阶梯，是代数恒等式而非数值拟合；有限域选取只为避免系数膨胀，不改变特征 0 的根数（需 $\mathbb F_{32003}$ 不整除相关消元分母，用户已核验）。
+
+#### 2.6.2 证明梗概
+
+**(I) 秩 9 $\Rightarrow N_{\mathbb C}=40$。** 平移不变性给出 $\mathbf M+\alpha\mathbf I_{10}$ 与 $\mathbf M$ 的临界点集合同构（$\lambda$ 整体平移 $4\alpha$），而 $\mathbf M+\alpha\mathbf I_{10}$ 对一般 $\alpha$ 满秩；故秩 9 的根数等于满秩通用情形的根数。$\mathbb F_{32003}$ 的商环计算进一步给出：纯 PnP 秩 9 阵（$\mathbf M\mathbf e_{\rm tr}=\mathbf 0$）、PnP + 单平面罚项的秩 9 阵、随机 $\mathbf A_9^\top\mathbf A_9$ 三者与通用满秩阵共享同一 15 元首项阶梯，故 $N_{\mathbb C}=40$。$\square$
+
+**(II) Hopf 直纹线与谱系。** 关键是 (2.8)：因为 $\|\mathbf w\|^2=(\mathbf q^\top\mathbf q)^2$，对任意 $\boldsymbol\Sigma_{\mathcal A}$ 减去 $\lambda_3(\mathbf q^\top\mathbf q)^2$ 后，纯四次部分只剩两个秩-1 方向 $\mathbf u_1,\mathbf u_2$，与 $k$ 无关——这就是"$k\ge2$ 全部同根数"的原因。直纹线的存在性可直接参数化验证：取 $\mathbf n=\mathbf e_3$，令
+$$
+\mathbf q(a,c)=(a,\ \mathrm i c,\ c,\ -\mathrm i a),\qquad (a,c)\in\mathbb C^2\setminus\{0\},
+$$
+则 $\mathbf q^\top\mathbf q=a^2+(\mathrm i c)^2+c^2+(-\mathrm i a)^2\equiv0$，且 $\mathbf w(\mathbf q)=\mathbf R(\mathbf q)^\top\mathbf e_3$ 的三个分量
+$$
+-2(ac-bd),\quad 2(ab+cd),\quad a^2-b^2-c^2+d^2
+$$
+在 $b=\mathrm i c,\ d=-\mathrm i a$ 时恒为 $0$；故 $\mathcal L_{\mathbf e_3}=\{[\mathbf q(a,c)]\}\cong\mathbb{CP}^1$。一般 $\mathbf n$ 由旋转共轭得到。于是在 $\mathcal L_{\mathbf n}$ 上 $\nabla J=2(\mathbf q^\top\mathbf K\mathbf q)\mathbf q\parallel\mathbf q$，直纹线整条是临界点，必须饱和后才能数孤立根。饱和后的商环维数即上表的 $N_{\mathbb C}$。$\square$
+
+#### 2.6.3 对本文假设 A2 的修正与实现口径
+
+> **对 A2 的必要修正（不改变 A2 原文，仅补充适用范围）**：A2 说"求解器返回全部实驻点"。定理 P2-1b 表明，在类型 II 情形临界点集合**不是有限的**（含正维分量 $\mathcal L_{\mathbf n}$），因此 A2 必须读作"返回**饱和理想意义下**的全部孤立实驻点"，并把 $\mathcal L_{\mathbf n}$ 排除在计数之外。未饱和的 40 根模板在类型 II 实例上会遇到无穷远/正维分量，表现为作用矩阵出现零特征值簇或重根误判——这是模板与问题族不匹配，不是数值实现 bug。
+
+**论文/实现的三条口径：**
+
+1. **P2 合成实例属于类型 I。** 底座是 PnP（各向异性），加平面非穿透约束后**没有**公共直纹线；noise $=0.01$ 时无权约化矩阵 $\mathbf M^{\rm red}_{\mathcal A}$ 秩 $9$，noise $=0$ 时秩 $8$（多一个零方向），两者都满足 $\mathbf M^{\rm red}_{\mathcal A}\mathbf e_{\rm tr}=\mathbf 0$，故 $N_{\mathbb C}=40$、$N_{\mathbb R}=16$–$18$（当前 24 实例 JSON；用户证明引 15–16）。同伦只找到 16–18 个实根是**预期现象**（40 是复射影根数；其余根为复共轭对或落在仿射图 $\mathbf q_0=1$ 之外），**不能**据此说"40 根模板失效"。
+2. **各向同性 3D–3D + 单平面**的紧凑子族应使用 **16 根饱和模板**（$k\ge2$）或 12 根模板（$k=1$），而不是未饱和的 40 根模板；$k=0$（纯 Horn）退化为 $4\times4$ Davenport 特征分解。这是 §5 中"P2 内层在类型 II 用 16 根饱和模板、否则用 40 根模板"的理论依据。
+3. **反向没有变化**：P2-1b 只改前向内层的枚举规模，不触及 §3 的 FB 约化与 §4.4 的证书；证书的 PSD 块仍是 $14\times14$。
+
+#### 2.6.4 本仓库的独立数值对照（非证明）
+
+`experiments/results/quartic_validation.json`（2026-11-27 21:04 的 24 实例版本）用 162 条路径的 total-degree 同伦（Bézout $3^4\cdot2=162$）做了四项可数值检验的对照：
+
+| 检验 | 结果（本仓库实测，当前 JSON） | 与 P2-1b 的关系 |
+|---|---|---|
+| 5 个通用随机 $\mathbf M$ 的有限射影根（2 个随机 $\gamma$ 并集） | $[40,40,40,40,40]$；实根 $12$–$24$；丢根 $0$ | 独立确认"通用 40 个射影根" |
+| P2 的 $\mathbf M^{\rm red}_{\mathcal A}$（24 个实例：noise $0/0.01/0.05$ × $p=8/16/32/64$ × 若干 seed） | 有限射影根 $40/40$；实根 $16$（20 例）或 $18$（4 例）；丢根 $0$ | 与类型 I 的"$N_{\mathbb C}=40$、实根只占一部分"一致 |
+| 对 $\mathbf M$ 加扰动 $\varepsilon\|\mathbf M\|R$（21 例，$\varepsilon=0$–$0.2$） | 有限射影根恒 $40$；实根 $16$（$\varepsilon<0.2$）或 $18$（$\varepsilon=0.2$）；丢根 $0$ | 当前实现对每个 $\varepsilon$ 都找齐 40 根；**旧一轮"$23\to39$ 逃逸"的说法已被本 JSON 推翻** |
+| exact 与 256 起点 BFGS 的目标值 | 差 $\le4.16\times10^{-17}$（24/24） | 退化不影响全局最小值的数值可达性 |
+
+> **限制与版本说明**：(i) 同伦在仿射图 $\mathbf q_0=1$ 内计数，故不能直接数 $\mathbb S^3_{\mathbb C}$ 上 $\mathbf q_0=0$ 的根；上表的 40 是当前枚举器实际找到的**有限**射影根数，饱和计算（$\mathbb F_{32003}$）是用户证明，本仓库未复跑。(ii) `quartic_validation.md` 里的旧表（"实根 15–16、单 $\gamma$ 有限几何根 27–36、扰动 23→39"）来自更早一轮、更小的 20 实例版本，已被本 JSON 的 24 实例、`n_lost=0` 结果取代；本节以 JSON 为准。(iii) 用户证明中的"15–16 个实根"与当前 16–18 的差别只是噪声/worktree 版本，不改变 "$N_{\mathbb C}=40$、实根远少于 40" 的结论。
+
+### 2.7 定理 P2-Cert（严格对偶修复；新增，用户证明）
+
+#### 2.7.1 陈述
+
+> **定理 P2-Cert（rigorous dual repair，无负 gap）**
+> 记 C-QPEP 的增广向量
+> $$
+> \mathbf y_{14}=\big[\mathbf v_2(\mathbf q)^\top,\ \mathbf t^\top,\ 1\big]^\top\in\mathbb R^{14},\qquad
+> \mathbf y_{13}=\big[\mathbf v_2(\mathbf q)^\top,\ \mathbf t^\top\big]^\top\in\mathbb R^{13},
+> $$
+> 二者由常数线性映射精确关联（因 $\mathbf e_{\rm tr}^\top\mathbf v_2(\mathbf q)=\|\mathbf q\|_2^2\equiv1$）：
+> $$
+> \mathbf y_{14}=\mathbf F\,\mathbf y_{13},\qquad
+> \mathbf F\triangleq\begin{bmatrix}\mathbf I_{10}&\mathbf 0_{10\times3}\\ \mathbf 0_{3\times10}&\mathbf I_3\\ \mathbf e_{\rm tr}^\top&\mathbf 0_{1\times3}\end{bmatrix}\in\mathbb R^{14\times13}. \tag{2.10}
+> $$
+> 设任意浮点 SDP 求解器（如 SCS）对 §2.2 的 $14\times14$ RLT-增强 Shor 对偶返回近似对偶变量 $(\hat\lambda_0,\ \hat{\boldsymbol\lambda}\in\mathbb R^{m_V},\ \hat{\boldsymbol\mu}\in\mathbb R^p,\ \hat{\boldsymbol\Gamma}\in\mathbb S^p)$，其中 $\hat\Gamma_{ij}$ 对应二次有效不等式 $g_i g_j\ge0$ 或 bound-RLT 乘积 $(g_i)(M_j+g_j)\le0$。执行**三步无超调对偶修复**（`repair_dual`）：
+>
+> 1. **严格锥投影**：$\tilde{\boldsymbol\mu}:=[\hat{\boldsymbol\mu}]_+\ge\mathbf 0$，$\tilde{\boldsymbol\Gamma}:=[\hat{\boldsymbol\Gamma}]_+\ge\mathbf 0$（逐元非负投影）。
+> 2. **折叠组装精确对偶松弛阵**：
+> $$
+> \tilde{\mathbf H}_{13}:=\mathbf F^\top\Big(\mathbf Q_{\rm aug}+\sum_{j=1}^p\tilde\mu_j\mathbf A_{g_j}-\sum_{i\le j}\tilde\Gamma_{ij}\mathbf A_{g_ig_j}-\hat\lambda_0\mathbf A_0-\sum_{k=1}^{m_V}\hat\lambda_k\mathbf B_k\Big)\mathbf F
+> =\begin{bmatrix}\tilde{\mathbf H}_{RR}&\tilde{\mathbf H}_{Rt}\\ \tilde{\mathbf H}_{Rt}^\top&\tilde{\mathbf H}_{tt}\end{bmatrix}\in\mathbb S^{13}. \tag{2.11}
+> $$
+> 3. **无 $R_t$ 依赖的精确平移 Schur 补修复**：
+>    - **情形 A（$\tilde{\mathbf H}_{tt}\succ0$，由 $3\times3$ Cholesky 检验）**：构造
+>      $$
+>      \mathbf S_{10}:=\tilde{\mathbf H}_{RR}-\tilde{\mathbf H}_{Rt}\tilde{\mathbf H}_{tt}^{-1}\tilde{\mathbf H}_{Rt}^\top\in\mathbb S^{10},\qquad
+>      \delta_{\min}:=\min\big(0,\lambda_{\min}(\mathbf S_{10})\big)\le0,
+>      $$
+>      并取满足矩阵舍入界的微小安全余量 $\delta_{\rm round}>0$（典型 $\sim10^{-12}\|\mathbf S_{10}\|_F$）。则
+>      $$
+>      \boxed{\ d_{\rm sound}^{\rm Schur}:=\hat\lambda_0+\delta_{\min}-\delta_{\rm round}\ \le\ f^\star_{\rm global}\ \le\ J(\mathbf q^\star,\mathbf t^\star).\ } \tag{2.12}
+>      $$
+>    - **情形 B（$\tilde{\mathbf H}_{tt}$ 非严格正定；需可行集满足平移球界 $\|\mathbf t\|_2\le R_t$）**：令 $\delta_{13}:=\min(0,\lambda_{\min}(\tilde{\mathbf H}_{13}))\le0$，利用 $\|\mathbf y_{13}\|_2^2=\|\mathbf v_2\|_2^2+\|\mathbf t\|_2^2\le1+R_t^2$，得
+>      $$
+>      \boxed{\ d_{\rm sound}^{\rm ball}:=\hat\lambda_0+(1+R_t^2)\big(\delta_{13}-\delta_{\rm round}\big)\ \le\ f^\star_{\rm global}\ \le\ J(\mathbf q^\star,\mathbf t^\star).\ } \tag{2.13}
+>      $$
+>
+> 两种情形都**在数学上 100% 严格保证**（$\le f^\star_{\rm global}$），因此由构造 $J(\mathbf q^\star,\mathbf t^\star)-d_{\rm sound}\ge0$：**负 gap 不可能出现**，除非浮点算术本身被违反。
+
+#### 2.7.2 证明
+
+对任意 C-QPEP 真实可行解 $(\mathbf q,\mathbf t)\in\mathbb S^3\times\mathbb R^3$：由 $g_j(\mathbf q,\mathbf t)\le0$、$\tilde\mu_j\ge0$、$\tilde\Gamma_{ij}\ge0$、$g_ig_j\ge0$，且所有 Veronese 约束满足 $\mathbf y_{14}^\top\mathbf B_k\mathbf y_{14}=0$、$\mathbf y_{14}^\top\mathbf A_0\mathbf y_{14}=1$，逐项有
+$$
+J(\mathbf q,\mathbf t)-\hat\lambda_0
+= \mathbf y_{14}^\top\big(\mathbf Q_{\rm aug}-\hat\lambda_0\mathbf A_0\big)\mathbf y_{14}
+\ \ge\ \mathbf y_{14}^\top\Big(\mathbf Q_{\rm aug}+\sum_j\tilde\mu_j\mathbf A_{g_j}-\sum_{i\le j}\tilde\Gamma_{ij}\mathbf A_{g_ig_j}-\hat\lambda_0\mathbf A_0-\sum_k\hat\lambda_k\mathbf B_k\Big)\mathbf y_{14}
+=\mathbf y_{13}^\top\tilde{\mathbf H}_{13}\mathbf y_{13}. \tag{2.14}
+$$
+最后一步用了 $\mathbf y_{14}=\mathbf F\mathbf y_{13}$。
+
+**情形 A**：对 (2.14) 右端精确配平方
+$$
+\mathbf y_{13}^\top\tilde{\mathbf H}_{13}\mathbf y_{13}
+=\mathbf v_2(\mathbf q)^\top\mathbf S_{10}\mathbf v_2(\mathbf q)
++\big\|\tilde{\mathbf H}_{tt}^{1/2}\big(\mathbf t+\tilde{\mathbf H}_{tt}^{-1}\tilde{\mathbf H}_{Rt}^\top\mathbf v_2(\mathbf q)\big)\big\|_2^2
+\ \ge\ \mathbf v_2(\mathbf q)^\top\mathbf S_{10}\mathbf v_2(\mathbf q).
+$$
+再用**单位四元数球面上的精确恒等式** $\|\mathbf v_2(\mathbf q)\|_2^2=\|\mathbf q\|_2^4\equiv1$：
+$$
+\mathbf v_2(\mathbf q)^\top\mathbf S_{10}\mathbf v_2(\mathbf q)\ \ge\ \lambda_{\min}(\mathbf S_{10})\cdot\|\mathbf v_2(\mathbf q)\|_2^2
+=\lambda_{\min}(\mathbf S_{10})\ \ge\ \delta_{\min}\ \ge\ \delta_{\min}-\delta_{\rm round}.
+$$
+合并即得 (2.12)。注意这里**不需要** $\|\mathbf t\|$ 的任何界——这正是 Schur 补修复比朴素 $R_t$ 球界紧一个数量级的原因。
+
+**情形 B**：$\mathbf y_{13}^\top\tilde{\mathbf H}_{13}\mathbf y_{13}\ge\lambda_{\min}(\tilde{\mathbf H}_{13})\|\mathbf y_{13}\|_2^2$。因 $\delta_{13}\le\lambda_{\min}$ 且 $\delta_{13}\le0$，有 $\lambda_{\min}\|\mathbf y_{13}\|^2\ge\delta_{13}\|\mathbf y_{13}\|^2\ge(\delta_{13}-\delta_{\rm round})\|\mathbf y_{13}\|^2$；又 $\|\mathbf y_{13}\|^2=1+\|\mathbf t\|^2\le1+R_t^2$，故 (2.13)。$\square$
+
+**$\delta_{\rm round}$ 的严格化（Rump 充分条件）**：浮点下不直接信任 $\lambda_{\min}$，而是验证
+$$
+\mathbf M_{\rm chk}:=\mathbf S_{10}-(\delta_{\min}-\delta_{\rm round})\mathbf I_{10}\succ0
+$$
+的 Cholesky 分解 $\mathbf M_{\rm chk}=\mathbf L\mathbf L^\top$ 成功且每个对角元满足
+$$
+L_{ii}^2>22\,u_{\rm mach}\,\|\mathbf M_{\rm chk}\|_F,\qquad u_{\rm mach}=2^{-53},
+$$
+则由 Rump 的舍入误差分析可严密认证 $\mathbf M_{\rm chk}\succ0$（即 $\lambda_{\min}(\mathbf M_{\rm chk})>0$），从而 $\lambda_{\min}(\mathbf S_{10})>\delta_{\min}-\delta_{\rm round}$。这是"数值上可检验的严格性"，不依赖 SDP 求解器的收敛精度。
+
+#### 2.7.3 与 §2.2 的关系：为什么一侧判定不是证书
+
+§2.2 的 Lemma 2.2 给出 $\mathrm{Shor}\le J^\star$ 的**精确算术**结论，但数值实现里 $\mathrm{Shor}$ 由 SCS 返回，可能违反原始约束（$\mathrm{Shor}>J$，即负 gap）。此前的"one-sided 判定" $J-\mathrm{Shor}\le10^{-6}$ **接受负 gap**，因此只是 sound rate 的**上界**，不是证书。定理 P2-Cert 的修复有三点本质区别：
+
+1. **只要求"某个对偶可行点"，不要求 SDP 解准确。** $\tilde\mu,\tilde\Gamma\ge0$ 是投影后强制成立的；$\tilde{\mathbf H}_{13}$ 的对偶可行性由 $\delta_{\min}$（或 $\delta_{13}$）显式补偿。SCS 的 primal 精度完全不进入结论。
+2. **$\delta_{\min}$ 的符号自动处理。** 若 $\mathbf S_{10}\succ0$（松弛在对偶侧已经足够好），$\delta_{\min}=0$，下界就是 $\hat\lambda_0-\delta_{\rm round}$；若 $\mathbf S_{10}$ 有负特征值，$\delta_{\min}<0$ 精确地把它扣掉。两种情形都不会超调。
+3. **负 gap 由构造排除。** $J-d_{\rm sound}\ge0$ 是 (2.14) 的直接推论，不需要"两侧 $|J-\mathrm{Shor}|\le10^{-6}$"这种必要非充分检验。
+
+> **代价**：投影 $[\cdot]_+$ 可能降低对偶目标（把负乘子截断），所以 $d_{\rm sound}$ 通常比 $\mathrm{Shor}$ 略低；这是用"必然 sound"换"可能更松"，正是证书应有的方向。$\delta_{\rm round}$ 与 $R_t$ 的选择见 §5.5 的实现说明。
+
+#### 2.7.4 LM-O 6 个纯平面实例的结构诊断
+
+`experiments/theory/results/round_rlt.md` 的 caveat 5 记录：LM-O 的 round-RLT 子集只有 **6 个纯平面实例**（单 frame、单物体 × 3 bias 的 $n=18$ 子集）。用户证明给出这 6 个实例即使加 RLT 仍留 $10^{-4}$–$5\times10^{-4}$ 的间隙（该区间本身来自用户证明；本仓库 $n=18$ 基线的 LM-O RLT gap 范围为 $[-4.28\times10^{-4},\,6.19\times10^{-2}]$，见 `experiments/results/real_cert_soundness_baseline.md`）。定理 P2-Cert 的证明顺带给出结构原因：
+
+当全部不等式均来自同一桌面平面（$g_j=-\mathbf n^\top(\mathbf R\mathbf v_j+\mathbf t)-d\le0$）时，所有约束的平移法向 $\mathbf b_j=-\mathbf n$ **秩 1 共线**。于是所有 RLT 乘积 $g_ig_j\ge0$ 的平移二次块
+$$
+\mathbf b_i\mathbf b_j^\top=\mathbf n\mathbf n^\top
+$$
+只约束一维高度 $\mathbf n^\top\mathbf t$，对**平行于桌面的 2D 平移**与相机深度方向**完全零约束**。在高噪声遮挡下，SDP 松弛矩阵 $\mathbf Y_{14}$ 因而可以把真实可行位姿与一个略微倾倒/后移的伪位姿做 **rank-2 凸混合**而不违反任何单平面 RLT 割。补充以下两类跨方向约束即可切掉该伪混合：
+$$
+\underbrace{g_{\rm depth}=-\mathbf e_3^\top(\mathbf R\mathbf v+\mathbf t)+z_{\min}\le0}_{\mathbf b_{\rm depth}=-\mathbf e_3\ \nparallel\ \mathbf n},\qquad
+\underbrace{g_{\rm tilt}=q_1^2+q_2^2-\sin^2(\tfrac\alpha2)\|\mathbf q\|^2\le0}_{\text{倾角锥}} .
+$$
+此时跨方向 RLT 乘积 $g_{\rm plane}g_{\rm depth}\ge0$ 与 $g_{\rm plane}g_{\rm tilt}\ge0$ 产生 $\mathbf n\mathbf e_3^\top$ 与 $\mathbf n\,(\text{倾斜方向})^\top$ 的非共线块，直接切掉 rank-2 分量。这就是 §5.5 中"LM-O 纯平面实例需要补深度约束 + 倾角锥"的依据。
+
+> **与实验的边界**：P2-Cert 是**下界**定理；LM-O 的 6 个实例是否能被深度 + 倾角锥**认证**，仍取决于补充约束后 SDP 是否变紧，这是实验问题（§5.5），不是本定理的推论。定理只保证：任何 `repair_dual` 输出都 $\le f^\star_{\rm global}$，因此不会出现负 gap；它不保证 gap 会变小。
+
+---
+
 ## 3. 定理 2.3（FB 约化的隐微分：可逆性 / 极限 / 相容性）
 
 ### 3.1 FB 函数：先把"等价性"说清楚
@@ -403,6 +617,8 @@ $\mathbf J_{g}=-1$、$\mathbf H_{\rm eff}=1$、$\mathbf r=1$、$\mathbf w=0$，�
 | G6 | $\rho,\varepsilon,\delta_{\rm act}$ 的调度敏感性 | P1 | 网格实验 |
 | G7 | $p$ 很大时 SDP 线性约束的规模 | P2 | $p=10^4$ 实测 |
 | G8 | 多次全局解（$\Delta J=0$）时解映射的跳变与 FB 行为 | P1 | 与 Prototype 1/3 的共享问题，本文需声明范围外 |
+
+> **2026-11-27 状态更新（在用户新证明之后）**：G1 已由 §2.6 定理 P2-1b 解决——类型 I（PnP / 一般秩 9）仍是 40 复射影根且共享 15 元模板，类型 II（各向同性 3D–3D + 同法向平面）为 $4/12/16$，双法向 32；剩下的只是实现选择（是否同时维护 40 根与 16 根饱和模板，见论文 §4.7）。G3 已由 §2.7 定理 P2-Cert 解决——对偶修复 + Rump/Cholesky 检验使 sound 下界不再依赖 SCS 容差，剩余的是紧性统计 G4。G5 已在论文 §4.5 明确选择 GN（Remark 4.1 给精确 Hessian 变体）。G2 仍开放。
 
 > **G5 特别说明**：这是审稿人最容易抓的一条。若 $\mathbf H_{\rm tan}$ 取完整 Hessian（含 $\mu_j\nabla^2 g_j$），则定理 2.3 的"$\mathbf H_{\rm eff}\succ0$"不再自动成立，可逆性只能退回"$\mathbf H_{\rm eff}$ 在 $\ker\mathbf J_{\mathcal A}$ 上非奇异"；若取 GN 近似（丢掉 $\mu_j\nabla^2g_j$），可逆性有保证但算出的 $d\mathbf z$ 是 GN 近似而非精确导数。源文档的 $\mathbf H_{\rm eff}=\mathbf H_{\rm tan}+\sum(b_j/a_j)\mathbf J^\top\mathbf J$ 两边都想要，必须二选一。建议：主定理给 GN 版本（可证），精确版本作为 Remark 并给数值对比。
 
