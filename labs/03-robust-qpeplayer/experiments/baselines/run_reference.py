@@ -13,6 +13,7 @@ results/reference.json        per-cell summary
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
@@ -25,7 +26,7 @@ sys.path.insert(0, str(HERE.parent / "synthetic"))
 import common  # noqa: E402
 
 P_LIST = [0.0, 0.3, 0.5, 0.7]
-N_TRIALS = 25
+N_TRIALS_DEFAULT = 25
 N_POINTS = 100
 OUT = HERE / "results"
 
@@ -54,13 +55,19 @@ def solve(method: str, x, y, rng):
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--trials", type=int, default=N_TRIALS_DEFAULT)
+    ap.add_argument("--out", type=Path, default=None)
+    args = ap.parse_args()
+    n_trials = args.trials
+    out_json = args.out or (OUT / "reference.json")
     OUT.mkdir(parents=True, exist_ok=True)
-    raw = open(OUT / "reference_raw.jsonl", "w")
+    raw = open(out_json.with_name(out_json.stem + "_raw.jsonl"), "w")
     summary = {}
     t_start = time.time()
     for p in P_LIST:
         cells = {m: dict(re=[], te=[], t=[], succ=[]) for m in METHODS}
-        for trial in range(N_TRIALS):
+        for trial in range(n_trials):
             rng = instance_rng(p, trial)
             x, y, Rgt, tgt = common.make_instance(rng, p, n=N_POINTS,
                                                   outlier_type="random")
@@ -86,14 +93,14 @@ def main() -> None:
             f"p50={summary[str(p)][m]['time_ms_p50']:.2f}ms" for m in METHODS),
             flush=True)
     raw.close()
-    common.json_dump(OUT / "reference.json", dict(
-        protocol=dict(n_points=N_POINTS, n_trials=N_TRIALS, p_list=P_LIST,
+    common.json_dump(out_json, dict(
+        protocol=dict(n_points=N_POINTS, n_trials=n_trials, p_list=P_LIST,
                       outlier_type="random", seed="SeedSequence([20261127,103,0,100p,trial])",
                       success="rot<5deg and trans<0.1m", c=common.C,
                       wall_time_s=time.time() - t_start),
         cells=summary,
     ))
-    print(f"done in {time.time() - t_start:.1f}s -> {OUT/'reference.json'}")
+    print(f"done in {time.time() - t_start:.1f}s -> {out_json}")
 
 
 if __name__ == "__main__":

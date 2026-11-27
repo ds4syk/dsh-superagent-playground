@@ -1,0 +1,134 @@
+{
+ "date": "2026-11-27",
+ "rounds": [
+  {
+   "round": 1,
+   "title": "Theseus 环境安装",
+   "status": "measured_with_fallback",
+   "claim": "theseus-ai 0.2.3 wheel 可装；scikit-sparse 源码编译被 SuiteSparse 头文件缺失阻断，改用 dense Cholesky。",
+   "numbers": {
+    "theseus_version": "0.2.3",
+    "torch_version": "2.11.0+cu128",
+    "blocker": "cholmod.h: No such file or directory"
+   },
+   "evidence": [
+    "experiments/baselines/logs/theseus_install.log",
+    "experiments/baselines/logs/theseus_install2.log"
+   ]
+  },
+  {
+   "round": 2,
+   "title": "Theseus 目标与 Jacobian 校验",
+   "status": "measured",
+   "claim": "per-point GM 目标与 NumPy 参考完全一致；解析 Jacobian 与中心差分一致。",
+   "numbers": {
+    "jac_rel_err": 1.09e-10,
+    "cost_rel_err": 0.0,
+    "c": 0.05
+   },
+   "evidence": [
+    "experiments/baselines/results/theseus_selfcheck.json"
+   ]
+  },
+  {
+   "round": 3,
+   "title": "Theseus-GM 20-trial 前向（GT / 随机初始化）",
+   "status": "measured",
+   "claim": "GT 初始化 1.00 全 p（局部盆地检查）；随机初始化 0.80/0.55/0.25（p=0.3/0.5/0.7）。",
+   "numbers": {
+    "0.0": {
+     "gt": 1.0,
+     "rand": 1.0
+    },
+    "0.3": {
+     "gt": 1.0,
+     "rand": 0.8
+    },
+    "0.5": {
+     "gt": 1.0,
+     "rand": 0.55
+    },
+    "0.7": {
+     "gt": 1.0,
+     "rand": 0.25
+    }
+   },
+   "evidence": [
+    "experiments/baselines/results/theseus.json",
+    "experiments/baselines/results/theseus_raw.jsonl"
+   ]
+  },
+  {
+   "round": 4,
+   "title": "GNC/RANSAC/IRLS/Kabsch 同实例复核",
+   "status": "measured",
+   "claim": "20 trials 下 GNC-GM 与 RANSAC-adaptive 全 p 成功；Kabsch 在 p≥0.3 全失败。",
+   "numbers": {
+    "0.0": {
+     "gnc": 1.0,
+     "ransac_adaptive": 1.0,
+     "kabsch": 1.0
+    },
+    "0.3": {
+     "gnc": 1.0,
+     "ransac_adaptive": 1.0,
+     "kabsch": 0.0
+    },
+    "0.5": {
+     "gnc": 1.0,
+     "ransac_adaptive": 1.0,
+     "kabsch": 0.0
+    },
+    "0.7": {
+     "gnc": 1.0,
+     "ransac_adaptive": 1.0,
+     "kabsch": 0.0
+    }
+   },
+   "evidence": [
+    "experiments/baselines/results/reference_n20.json",
+    "experiments/baselines/results/reference_n20_raw.jsonl"
+   ]
+  },
+  {
+   "round": 5,
+   "title": "SDPRLayers + SCS 前向（N=20/50/100）",
+   "status": "measured",
+   "claim": "SCS 前向 0/208 异常；p=0 成功 1.00，p≥0.3 全部失败（非鲁棒最小二乘的预期行为）。",
+   "numbers": {
+    "attempts": 208,
+    "scs_failures": 0,
+    "success_p0": 1.0,
+    "success_p03": 0.0,
+    "success_p05": 0.0,
+    "success_p07": 0.0,
+    "time_ms_p50_range": [
+     8.5,
+     13.4
+    ]
+   },
+   "evidence": [
+    "experiments/baselines/results/sdpr_forward.json",
+    "experiments/baselines/results/sdpr_forward_raw.jsonl",
+    "experiments/baselines/logs/"
+   ]
+  },
+  {
+   "round": 6,
+   "title": "BPnP / Pyatov / POLI 可得性与任务域",
+   "status": "blocked",
+   "claim": "三者均无法给出与 3D-3D/GM 表同口径的实测：BPnP 是 PnP(3D-2D)，Pyatov 是两视图(2D-2D) 且权重在 Google Drive，POLI 是逐点几何估计器且未找到官方代码/权重。",
+   "numbers": {
+    "BPnP_commit": "f1f4f6a",
+    "ihls_commit": "8580bbf",
+    "POLI_arxiv": "2605.10456",
+    "POLI_code_found": false
+   },
+   "evidence": [
+    "results/availability.md",
+    "third_party/BPnP",
+    "third_party/ihls"
+   ]
+  }
+ ]
+}

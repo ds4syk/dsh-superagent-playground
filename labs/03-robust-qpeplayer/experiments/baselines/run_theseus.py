@@ -39,7 +39,7 @@ import common  # noqa: E402
 from theseus_cost import build_gm_objective, errors_from_pose, self_check  # noqa: E402
 
 P_LIST = [0.0, 0.3, 0.5, 0.7]
-N_TRIALS = 25
+N_TRIALS = int(__import__("os").environ.get("THESEUS_TRIALS", "20"))
 N_POINTS = 100
 MAX_ITERS = 100
 OUT = HERE / "results"
@@ -75,7 +75,7 @@ def solve_theseus(x, y, R0, t0, c):
     dt = time.perf_counter() - t0c
     R, t = errors_from_pose(pose)
     iters = int(info.converged_iter.flatten()[0])
-    status = int(info.status.flatten()[0])
+    status = int(info.status.flatten()[0].value)
     last_err = float(info.last_err.flatten()[0])
     return R, t, dt, iters, status, last_err
 
