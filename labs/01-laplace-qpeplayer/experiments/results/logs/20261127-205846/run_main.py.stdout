@@ -1,0 +1,9 @@
+theta -0.0150 modes 3 hard_k 0 lap_grad 2.20e-05 mc_grad 4.60e-04 hard_grad 2.2399087437764216e-05
+theta -0.0100 modes 3 hard_k 0 lap_grad 3.46e-05 mc_grad 1.17e-01 hard_grad 1.6437270506800257e-05
+theta -0.0050 modes 3 hard_k 0 lap_grad 5.68e-04 mc_grad 3.87e-01 hard_grad 9.313340246448246e-06
+theta +0.0000 modes 4 hard_k 0 lap_grad 4.34e-04 mc_grad 3.26e-02 hard_grad None
+theta +0.0050 modes 3 hard_k 0 lap_grad 5.73e-04 mc_grad 3.33e-02 hard_grad 9.37349817464806e-06
+theta +0.0100 modes 3 hard_k 0 lap_grad 3.46e-05 mc_grad 1.72e-01 hard_grad 1.6510165132172265e-05
+theta +0.0150 modes 3 hard_k 0 lap_grad 2.19e-05 mc_grad 4.61e-04 hard_grad 2.2311262530642496e-05
+theta +0.0200 modes 3 hard_k 0 lap_grad 1.20e-04 mc_grad 1.21e-04 hard_grad 0.00012002559577150073
+wrote /tmp/p1-repro.20261127-205846.XBsQLG/work/results/main_table.md /tmp/p1-repro.20261127-205846.XBsQLG/work/results/main_table.png

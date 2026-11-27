@@ -30,7 +30,9 @@
 
 - `ift_dq` 对分支跟随 FD：误差 $5\times10^{-9}$（修复了缺少因子 2 的 bug）。
 - `dpose_dq` 对 FD：误差 $2\times10^{-9}$（修复了 einsum 下标错误）。
-- `dlogdet_numeric`：显式 $\theta$ 部分 + 切空间 $q$ 部分，对分支 FD 误差 $3\times10^{-8}$（原 `dhessJ_dq` 路径有误，已绕开）。
+- **闭式 $\mathrm d\log\det H/\mathrm d\theta$（2026-11-27 修复）**：`core.dlogdetH_dtheta` 经 `dHsphere_dq -> dE` 收缩。审计发现 `qpep_core.dE` 的 `d1/d2/d3` 在第 1–2 行有错项，导致该路径偏差 $O(1)$（$8\times10^{-2}$–$2.8\times10^{-1}$）；修正后与独立闭式 `dlogdet_exact` 一致到 $8.9\times10^{-16}$、与分支 FD 一致到 $1.8\times10^{-9}$。主表已切换到该闭式路径，数值列与旧 numeric fallback **逐位相同**。回归测试 `code/test_derivatives.py`。
+- `dlogdet_numeric`：显式 $\theta$ 部分 + 切空间 $q$ 部分，保留作交叉校验（对分支 FD $3\times10^{-8}$）。
+- **FD 参考步长（2026-11-27）**：交叉附近 Laplace 映射的变化尺度是 $\tau/\text{slope}\approx5\times10^{-3}$，主表原用 $h=10^{-4}$ 在 $\theta=0$ 已进入截断区；`results/fd_step.md` 显示 $4.34\times10^{-4}$ 严格按 $h^2$ 缩放（$h=10^{-5}\to4.34\times10^{-6}$，$h=10^{-6}\to4.34\times10^{-8}$）。所以主表 `at` 行 $4\times10^{-4}$ 应读作 **FD 截断底**，不是解析公式误差。
 - Laplace 权重导数：必须用 $\dot g=-\dot J/\tau-\tfrac12\dot{\log\det H}$，不能用 $g$ 本身；修复后远/近/交叉处分别 $4\times10^{-6}/10^{-4}/4\times10^{-4}$。
 - 硬 argmin 在 $\pm h$ 内分支切换时 FD 标为 N/A，不用错误跳变填表。
 
@@ -50,18 +52,29 @@ srun --partition=cpu --time=00:40:00 --ntasks=1 \
 |-|-|-|-|-|-|-|
 | far ($\lvert\theta\rvert>0.05$) | 61 | **4.7e-7** | 4.7e-7 | 4.7e-7 | 2.8e-16 | 13.1 |
 | near ($0.005<\lvert\theta\rvert<0.05$) | 19 | **3.5e-5** | 9.4e-5 | 2.2e-5 | 2.9e-16 | 18.5 |
-| at ($\lvert\theta\rvert<0.005$) | 1 | **4.3e-4** | 3.3e-2 | **N/A** | **1.1e-1** | 51.4 |
+| at ($\lvert\theta\rvert<0.005$) | 1 | **4.3e-4**（FD 截断；$h=10^{-6}$ 时 $4.3\times10^{-8}$） | 3.3e-2 | **N/A** | **1.1e-1** | 51.4 |
+
+> 计时列是空载 CPU 测量；2026-11-27 晚在 5 个并行子任务负载下复跑同一脚本得到 17.7/34.6/89.5 ms，数值列逐位不变。引用计时请用 `results/robustness.md` 的重复测量中位数，并注明机器负载。
 
 - 远离交叉：三种方法都等价于硬 argmin（全局模式权重≈1），梯度与 FD 一致到 $10^{-7}$–$10^{-5}$；MC 方差≈0（所有样本落在同一模式）。
 - 交叉处：硬 argmin 在 $\pm h$ 内切换分支，FD 无定义（N/A）；Laplace 的解析梯度仍与平滑后验的 FD 一致到 **$4.3\times10^{-4}$**；MC 的误差 **$3.3\times10^{-2}$**、跨种子位姿标准差 **$1.1\times10^{-1}$**。这正是“Laplace 比采样方差低、且交叉处仍可微”的方向性证据。
-- 交叉处 Laplace 的 $4\times10^{-4}$ 残差主要来自 $\theta=0$ 两全局极小严格简并时 FD 参考的模式集变化，不是解析公式错误（远离简并处为 $10^{-5}$ 量级）。
+- 交叉处 Laplace 的 $4\times10^{-4}$ 残差是 **FD 参考的截断**（严格 $h^2$，见 `results/fd_step.md`），不是解析公式误差：解析梯度对 $h=10^{-6}$ 的 FD 只差 $4.3\times10^{-8}$。
+- **Fold（2026-11-27 实测）**：多峰 Laplace 映射在 $\lvert\theta\rvert\approx1.315\times10^{-3}$ 处有真实 fold；次级极小在该邻域外消失（$K:4\to3$），接近 fold 时 $\det H\to0$、体积权重 $1/\sqrt{\det H}$ 发散、$|\mathrm d\,\mathrm{pose}|$ 从 548 跳到 8362 再落到 412。不能靠更小 $\tau$ 或更多初值修复；"交叉处光滑"只能限定在排除该邻域的区间。
+- **Fold 的部分修复（2026-11-27）**：把 $\det H$ 换成 $\det(H+\tau^{1/3}I)$（导数仍闭式 $\mathrm{tr}((H+\epsilon I)^{-1}\dot H)$）后，$|\mathrm d\,\mathrm{pose}|$ 尖峰 3529→443、近 fold 梯度误差 2.90e-1→1.19e-2，远离 fold 与标准版一致；但模式生灭造成的**值**跳变只从 0.309 降到 0.107，$K$ 仍 4→3。即正则化修导数奇点、不修值不连续；后者需要 Airy 一致展开或对合并模式做局部数值积分。见 `results/fold_6d.md`。
 
 ![主表](results/main_table.png)
 
 
-## 5. 限制
+## 5. 真实数据（BOP LINEMOD，`real/linemod/`）
 
-- 合成双峰实例；$\theta=0$ 处两个全局极小严格简并，Laplace 的 FD 参考在简并处受模式集变化影响（$4\times10^{-4}$ 误差主要来自这里）。
+旧「对称标注混合」构造是负结果（mm/m 单位 + 共享 t 消去两个原因，见 `real/linemod/README.md`）。替代构造 `run_two_mode.py` 在 **15/15 帧** eggbox/glue 上得到真实双峰代价（真实深度 bearing + 最近 mesh 顶点 + 主平面片 RANSAC + $z>0$ 过滤）：$K=2$、$\Delta J\in[1.25\times10^{-4},2.56\times10^{-3}]$、错误模式 Laplace 权重 0.45–0.61。
+
+诚实结论：**真实近简并处 Laplace 不是精度优势**——hard argmin 中位旋转误差 2.06°（1/15 帧失败），Laplace 后验均值中位 58.3°（被错误模式拉偏）。同一真实几何上的受控横截交叉（两个标注各自消去平移）给出 Laplace 解析梯度 rel **1.9e-10–1.8e-9**，MC **9e-5–1.7e-1**。详见 `real/linemod/results/two_mode.md`。
+
+## 6. 限制
+
+- 合成双峰实例；$\theta=0$ 处两个全局极小严格简并，Laplace 的 FD 参考在简并处受模式集变化影响（$4\times10^{-4}$ 已确认是 FD 截断，见 `results/fd_step.md`）。
+- 真实数据实验只到「几何代价 + 层可微性」层，没有图像前端，不能给 ADD(-S)/AUC 精度 claim。
 - MC 是 mode-level 采样，不是 $SE(3)$ 上的连续 MCMC；它验证的是“离散模式权重采样方差”，不是 EPro-PnP 的完整采样器。
 - 优化拟合是诊断（目标为两分支平均位姿），不是训练一个真实前端。
 
@@ -114,7 +127,10 @@ srun --partition=cpu --time=00:40:00 --ntasks=1 \
 
 ## D. 补充证明核验结论
 
-- **完备**：P1-Q1/Q9（Carathéodory 物理实现 + 正测度）、P1-Q2/Q13（13×13 ≡ 10×10）、P1-Q3（40 根）、P1-Q6（闭式 logdet）、P1-Q7（Haar 常数）、P1-Q5 的**期望值**部分。
+- **完备（证明层面）**：P1-Q1/Q9（Carathéodory 物理实现 + 正测度）、P1-Q2/Q13、P1-Q3（40 根）、P1-Q6（闭式 logdet）、P1-Q7（Haar 常数）、P1-Q5 的**期望值**部分。
+- **Q2/Q13 本地数值核验给出相反结果（2026-11-27）**：`sdp/run_sdp_check.py` 逐行复刻 SDPRLayers 的 24 条约束后发现，13×13 的约束在 $\mathrm{Sym}^{10}$ 上比 10×10 的 21 条**少 3 条行正交** $r_1\cdot r_2=r_1\cdot r_3=r_2\cdot r_3=0$，因此 $f^\star_{13}\le f^\star_{10}$ 且一般**严格更松**：构造反例 $Q=-r_1\cdot r_2+I/4$ 给出 $f^\star_{10}=+1.0$、$f^\star_{13}=-1.0$（差 2.0）；项目自己的 Choi–Lam 实例两者相等（1.9658119658，rank 6）只是对称性巧合，8 个 $10^{-2}$ 破缺扰动后 **8/8** 严格 $f^\star_{13}<f^\star_{10}$。这与 `theory/proofs.md` 的 GAP 标注一致，但与「Q2/Q13 已证等价」的表述冲突；**不能把 13×13 写成与 10×10 同值同秩**。详见 `sdp/results/sdp_check.md`。
+- **fold 核验（2026-11-27）**：多峰 Laplace 映射在 $|\theta|\approx1.31\times10^{-3}$ 处有模式生灭（fold），$\det H\to0$、权重尖峰、$|\mathrm d\,\mathrm{pose}|$ 峰值 3529（常规 379），且映射本身在该点不连续；这不是漏根，也不能靠更小 $\tau$/更多初值修复。详见 `results/robustness.md`。
+- **可复现**：`run_all.sh`（任意 cwd）默认 6 脚本 34–38 s，非计时字段与已提交结果逐位一致；`REPRO.md` 记录 clean-cwd、确定性与 B1–B7 脆弱点。
 - **仍需补**：**P1-Q5 的梯度一致界**仍是证明草图：定理要求 $\|\nabla E-\nabla\bar\ell\|=O(1)$ 且相对误差 $O(\tau)$，但需要 (i) 局部余项 $\partial_\theta r_k$ 的界，(ii) 交叉的横截性/真梯度 $\Theta(1/\tau)$ 的下界。1D 数值算例（slope 1.07，relG 3.4e-3 @ $\tau=0.01$）支持该结论，但还不是严格证明。
 - P1 级（非 P0）仍 open：Q4（精确充要条件）、Q8（$\tau$ 学习/尺度）、Q11（重根梯度）、Q12（EPro 公平对比）、Q14（措辞）、Q15（群轨道平均）。
 

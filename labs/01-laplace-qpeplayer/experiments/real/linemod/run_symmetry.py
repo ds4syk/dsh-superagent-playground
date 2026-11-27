@@ -1,6 +1,29 @@
 #!/usr/bin/env python3
 """P1 real-data symmetry experiment on BOP LINEMOD (eggbox / glue).
 
+*** DEPRECATED / NEGATIVE ARTIFACT (kept reproducible on purpose, 2026-11-27) ***
+This script is the original failed attempt.  It is NOT a valid negative result
+about symmetric objects, because it contains three bugs:
+
+  (S1) `sym_of()` uses the models_info 4x4 symmetry translation in millimetres
+       as metres, offsetting the second hypothesis point cloud by ~0.69 m.
+  (S2) `gap_at()` sorts J before taking J[1]-J[0], so the "gap" it feeds to the
+       bracket search is >= 0 by construction; the sign-change test can never
+       fire.  The empty table is therefore a code bug, not evidence that the
+       data has no crossing.
+  (S3) FRAMES omits 000011, and most of the listed frames contain objects other
+       than obj 10/11 and are silently skipped; the original run effectively
+       covers very few eggbox/glue frames.
+
+  Even after fixing S1/S3, mixing two FULL bearing costs and then eliminating
+  ONE shared translation pulls both wells to a compromise pose, so the cost is
+  unimodal at the crossing (S4).  The corrected constructions are in
+  `run_two_mode.py` (real planar-face two-mode cost + controlled transverse
+  crossing with per-hypothesis translation elimination) and are documented in
+  `README.md`.
+
+The original docstring follows.
+
 For a symmetric object, the same image is consistent with two poses A and
 A*S.  We build two bearing-cost matrices from the same real model and image
 projections: (P, U) for pose A and (S P, U) for pose A*S.  Their convex

@@ -76,7 +76,11 @@ def pose_and_derivs(I, theta, m=None):
     dq = np.array([core.ift_dq(qq, M, dM) for qq in q])    # (K,4)
     dposes = np.array([core.dpose_dq(qq, I.GinvD) @ dq[k] for k, qq in enumerate(q)])
     dJ = np.array([core.dJ_dtheta(qq, M, dM) for qq in q])
-    dlogdet = np.array([dlogdet_numeric(qq, M, dM, dq[k]) for k, qq in enumerate(q)])
+    # Closed-form third-derivative contraction (qpep_core.dHsphere_dq -> dE fixed
+    # on 2026-11-27; validated in code/test_derivatives.py to 1e-16 vs the
+    # independent dlogdet_exact and 1e-9 vs branch FD).  The old numeric fallback
+    # dlogdet_numeric is kept below as an auditable cross-check.
+    dlogdet = np.array([core.dlogdetH_dtheta(qq, M, dM, dq[k])[0] for k, qq in enumerate(q)])
     return dict(q=q, J=J, logdet=logdet, poses=poses, dq=dq, dposes=dposes,
                 dJ=dJ, dlogdet=dlogdet, H=m["H"])
 
@@ -208,8 +212,18 @@ def main():
             t_hard_ms=med([r["t_hard_ms"] for r in rs]),
             t_mc_ms=med([r["t_mc_ms"] for r in rs]),
         ))
+    # REPRO B4: json.dump writes bare NaN, which strict JSON parsers reject.
+    # Emit null for non-finite floats instead (the .md keeps "N/A").
+    def _json_safe(x):
+        if isinstance(x, float):
+            return x if np.isfinite(x) else None
+        if isinstance(x, dict):
+            return {k: _json_safe(v) for k, v in x.items()}
+        if isinstance(x, (list, tuple)):
+            return [_json_safe(v) for v in x]
+        return x
     with open(OUT / "main_table.json", "w") as f:
-        json.dump(table, f, indent=2)
+        json.dump(_json_safe(table), f, indent=2)
 
     lines = ["# Laplace-QPEPLayer synthetic branch-crossing experiment\n",
              f"theta grid {THETA_GRID[0]:+.2f}..{THETA_GRID[-1]:+.2f} ({len(THETA_GRID)} points), "
@@ -279,7 +293,10 @@ def main():
     ax[1].set_xlabel("theta"); ax[1].set_ylabel("MC std (20 seeds)")
     ax[1].grid(alpha=0.3); ax[1].legend(fontsize=8)
     fig.tight_layout(); fig.savefig(OUT / "main_table.png", dpi=160)
-    print("wrote", OUT / "main_table.md", OUT / "fit_table.md", OUT / "main_table.png")
+    done = [str(OUT / "main_table.md"), str(OUT / "main_table.png")]
+    if FIT_SEEDS > 0:
+        done.insert(1, str(OUT / "fit_table.md"))
+    print("wrote", *done)
 
 
 if __name__ == "__main__":

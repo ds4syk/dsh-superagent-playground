@@ -80,10 +80,16 @@ def dE(q):
     """d E / d q_b, b=0..3.  q: (...,4) -> (...,4,4,3) indexed [.., b, i, c]."""
     q = np.asarray(q, dtype=float)
     batch = q.shape[:-1]
+    # E rows are  r0=[-q1,-q2,-q3], r1=[q0,-q3,q2], r2=[q3,q0,-q1], r3=[-q2,q1,q0].
+    # The partials below were fixed on 2026-11-27 after a finite-difference audit:
+    # the previous d1,d2,d3 had wrong signs / entries at rows 1-2, which silently
+    # corrupted the only consumer, dHsphere_dq -> dlogdetH_dtheta (the closed-form
+    # third-derivative path).  dlogdet_exact / run_main's numeric fallback used
+    # E(dq) instead and were unaffected.
     d0 = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=float)
-    d1 = np.array([[-1, 0, 0], [0, 0, 0], [0, 0, 1], [0, 1, 0]], dtype=float)
-    d2 = np.array([[0, -1, 0], [0, 0, -1], [0, 0, 0], [1, 0, 0]], dtype=float)
-    d3 = np.array([[0, 0, -1], [0, 0, 1], [-1, 0, 0], [0, 0, 0]], dtype=float)
+    d1 = np.array([[-1, 0, 0], [0, 0, 0], [0, 0, -1], [0, 1, 0]], dtype=float)
+    d2 = np.array([[0, -1, 0], [0, 0, 1], [0, 0, 0], [-1, 0, 0]], dtype=float)
+    d3 = np.array([[0, 0, -1], [0, -1, 0], [1, 0, 0], [0, 0, 0]], dtype=float)
     out = [np.broadcast_to(d, batch + (4, 3)) for d in (d0, d1, d2, d3)]
     return np.stack(out, axis=-3)
 

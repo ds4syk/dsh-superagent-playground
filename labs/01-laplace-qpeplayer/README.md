@@ -12,8 +12,8 @@
 
 | 交付 | 状态 |
 |-|-|
-| `paper/draft.md` 英文论文草稿 | 结构完整（Title/Abstract/Intro/RW/Formulation/Method/Experiments/Discussion/Conclusion/References），实验结果为 TODO，未编造数字 |
-| `theory/proofs.md` 定理 0.1/0.2/0.3、1.1、1.2、1.3 | 已证明 / 有明确 GAP / 数值验证；2026-11-27 补充证明结案 Q1/Q9、Q2/Q13、Q3、Q6、Q7、Q5 期望值（唯一 P0 缺口：Q5 梯度余项引理） |
+| `paper/draft.md` 英文论文草稿 | 结构完整（Title/Abstract/Intro/RW/Formulation/Method/Experiments/Discussion/Conclusion/References），实验节已填真实测量（12 张表，合成 6D + 1D + SDP + 真实 LINEMOD 双峰），无编造数字 |
+| `theory/proofs.md` 定理 0.1/0.2/0.3、1.1、1.2、1.3 | 已证明 / 有明确 GAP / 数值验证；2026-11-27 P2 证明结案 Q5/Q4/Q8/Q11/Q15；Q1/Q9/Q3/Q6/Q7 已结案。**P1-Q2/Q13 的 13×13 等价被 SDP 数值反例推翻（13×13 缺 3 条行正交，严格更松），重新打开**，见 `experiments/sdp/results/sdp_check.md` |
 | `theory/derivations.md` | U 构造、21 约束与 20 维理想、$E(q)$、$\lambda^*=4J$、$H_{\mathbb S^3}$、对跖不变性、Laplace 常数与误差阶、KL 梯度 |
 | `verify/` 两个最小数值脚本 | 已运行并保存 JSON；定理 0 的“21 约束 = Veronese 二次理想”为符号+秩证明；Choi–Lam 构造实例有对偶证书 |
 | `experiments/protocol.md` | 数据集、baseline、指标、消融、算力、复现风险 |
