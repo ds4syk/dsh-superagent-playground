@@ -1,0 +1,58 @@
+# GPU probe job state (phase 4, final paper consistency)
+# recorded at 2026-11-28T00:31:16+08:00
+
+## squeue -j 3184
+ JOBID PARTITION     USER ST       TIME  NODES NODELIST(REASON) TRES_PER_NODE START_TIME DEPENDENCY
+  3184       gpu      syk PD       0:00      1 (Resources) gres/gpu:1 2026-11-28T21:23:07 (null)
+
+## scontrol show job 3184
+JobId=3184 JobName=p3gpu-probe
+   UserId=syk(1009) GroupId=syk(1010) MCS_label=N/A
+   Priority=2727 Nice=0 Account=users QOS=normal
+   JobState=PENDING Reason=Resources Dependency=(null)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:00 TimeLimit=00:20:00 TimeMin=N/A
+   SubmitTime=2026-11-28T00:26:08 EligibleTime=2026-11-28T00:26:08
+   AccrueTime=2026-11-28T00:26:08
+   StartTime=2026-11-28T21:23:07 EndTime=2026-11-28T21:43:07 Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-28T00:30:50 Scheduler=Backfill:*
+   Partition=gpu AllocNode:Sid=localhost:3092946
+   ReqNodeList=(null) ExcNodeList=(null)
+   NodeList= SchedNodeList=ls
+   NumNodes=1 NumCPUs=2 NumTasks=1 CPUs/Task=2 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=2,mem=32G,node=1,billing=2,gres/gpu=1
+   AllocTRES=(null)
+   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
+   MinCPUsNode=2 MinMemoryTRES=32G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)
+   Command=/mnt/storage1/syk/.superagent-work/wt-final-p3-paper/labs/03-robust-qpeplayer/experiments/qpep_gpu/sbatch_probe_phase4.sbatch
+   SubmitLine=sbatch sbatch_probe_phase4.sbatch
+   WorkDir=/mnt/storage1/syk/.superagent-work/wt-final-p3-paper/labs/03-robust-qpeplayer/experiments/qpep_gpu
+   StdErr=/mnt/storage1/syk/.superagent-work/wt-final-p3-paper/labs/03-robust-qpeplayer/experiments/qpep_gpu/results/logs/slurm_probe_phase4_3184.err
+   StdIn=/dev/null
+   StdOut=/mnt/storage1/syk/.superagent-work/wt-final-p3-paper/labs/03-robust-qpeplayer/experiments/qpep_gpu/results/logs/slurm_probe_phase4_3184.log
+   MemPerTres=gpu:32768
+   TresPerNode=gres/gpu:1
+   TresPerTask=cpu=2
+
+
+## sinfo
+PARTITION AVAIL TIMELIMIT NODES STATE NODELIST GRES
+cpu* up 2-00:00:00 1 mix- ls gpu:3
+gpu up 3-00:00:00 1 mix- ls gpu:3
+
+## squeue (all users, gpu partition)
+ JOBID PARTITION     USER ST       TIME  NODES NODELIST(REASON) TRES_PER_NODE
+  3184       gpu      syk PD       0:00      1 (Resources) gres/gpu:1
+  3182       gpu      wyx PD       0:00      1 (Priority) gres/gpu:1
+  3181       gpu      cyr  R      17:26      1 ls gres/gpu:1
+  3151       gpu      cyr  R    3:08:09      1 ls gres/gpu:1
+  3180       gpu      wyx  R    1:18:45      1 ls gres/gpu:1
+
+## after scancel 3184 at 2026-11-28T00:31:21+08:00
+ JOBID ST       TIME NODELIST(REASON)
+   JobState=CANCELLED Reason=Resources Dependency=(null)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:00 TimeLimit=00:20:00 TimeMin=N/A
+   StartTime=2026-11-28T00:31:18 EndTime=2026-11-28T00:31:18 Deadline=N/A

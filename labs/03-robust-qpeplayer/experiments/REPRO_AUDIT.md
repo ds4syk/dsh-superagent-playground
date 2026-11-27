@@ -1,8 +1,9 @@
 # P3 reproducibility audit
 
 - Python 3.10.22 / NumPy 2.2.6 / SciPy 1.15.3
-- git HEAD `17d7ffcc30204bdd3dee8f29a8eaf24f739a97d3`
-- cwd `/mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments`
+- git HEAD `2ca1ec3063e2cf1710e9669acd163ec4a395c757`
+- cwd `/mnt/storage1/syk/.superagent-work/wt-final-p3/labs/03-robust-qpeplayer/experiments`
+- mode: **default (gitignored regen artifacts optional)**
 - overall: **PASS**
 
 ## Checks
@@ -26,6 +27,7 @@
 | `real/kitti/results/n_scaling.json` | ok |
 | `real/kitti2/results/kitti2.json` | ok |
 | `real/kitti2/results/verify_kitti2.json` | ok |
+| `real/kitti2/results/kitti2_compare.json` | ok |
 | `e2e_torch/results/e2e_torch.json` | ok |
 | `e2e_torch/results/gradcheck.json` | ok |
 | `inner/results/inner_solver.json` | ok |
@@ -43,6 +45,14 @@
 | `real/inthedark/results/inthedark_run12_dense.json` | ok |
 | `real/inthedark/results/verify_run_000002.json` | ok |
 | `real/inthedark/results/verify_run_000012.json` | ok |
+| `real/inthedark/results/night17_dense_prefix.json` | ok |
+| `real/inthedark/results/night18_dense_prefix.json` | ok |
+| `real/inthedark/results/night_dense_run_000017.json` | ok |
+| `real/inthedark/results/night_dense_run_000018.json` | ok |
+| `real/inthedark/results/night_sparse_run_000017.json` | ok |
+| `real/inthedark/results/night_summary.json` | ok |
+| `real/kitti_more/results/kitti_more.json` | ok |
+| `real/threedmatch_low_overlap/results/low_overlap.json` | ok |
 | `../results/baselines.json` | ok |
 | `real/kitti_odom/results/raw_drive_motion.json` | ok |
 | `real/threedmatch_full/results/manifest.json` | ok |
@@ -57,11 +67,23 @@
 | `real/threedmatch_full/results/overlap_bins.json` | ok |
 | `real/threedmatch_full/results/overlap_dependence.json` | ok |
 | `results/phase3_rounds.json` | ok |
+| `results/final_rounds.json` | ok |
+| `analysis/wilson.json` | ok |
+| `real/inthedark/results/inthedark_rounds.json` | ok |
+| `real/inthedark/results/convention_calib_r2.json` | ok |
+| `real/kitti_odom/results/rounds.json` | ok |
+| `real/threedmatch_full/results/rounds.json` | ok |
+| `baselines/results/theseus.json` | ok |
+| `baselines/results/sdpr_forward.json` | ok |
+| `baselines/results/sdpr_kabsch_equiv.json` | ok |
+| `baselines/results/theseus_selfcheck.json` | ok |
+| `baselines/results/reference_n20.json` | ok |
 | `synthetic/results/main_table_extended_raw.jsonl` | ok (14500 lines) |
 | `real/threedmatch/results/threedmatch_raw.jsonl` | ok (4800 lines) |
 | `real/threedmatch/results/descriptor_raw.jsonl` | ok (600 lines) |
 | `real/threedmatch/results/n_scaling_raw.jsonl` | ok (1280 lines) |
 | `real/threedmatch_extra/results/extra_scenes_raw.jsonl` | ok (4800 lines) |
+| `real/threedmatch_low_overlap/results/low_overlap_raw.jsonl` | ok (9200 lines) |
 | `real/kitti/results/kitti_raw.jsonl` | ok (2400 lines) |
 | `real/kitti/results/c_sensitivity_raw.jsonl` | ok (720 lines) |
 | `systems/results/batch_gnc_raw.jsonl` | ok (800 lines) |
@@ -70,6 +92,15 @@
 | `real/kitti2/results/kitti2_raw.jsonl` | ok (2400 lines) |
 | `real/threedmatch_full/results/full_scenes_raw.jsonl` | ok (19200 lines) |
 | `real/threedmatch_full/results/overlap_bins_raw.jsonl` | ok (13800 lines) |
+| `qpep_gpu/results/logs/slurm_gpu_3184_state.txt` | ok (text) |
+| `real/threedmatch_full/results/full_scenes.md` | ok (text) |
+| `real/inthedark/results/inthedark_main.md` | ok (text) |
+
+## Ignored/regeneratable artifacts absent in this checkout
+
+- none
+
+These files are gitignored by design; the committed `summary` artifact (for example `real/threedmatch_full/results/full_scenes.md`) is what the paper cites. Re-run the corresponding `run_*.py` script on the data disk to regenerate them, or run this audit with `--strict` on that machine.
 
 ## Large/cache files under experiments
 
@@ -94,6 +125,7 @@
 - `real/kitti/results/n_scaling.json`: `cb34c1e925c1df9bf02e40595d95f38edde87f184400c42e2d17b1c7cef33a78`
 - `real/kitti2/results/kitti2.json`: `60c534ce4367a582896c69b3cde9cfa0cb0e2a1be2f931fff709254bf685b817`
 - `real/kitti2/results/verify_kitti2.json`: `21df7103c8568490abf82b1c3437bf257a5ff2c4d3f05514a4c7fb1e91fa4cb7`
+- `real/kitti2/results/kitti2_compare.json`: `5e3a6d2360f8805b700e105b07ba03664380e016992bb9ed826962b675b813e4`
 - `e2e_torch/results/e2e_torch.json`: `ed9e3cf121f03803d2d296b25931c49995a7b4cc40a8c856458591e11f68d67d`
 - `e2e_torch/results/gradcheck.json`: `de7b5aaa9b0f8438eb939e91c8a7d16b00cb4639bc480c693e7a10e709a3453b`
 - `inner/results/inner_solver.json`: `8d9f20f2ebb31e7ad7ea3b1eb7113e2d9b40c6a32cd3ca5878be8140f6f020ba`
@@ -111,6 +143,14 @@
 - `real/inthedark/results/inthedark_run12_dense.json`: `f9342c18ab8e4b6d3f6e2c4eaf95fcee373cd45201892928bae5816f7caf6e8d`
 - `real/inthedark/results/verify_run_000002.json`: `480012dc825511421ab8228e3c43bb4cb735bb852ef301aa4ee5f6ee0daaf05d`
 - `real/inthedark/results/verify_run_000012.json`: `72cd0bd9853c897db05dca7d53665d0408243762cfdcc20169d42b743e7d1352`
+- `real/inthedark/results/night17_dense_prefix.json`: `cdc2a42944053ab5033666b91e73182138b5350b2b051fea85071c024a53383a`
+- `real/inthedark/results/night18_dense_prefix.json`: `c0c3dbfe9e4ef42d199365d7d0b2d6504cd5f21d003a4e44cccbc2e6fdd37448`
+- `real/inthedark/results/night_dense_run_000017.json`: `8d057c7d82201698b1bfd0d5e964c3c639cea92918e8459c6c28607c9980160d`
+- `real/inthedark/results/night_dense_run_000018.json`: `e22cee895cbf7be0a7fd6632ed072ea30fb4643d3e4c4d4a1ae976f99866811d`
+- `real/inthedark/results/night_sparse_run_000017.json`: `6d1be52e2bad9302c23a8446b84957e754b4b2290be93a284c55009a2d7acbad`
+- `real/inthedark/results/night_summary.json`: `426de0de29ff380d161427308029cfbcd4d12910f859932274d50f0d4eb528bc`
+- `real/kitti_more/results/kitti_more.json`: `0b37e2d1db72950cbdde12e9e6f445ce3d158edb5aef39bc556eb5e7a2c0a541`
+- `real/threedmatch_low_overlap/results/low_overlap.json`: `57b6758ed27ba2b72917c9b059bd0cd1d8436be042f272b35c5d196099ba6812`
 - `../results/baselines.json`: `a193173ac3880ffbba6afb91c87d4793a3b2713cd50ec16deefda2a5cd0b2c87`
 - `real/kitti_odom/results/raw_drive_motion.json`: `a49bc658ffa3ee0cead9d9c4987b02c3cc0def98340f17cd206b7918ad5d8623`
 - `real/threedmatch_full/results/manifest.json`: `a90be6c949dba835f32d1747c5f2ed282cc757449f33a5aeaa36cc5ccb67a11b`
@@ -125,11 +165,23 @@
 - `real/threedmatch_full/results/overlap_bins.json`: `afa725aa336265a647e61c0bb710121143aaed342044bf6df6da3418b6fd8846`
 - `real/threedmatch_full/results/overlap_dependence.json`: `a17787d866275983d1956dc4b819b466901040bc7fed501d048bfcce1aa9a988`
 - `results/phase3_rounds.json`: `3cf7c1973a457d19fb51a4ea08ba78bbaeafcbe52b5bc22fb0a6fd1ace1019b1`
+- `results/final_rounds.json`: `eede21d50b4ded39f716bd15fdbad21e12675c6d3b182e165815ee531952534c`
+- `analysis/wilson.json`: `bdab5d9a45895228cba23e12044c5d34841a0609bfe352921e8f7a0917869dc9`
+- `real/inthedark/results/inthedark_rounds.json`: `8bf99cd169ed94c088c3a46cef3f3151834f18c01c5924a437c77d07f95d03f8`
+- `real/inthedark/results/convention_calib_r2.json`: `476f7346802489e694bb44b8600be398581bebb17553d708023e60f6a31b6581`
+- `real/kitti_odom/results/rounds.json`: `975b5cc9fc6b30cc5b81f5499662d9b20fa8763a7bfd5b20bd30496e5d536610`
+- `real/threedmatch_full/results/rounds.json`: `7c88c707374bca438cfd4cccd1d12c1218026be609882370749a385f5191ee87`
+- `baselines/results/theseus.json`: `d797991a50afa9713c39175a7175bf9b83c473be8b6c08baf270466727257840`
+- `baselines/results/sdpr_forward.json`: `47880621c49d5e3c2472ab5fb057db8b96ac3482bb5cf0eee79cd6ec9974fdb3`
+- `baselines/results/sdpr_kabsch_equiv.json`: `175c02da596e18a0bfc3e218e6d1e27f9c7c8445feff17736d8becde979cab8b`
+- `baselines/results/theseus_selfcheck.json`: `3343107ed06440757219260d796f238658ff55c86575b23ce8f12b51c46790f9`
+- `baselines/results/reference_n20.json`: `45fd479fb6eba341412019642fdc9e7145e6d1e7ab649ed5b4ea54c0377bc02c`
 - `synthetic/results/main_table_extended_raw.jsonl`: `ae2172a522e275a1ea350d6d478d45c6c1af0a167b17ac415b493309d042e7f4`
 - `real/threedmatch/results/threedmatch_raw.jsonl`: `fe1e5ca39296fb05d1f8113d0edb92c135dd819df4b638ee4608571b1a04a13c`
 - `real/threedmatch/results/descriptor_raw.jsonl`: `56b00219a996bea4855319e8908aa5ff1c5af0bb1114739f876fa78ebf930317`
 - `real/threedmatch/results/n_scaling_raw.jsonl`: `7a1353afb94de8178550bde0fd4c79948d136139d15e3526d7b7065d212ace0a`
 - `real/threedmatch_extra/results/extra_scenes_raw.jsonl`: `dad4f6d564c5ab24997068e81437dbdc3fce62abdb3a58bf51eac221cdd010d6`
+- `real/threedmatch_low_overlap/results/low_overlap_raw.jsonl`: `1ee961eb76a3fb49fdb0ee835a88747bd79ef459f30bcb6250fe2a777d19bf4e`
 - `real/kitti/results/kitti_raw.jsonl`: `92593d13cf86aa5d5b313e3ab76e8536c3fe639bfeef7a4e249127f95f83ff39`
 - `real/kitti/results/c_sensitivity_raw.jsonl`: `6d46758f95216a6f85f824a3c0c135dbc7d46c4d1745fea8e722d4bb454d2657`
 - `systems/results/batch_gnc_raw.jsonl`: `f54668856b49446f5871b24da8dd44bacbfa290eb10940dfa24998e9a52cf30f`
@@ -138,3 +190,6 @@
 - `real/kitti2/results/kitti2_raw.jsonl`: `c5640abfa962b83aede49abbe7b8caae5450d50ce8c46b25595cda97e4fa53c8`
 - `real/threedmatch_full/results/full_scenes_raw.jsonl`: `4c5e8a9b51af2749095844a4fd59ec50ecf560edaba824ebfac55a2cb9631c95`
 - `real/threedmatch_full/results/overlap_bins_raw.jsonl`: `3db162beebfe1b767aa8a18a4d6d92c58acee0cb93a4ea7af73c8a6aefacfa30`
+- `qpep_gpu/results/logs/slurm_gpu_3184_state.txt`: `3ca7447c044bca9f13ff1c82e5a2933f8effea9f39277cd83feacfc3f6557e4e`
+- `real/threedmatch_full/results/full_scenes.md`: `c27395cf6469bac82873a4a712837694b819fb4a46289018c035b8086c9c8c6b`
+- `real/inthedark/results/inthedark_main.md`: `b32fb3853300e83797d6be671e9b41364a43a790730a17360cf18f91a14c5a89`

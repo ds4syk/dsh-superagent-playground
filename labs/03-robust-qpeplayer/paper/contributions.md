@@ -14,7 +14,7 @@
 | **C4** | **一维精确变号定理 + 存在性**：$\mathrm dt^*/\mathrm dy_j=\lambda_\parallel(e_j)/H_{\mathrm{rob}}$；$e_j>c^2/3$ 时真实导数负、naive 正 | Proposition 3.4、3.5；数值：精确 vs FD $1.2\times10^{-8}$，naive 误差 $137\%$，符号相反 | **已证 + 数值** |
 | **C5** | **$O(\|\mathbf r_i\|^{-4})$ 逐观测梯度界**：常数显式；前向偏差 $O(\|\mathbf r_i\|^{-3})$；区分“梯度免疫”与“前向鲁棒” | Proposition 3.6；数值 log-log 斜率 $-3.9979$ | **已证（条件性）** |
 | **C6** | **统一核框架**：GM/Cauchy/Welsch/TLS 的 BR 对偶表；同一前后向结构 | Lemma 3.1 备注、Appendix B | **已证**（TLS 非光滑边界另注） |
-| **C7** | **实验协议与可复现计划**：In-The-Dark / 3DMatch / KITTI，SDPR+RANSAC / Theseus / BPnP / Pyatov / POLI 对比 | `experiments/protocol.md` | **设计完成，结果 TODO** |
+| **C7** | **实验协议与可复现计划**：In-The-Dark / 3DMatch / KITTI，SDPR+RANSAC / Theseus / BPnP / Pyatov / POLI 对比 | `experiments/protocol.md`、`paper/claims_to_evidence.md`；合成 Theseus/SDPR、3DMatch 8 场景、KITTI raw 2 drives、odom 00/05/07 子集、In-The-Dark 2 个白天 run 已测 | **部分实测**：合成外部基线 + 真实 3D-3D 已完成；real-data external baseline suite、BPnP/Pyatov/POLI、夜间/训练 In-The-Dark 仍未做（§5.9） |
 
 **不声称**：全局鲁棒最优；可验证鲁棒性；6D 变号定理；GNC 输出 = 全局 argmin；任意外点下替代 RANSAC。
 
@@ -96,7 +96,7 @@
 **回应**：
 - Pyatov：两视图基础矩阵，隐式鲁棒损失，学习匹配权重；没有 S³ 约束乘子、没有 3D-3D QPEP、没有 Schur 补/一维变号定理。
 - JFB：用廉价近似替代逆 Jacobian；我们的“naive IRLS-StopGrad”正是一种 phantom gradient。我们证明它在 1D 可以**符号错误**，比“近似误差”更强；精确 IFT 是 $6\times6$，代价可接受，不需要 JFB 的近似。
-- 若审稿人认为“精确 IFT 太贵”，我们报告 $6\times6$ 的实际耗时（TODO）。
+- 若审稿人认为“精确 IFT 太贵”，我们报告反向只解一个 $6\times6$ 系统（$O(6^3)$，与 $N$ 无关）；本文未单独计这一次 solve 的墙钟，但前向 GNC 是 $O(N)$ 主导，反向的 $6\times6$ 不是瓶颈。
 
 ### Q7. “二阶证书 ($\lambda_{\min}>0$) 有什么用？”
 
@@ -158,7 +158,7 @@
 | 变号构型存在 | 解析证明 | 两观测、大间隔 |
 | $O(r^{-4})$ | 解析证明（条件 B2） | 需 $H^{-1}$ 一致有界；逐观测 |
 | 相干多数外点崩溃 | 解析例子 | 1D；3D 需几何构造 |
-| 端到端优于 SDPR+RANSAC | **未验证** | 实验 TODO |
+| 端到端优于 SDPR+RANSAC | **未验证** | 本线没有真实端到端训练；`e2e_torch` 只是 toy 诊断，不能替代 |
 
 ---
 

@@ -48,6 +48,22 @@
     "wilson_hi": 0.0458197362645751
   },
   {
+    "cell": "3DMatch-8 random p=0.5 GNC",
+    "k": 160,
+    "n": 160,
+    "rate": 1.0,
+    "wilson_lo": 0.9765529633499672,
+    "wilson_hi": 1.0
+  },
+  {
+    "cell": "3DMatch-8 random p=0.7 GNC",
+    "k": 160,
+    "n": 160,
+    "rate": 1.0,
+    "wilson_lo": 0.9765529633499672,
+    "wilson_hi": 1.0
+  },
+  {
     "cell": "KITTI-2 random p=0.5 GNC",
     "k": 40,
     "n": 40,
@@ -62,5 +78,21 @@
     "rate": 1.0,
     "wilson_lo": 0.9123754607496077,
     "wilson_hi": 1.0
+  },
+  {
+    "cell": "KITTI-odom pooled random p=0.5 GNC",
+    "k": 60,
+    "n": 60,
+    "rate": 1.0,
+    "wilson_lo": 0.9398260695220669,
+    "wilson_hi": 0.9999999999999999
+  },
+  {
+    "cell": "KITTI-odom pooled random p=0.7 GNC",
+    "k": 60,
+    "n": 60,
+    "rate": 1.0,
+    "wilson_lo": 0.9398260695220669,
+    "wilson_hi": 0.9999999999999999
   }
 ]

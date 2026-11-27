@@ -23,15 +23,18 @@ import zlib
 CHUNK = 30 + 4096  # local header + generous name/extra allowance
 
 
-def fetch_range(url: str, start: int, end: int, out: pathlib.Path) -> bytes:
+def fetch_range(url: str, start: int, end: int, out: pathlib.Path, proxy: str | None = None) -> bytes:
     """Inclusive byte range [start, end] -> bytes (curl handles FTP REST)."""
-    subprocess.run(["curl", "-s", "--fail", "-r", f"{start}-{end}", "-o", str(out), url],
-                   check=True)
+    cmd = ["curl", "-s", "--fail"]
+    if proxy:
+        cmd += ["--socks5-hostname", proxy]
+    cmd += ["-r", f"{start}-{end}", "-o", str(out), url]
+    subprocess.run(cmd, check=True)
     return out.read_bytes()
 
 
-def central_directory(url: str, size: int, tmp: pathlib.Path):
-    tail = fetch_range(url, size - 128 * 1024, size - 1, tmp / "tail.bin")
+def central_directory(url: str, size: int, tmp: pathlib.Path, proxy: str | None = None):
+    tail = fetch_range(url, size - 128 * 1024, size - 1, tmp / "tail.bin", proxy)
     i = tail.rfind(b"PK\x05\x06")
     if i < 0:
         raise SystemExit("no EOCD in tail; not a zip or archive too small for tail probe")
@@ -40,12 +43,27 @@ def central_directory(url: str, size: int, tmp: pathlib.Path):
     if cd_off == 0xFFFFFFFF:
         raise SystemExit("zip64 archive: not supported by this probe")
     cd = tail[cd_off - base:] if cd_off >= base else fetch_range(
-        url, cd_off, min(cd_off + cd_size + 64, size - 1), tmp / "cd.bin")
+        url, cd_off, min(cd_off + cd_size + 64, size - 1), tmp / "cd.bin", proxy)
     ents, p = {}, 0
     while cd[p:p + 4] == b"PK\x01\x02":
         (_, _, _, method, _, _, crc, csize, usize, nlen, elen, clen,
          _, _, _, lho) = struct.unpack_from("<HHHHHHIIIHHHHHII", cd, p + 4)
         name = cd[p + 46:p + 46 + nlen].decode()
+        if 0xFFFFFFFF in (usize, csize, lho):
+            extra = cd[p + 46 + nlen:p + 46 + nlen + elen]
+            q = 0
+            while q + 4 <= len(extra):
+                tag, sz = struct.unpack_from("<HH", extra, q)
+                q += 4
+                if tag == 0x0001:
+                    off = 0
+                    if usize == 0xFFFFFFFF:
+                        usize = struct.unpack_from("<Q", extra, q + off)[0]; off += 8
+                    if csize == 0xFFFFFFFF:
+                        csize = struct.unpack_from("<Q", extra, q + off)[0]; off += 8
+                    if lho == 0xFFFFFFFF:
+                        lho = struct.unpack_from("<Q", extra, q + off)[0]; off += 8
+                q += sz
         ents[name] = dict(method=method, csize=csize, usize=usize, lho=lho,
                           nlen=nlen, elen=elen, crc=crc)
         p += 46 + nlen + elen + clen
@@ -54,9 +72,9 @@ def central_directory(url: str, size: int, tmp: pathlib.Path):
     return ents
 
 
-def extract(url: str, ent: dict, out: pathlib.Path, tmp: pathlib.Path) -> pathlib.Path:
+def extract(url: str, ent: dict, out: pathlib.Path, tmp: pathlib.Path, proxy: str | None = None) -> pathlib.Path:
     need = 30 + ent["nlen"] + ent["elen"] + ent["csize"]
-    blob = fetch_range(url, ent["lho"], ent["lho"] + need - 1, tmp / "member.bin")
+    blob = fetch_range(url, ent["lho"], ent["lho"] + need - 1, tmp / "member.bin", proxy)
     nlen, elen = struct.unpack_from("<HH", blob, 26)
     start = 30 + nlen + elen
     raw = blob[start:start + ent["csize"]]
@@ -70,8 +88,9 @@ def extract(url: str, ent: dict, out: pathlib.Path, tmp: pathlib.Path) -> pathli
         raise SystemExit(f"size mismatch {len(data)} != {ent['usize']}")
     if zlib.crc32(data) & 0xFFFFFFFF != ent["crc"]:
         raise SystemExit("CRC mismatch: range extraction corrupt")
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(data)
-    print(f"  {out.name}: {len(data)} B (crc ok, deflate {ent['csize']} B)")
+    print(f"  {out}: {len(data)} B (crc ok, deflate {ent['csize']} B)")
     return out
 
 

@@ -29,7 +29,7 @@
 | 路线图 | **完成**，见 `roadmap.md`（RA-L 首选 / IROS 2027 备选 / T-RO stretch） |
 | 未解决数学问题 | **12 条，P0×4**，见 `math_questions.md` |
 
-**没有做的**：SDPRLayers/Theseus/BPnP/Pyatov/POLI 同数据对比、UTIAS In-The-Dark 端到端训练、学习描述子（FCGF/Predator）、完整 40 根 QPEP 多项式求解器、6D 变号定理、GNC 分岔反例。**已做的真实数据**：ModelNet40/10、3DMatch 4 场景（GT-NN + 手工 FPFH）、KITTI raw 2 drives；**已做的工程**：torch autograd 层 gradcheck、批量 GNC、Davenport 内层、LO-RANSAC/核/GNC 调度/各向异性/噪声/崩溃点消融。**没有编造**任何实验数字；源文档的预实验数字在 `experiments/protocol.md` §8 标为“待独立复现”。**已修**：`verify/riemann_hessian_check.py` 的 `build_A` 原先用非齐次 `Rmat` 极化，已改为齐次式并重跑（25.9% / 9.9e-8 / 51.05），见 `experiments/README.md` §7.1。
+**没有做的**：BPnP/Pyatov/POLI 同数据对比（任务不同/无代码权重）、In-The-Dark 端到端训练（只做手写前端 test-time，2 白天 + 2 夜间前缀）、学习描述子（FCGF/Predator）、完整 40 根 QPEP 多项式求解器、6D 变号定理、GNC 分岔反例。**已做的真实数据**：ModelNet40/10、3DMatch **8 个官方 test 场景**（GT-NN + 手工 FPFH + 真 low-overlap 0.20–0.50）、KITTI raw 2 drives、KITTI odometry **00–10**（每序列 33 协议帧）；**已做的工程/基线**：torch autograd 层 gradcheck、批量 GNC、Davenport 内层、Theseus-GM/SDPR-SCS 合成基线、LO-RANSAC/核/GNC 调度/各向异性/噪声/崩溃点消融。**没有编造**任何实验数字；源文档的预实验数字在 `experiments/protocol.md` §8 标为“待独立复现”。**已修**：`verify/riemann_hessian_check.py` 的 `build_A` 原先用非齐次 `Rmat` 极化，已改为齐次式并重跑（25.9% / 9.9e-8 / 51.05），见 `experiments/README.md` §7.1。
 
 ---
 

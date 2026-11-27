@@ -1,3 +1,5 @@
+> **Superseded 2026-11-28:** the phase-3 'still open' items were addressed in phase 4 — the 8-scene 3DMatch aggregate, KITTI odometry 00/05/07, two daylight In-The-Dark runs, and the GPU retry (job 3184, still blocked) are recorded in `phase4_consistency.md` and the paper v0.4. This file is kept as the phase-3 history; its 'still open' section is not the current status.
+
 # Phase-3 consistency fixes (P3b, 2026-11-27)
 
 Scope: `paper/draft.md` (§5, abstract, limitations/conclusion), `experiments/README.md`,

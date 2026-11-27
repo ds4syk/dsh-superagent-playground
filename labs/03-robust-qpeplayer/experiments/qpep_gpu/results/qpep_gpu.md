@@ -12,6 +12,8 @@
 > ~1e-16 (float64) and ~1e-7 (float32), with identical `n_mu`. The CUDA paths
 > remain unmeasured; do not cite these numbers as GPU timings.
 
+> **Phase-4 retry (2026-11-28):** a second probe job 3184 was submitted at 00:26:08 with `--gres=gpu:1`. At 00:31:16 it was still `PENDING Reason=Resources StartTime=2026-11-28T21:23:07` (≈21 h later) while jobs 3151/3180/3181 held the three RTX 5090s; it was cancelled at 00:31:21 (`JobState=CANCELLED Reason=Resources`). The exact `squeue`/`scontrol` output is in `logs/slurm_gpu_3184_state.txt`. No GPU number, no CUDA graph, and no graph error exist; the CPU tables below remain the only measured data.
+
 - device: **cpu** (x86_64)
 - torch 2.11.0+cu128 / CUDA 12.8 / NumPy 2.2.6
 - git HEAD `17d7ffcc30204bdd3dee8f29a8eaf24f739a97d3`

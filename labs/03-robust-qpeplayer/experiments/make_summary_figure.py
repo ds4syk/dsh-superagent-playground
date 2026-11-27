@@ -113,8 +113,8 @@ def main():
     ax[1, 1].legend(fontsize=8)
 
     fig.suptitle("Robust-QPEPLayer (P3): measured 3D-3D evidence, 2026-11-27", fontsize=13)
-    fig.text(0.5, 0.01, "Real stereo fallback (KITTI raw, 30 pairs): rot 0.052°, trans 0.70 m, 0% @0.1 m; "
-             "GNC 19.3× faster than RANSAC-1000 — translation is front-end bound.",
+    fig.text(0.5, 0.01, "Real stereo fallback (KITTI raw): rot 0.052°, trans 0.70 m, 0% @0.1 m. "
+             "In-The-Dark: day 0.078–0.092°/0.010–0.020 m; night dense 0.135–0.150°/0.011 m (sparse 0.197°).",
              ha="center", fontsize=8, color="0.3")
     fig.tight_layout(rect=(0, 0.035, 1, 0.96))
     fig.savefig(OUT, dpi=170)
