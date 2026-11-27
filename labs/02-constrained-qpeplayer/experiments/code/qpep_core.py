@@ -266,7 +266,7 @@ def full_L_grad(q, t, M0, D0, G0, A, B, mu, rho):
 
 def alm_qpep(M0, D0, G0, A, B, q_init, t_init, mu0=None, rho0=10.0,
              max_outer=50, tol=1e-10, rho_max=1e7, n_starts=6, rng=None,
-             verbose=False):
+             verbose=False, inner="multistart", inner_kw=None):
     """ALM-QPEP 前向。
 
     返回 dict: q,t,mu,rho,iters,viol,J,hist, fallback_count, ok
@@ -275,8 +275,17 @@ def alm_qpep(M0, D0, G0, A, B, q_init, t_init, mu0=None, rho0=10.0,
         按定理 2.1 装配 M_A/D_A/G_A（10×10/3×10/3×3，与 p 无关），丢给内层；
       * 内层解出 (q,t) 后若活跃集不一致（Lemma 2.1(b)），重新识别并重解；
       * 连续 5 次不一致时，回退到对 full L_rho 做 7 维 BFGS（仍用同一 ALM 更新）。
+
+    inner : "multistart"（默认，多起点 BFGS，与历史结果完全一致）或
+            "exact"（quartic_roots.solve_inner_exact 的 KKT 全枚举）。
+            exact 模式下若枚举掉了路径（fallback=True），solve_inner_exact 内部
+            已回退到多起点，本函数只统计次数，不声称精确。
     """
     rng = rng or np.random.default_rng(0)
+    inner_kw = dict(inner_kw or {})
+    if inner not in ("multistart", "exact"):
+        raise ValueError("inner must be 'multistart' or 'exact', got %r" % (inner,))
+    _inner_stats = dict(exact_calls=0, exact_fallbacks=0, exact_time=0.0)
     p = A.shape[0]
     mu = np.zeros(p) if mu0 is None else np.array(mu0, float)
     q, t = q_init / np.linalg.norm(q_init), np.array(t_init, float)
@@ -299,7 +308,18 @@ def alm_qpep(M0, D0, G0, A, B, q_init, t_init, mu0=None, rho0=10.0,
         for _ in range(5):
             MA, DA, GA = _alm_quadratic(M0, D0, G0, A, B, mu, rho, act)
             Mred = _rho_of(MA, DA, GA)
-            _, q_new = solve_inner(Mred, n_starts=n_starts, rng=rng, q0=q)
+            if inner == "exact":
+                import quartic_roots as _QR
+                _t0 = time.perf_counter()
+                _ex = _QR.solve_inner_exact(
+                    Mred, seed=_inner_stats["exact_calls"], **inner_kw)
+                _inner_stats["exact_time"] += time.perf_counter() - _t0
+                _inner_stats["exact_calls"] += 1
+                if _ex.get("fallback", False):
+                    _inner_stats["exact_fallbacks"] += 1
+                q_new = _ex["q"]
+            else:
+                _, q_new = solve_inner(Mred, n_starts=n_starts, rng=rng, q0=q)
             t_new = -np.linalg.solve(GA, DA @ v2(q_new))
             g_new = _gfun(A, B, q_new, t_new)
             act_new = np.where(mu + rho * g_new > 0.0)[0]
@@ -340,6 +360,7 @@ def alm_qpep(M0, D0, G0, A, B, q_init, t_init, mu0=None, rho0=10.0,
     J = obj_value(q, t, M0, D0, G0)
     return dict(q=q, t=t, mu=mu, rho=rho, iters=it + 1, viol=viol, J=J,
                 hist=hist, fallback_count=fallback_count,
+                inner=inner, **_inner_stats,
                 ok=bool(viol <= max(tol, 1e-8)))
 
 
