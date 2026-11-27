@@ -253,9 +253,12 @@ if len(b_p) >= 2:
                 fontsize=6.0, color="#4a148c")
     ax.set_yscale("log")
     ax.set_ylim(20.0, max(b_slack) * 1.8)
-    ax.set_yticks([20, 30, 50, 100, 200, 500, 1000])
-    from matplotlib.ticker import ScalarFormatter
-    ax.yaxis.set_major_formatter(ScalarFormatter())
+    ticks = [t for t in (20, 30, 50, 100, 200, 500, 1000, 2000, 5000)
+             if t <= max(b_slack) * 1.8]
+    ax.set_yticks(ticks)
+    ax.set_yticklabels([str(t) for t in ticks])
+    from matplotlib.ticker import NullFormatter
+    ax.yaxis.set_minor_formatter(NullFormatter())
     ax.set_xticks(x)
     ax.set_xticklabels([f"p={p_}\n{14 + p_}² vs 14²" for p_ in b_p], fontsize=7.0)
     ax.set_ylabel("median SDP wall-clock (ms, log)")

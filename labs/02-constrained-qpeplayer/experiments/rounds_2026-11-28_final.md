@@ -42,3 +42,18 @@
 | F70 | main | 集成全部子 worktree 产物 + validate_code 40/40 + `final_push_summary.md` | 全套 |
 
 **最终统计：28 / 70 轮完成**（sdpr 7、dqp 4、e2e 3、real 8、paper 4、main 2）；其余 42 轮按“stop and integrate now”指令未执行（非技术失败）。核心缺口：Theseus 库缺 CHOLMOD（已文档化）、E2E 训练只 3 epoch、SDPR p16/LM 小样本、KITTI n 待去重。
+
+## 最终 accepted-round 台账（截至 2026-11-28 06:xx）
+
+> 规则：一个“任务→子代理总结”算 1 轮；失败/重试不计。140 轮预算，实际 accepted 如下。
+
+| 线 | accepted | 主要单元 |
+|---|---|---|
+| 早期（phase-3 + 首轮 final push） | 28 | 严格证书、谱系、exact-inner、论文 v0.3、SDPR/dQP/E2E/real 的首批表 |
+| SDPR (A) | 12 | A1 p16 n=50；A2 LM n=90；A3 LM-O；A4 YCB；A5 slack M sweep；A6 PSD 尺寸/状态普查；A7 汇总表；A8 §5.7 正文；A9 final_push_summary；A10 provenance；A11 代码代际统一（p32 slack 100→92%）；A12 成本图 |
+| dQP/Theseus (B) | 8 | dQP p=16/32 n=50；dQP 真实子集 n=30；梯度分裂（LICQ 退化 2/8）；CVXPYLayers 交叉验证；Theseus CHOLMOD 隔离覆盖层；Theseus 官方 LM p=8/16/32 n=30 + λ Pareto（Table 5.9d）；Huber 变体；§5.7 正文 |
+| E2E (C) | 8 | FB backward（unc/ALM ε 消融）；10 seeds × 4 modes 梯度校验；kink 测试；2000-step × 3 seeds 训练；四头 n=64 评估；模型/单元保存；§5.8 正文；e2e_final.md |
+| Real (D) | 6 | KITTI 计数审计（n=63/252，meta 84→21 去重）；KITTI 表重生成；KITTI rigorous 子集 126/126；UTIAS Table 5.16b n=38；ADD 三数据集最终表；real_combined |
+| Paper (E) | 11 | E0 基线；E1 溯源矩阵；E2 SDPR 表；E3 dQP/Theseus；E5 KITTI 去重+UTIAS；E5b KITTI rigorous；E6 ADD 证书映射；E7 stale 清理；E8 refs 核验（[verify] 2→0）；E9 图 panel d；E4 §5.8 最终化 |
+| PDF | 3 | EN: pandoc+tectonic，35 页（图 5.1 内嵌，表格页 QA）；ZH: 全文翻译 892 行（42 标题/23 表/1105 公式逐项核对）+ 同管线 32 页；`PDF_BUILD.md` 记录工具链 |
+| **合计** | **78 / 140** | 其余预算未使用（无失败重试计数）；EN 36 页 / ZH 32 页 |

@@ -64,3 +64,9 @@ All numbers below are produced by the subagent code in this working tree; see th
 - `paper/draft.md` now 830 lines, status v0.5, **0 TODO/TBD**; new sections **§5.7 Neighbouring layer families** (SDPRLayers-style Table 5.9b, dQP/CVXPYLayers-style, Theseus-style not run + reason), **§5.8 End-to-end CPU toy** (Table 5.9c: ADD 106.86→12.69, penetration→0, feasible 0→100%), plus the already-present §5.9 KITTI/UTIAS, §5.10 ADD/ADD-S (Table 5.17, all three datasets), §5.11 scope.
 - Stale "pending" wording removed from §5.1/§4.5; the exact-Hessian ablation and FB-gradient check are now explicitly listed as not-run in §5.11 rather than "pending".
 - Remaining paper caveats stated in §5.11 (not TODO): no learned detector/VLA, no network-scale T1, baselines are re-implementations, Theseus library import blocked, 16-root template not shipped, P2-Cert not run on KITTI/UTIAS, no packaged torch layer.
+
+## 7. Paper PDFs (final)
+
+- `paper/draft.md` 894 lines, v0.6, 0 TODO/TBD; `paper/draft_en.pdf` **36 pages** (pandoc + tectonic; Figure 5.1 embedded on p.16, table pages QA'd).
+- `paper/draft_zh.md` 892 lines (line-by-line translation; 41 headings/23 tables/1105 math segments verified identical); `paper/draft_zh.pdf` **32 pages** (same pipeline with Noto Serif CJK SC); `paper/translation_notes.md` records the self-check and the 4 deliberate choices.
+- Build recipe: `paper/PDF_BUILD.md` (pandoc 3.8 from the conda package cache + tectonic 0.15).
