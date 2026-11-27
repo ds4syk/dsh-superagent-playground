@@ -33,6 +33,8 @@ def main():
     ver = load(RES / "verify_gt_direction_full.json")
     full = load(RES / "full_scenes.json")
     bins = load(RES / "overlap_bins.json")
+    dep_path = RES / "overlap_dependence.json"
+    dep = load(dep_path) if dep_path.exists() else None
 
     # ---- R1: overlap estimator saturation ---------------------------------
     all_ov = [r["overlap"] for rows in scan.values() for r in rows]
@@ -94,10 +96,10 @@ def main():
     g07 = pooled_cell(0.7, "random", "GNC-GM")
     r07 = pooled_cell(0.7, "random", "RANSAC-1000")
     g06c = pooled_cell(0.6, "coherent", "GNC-GM")
-    scene_succ_05 = {F: next(r["success"] for r in full["per_scene"]
-                             if r["scene"] == s and r["outlier_type"] == "random"
-                             and r["method"] == "GNC-GM" and abs(r["p"] - 0.5) < 1e-9)
-                     for F, s in full["config"]["scene_short"].items()}
+    scene_succ_05 = {short: next(r["success"] for r in full["per_scene"]
+                                 if r["scene"] == scene and r["outlier_type"] == "random"
+                                 and r["method"] == "GNC-GM" and abs(r["p"] - 0.5) < 1e-9)
+                     for scene, short in full["config"]["scene_short"].items()}
 
     # ---- R5/R6: overlap bins ---------------------------------------------
     tab = {}
@@ -119,6 +121,25 @@ def main():
     from scipy.stats import spearmanr
     rho_g, p_g = spearmanr([r["overlap"] for r in pl], [r["succ_GNC-GM"] for r in pl])
     rho_r, p_r = spearmanr([r["overlap"] for r in pl], [r["succ_RANSAC-1000"] for r in pl])
+    rho_g = [float(rho_g), float(p_g)] if np.isfinite(rho_g) and np.isfinite(p_g) else None
+    rho_r = [float(rho_r), float(p_r)] if np.isfinite(rho_r) and np.isfinite(p_r) else None
+
+    r6_paired = None
+    if dep is not None:
+        r6_paired = dict(
+            per_bin={b: dict(
+                n_pairs=dep["cells"][f"{b}|0.5"]["n_pairs"],
+                n_trials=dep["cells"][f"{b}|0.5"]["n_trials"],
+                discordant_gnc_only=dep["cells"][f"{b}|0.5"]["discordant_gnc_only"],
+                discordant_ransac_only=dep["cells"][f"{b}|0.5"]["discordant_ransac_only"],
+                mcnemar_p=dep["cells"][f"{b}|0.5"]["mcnemar_p"],
+                rot_delta_median=dep["cells"][f"{b}|0.5"]["rot_delta_median"],
+                rot_delta_ci=dep["cells"][f"{b}|0.5"]["rot_delta_ci"],
+                wilcoxon_p=dep["cells"][f"{b}|0.5"]["wilcoxon_p"],
+            ) for b in ["low", "mid", "high"]},
+            interaction_low_minus_high_05=dep["interaction"]["0.5"]["interaction_low_minus_high"],
+            interaction_ci_05=dep["interaction"]["0.5"]["interaction_ci"],
+        )
 
     rounds = [
         dict(
@@ -226,13 +247,16 @@ def main():
             after=dict(delta_success_gnc_minus_ransac_p05=delta,
                        speedup_p05=speedup,
                        delta_success_gnc_minus_ransac_p07=delta7,
-                       spearman_gnc_success_vs_overlap=[float(rho_g), float(p_g)],
-                       spearman_ransac_success_vs_overlap=[float(rho_r), float(p_r)]),
+                       spearman_gnc_success_vs_overlap=rho_g,
+                       spearman_ransac_success_vs_overlap=rho_r,
+                       paired_test_05=r6_paired),
             keep=True,
             rationale=("Success is at or near saturation in all bins for both methods, so the "
                        "measured overlap dependence is in rotation error/runtime rather than "
-                       "success; reported as such."),
-            artifact="results/overlap_bins.json#advantage",
+                       "success; the exact McNemar counts and the low-vs-high interaction CI "
+                       "are in results/overlap_dependence.json."),
+            artifact=("results/overlap_bins.json#advantage; "
+                      "results/overlap_dependence.json"),
         ),
     ]
     (RES / "rounds.json").write_text(json.dumps(dict(rounds=rounds), indent=2))

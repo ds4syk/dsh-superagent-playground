@@ -21,8 +21,8 @@ Design
 3. Pick up to 3 pairs per bin per scene, spread over the bin's overlap range.
 4. Run the identical robust protocol on those pairs: N=300 (padded by
    resampling for the few pairs that yield fewer valid GT-NN pairs), c=0.05 m,
-   random outliers at p in {0, 0.3, 0.5, 0.7}, plus one coherent-outlier cell
-   at p=0.3 as a secondary check, 8 trials/cell, 5 methods.
+   random outliers at p in {0, 0.3, 0.5, 0.7}, plus coherent-outlier cells
+   at p in {0.3, 0.5} as a secondary stress check, 8 trials/cell, 5 methods.
 5. Report success / rotation error / runtime by overlap bin, the GNC-vs-RANSAC
    success delta and speedup per bin, and per-pair success vs overlap with a
    Spearman correlation.  The clean (p=0) rows measure how the real GT-NN
@@ -58,7 +58,7 @@ C = F.C
 TAU = F.TAU
 VOXEL = F.VOXEL
 P_LIST = [0.0, 0.3, 0.5, 0.7]
-COHERENT_P = [0.3]
+COHERENT_P = [0.3, 0.5]
 TRIALS = 8
 PER_BIN = 3
 N_PROBE = 2000
@@ -101,11 +101,18 @@ def phase_scan():
 
 
 def select_pairs(scan):
+    """Pick bin pairs as *copies* of the scan rows.
+
+    ``main`` attaches a numpy ``Tinv`` to every selected pair; if the selected
+    dicts were the same objects as ``scan`` rows, writing ``overlap_scan.json``
+    would fail on the ndarray.  Copying keeps the scan artifact pure JSON.
+    """
     by_scene = {}
     for scene, rows in scan.items():
         for r in rows:
             r["bin"] = bin_label(r["overlap"])
-        by_scene[scene] = F.pick_bin_pairs(rows, per_bin=PER_BIN)
+        picked = F.pick_bin_pairs(rows, per_bin=PER_BIN)
+        by_scene[scene] = {b: [dict(r) for r in picked[b]] for b in picked}
     return by_scene
 
 
@@ -197,7 +204,7 @@ def aggregate(raw, selected):
                         n_trials=len(sel),
                         overlap_mean=float(np.mean([r["overlap"] for r in sel])),
                         base_inlier=float(np.mean([r["base_inlier"] for r in sel])),
-                        n_pairs=len({r["pair"] for r in sel}), **s)
+                        n_pairs=len({(r["scene"], r["pair"]) for r in sel}), **s)
     return tables
 
 
@@ -253,10 +260,16 @@ def pair_level(raw):
 def spearman(x, y):
     from scipy.stats import spearmanr
     x, y = np.asarray(x, float), np.asarray(y, float)
-    if len(x) < 4 or np.allclose(x, x[0]):
+    if len(x) < 4 or np.allclose(x, x[0]) or np.allclose(y, y[0]):
         return None, None
     rho, p = spearmanr(x, y)
     return float(rho), float(p)
+
+
+def fmt_rho(rho, p, what="success"):
+    if rho is None:
+        return f"undefined ({what} is constant across the selected pairs)"
+    return f"{rho:+.2f} (p={p:.3f})"
 
 
 def write_markdown(scan_summary, tables, adv, pl, config):
@@ -264,7 +277,7 @@ def write_markdown(scan_summary, tables, adv, pl, config):
     lines.append(f"Overlap = uncapped GT-NN fraction (fraction of 2000 sampled source points "
                  f"mapped by inv(gt.log) with a target NN within tau={TAU} m). Bins: "
                  f"low < 0.5, mid 0.5-0.8, high > 0.8. N={N}, c={C} m, random outliers at "
-                 f"p in {P_LIST}, plus coherent outliers at p={COHERENT_P[0]}; "
+                 f"p in {P_LIST}, plus coherent outliers at p in {COHERENT_P}; "
                  f"{TRIALS} trials/cell; up to {PER_BIN} pairs per bin per scene.")
     lines.append("")
     lines.append("## Overlap distribution of all gt.log pairs")
@@ -312,6 +325,30 @@ def write_markdown(scan_summary, tables, adv, pl, config):
                      f"{a['time_gnc']:.2f} | {a['time_ransac']:.1f} | "
                      f"{a['speedup_ransac_over_gnc']:.1f}x |")
     lines.append("")
+    lines.append("## Coherent outliers by overlap bin (success %)")
+    lines.append("")
+    lines.append(hdr)
+    lines.append("|---|---|" + "|".join(["---"] * len(METHODS)) + "|")
+    for b in ["low", "mid", "high"]:
+        for p in COHERENT_P:
+            cells = []
+            for m in METHODS:
+                t = tables.get(f"{b}|coherent|{p:.1f}|{m}")
+                cells.append(f"{100 * t['success']:.0f}" if t else "—")
+            lines.append(f"| {b} | {int(100 * p)}% | " + " | ".join(cells) + " |")
+    lines.append("")
+    lines.append("## Coherent outliers by overlap bin (median rotation error, deg)")
+    lines.append("")
+    lines.append(hdr)
+    lines.append("|---|---|" + "|".join(["---"] * len(METHODS)) + "|")
+    for b in ["low", "mid", "high"]:
+        for p in COHERENT_P:
+            cells = []
+            for m in METHODS:
+                t = tables.get(f"{b}|coherent|{p:.1f}|{m}")
+                cells.append(f"{t['rot_median']:.2f}" if t else "—")
+            lines.append(f"| {b} | {int(100 * p)}% | " + " | ".join(cells) + " |")
+    lines.append("")
     lines.append("## Per-pair overlap dependence")
     lines.append("")
     pairs_at = [r for r in pl if "succ_GNC-GM" in r and "succ_RANSAC-1000" in r]
@@ -320,8 +357,10 @@ def write_markdown(scan_summary, tables, adv, pl, config):
     rho_r, pr = spearman([r["overlap"] for r in pairs_at],
                          [r["succ_RANSAC-1000"] for r in pairs_at])
     rho_c, pc = spearman([r["overlap"] for r in pairs_at], [r["clean_rot"] for r in pairs_at])
-    lines.append(f"* GNC success vs pair overlap at p=0.5: Spearman rho={rho_g:+.2f} (p={pg:.3f})")
-    lines.append(f"* RANSAC-1000 success vs pair overlap at p=0.5: rho={rho_r:+.2f} (p={pr:.3f})")
+    lines.append(f"* GNC success vs pair overlap at p=0.5: Spearman rho="
+                 f"{fmt_rho(rho_g, pg, 'GNC success')}")
+    lines.append(f"* RANSAC-1000 success vs pair overlap at p=0.5: rho="
+                 f"{fmt_rho(rho_r, pr, 'RANSAC success')}")
     lines.append(f"* clean median rotation error vs pair overlap: rho={rho_c:+.2f} (p={pc:.3f})")
     lines.append("")
     lines.append("| scene | pair | bin | overlap | n_valid | base inlier | clean rot | GNC succ p=0.5 | RANSAC succ p=0.5 |")
@@ -354,8 +393,29 @@ def make_figure(tables, adv, pl, scan, scan_summary):
     colors = {"Kabsch": "tab:gray", "RANSAC-1000": "tab:orange",
               "RANSAC-adaptive": "tab:green", "IRLS-GM": "tab:blue",
               "GNC-GM": "tab:red"}
-    fig, axes = plt.subplots(2, 3, figsize=(17, 9))
-    # 1: success vs overlap scatter at p=0.5
+    fig, axes = plt.subplots(2, 4, figsize=(21, 9))
+    width = 0.16
+    xpos = np.arange(3)
+    blabels = ["low\n(<0.5)", "mid\n(0.5-0.8)", "high\n(>0.8)"]
+
+    def bin_bars(ax, key, col, title, ylabel, scale=1.0, log=False, legend=False):
+        for k, m in enumerate(METHODS):
+            vals = []
+            for b in ["low", "mid", "high"]:
+                t = tables.get(f"{b}|{key}|{m}")
+                vals.append(scale * t[col] if t else np.nan)
+            ax.bar(xpos + (k - 2) * width, vals, width, color=colors[m], label=m)
+        ax.set_xticks(xpos)
+        ax.set_xticklabels(blabels)
+        ax.set_ylabel(ylabel)
+        ax.set_title(title)
+        ax.grid(alpha=0.3, axis="y")
+        if log:
+            ax.set_yscale("log")
+        if legend:
+            ax.legend(fontsize=6, ncol=2)
+
+    # 1: per-pair success vs overlap at p=0.5
     ax = axes[0, 0]
     pts = [r for r in pl if "succ_GNC-GM" in r]
     for m in ["RANSAC-1000", "GNC-GM", "IRLS-GM"]:
@@ -363,58 +423,38 @@ def make_figure(tables, adv, pl, scan, scan_summary):
                    s=22, color=colors[m], label=m, alpha=0.75)
     ax.axvline(0.5, color="k", ls="--", lw=0.8)
     ax.axvline(0.8, color="k", ls="--", lw=0.8)
-    ax.set_xlabel("GT-NN overlap"); ax.set_ylabel("success at p=0.5 random")
-    ax.set_title("Per-pair success vs overlap"); ax.grid(alpha=0.3)
+    ax.set_xlabel("GT-NN overlap")
+    ax.set_ylabel("success at p=0.5 random")
+    ax.set_title("Per-pair success vs overlap")
+    ax.grid(alpha=0.3)
     ax.legend(fontsize=7)
-    # 2: success by bin and method at p=0.5
-    ax = axes[0, 1]
-    width = 0.16
-    xpos = np.arange(3)
-    for k, m in enumerate(METHODS):
-        vals = []
-        for b in ["low", "mid", "high"]:
-            t = tables.get(f"{b}|random|0.5|{m}")
-            vals.append(100 * t["success"] if t else 0)
-        ax.bar(xpos + (k - 2) * width, vals, width, color=colors[m], label=m)
-    ax.set_xticks(xpos); ax.set_xticklabels(["low\n(<0.5)", "mid\n(0.5-0.8)", "high\n(>0.8)"])
-    ax.set_ylabel("success (%)"); ax.set_ylim(0, 105)
-    ax.set_title("Random outliers p=0.5: success by overlap bin"); ax.grid(alpha=0.3, axis="y")
-    ax.legend(fontsize=6, ncol=2)
-    # 3: clean success/rot by bin
-    ax = axes[0, 2]
-    for k, m in enumerate(METHODS):
-        vals = []
-        for b in ["low", "mid", "high"]:
-            t = tables.get(f"{b}|random|0.0|{m}")
-            vals.append(100 * t["success"] if t else 0)
-        ax.bar(xpos + (k - 2) * width, vals, width, color=colors[m])
-    ax.set_xticks(xpos); ax.set_xticklabels(["low", "mid", "high"])
-    ax.set_ylabel("success (%)"); ax.set_ylim(0, 105)
-    ax.set_title("Clean (p=0): success by overlap bin"); ax.grid(alpha=0.3, axis="y")
-    # 4: median rot at p=0.5
-    ax = axes[1, 0]
-    for k, m in enumerate(METHODS):
-        vals = []
-        for b in ["low", "mid", "high"]:
-            t = tables.get(f"{b}|random|0.5|{m}")
-            vals.append(t["rot_median"] if t else np.nan)
-        ax.bar(xpos + (k - 2) * width, vals, width, color=colors[m])
-    ax.set_xticks(xpos); ax.set_xticklabels(["low", "mid", "high"])
-    ax.set_ylabel("median rotation error (deg)")
-    ax.set_title("Random outliers p=0.5: rotation error"); ax.grid(alpha=0.3, axis="y")
-    # 5: runtime by bin at p=0.5
-    ax = axes[1, 1]
-    for k, m in enumerate(METHODS):
-        vals = []
-        for b in ["low", "mid", "high"]:
-            t = tables.get(f"{b}|random|0.5|{m}")
-            vals.append(t["time_ms_p50"] if t else np.nan)
-        ax.bar(xpos + (k - 2) * width, vals, width, color=colors[m])
-    ax.set_yscale("log")
-    ax.set_xticks(xpos); ax.set_xticklabels(["low", "mid", "high"])
-    ax.set_ylabel("runtime p50 (ms, log)")
-    ax.set_title("Runtime by overlap bin (p=0.5)"); ax.grid(alpha=0.3, axis="y")
-    # 6: per-scene overlap distributions of all gt.log pairs
+
+    # 2: success by bin at p=0.5
+    bin_bars(axes[0, 1], "random|0.5", "success",
+             "Random outliers p=0.5: success by overlap bin",
+             "success (%)", scale=100.0, legend=True)
+
+    # 3: clean rotation by bin (p=0) -- the real overlap dependence
+    bin_bars(axes[0, 2], "random|0.0", "rot_median",
+             "Clean (p=0): median rotation error by overlap bin",
+             "median rotation error (deg)")
+
+    # 4: coherent p=0.5 success by bin (stress cell where the ceiling breaks)
+    bin_bars(axes[0, 3], "coherent|0.5", "success",
+             "Coherent outliers p=0.5: success by overlap bin",
+             "success (%)", scale=100.0, legend=True)
+
+    # 5: rotation error by bin at p=0.5
+    bin_bars(axes[1, 0], "random|0.5", "rot_median",
+             "Random outliers p=0.5: rotation error",
+             "median rotation error (deg)")
+
+    # 6: runtime by bin at p=0.5
+    bin_bars(axes[1, 1], "random|0.5", "time_ms_p50",
+             "Random outliers p=0.5: runtime by overlap bin",
+             "runtime p50 (ms, log)", log=True)
+
+    # 7: per-scene overlap distributions of all gt.log pairs
     ax = axes[1, 2]
     scenes = list(scan)
     data = [[r["overlap"] for r in scan[s]] for s in scenes]
@@ -427,6 +467,22 @@ def make_figure(tables, adv, pl, scan, scan_summary):
     ax.set_xticklabels([F.SCENE_SHORT[s] for s in scenes], rotation=35, ha="right", fontsize=7)
     ax.set_ylabel("GT-NN overlap (all pairs)")
     ax.set_title("Overlap distribution per scene"); ax.grid(alpha=0.3, axis="y")
+
+    # 8: GNC minus RANSAC median rotation error at p=0.5, by bin
+    ax = axes[1, 3]
+    deltas = []
+    for b in ["low", "mid", "high"]:
+        g = tables.get(f"{b}|random|0.5|GNC-GM")
+        r = tables.get(f"{b}|random|0.5|RANSAC-1000")
+        deltas.append(1000 * (g["rot_median"] - r["rot_median"]) if g and r else np.nan)
+    ax.bar(xpos, deltas, 0.5, color="tab:red")
+    ax.axhline(0, color="k", lw=0.8)
+    ax.set_xticks(xpos)
+    ax.set_xticklabels(blabels)
+    ax.set_ylabel("GNC - RANSAC median rot error (mdeg)")
+    ax.set_title("Rotation advantage at p=0.5 (negative = GNC better)")
+    ax.grid(alpha=0.3, axis="y")
+
     fig.suptitle("3DMatch full set: low / mid / high overlap bins")
     fig.tight_layout()
     return fig
