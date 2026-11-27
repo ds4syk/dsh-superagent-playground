@@ -58,3 +58,9 @@ All numbers below are produced by the subagent code in this working tree; see th
 - UTIAS constraint table partial; KITTI counts need dedup verification (frames list appeared 4× in the table).
 - Paper integration incomplete (SDPR/dQP/E2E/real tables not yet inserted; TODO 5).
 - No commit/push; all artifacts are in this working tree.
+
+## 6. Paper integration (final)
+
+- `paper/draft.md` now 830 lines, status v0.5, **0 TODO/TBD**; new sections **§5.7 Neighbouring layer families** (SDPRLayers-style Table 5.9b, dQP/CVXPYLayers-style, Theseus-style not run + reason), **§5.8 End-to-end CPU toy** (Table 5.9c: ADD 106.86→12.69, penetration→0, feasible 0→100%), plus the already-present §5.9 KITTI/UTIAS, §5.10 ADD/ADD-S (Table 5.17, all three datasets), §5.11 scope.
+- Stale "pending" wording removed from §5.1/§4.5; the exact-Hessian ablation and FB-gradient check are now explicitly listed as not-run in §5.11 rather than "pending".
+- Remaining paper caveats stated in §5.11 (not TODO): no learned detector/VLA, no network-scale T1, baselines are re-implementations, Theseus library import blocked, 16-root template not shipped, P2-Cert not run on KITTI/UTIAS, no packaged torch layer.

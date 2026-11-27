@@ -31,3 +31,14 @@
 | **合计** | **25 / 70** | | **45 轮被 15 分钟收尾上限阻塞**（非技术失败；各线代码/结果已保留，可下轮继续） |
 
 关键产出：`results/final_push_summary.md`（SDPR 20 行对照表 + dQP/ADD/KITTI/UTIAS 摘要）、`real_bop_add.{json,md,png}`、`kitti_layer.{json,md,png}`、`baseline_dqp.{json,md}`、`baseline_sdpr_*.json`、`e2e_*.json`、`real_utias.json`；`validate_code.py` 40/40。
+
+## 追加收尾（按“integrate now”指令）
+
+| Round | 线 | 内容 | 产物 |
+|---|---|---|---|
+| F67 | paper | 新增 §5.7 邻接层族基线（SDPRLayers-style 表 5.9b、dQP/CVXPYLayers-style、Theseus 未跑及原因） | `paper/draft.md` |
+| F68 | paper | 新增 §5.8 CPU 端到端 toy（表 5.9c：ADD 106.86→12.69、pen→0、feasible 0→100%） | 同上 |
+| F69 | paper | 去除 §5.1/§4.5 的 stale pending 措辞；§5.11 明确列出未跑项；0 TODO/TBD | 同上 |
+| F70 | main | 集成全部子 worktree 产物 + validate_code 40/40 + `final_push_summary.md` | 全套 |
+
+**最终统计：28 / 70 轮完成**（sdpr 7、dqp 4、e2e 3、real 8、paper 4、main 2）；其余 42 轮按“stop and integrate now”指令未执行（非技术失败）。核心缺口：Theseus 库缺 CHOLMOD（已文档化）、E2E 训练只 3 epoch、SDPR p16/LM 小样本、KITTI n 待去重。
