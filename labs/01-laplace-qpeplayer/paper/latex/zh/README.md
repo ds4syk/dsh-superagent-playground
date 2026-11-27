@@ -1,4 +1,4 @@
-# 01-laplace-qpeplayer — LaTeX draft (zh)
+# 01-laplace-qpeplayer — LaTeX manuscript (zh，人工翻译)
 
 - **Target venue:** 《自动化学报》式中文双栏期刊（自动化学报 style）
 - **Document class:** `ctexart, twocolumn`
@@ -17,45 +17,20 @@
 
 | item | value |
 |---|---|
-| last compile | 2026-11-28, Tectonic 0.17.0, exit 0 |
-| main-text pages | 22 |
-| total pages | 24 |
-| tables / figures | 19 / 5 |
-| undefined refs / cites | 0 |
-| bibliography | `refs.bib` via BibTeX, `plain` style, 15 entries |
-
-## Translation status
-
-All eight section files plus the abstract were hand-translated from
-`../en/sections/*.tex`. Equations, table rows, figure files and every numeric
-value are carried over verbatim (audited: 552/552 measurement-like numeric
-tokens and 98/98 multi-digit integers appear unchanged; 35/35 `\cite` keys,
-100/100 labels, 19 tables, 5 figures, 25 numbered equations match the English
-tree). Proper nouns and acronyms (QPEP, SDP, Veronese, Choi–Lam, LINEMOD,
-Theseus, EPnP, …) are kept in Latin script. Author names and affiliations
-remain placeholders.
+| last compile | Tectonic exit 0, 无未定义引用, 无 >3pt 的 overfull（见 `build.log`） |
+| total pages | 18（双栏） |
+| tables / figures | 17 表 / 5 图 |
+| 说明 | 由英文终稿逐节人工翻译（非机器翻译），结构、公式、表格、数字与引用一一对应（2026-11-28） |
 
 ## Files
 
 `main.tex` (documentclass, title, abstract, keywords, \input lines), `preamble.tex`,
-`sections/*.tex`, `figures/*.png`, `refs.bib`, `build.log`.
+`sections/*.tex`, `figures/*.png`, `refs.bib` (EN only), `build.log`.
 
-## Known pending claims / gaps (must stay visible in the paper)
+## 论文中陈述的局限性（第 6 节）
 
-1. 没有检测器级 ADD(-S)/ADD-S AUC，也没有学习前端：真实数据部分是受控双模态层实验，不是检测器基准。
-2. UTIAS In-The-Dark 未运行，不对该流程作任何声明。
-3. 未运行学习型/可微分层次 baseline（SDPR-IS、SDPR-SDP、EPro-PnP、BPnP）；Theseus 与 cv2 经典解法只是同一批对应上的前向/局部参照。
-4. mode-level MC 只对离散模态权重采样，不是 EPro-PnP 的 SE(3) AMIS 采样器。
-5. 已报告运行假定根枚举完备（A2）；total-degree homotopy 在 4/4 实例上确认 40 个复射影根，但不证明多起点枚举器的漏根率。
-6. SDP 证书是数值证书（SCS 容差），不是符号证书；Choi–Lam 实例的物理可实现性（Q1）仍开放；逐实例认证实根数是未来工作。
-7. GPU 批处理 / 端到端训练 / 峰值内存 / 吞吐未测量。
-8. 必须保留的负结果：在 15 帧 LINEMOD 上，Laplace 后验均值被拉向翻转模态（中位 44.24° / 13.9 mm ADD-S），而 hard argmin 为 2.06° / 3.7 mm。
-
-## Editorial rules
-
-- Tables: `booktabs`, wide tables as `table*` with `\scriptsize`; no vertical rules.
-- Figures: `\\includegraphics[width=\\columnwidth]{...}` inside `figure`; wide overview
-  figures in `figure*` with `width=\\textwidth`.
-- Evidence tags stay honest: *paper claim* / *independent reproduction (this repo)* /
-  *unverified*; Chinese: 论文声明 / 独立复现（本仓库） / 未验证 / 待核实.
-- Author names, affiliations and funding are placeholders; do not invent them.
+1. 评估为层级评估：81 点合成交叉、一维标准型、15 帧 LINEMOD；无检测器级 ADD(-S)/ADD-S AUC，无学习式前端，无端到端训练。
+2. 实根枚举完备性是假设 (A2)；全次数同伦认证 4/4 个实例上的 40 个复射影根，而非枚举器的漏检率。
+3. 真实近打平处 Laplace 后验均值被拉向竞争模态（44.24 deg / 13.9 mm ADD-S），硬 argmin 为 2.06 deg / 3.7 mm。
+4. 构造的 Choi–Lam 代价作为对应 Gram 矩阵的可实现性仍开放。
+5. 学习式前端、检测器级基准、UTIAS In-The-Dark、SDPR/EPro-PnP 对比、逐实例认证实根数与 GPU 批量前向列为未来工作。

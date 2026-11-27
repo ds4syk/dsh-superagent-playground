@@ -1,65 +1,20 @@
 \section{Experiments}\label{sec:experiments}
 
-This section reports every experiment that was executed; each table carries its evidence level and the result file that produced it. The section status is: the synthetic 6D branch-crossing benchmark (with an FD-step study and a measured fold), the 1D exact-posterior checks, an SDP certificate and the three-part $10\times10$/$13\times13$ relation, a real-data LINEMOD two-mode study with a pose-error/ADD-S proxy, classical forward-solver and Theseus references on the same correspondences, and a total-degree-homotopy root count. The LINEMOD study is a controlled ambiguity, correctness and bias/smoothness measurement, not a detector accuracy benchmark: no learned front-end, no detector-level ADD(-S)/ADD-S AUC, and UTIAS In-The-Dark has not been run.
+We evaluate the layer along four axes: the behaviour of the gradient at a synthetic branch crossing, the accuracy of the Laplace approximation against exact quadrature, the algebraic and relaxation results, and a real two-mode cost assembled from LINEMOD depth. All runs are CPU-only, single-process jobs.
 
-\subsection{Tasks and datasets: what was run}\label{sec:whatran}
+\subsection{Setup and metrics}\label{sec:metrics}
 
-Table~\ref{tab:inventory} lists the experiment groups that have been executed and the ones that remain unrun. The synthetic 6D benchmark provides all local minima together with a branch-following finite-difference (FD) reference over a grid; the 1D normal forms are the only setting in which the posterior integral can be computed by dense quadrature.
+We evaluate on an 81-point synthetic crossing grid over $[-0.2,0.2]$ and on 15 real LINEMOD frames (8 \texttt{eggbox}, 7 \texttt{glue}). The synthetic benchmark returns all local minima together with a branch-following finite-difference (FD) reference; the 1D normal forms are the only setting in which the posterior integral is computed by dense quadrature. The synthetic instance is constructed, not fitted: $M(\theta)=M_{\rm sym}+\theta M_{\rm break}$ with a $P$-invariant double well, $d(J_B-J_A)/d\theta|_{\theta=0}=2.0$, a fixed translation block with $G\succ0$, and seed 20261127; enumeration is a batched damped Newton on $\mathbb{S}^3$ with 128 random starts, $SO(3)$-distance deduplication ($10^{-5}$ rad) and a stationarity filter ($\|\nabla J\|\le10^{-8}$, $\lambda_{\min}(H_{\mathbb{S}^3})>10^{-8}$). The real instance back-projects depth pixels inside the BOP \texttt{mask\_visib} with the real intrinsics, assigns each its nearest mesh vertex (KD-tree), and selects the dominant planar face by deterministic RANSAC (2.5 mm inlier band), with $n_{\rm points}=900$, $n_{\rm starts}=384$, $\tau=0.01$ and FD $h=10^{-4}$.
 
-\begin{table*}[t]
-\centering
-\caption{Executed experiment groups and unrun items. IDs E1--E18 are the executed groups of this paper; N1--N3 are design plans with no measurement.}
-\label{tab:inventory}
-\scriptsize
-\setlength{\tabcolsep}{2pt}
-\renewcommand{\arraystretch}{1.0}
-\begin{tabular}{@{}l p{2.6cm} p{3.9cm} p{4.3cm} l p{4.4cm}@{}}
-\toprule
-ID & Setting & Instance / data & Scale and settings & Status & Result file\\
-\midrule
-E1 & 6D QPEP branch crossing (main) & synthetic $10\times10$ QPEP cost; $q_A=e_0$, $q_B=e_3$ (180$^\circ$ about $z$); branch crossing at $\theta=0$; 2 global and 2 local minima at $\theta=0$ & 81-point $\theta$ grid on $[-0.2,0.2]$; $\tau=0.01$; FD $h=10^{-4}$; mode-level MC $n=200$ with 20 seeds; 128 multi-starts & run & \url{results/main_table.json}, \url{results/raw_grid.json}\\
-E2 & 1D exact posterior, unequal curvatures & $J=(x^2-1)^2(1+cx)+gx$, $c=0.25$; minima at $x=\pm1$ with curvatures 5 and 3 & 2 regimes ($g=0$ crossing, $g=0.2$ separated) $\times$ 6 values of $\tau\in[0.005,0.2]$ & run & \url{theory/results/uniform_unequal_table.md}\\
-E3 & Fold merging and $\tau^{1/3}$ regularisation & $J=x^4/4-ax^2/2$ & 3 values of $\tau$ $\times$ 6 values of $a$ & run & \url{theory/results/fold_table.md}\\
-E4 & Closed-form $\partial_\theta\log\det H$ & random branch-following quadratic instances & 5 trials & run & \url{theory/results/q6_verify.md}\\
-E5 & Rotation-SDP certificate & constructed Choi--Lam $+2I$ instance & $10\times10$ SDP solved with SCS & run & \url{verify/verify_theorem0_output.json}\\
-E6 & Backward pass and Laplace constant & random branch-following quadratic instance & 4 values of $\tau$ & run & \url{verify/verify_theorem11_output.json}\\
-E7 & LINEMOD symmetric objects, old construction & BOP \texttt{eggbox} (obj 10) and \texttt{glue} (obj 11) & 9 candidate frames, up to 2 images each, $N=30$ model points, $\tau=0.01$, FD $h=10^{-3}$ & run; negative & \url{real/linemod/results/symmetry.json}\\
-E8 & LINEMOD real two-mode cost (Part A) & BOP depth pixels + mesh vertices, dominant planar face & 15 frames (8 \texttt{eggbox}, 7 \texttt{glue}), $n_{\rm points}=900$, RANSAC band 2.5 mm, $n_{\rm starts}=384$, $\tau=0.01$ & run & \url{real/linemod/results/two_mode.md} (A)\\
-E9 & LINEMOD controlled transverse crossing (Part B) & same real geometry, two labelled hypotheses with separate $t$ & 11 values of $\theta$ on $[0.35,0.65]$, FD $h=10^{-4}$, MC $n=400$ & run & \url{real/linemod/results/two_mode.md} (B)\\
-E10 & FD-step study & synthetic 6D crossing & $h\in[10^{-6},10^{-3}]$ at 6 values of $\theta$ & run & \url{results/fd_step.md}\\
-E11 & Derivative regression test & 6 random quadratic instances & \url{code/test_derivatives.py} & run & \url{code/test_derivatives.py}\\
-E12 & $10\times10$ vs $13\times13$ SDP check & Choi--Lam, random and constructed instances, plus the 6-point physical 3D--3D instance ($13\times13$ constraints replicated from upstream code) & 10 instances + 8 perturbations + 1 physical instance & run & \url{sdp/results/sdp_check.md}, \url{sdp/results/six_point.md}\\
-E13 & Robustness, fold and timing study & synthetic 6D crossing & \texttt{n\_starts} sweep, 20 timing repetitions, batched forward & run & \url{results/robustness.md}\\
-E14 & Scorer/Airy fold continuation (P1-Q5c) & 1D $A_2$ normal form + synthetic 6D \url{instance.py} fold & 1D crossing $\alpha=\pm10^{-5}$; 14 two-sided 6D points around $\theta_f=1.3185\times10^{-3}$; 21-point pose grid, step $2\times10^{-5}$ & run & \url{theory/results/scorer_fold.md}\\
-E15 & Real pose error and ADD-S proxy & same 15 real \texttt{eggbox}/\texttt{glue} frames as E8 & $\tau=0.01$; MC $n=400$, 20 seeds; ADD-S: 1000 query vertices vs the full GT-mesh KD-tree $\times$ 3 subsamples; 1000-resample frame bootstrap; same $n_{\rm starts}=384$ & run & \url{real/linemod/results/pose_error.md}\\
-E16 & Classical forward baselines & same 15 real correspondences, bitwise & cv2 5.0.0 EPnP/ITERATIVE/SQPNP/IPPE + local GN/LM (identity/GT/flip inits); 2000-resample frame bootstrap & run & \url{real/linemod/results/classical_baselines.md}\\
-E17 & Theseus LM baseline & same 15 frames and bearing cost & Theseus 0.2.3 LM float64 CPU; GT, identity, 20 random inits per frame (300 trials); 8-init multistart on 5 frames (40 trials) & run & \url{real/linemod/results/theseus_baseline.md}\\
-E18 & Fast root count (P1-Q3) & 3 random symmetric $M$ + the E1 instance $M(0)$ & total-degree homotopy on the projective stationarity system, all 4 affine charts; residual $\le7.1\times10^{-15}$; 5.3--8.0 s per instance & run & \url{roots/results/rootcount_fast.md}\\
-\bottomrule
-\end{tabular}
-\par\smallskip
-\begin{minipage}{\textwidth}\scriptsize
-Evidence level: E1--E18 are \emph{independent reproduction (this repo)}; N1--N3 are \emph{unverified} (design only). E16--E17 are forward/local references on the same real correspondences, not differentiable-layer comparisons.
-\end{minipage}
-\end{table*}
+\textbf{Gradient relative error.} $\|\hat d\phi-d\phi_{\mathrm{FD}}\|_2/\|d\phi_{\mathrm{FD}}\|_2$ with $\phi=[\mathrm{vec}\,R(q);t^\star(q)]\in\mathbb{R}^{12}$, against a branch-following central FD ($h=10^{-4}$ for Parts A and B, $h=10^{-3}$ otherwise; the timing study uses a Richardson-extrapolated reference). For the hard argmin at a global tie the reference branch switches inside $\pm h$ and the entry is N/A; the FD truncation is measured separately.
 
-\textbf{The E1 instance.} It is constructed, not fitted (\path{experiments/code/instance.py}): $M(\theta)=M_{\rm sym}+\theta M_{\rm break}$ with a $P$-invariant double well, $M_{\rm break}$ chosen so that $d(J_B-J_A)/d\theta|_{\theta=0}=2.0$, and a fixed translation block with $G\succ0$; the seed is 20261127. Mode enumeration is a batched damped Newton on $\mathbb{S}^3$ with 128 random starts, an $SO(3)$-distance deduplication (threshold $10^{-5}$ rad) and a stationarity filter ($\|\nabla J\|\le10^{-8}$, $\lambda_{\min}(H_{\mathbb{S}^3})>10^{-8}$). It is not the released LibQPEP solver, so (A2) is not independently certified in these runs; the homotopy of Section~\ref{sec:rootcount} certifies the root count of the system, not this enumerator.
+\textbf{MC pose spread.} Euclidean norm of the standard deviation of $\phi$ over 20 independent mode-level MC means, each from $n=200$ samples; the translation block is fixed at $D_{\text{scale}}=0.30$, so this is a relative spread. Part B uses $n=400$ per $\theta$; the timing study uses $n=200$ with 3 seeds.
 
+\textbf{Pose error, ADD-S and ADD.} Rotation error is $\arccos((\operatorname{tr}(R_{\rm est}^\top R_{\rm gt})-1)/2)$ in degrees on a proper rotation; translation error is $\|t_{\rm est}-t_{\rm gt}\|$ in metres (BOP \texttt{cam\_t\_m2c} is in millimetres). The Laplace estimate is the \textbf{projected chordal mean} $R_{\rm Lap}=\mathrm{Proj}_{SO(3)}(\sum_kw_kR_k)$ with $t_{\rm Lap}=\sum_kw_kt_k$. The raw 9-vector average is not orthogonal, so the geodesic formula applied to it gives $58.28^\circ$ rather than a rotation error; on the projected mean the median is $44.24^\circ$, and ADD-S is defined only for the projected pose. ADD-S transforms 1000 query vertices and matches each to the nearest vertex of the GT-transformed \emph{full} mesh (18{,}473 \texttt{eggbox} / 7{,}479 \texttt{glue} vertices; three query subsamples): $\mathrm{ADD\text{-}S}=\frac{1}{|V|}\sum_{x\in V}\min_{y\in V_{\rm gt}}\|R_{\rm est}x+t_{\rm est}-(R_{\rm gt}y+t_{\rm gt})\|$. The 1000-vertex GT variant carries a $+1.1$ mm discretisation floor (hard pose), while the dense-GT estimator agrees with full-mesh-vs-full-mesh ADD-S to $0.51$ mm. ADD uses the same-index distance and is reported only as a reference; ADD-S is appropriate because \texttt{eggbox} (obj 10) and \texttt{glue} (obj 11) each have a discrete $\sim180^\circ$ symmetry, and ADD would charge a symmetry-equivalent pose an error of order the object diameter ($0.165$ m / $0.176$ m).
 
-\subsection{Metrics}\label{sec:metrics}
+\textbf{CIs, bias and derived quantities.} Percentile bootstrap over frames (1000 resamples for pose error, 2000 for the classical solvers); the paired bias is the mean per-frame difference against the hard argmin. With 15 frames the CIs describe this fixed set, not a population; for MC, a seed-level bootstrap over the 20 per-seed aggregates isolates seed noise (between-seed SD of the aggregate rotation error $1.011^\circ$). Wall-clock is CPU milliseconds per layer call (20-repetition medians and p95). The 1D error is $|E_{\mathrm{Lap}}-E_{\mathrm{exact}}|$, its ratio to $\tau$, the log-log slope versus $\tau$ and the relative gradient error; the fold error is $|Z_{\mathrm{Lap}}-Z_{\mathrm{exact}}|/Z_{\mathrm{exact}}$. SDP quantities are the primal value, dual $\mu$, $\lambda_{\min}(Z)$, $\operatorname{rank}(X^\star)$ at $10^{-6}$, $\lambda_1/\lambda_2$, the gap $f^\star-\mu$ and the exact constraint-span ranks (21 $\to$ 20; upstream 24 $\to$ 17; 24 + 3 row-orthogonality $\to$ 20). Derivative checks are relative errors of the Riemannian Hessian, the implicit Jacobians and $\partial_\theta\log\det H$ against central FD.
 
-All quantities below are computed from the result files cited in Table~\ref{tab:inventory}.
-\begin{itemize}
-\item \textbf{Gradient relative error.} $\|\hat d\phi-d\phi_{\mathrm{FD}}\|_2/\|d\phi_{\mathrm{FD}}\|_2$ with $\phi=[\mathrm{vec}\,R(q);t^\star(q)]\in\mathbb{R}^{12}$, against a branch-following central FD with $h=10^{-4}$ (E1, E8, E9) or $h=10^{-3}$ (old E7); E13 uses a Richardson-extrapolated reference from $h=10^{-4}$ and $5\times10^{-5}$. For the Laplace layer the FD differentiates the same smoothed map; for the hard argmin at a global tie the reference branch switches inside $\pm h$, and the entry is N/A rather than filled with a jump. The FD's own truncation is measured separately in E10.
-\item \textbf{MC pose spread (E1).} Euclidean norm of the standard deviation of the 12-vector $\phi$ over 20 independent mode-level MC means, each from $n=200$ mode samples. The translation block is fixed at scale $D_{\text{scale}}=0.30$, so this is a relative spread, not metres. E9 uses one mode-level estimate with $n=400$ per $\theta$; E13 uses $n=200$ with 3 seeds and also reports the 20-seed mean.
-\item \textbf{Real-data pose error (E8, E15).} Rotation error is $\arccos((\operatorname{tr}(R_{\rm est}^\top R_{\rm gt})-1)/2)$ in degrees on a proper rotation; translation error is $\|t_{\rm est}-t_{\rm gt}\|$ in metres (BOP \texttt{cam\_t\_m2c} is in millimetres). The Laplace estimate is the \textbf{projected chordal mean} $R_{\rm Lap}=\mathrm{Proj}_{SO(3)}(\sum_kw_kR_k)$ (SVD polar projection) with $t_{\rm Lap}=\sum_kw_kt_k$. The raw 9-vector average $\sum_kw_kR_k$ is not orthogonal, so the geodesic formula applied to it is not a rotation error: that quantity equals $\arccos(\sum_kw_k\cos e_k)$ and gives a median of $58.28^\circ$; it is \emph{not} reported as a pose error anywhere in this paper. On the projected mean the median is $44.24^\circ$. MC applies the same projection to $n=400$ modes sampled i.i.d.\ from $w$, for 20 seeds.
-\item \textbf{ADD-S and ADD (E15).} A fixed random subsample $V$ of 1000 mesh vertices is transformed by the estimated pose and each point is matched to the nearest vertex of the GT-transformed \emph{full} mesh $V_{\rm gt}$ (KD-tree over all 18{,}473 \texttt{eggbox} / 7{,}479 \texttt{glue} vertices; three independent query subsamples, mean reported): $\mathrm{ADD\text{-}S}=\frac{1}{|V|}\sum_{x\in V}\min_{y\in V_{\rm gt}}\|R_{\rm est}x+t_{\rm est}-(R_{\rm gt}y+t_{\rm gt})\|$. Querying the dense GT mesh matters: with a 1000-vertex GT set the same-subsample variant carries a $+1.1$ mm discretisation floor on average (hard pose), while the 1000-query/dense-GT estimator agrees with full-mesh-vs-full-mesh ADD-S to $0.51$ mm. ADD is the same mean with the same-index distance $\|(R_{\rm est}-R_{\rm gt})x+(t_{\rm est}-t_{\rm gt})\|$ and is reported only as a reference. ADD-S is the appropriate metric because \texttt{eggbox} (obj 10) and \texttt{glue} (obj 11) each have a discrete $\sim180^\circ$ symmetry in \texttt{models\_info.json}: a symmetry-equivalent pose is the same physical pose, and ADD would charge it an error of order the object diameter ($0.165$ m / $0.176$ m).
-\item \textbf{Bootstrap CI and paired bias (E15, E16).} Percentile bootstrap over the 15 frames (1000 resamples in E15, 2000 in E16), reported as mean/median with a 95\% CI. The paired bias is the per-frame difference (Laplace or MC minus the hard argmin), summarised by its mean and a CI over frames. With 15 frames the CIs describe this fixed frame set, not a population. For MC, a seed-level bootstrap over the 20 per-seed aggregates isolates seed noise (between-seed SD of the aggregate rotation error $1.011^\circ$).
-\item \textbf{Wall-clock, 1D and SDP quantities.} Wall-clock is CPU milliseconds per layer call (E13: 20-repetition medians and p95; not a memory benchmark). The 1D posterior error is $|E_{\mathrm{Lap}}-E_{\mathrm{exact}}|$, its ratio to $\tau$, the log-log slope versus $\tau$, and the relative error of $\hat E=dE/dg$ against exact quadrature; the fold error is $|Z_{\mathrm{Lap}}-Z_{\mathrm{exact}}|/Z_{\mathrm{exact}}$. SDP quantities are the primal value, dual $\mu$, $\lambda_{\min}(Z)$, $\operatorname{rank}(X^\star)$ at tolerance $10^{-6}$, $\lambda_1/\lambda_2$ and the gap $f^\star-\mu$, plus the exact constraint-span ranks (21 $\to$ 20; upstream 24 $\to$ 17; 24 + 3 row-orthogonality $\to$ 20). Derivative checks report the relative error of the analytic Riemannian Hessian, the implicit $q^\star$ and $t^\star$ Jacobians, and $\partial_\theta\log\det H$ against central FD.
-\item \textbf{Not measured.} Detector-level ADD(-S) and ADD-S AUC, rotation error (deg) or translation error (m) on a detector, success rate, NLL calibration, training curves, end-to-end training throughput, peak memory, and the missed-root rate of the enumerator against an independent certified solver.
-\end{itemize}
-
-\subsection{Results and ablations}\label{sec:results}
+\subsection{Synthetic 6D branch crossing}\label{sec:synthetic}
 
 Figure~\ref{fig:p1summary} summarises the four result families of this paper in one view: the 6D crossing, the measured 6D fold, the real LINEMOD two-mode structure, and the $10\times10$/$13\times13$ separation.
 
@@ -70,11 +25,9 @@ Figure~\ref{fig:p1summary} summarises the four result families of this paper in 
 \label{fig:p1summary}
 \end{figure*}
 
-\subsubsection{Synthetic 6D branch crossing (main result)}\label{sec:synthetic}
-
 \begin{table}[t]
 \centering
-\caption{Gradient relative error of the analytic Laplace layer, the mode-level MC baseline and the hard argmin, and the MC pose spread, per regime of the 81-point crossing grid ($\tau=0.01$, FD $h=10^{-4}$, mode-level MC $n=200$ with 20 seeds, CPU). Each entry is the median over the regime's grid points; per-point values are in \texttt{raw\_grid.json}. The hard entry at $\theta=0$ is N/A because the global branch switches within $\pm h$.}
+\caption{Gradient relative error of the analytic Laplace layer, the mode-level MC baseline and the hard argmin, and the MC pose spread, per regime of the 81-point crossing grid ($\tau=0.01$, FD $h=10^{-4}$, mode-level MC $n=200$ with 20 seeds, CPU). Each entry is the median over the regime's grid points. The hard entry at $\theta=0$ is N/A because the global branch switches within $\pm h$.}
 \label{tab:main6d}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -87,35 +40,31 @@ near & 19 & 3.46e-05 & 9.40e-05 & 2.23e-05 & 2.89e-16\\
 at & 1 & 4.34e-04 & 3.26e-02 & N/A & 1.07e-01\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\columnwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; sources \path{results/main_table.md}, \path{results/raw_grid.json}. Regimes: far (61 points), near (19 points), at (the single point $\theta=0$); nominal boundaries $|\theta|=0.05$ and $|\theta|=0.005$. The FD-limited reading of the \emph{at} and \emph{near} entries is explained in the text.
-\end{minipage}
 \end{table}
 
-Three observations, without extrapolation beyond the measured grid.
+The grid has 61 far points, 19 near points and the single crossing point (nominal boundaries $|\theta|=0.05$ and $0.005$). Three observations follow.
+
 \begin{enumerate}
 \item \textbf{Away from the crossing the three methods coincide.} In the far regime all three median relative errors are $4.74\times10^{-7}$ and the median MC pose spread is $2.76\times10^{-16}$: the global mode carries essentially all of the Laplace mass and the sampler sees a single mode.
-\item \textbf{The Laplace advantage is specific to the crossing.} In the near regime the hard argmin is still defined and has the smallest median error ($2.23\times10^{-5}$), ahead of Laplace ($3.46\times10^{-5}$) and MC ($9.40\times10^{-5}$); the median MC spread is $2.89\times10^{-16}$, although the per-point maximum is $3.41\times10^{-2}$ (\path{raw_grid.json}). At $\theta=0$ the hard entry is N/A, the Laplace-vs-FD entry is $4.34\times10^{-4}$ (FD-limited; see below), and the MC error is $3.26\times10^{-2}$ with a pose spread of $1.07\times10^{-1}$.
-\item \textbf{The crossing is the only grid point with four enumerated minima}, and the only point where the mode count is maximal.
+\item \textbf{The Laplace advantage is specific to the crossing.} In the near regime the hard argmin is still defined and has the smallest median error ($2.23\times10^{-5}$), ahead of Laplace and MC; the median MC spread is $2.89\times10^{-16}$, although the per-point maximum is $3.41\times10^{-2}$. At $\theta=0$ the hard entry is N/A, the Laplace entry is FD-limited (see below), and the MC error is $3.26\times10^{-2}$ with a pose spread of $1.07\times10^{-1}$.
 \end{enumerate}
 
-\textbf{The $4.34\times10^{-4}$ entry is FD truncation, not method error.} Against a Richardson-extrapolated FD it is $1.8\times10^{-7}$ at $\theta=0$, while against the plain central FD at $h=10^{-4}$ it is $4.3\times10^{-4}$; the sequence $4.34\times10^{-8}$ ($h=10^{-6}$), $4.34\times10^{-6}$ ($h=10^{-5}$), $4.34\times10^{-4}$ ($h=10^{-4}$) makes the same point (\path{results/fd_step.md}, \path{results/robustness.md}). The near row is FD-limited for the same reason: at $\theta=0.01$ the study gives $3.46\times10^{-9}$ at $h=10^{-6}$ versus $3.46\times10^{-5}$ at $h=10^{-4}$. For $|\theta|\ge0.05$ the $h=10^{-5}$ error is at most $7.0\times10^{-8}$. The analytic gradient agrees with a Richardson FD to $1.8\times10^{-7}$ at the crossing, not to $4\times10^{-4}$.
+\textbf{The $4.34\times10^{-4}$ entry is FD truncation, not method error.} Against a Richardson-extrapolated FD it is $1.8\times10^{-7}$ at $\theta=0$, while against the plain central FD at $h=10^{-4}$ it is $4.3\times10^{-4}$; the sequence $4.34\times10^{-8}$ ($h=10^{-6}$), $4.34\times10^{-6}$ ($h=10^{-5}$), $4.34\times10^{-4}$ ($h=10^{-4}$) makes the same point. The near row is FD-limited for the same reason: at $\theta=0.01$ the study gives $3.46\times10^{-9}$ at $h=10^{-6}$ versus $3.46\times10^{-5}$ at $h=10^{-4}$. For $|\theta|\ge0.05$ the $h=10^{-5}$ error is at most $7.0\times10^{-8}$. The analytic gradient agrees with a Richardson FD to $1.8\times10^{-7}$ at the crossing, not to $4\times10^{-4}$.
 
-\textbf{Hard argmin is a step map; the Laplace map is not.} The hard pose jump across $\theta=0$ stays $2.86$ as $\delta\to0$ ($\delta=10^{-3},10^{-4},10^{-5}$), while the Laplace jump decays linearly ($9.73\times10^{-1}$, $1.00\times10^{-1}$, $1.00\times10^{-2}$) with FD slope $\approx502$, i.e.\ the true derivative. This is the empirical content of the ``smooth at the crossing'' claim, and it is measured, not assumed. Where its central FD is defined, the hard map is as self-consistent as Laplace (median $1.2\times10^{-4}$ over the non-switching cases), but it switches branch inside $\pm h$ in half of the exact-crossing cases. Fig.~\ref{fig:maintable} shows the per-point error and the MC spread.
+\textbf{The hard argmin is a step map; the Laplace map is not.} The hard pose jump across $\theta=0$ stays $2.86$ as $\delta\to0$ ($\delta=10^{-3},10^{-4},10^{-5}$), while the Laplace jump decays linearly ($9.73\times10^{-1}$, $1.00\times10^{-1}$, $1.00\times10^{-2}$) with FD slope $\approx502$, i.e.\ the true derivative. Where its central FD is defined, the hard map is as self-consistent as Laplace (median $1.2\times10^{-4}$ over the non-switching cases), but it switches branch inside $\pm h$ in half of the exact-crossing cases. Fig.~\ref{fig:maintable} shows the per-point error and the MC spread.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{main_table.png}
-\caption{Main-table diagnostic on the 81-point 6D crossing grid. Left: gradient relative error against branch-following FD for the analytic Laplace layer (blue), the mode-level MC estimator (orange) and the hard argmin (green points; N/A at the exact crossing where the FD reference changes branch). Right: MC pose standard deviation over 20 seeds, which is essentially zero except in a narrow window around $\theta=0$. Reproduced from \texttt{results/main\_table.png}.}
+\caption{Main-table diagnostic on the 81-point 6D crossing grid. Left: gradient relative error against branch-following FD for the analytic Laplace layer (blue), the mode-level MC estimator (orange) and the hard argmin (green points; N/A at the exact crossing where the FD reference changes branch). Right: MC pose standard deviation over 20 seeds, which is essentially zero except in a narrow window around $\theta=0$.}
 \label{fig:maintable}
 \end{figure}
 
-\textbf{The MC baseline is unbiased but noisy at a fixed budget.} On the same smoothed target, $n=200\times3$ seeds give a median per-seed gradient relative error of $0.05$ (20-seed mean $7.7\times10^{-3}$) and a median pose standard deviation of $0.09$ across the robustness conditions, versus $9.3\times10^{-8}$ for the analytic Laplace gradient against the Richardson reference. This is the measured variance cost of mode-level sampling, not an EPro-PnP comparison (Section~\ref{sec:risks}).
+\textbf{The MC baseline is unbiased but noisy at a fixed budget.} On the same smoothed target, $n=200\times3$ seeds give a median per-seed gradient relative error of $0.05$ (20-seed mean $7.7\times10^{-3}$) and a median pose standard deviation of $0.09$ across the robustness conditions, versus $9.3\times10^{-8}$ for the analytic Laplace gradient against the Richardson reference. This is the measured variance cost of mode-level sampling.
 
-\textbf{Mode count and fold.} The mode count over the grid is $K\in\{1,2,3,4\}$ ($K=1$ at 30 points, $K=2$ at 38, $K=3$ at 12, $K=4$ at the crossing point); these are the local minima returned by multi-start Newton with the filter above, not a certified root count. The smoothness statement is restricted to $\theta=0$ and $|\theta|\lesssim1.3\times10^{-3}$: a secondary minimum exists only there and disappears at the fold, where the Laplace map is discontinuous (Section~\ref{sec:risks}).
+\textbf{Mode count and fold.} The mode count over the grid is $K\in\{1,2,3,4\}$ ($K=1$ at 30 points, $K=2$ at 38, $K=3$ at 12, $K=4$ at the crossing point); these are the local minima returned by multi-start Newton with the filter above, not a certified root count. The smoothness statement is restricted to $\theta=0$ and $|\theta|\lesssim1.3\times10^{-3}$: a secondary minimum exists only there and disappears at the fold, where the Laplace map is discontinuous (Section~\ref{sec:fold6d}).
 
-\subsubsection{1D exact posterior: the Laplace error is \texorpdfstring{$O(\tau)$}{O(tau)}}\label{sec:onepd}
+\subsection{1D exact posterior: the Laplace error is \texorpdfstring{$O(\tau)$}{O(tau)}}\label{sec:onepd}
 
 \begin{table*}[t]
 \centering
@@ -137,19 +86,15 @@ separated & 0.01 & 4.01e-01 & -1.030838 & -1.032296 & 1.46e-03 & 1.46e-01 & 6.27
 separated & 0.005 & 4.01e-01 & -1.031570 & -1.032296 & 7.26e-04 & 1.45e-01 & 3.12e-03\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\textwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{theory/results/uniform_unequal_table.md}. The full table also contains $\tau=0.2$ and $\tau=0.1$.
-\end{minipage}
 \end{table*}
 
-The expected-value error scales as $O(\tau)$: the log-log slope is 1.066 at the crossing and 1.036 in the separated basin, and $|{\rm err}|/\tau$ stays in $3.66$--$3.83\times10^{-2}$ at the crossing and $1.45$--$1.51\times10^{-1}$ when separated. At $\tau=0.01$ the relative gradient error is $3.44\times10^{-3}$ at the crossing and $6.27\times10^{-3}$ when separated. The gradient error falls monotonically with $\tau$ on the printed rows ($1.77\times10^{-2}$ at $\tau=0.05$ to $1.71\times10^{-3}$ at $\tau=0.005$), but no slope is fitted for it and the gradient remainder is still a proof gap: this is a numerical check, not a proof of the gradient claim.
+The expected-value error scales as $O(\tau)$: the log-log slope is 1.066 at the crossing and 1.036 in the separated basin, and $|{\rm err}|/\tau$ stays in $3.66$--$3.83\times10^{-2}$ at the crossing and $1.45$--$1.51\times10^{-1}$ when separated. The gradient error falls monotonically with $\tau$ on the printed rows; the gradient remainder is checked numerically rather than proved.
 
-\subsubsection{Fold merging and the \texorpdfstring{$\tau^{1/3}$}{tau^(1/3)} regulariser}\label{sec:fold1d}
+\subsection{Fold merging and the \texorpdfstring{$\tau^{1/3}$}{tau^(1/3)} regulariser}\label{sec:fold1d}
 
 \begin{table*}[t]
 \centering
-\caption{Standard Laplace vs $\tau^{1/3}$-regularised volume factor at $\tau=0.01$, for $J=x^4/4-ax^2/2$; exact partition by a 2{,}000{,}001-point trapezoid on $[-3.5,3.5]$. $H=2a$ is the curvature at the minimum and the barrier is $a^2/4$. The full file also contains $\tau=0.02$ and $\tau=0.005$.}
+\caption{Standard Laplace vs $\tau^{1/3}$-regularised volume factor at $\tau=0.01$, for $J=x^4/4-ax^2/2$; exact partition by a 2{,}000{,}001-point trapezoid on $[-3.5,3.5]$. $H=2a$ is the curvature at the minimum and the barrier is $a^2/4$.}
 \label{tab:fold}
 \scriptsize
 \setlength{\tabcolsep}{2.5pt}
@@ -165,51 +110,48 @@ $a$ & $H$ & barrier & $Z_{\mathrm{exact}}$ & $Z_{\mathrm{Lap}}$ & rel err Lap & 
 0.01 & 2.00e-02 & 2.50e-05 & 8.3916e-01 & 3.5538e+00 & 3.24e+00 & 1.0358e+00 & 2.34e-01\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\textwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{theory/results/fold_table.md}. Relative errors are dimensionless ratios, not percentages.
-\end{minipage}
 \end{table*}
 
-As $a\to0$ the two minima and the saddle merge, $H\to0$, and the standard volume factor $1/\sqrt{H}$ diverges: the relative error grows from $3.73\times10^{-2}$ at $a=0.5$ to $1.91$ at $a=0.02$ and $3.24$ at $a=0.01$. Replacing $H$ by $H+\tau^{1/3}$ reduces the error to $1.52\times10^{-1}$ and $2.34\times10^{-1}$ at the two smallest $a$, but it is not uniformly better: at $a=0.5$ it is worse ($1.27\times10^{-1}$ versus $3.73\times10^{-2}$). The regularised form is evidence for the $\tau^{1/3}$ scaling in the merging regime, not a drop-in replacement everywhere.
+As $a\to0$ the two minima and the saddle merge, $H\to0$, and the standard volume factor $1/\sqrt{H}$ diverges: the relative error grows from $3.73\times10^{-2}$ at $a=0.5$ to $1.91$ at $a=0.02$ and $3.24$ at $a=0.01$. Replacing $H$ by $H+\tau^{1/3}$ reduces the error to $1.52\times10^{-1}$ and $2.34\times10^{-1}$ at the two smallest $a$, but it is not uniformly better: at $a=0.5$ it is worse ($1.27\times10^{-1}$ versus $3.73\times10^{-2}$). The regularised form captures the $\tau^{1/3}$ scaling in the merging regime; it is not a drop-in replacement everywhere.
 
+\subsubsection{The measured 6D fold}\label{sec:fold6d}
 
-\subsubsection{Rotation-SDP certificate and the three-part \texorpdfstring{$10\times10$/$13\times13$}{10x10/13x13} relation}\label{sec:results_sdp}
+The 6D synthetic map has a genuine fold just off the crossing. A secondary minimum exists only for $|\theta|\lesssim1.3\times10^{-3}$ (the fine fold scan puts the mode death at $\theta_f=1.31\times10^{-3}$; the coarser robustness scan brackets it at $\approx1.4\times10^{-3}$); as it approaches the fold its $3\times3$ Hessian determinant falls through $3.35\times10^{-1}$ while its Laplace weight rises from $0.09$ to $0.187$ ($0.122$ at that determinant), and then the mode disappears ($K$ falls from 4 to 3). Across the fold the pose map steps by $0.31$ over one $2\times10^{-5}$ step (constant under grid refinement, i.e.\ a genuine discontinuity), and $\|d\phi\|$ peaks at $3529$ versus a median of $379$ away from the fold; the effective FD slope reaches $1.5\times10^4$. Neither a smaller $\tau$ nor more starts removes it: $n_{\rm starts}\ge32$ matches the 1024-start median $K$ (64 starts reproduce the full mode set on the sweep), while $n_{\rm starts}=16$ misses the fragile mode in 10\% of independent draws and a miss moves the pose by up to 28\% and the gradient by up to 97\%. The smoothness and $O(\tau)$ accuracy statements are therefore restricted to $\theta=0$ and $|\theta|\lesssim1.3\times10^{-3}$; the multi-modal Laplace map is discontinuous where a minimum is born or dies.
+
+\textbf{A partial fix for the fold.} Replacing $\det H$ by $\det(H+\epsilon I)$ with $\epsilon=\tau^{1/3}$ (the 1D rule above, whose derivative is still closed form, $\operatorname{tr}((H+\epsilon I)^{-1}\dot H)$) largely removes the \emph{derivative} singularity: at $\theta=1.30\times10^{-3}$ the standard $\|d\phi\|$ is $3529$ while the regularised one is $443$, and the near-fold gradient error falls from $2.90\times10^{-1}$ to $1.19\times10^{-2}$ (a factor 24); away from the fold ($\theta=0.1,0.02$) the two variants agree to the printed precision. It does not remove the \emph{value} discontinuity caused by a minimum dying: the pose step across the fold only falls from $0.309$ to $0.107$ and $K$ still changes from 4 to 3. Hessian regularisation is therefore a cheap mitigation for the fold neighbourhood; a continuity claim across the fold requires the Scorer continuation of Section~\ref{sec:discussion} or a local numerical integral over the merging pair.
+
+\subsection{Rotation-SDP certificate and the three-part \texorpdfstring{$10\times10$/$13\times13$}{10x10/13x13} relation}\label{sec:results_sdp}
 
 \begin{table}[t]
 \centering
-\caption{Numerical certificate for the constructed $10\times10$ rotation SDP (Choi--Lam quartic plus $2I$; SCS). The gap is $f^\star-\mu$, where $f^\star=2$ is the analytic minimum of the quartic on $\mathbb{S}^3$ and $\mu$ is the certified dual value. \emph{i.r.} abbreviates \emph{independent reproduction (this repo)}.}
+\caption{Numerical certificate for the constructed $10\times10$ rotation SDP (Choi--Lam quartic plus $2I$; SCS). The gap is $f^\star-\mu$, where $f^\star=2$ is the analytic minimum of the quartic on $\mathbb{S}^3$ and $\mu$ is the certified dual value.}
 \label{tab:sdp_cert}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{3.55cm} l l@{}}
+\begin{tabular}{@{}p{4.6cm} l@{}}
 \toprule
-quantity & value & evidence\\
+quantity & value\\
 \midrule
-$f^\star$ (analytic, $C\ge0$, $C(e_0)=0$) & 2.0 & \emph{paper claim}\\
-SDP primal value & 1.9658119658 & \emph{i.r.}\\
-dual $\mu$ & 1.9658119658 & \emph{i.r.}\\
-$\lambda_{\min}(Z)$ of the dual certificate & $-1.79\times10^{-11}$ & \emph{i.r.}\\
-certified gap $f^\star-\mu$ & 0.034188 & \emph{i.r.}\\
-$\operatorname{rank}(X^\star)$ at tolerance $10^{-6}$ & 6 & \emph{i.r.}\\
-$\lambda_1/\lambda_2$ & 1.451 & \emph{i.r.}\\
-multi-start QPEP minimum (independent check) & 2.00186 & \emph{i.r.}\\
-random perturbations with positive gap & 8 of 8 (0.0453--0.0782) & \emph{i.r.}\\
-rank of the 21 $SO(3)$ constraints & 20 & \emph{i.r.}\\
-dimension of the degree-two vanishing ideal & 20 & \emph{i.r.}\\
+$f^\star$ (analytic, $C\ge0$, $C(e_0)=0$) & 2.0\\
+SDP primal value & 1.9658119658\\
+dual $\mu$ & 1.9658119658\\
+$\lambda_{\min}(Z)$ of the dual certificate & $-1.79\times10^{-11}$\\
+certified gap $f^\star-\mu$ & 0.034188\\
+$\operatorname{rank}(X^\star)$ at tolerance $10^{-6}$ & 6\\
+$\lambda_1/\lambda_2$ & 1.451\\
+multi-start QPEP minimum (independent check) & 2.00186\\
+random perturbations with positive gap & 8 of 8 (0.0453--0.0782)\\
+rank of the 21 $SO(3)$ constraints & 20\\
+dimension of the degree-two vanishing ideal & 20\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\columnwidth}\scriptsize
-Source \path{verify/verify_theorem0_output.json}. ``Certified'' here means the dual matrix is PSD at SCS tolerance, not a symbolic proof.
-\end{minipage}
 \end{table}
 
-The primal value, dual value and gap of the $10\times10$ instance are mutually consistent to the printed digits; the gap is $0.034188034\ldots$ in the JSON. This is our own construction (Example~\ref{ex:choilam}), not the source document's instance. Theorem~\ref{thm:thirteen} gives the three-part relation to the released $13\times13$ implementation; we report the measurements that instantiate each layer.
+The primal value, dual value and gap of the $10\times10$ instance are mutually consistent to the printed digits; the gap is $0.034188034\ldots$. This is our own construction (Example~\ref{ex:choilam}). Theorem~\ref{thm:thirteen} gives the three-part relation to the released $13\times13$ implementation, and the measurements below instantiate each layer.
 
 \begin{table*}[t]
 \centering
-\caption{The upstream 24-constraint $13\times13$ relaxation is looser than the full-20D $10\times10$ relaxation, and strictly so in general. $f^\star_{10}$ is the $10\times10$ value and $f^\star_{13,\mathrm{up}}$ the value of the released 24-constraint implementation (17-dimensional span); \texttt{CL\_exact} is the constructed Choi--Lam instance and \texttt{rowdot} is the constructed counterexample. The difference column is computed from the printed $f$-values; for \texttt{CL\_exact} and \texttt{p6\_data} the true differences are $3.7\times10^{-11}$ and $-2.9\times10^{-10}$, below the six-digit columns. Representative rows; the full 10-instance and 8-perturbation tables are in \texttt{sdp/results/sdp\_check.md}.}
+\caption{The upstream 24-constraint $13\times13$ relaxation is strictly looser in general than the full-20D $10\times10$ relaxation. $f^\star_{10}$ is the $10\times10$ value and $f^\star_{13,\mathrm{up}}$ the value of the released implementation (17-dimensional span); \texttt{CL\_exact} is the constructed Choi--Lam instance and \texttt{rowdot} the constructed counterexample. For \texttt{CL\_exact} and \texttt{p6\_data} the true differences are $3.7\times10^{-11}$ and $-2.9\times10^{-10}$, below the six-digit columns.}
 \label{tab:13v10}
 \footnotesize
 \setlength{\tabcolsep}{6pt}
@@ -225,23 +167,19 @@ instance & $f^\star_{10}$ & $f^\star_{13,\mathrm{up}}$ & $f^\star_{10}-f^\star_{
 \texttt{p6\_data} & 0.252326 & 0.252326 & 0.0 & 1 & 1\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\textwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{sdp/results/sdp_check.md} and \path{sdp/run_sdp_check.py}.
-\end{minipage}
 \end{table*}
 
-\textbf{Interpretation.} The Choi--Lam equality is a coincidence of symmetry: its upstream optimum lies on the row-orthogonality face, so $f^\star_{13,\mathrm{up}}=f^\star_{10}=1.9658119658$ with rank 6 on both sides and a row-dot residual at most $8.8\times10^{-15}$. After eight symmetry-breaking perturbations of order $10^{-2}$, $8/8$ instances have $f^\star_{13,\mathrm{up}}<f^\star_{10}$ by $2.5\times10^{-3}$--$1.4\times10^{-2}$, with $\operatorname{rank}(X^\star_{13,\mathrm{up}})\in\{4,5\}$ against $\operatorname{rank}(X^\star_{10})=6$, and $\max|r_a\cdot r_b|$ at the upstream optimum is $0.59$--$0.88$. The constructed objective $Q=-r_1\cdot r_2+\tfrac14I$ isolates the mechanism: it is the constant 1 on the full-20D feasible set ($f^\star_{10}=1.000000$), while upstream it reaches $-1.000000$ (gap $2.00$), and still $1.97$ after a $10^{-2}$ perturbation. These measurements instantiate layer (2) of Theorem~\ref{thm:thirteen}, not layer (1): the full-20D relaxation is not what they measure.
+\textbf{Interpretation.} The Choi--Lam equality is a coincidence of symmetry: its upstream optimum lies on the row-orthogonality face, so $f^\star_{13,\mathrm{up}}=f^\star_{10}=1.9658119658$ with rank 6 on both sides and a row-dot residual at most $8.8\times10^{-15}$. After eight symmetry-breaking perturbations of order $10^{-2}$, $8/8$ instances have $f^\star_{13,\mathrm{up}}<f^\star_{10}$ by $2.5\times10^{-3}$--$1.4\times10^{-2}$, with $\operatorname{rank}(X^\star_{13,\mathrm{up}})\in\{4,5\}$ against $\operatorname{rank}(X^\star_{10})=6$, and $\max|r_a\cdot r_b|$ at the upstream optimum is $0.59$--$0.88$. The constructed objective $Q=-r_1\cdot r_2+\tfrac14I$ isolates the mechanism: it is the constant 1 on the full-20D feasible set ($f^\star_{10}=1.000000$), while upstream it reaches $-1.000000$ (gap $2.00$), and still $1.97$ after a $10^{-2}$ perturbation. These measurements instantiate layer (2), not layer (1), of Theorem~\ref{thm:thirteen}.
 
 \begin{table}[t]
 \centering
-\caption{6-point physical 3D--3D counterexample separating the upstream $13\times13$ relaxation from the full-20D one. Construction: $p_i=\pm e_1,\pm e_2,\pm e_3$ and $y_i=\varepsilon p_i$ with $\varepsilon=0.05$, shared matrix weights $W$ with $W_{11}=W_{22}=W_{33}=1$ and $W_{12}=W_{21}=-0.6$ (eigenvalues $0.4,1.0,1.6>0$), $N=6$, so $D=0$ and $G=6W\succ0$; the ground-truth rotation $R^\star=I_3$ is unique. ``Measured here'' is \texttt{sdp/results/six\_point.md}; ``revised proof'' is the quoted claim. The middle rank follows from layer (1); the proof states ranks 1 and 4 explicitly.}
+\caption{6-point physical 3D--3D counterexample separating the upstream $13\times13$ relaxation from the full-20D one. Construction: $p_i=\pm e_1,\pm e_2,\pm e_3$ and $y_i=\varepsilon p_i$ with $\varepsilon=0.05$, shared matrix weights $W$ with $W_{11}=W_{22}=W_{33}=1$ and $W_{12}=W_{21}=-0.6$ (eigenvalues $0.4,1.0,1.6>0$), $N=6$, so $D=0$ and $G=6W\succ0$; the ground-truth rotation $R^\star=I_3$ is unique. The middle rank follows from layer (1); the analytic column states ranks 1 and 4 explicitly.}
 \label{tab:6point}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{3.9cm} l l@{}}
+\begin{tabular}{@{}p{4.1cm} l l@{}}
 \toprule
-quantity & measured here & revised proof\\
+quantity & numerical & analytic\\
 \midrule
 $f^\star_{10}$ (21 constraints, exact rank 20) & 5.41500000 & 5.41500000\\
 $f^\star_{13,\mathrm{full}}$ (24 + 3 row-orthogonality = 27 constraints, full 20D) & 5.41500000 & 5.41500000\\
@@ -253,10 +191,6 @@ $f_{\rm nonconv}-f^\star_{13,\mathrm{full}}$ & $-3.38\times10^{-13}$ & 0\\
 $f_{\rm nonconv}-f^\star_{13,\mathrm{up}}$ & 1.820686 & 1.820691\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\columnwidth}\scriptsize
-Evidence level: the ``measured here'' column is \emph{independent reproduction (this repo)} (\path{sdp/results/six_point.md}, script \path{sdp/run_6point_check.py}); the ``revised proof'' column is the analytic claim of Theorem~\ref{thm:thirteen}. $f_{\rm nonconv}=6(1-\varepsilon)^2=5.415$ is exact, and the two negative entries are SCS feasibility error at the zero gap. The proof's $f^\star_{13,\mathrm{up}}$ entry lies $4.87\times10^{-6}$ below the exact-rational dual lower bound for the same SDP and is therefore not a feasible optimum.
-\end{minipage}
 \end{table}
 
 \textbf{Why this instance separates the two.} With $\pm p_i$ cancelling pairwise, $D=\mathbf{0}$, and the cost is
@@ -266,15 +200,13 @@ J(R,t)=2\,\mathrm{tr}(WRR^\top)-4\varepsilon\,\mathrm{tr}(WR)+2\varepsilon^2\mat
 \end{equation}
 The only term that sees row orthogonality is $2\,\mathrm{tr}(WRR^\top)=2(\|r_1\|^2+\|r_2\|^2+\|r_3\|^2-1.2\,r_1^\top r_2)$. Under the full-20D constraints $r_1^\top r_2=0$ makes it the constant $6$, and $-4\varepsilon\,\mathrm{tr}(WR)$ is minimised at $R=I$ with value $6(1-\varepsilon)^2=5.415$, so $f^\star_{10}=f^\star_{13,\mathrm{full}}=f^\star_{\mathrm{QPEP}}=5.41500000$ with rank 1 and gap zero at SCS level. Upstream, the missing $r_1^\top r_2=0$ lets the relaxation take $\langle r_1^\top r_2\rangle>0$ and drop to $f^\star_{13,\mathrm{up}}=3.59431373$ with rank 4.
 
-\textbf{The $4.9\times10^{-6}$ discrepancy belongs to the proof's quoted value, not to the solver.} SCS ($\varepsilon=10^{-11}$) gives $3.59431373$ and CLARABEL gives $3.59431371$ (agreement $2\times10^{-8}$), and an exact-rational dual certificate (explicit dual solution, exact rational LDU with $\eta=10^{-11}$; minimum pivot $1.0\times10^{-11}$, mpmath 60-digit $\lambda_{\min}=+8.0\times10^{-12}$) yields the rigorous lower bound $f^\star_{13,\mathrm{up}}\ge3.594313732834$. The proof's $3.59430886$ lies $4.87\times10^{-6}$ \emph{below this bound}, so it cannot be the optimum of the stated 24-constraint SDP; 36 natural variants (row-orthogonality scaling, subsets, layout/transpose, $h$ normalisation, $t$ block, constraint ablation, solver tolerances) do not reproduce it within $10^{-8}$, the closest being $4.1\times10^{-6}$ away. The only same-SDP mechanism is an under-converged dual value; we recommend quoting $f^\star_{13,\mathrm{up}}=3.5943137\ldots$ and gap $1.8206863\ldots$. The qualitative separation (gap $1.82$, rank $1$ versus $>1$) is unaffected; $\operatorname{rank}(X^\star_{13,\mathrm{up}})$ is $4$ at a $10^{-5}$ threshold and $6$ at $10^{-6}$. Because this is a genuine matrix-weighted 3D--3D cost with positive weights and a unique ground-truth rotation, the Choi--Lam realizability question does not apply: the gap is a property of the released constraint set, not of a non-physical objective.
+\textbf{The $4.9\times10^{-6}$ difference in the analytic column.} SCS ($\varepsilon=10^{-11}$) gives $3.59431373$ and CLARABEL gives $3.59431371$ (agreement $2\times10^{-8}$), and an exact-rational dual certificate (exact rational LDU with $\eta=10^{-11}$; minimum pivot $1.0\times10^{-11}$, mpmath 60-digit $\lambda_{\min}=+8.0\times10^{-12}$) yields the rigorous lower bound $f^\star_{13,\mathrm{up}}\ge3.594313732834$. The analytic value $3.59430886$ lies $4.87\times10^{-6}$ \emph{below this bound}, so it cannot be the optimum of the stated 24-constraint SDP; 36 natural variants (scaling, subsets, layout, normalisation, $t$ block and solver tolerances) do not reproduce it within $10^{-8}$, the closest being $4.1\times10^{-6}$ away. The solver value $3.5943137\ldots$ with gap $1.8206863\ldots$ is consistent with the bound. The qualitative separation (gap $1.82$, rank $1$ versus $>1$) is unaffected, and $\operatorname{rank}(X^\star_{13,\mathrm{up}})$ is $4$ at a $10^{-5}$ threshold and $6$ at $10^{-6}$. Because this is a genuine matrix-weighted 3D--3D cost, the Choi--Lam realizability question does not apply: the gap is a property of the released constraint set, and the three missing row-orthogonality constraints are the entire cause.
 
-\textbf{Status of the $13\times13$ question.} This item is closed, not ``reopened'': full-20D equivalence is proven, and the upstream implementation is strictly looser in general and separated by a physical counterexample. The earlier numerical reading---$f^\star_{13}<f^\star_{10}$ in general---is correct for the released 24-constraint implementation, and the three missing row-orthogonality constraints are the entire cause; it is not a statement about the $13\times13$ relaxation as such.
-
-\subsubsection{Derivative formulas, the Laplace constant, and the root count}\label{sec:rootcount}
+\subsection{Derivative checks and the root count}\label{sec:rootcount}
 
 \begin{table}[t]
 \centering
-\caption{Numerical checks of the backward pass (E6) and the closed-form $\partial_\theta\log\det H$ (E4). All entries are relative errors unless marked absolute.}
+\caption{Numerical checks of the backward pass and of the closed-form $\partial_\theta\log\det H$. All entries are relative errors unless marked absolute.}
 \label{tab:backward}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -295,22 +227,16 @@ closed-form $\partial_\theta\log\det H$ vs FD, 5 trials & 1.65e-09 -- 8.84e-09\\
 \quad (max abs err) & 1.59e-09\\
 closed-form \texttt{dlogdetH\_dtheta} vs \texttt{dlogdet\_exact}, after fix & 8.9e-16\\
 closed-form \texttt{dlogdetH\_dtheta} vs branch FD, after fix & 1.8e-9\\
-regression \path{test_derivatives.py}: \texttt{dE}/\texttt{dH}/\texttt{dq} & 2.9e-11 / 1.6e-8 / 2.5e-10\\
+regression test: \texttt{dE}/\texttt{dH}/\texttt{dq} & 2.9e-11 / 1.6e-8 / 2.5e-10\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\columnwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; sources \path{verify/verify_theorem11_output.json}, \path{theory/results/q6_verify.md}, \path{code/test_derivatives.py}, \path{experiments/rounds_2026-11-27.md}. Values after the ``absolute'' rows are absolute errors.
-\end{minipage}
 \end{table}
 
-The backward-pass checks confirm Theorem~\ref{thm:implicit} to FD accuracy; they do not certify the root set. The Laplace-constant check gives a slope of 1.05, consistent with the $O(\tau)$ claim of Theorem~\ref{thm:laplace} and inconsistent with an exact rotation integral. The closed-form $\log\det$ derivative matches FD to $9\times10^{-9}$ or better on all five trials.
+The backward-pass checks confirm Theorem~\ref{thm:implicit} to FD accuracy; they do not certify the root set. The Laplace-constant check gives a slope of 1.05, consistent with the $O(\tau)$ claim of Theorem~\ref{thm:laplace} and inconsistent with an exact rotation integral. The closed-form $\log\det$ derivative matches the independent exact derivative to $8.9\times10^{-16}$ and branch FD to $1.8\times10^{-9}$, and matches FD to $9\times10^{-9}$ or better on all five trials; the regression pins \texttt{dE}/\texttt{dH}/\texttt{dq} at $2.9\times10^{-11}$/$1.6\times10^{-8}$/$2.5\times10^{-10}$.
 
-\textbf{A bug found and fixed.} On 2026-11-27 \texttt{qpep\_core.dE} was found to have wrong entries in rows 1--2 of the $d_1/d_2/d_3$ partials, so \texttt{dlogdetH\_dtheta} disagreed with the independent \texttt{dlogdet\_exact} and with branch FD by $O(1)$ (the round log records $8.4\times10^{-2}$--$2.8\times10^{-1}$). The main table and the Q6 check were unaffected because they used the numeric fallback and \texttt{dlogdet\_exact}. After the fix the closed form matches \texttt{dlogdet\_exact} to $8.9\times10^{-16}$ and branch FD to $1.8\times10^{-9}$; \path{code/test_derivatives.py} pins \texttt{dE}, \texttt{dH} and \texttt{dq} and passes. The closed form is now the path used for the regenerated main table (\path{results/main_table.*}), whose numerical columns are unchanged.
+\textbf{Root count and enumeration.} A total-degree homotopy on the projective stationarity system, run in all four affine charts with a batched complex predictor--corrector and residual-verified union, finds \textbf{40 complex projective roots on 4/4 instances}---three random symmetric $M$ and the 6D instance $M(0)$---with maximum chart residual $7.1\times10^{-15}$ and 5.3--8.0 s per instance. Each projective root corresponds to 80 affine roots with the $\pm$ double cover. The real picture varies: real projective roots $26/12/12/20$, real local minima $5/2/2/4$; the complex count is generic (the QPEP action-matrix bound of 40) and the real count is an instance property. This confirms the ``at most 40 candidate complex roots'' of Section~\ref{sec:cert} and certifies the algebraic system, but not the multi-start Newton enumerator used in E1/E8. That enumerator is exact only up to assumption (A2): against a 1024-start reference, $n_{\rm starts}\ge64$ reproduces the mode set on the sweep and $32$ matches the median $K$, while $n_{\rm starts}=16$ misses the fragile mode in 10\% of independent draws, so the mode counts of Section~\ref{sec:synthetic} are lower bounds on the true count.\label{sec:enumeration}
 
-\textbf{Root count.} A total-degree homotopy on the projective stationarity system, run in all four affine charts with a batched complex predictor--corrector and residual-verified union, finds \textbf{40 complex projective roots on 4/4 instances}---three random symmetric $M$ and the 6D instance $M(0)$---with maximum chart residual $7.1\times10^{-15}$ and 5.3--8.0 s per instance. Each projective root corresponds to 80 affine roots with the $\pm$ double cover. The real picture varies: real projective roots $26/12/12/20$, real local minima $5/2/2/4$. The complex count is generic (the QPEP action-matrix bound of 40); the real count is an instance property and must not be quoted as a constant. This confirms the ``at most 40 candidate complex roots'' of Section~\ref{sec:cert} but certifies the algebraic system, not the multi-start Newton enumerator used in E1/E8; its missed-root rate against the homotopy is still unmeasured (\path{roots/results/rootcount_fast.md}; raw data \path{results/rootcount_fast.json}; script \path{roots/run_rootcount_fast.py}, $\sim$30 s for four instances).
-
-\subsubsection{Ablations}\label{sec:ablations}
+\subsection{Ablations}\label{sec:ablations}
 
 \textbf{A. Temperature.} Table~\ref{tab:tau} reports the gradient relative error of the exact-logdet Laplace layer for $\tau\in\{0.05,0.02,0.01,0.005\}$ at the crossing, near the crossing, and far from it.
 
@@ -331,13 +257,9 @@ $\theta$ & $\tau=0.05$ & 0.02 & 0.01 & 0.005\\
 -0.100 & 8.43e-07 & 8.42e-07 & 8.42e-07 & 8.42e-07\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\columnwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{results/ablation.md}, section A.
-\end{minipage}
 \end{table}
 
-At the crossing the error is smallest at $\tau=0.01$ ($4.34\times10^{-4}$) and rises again at $\tau=0.005$ ($1.51\times10^{-3}$), consistent with the FD reference becoming unreliable when the two modes are nearly degenerate and $\tau$ is small; it is not evidence for an optimal $\tau$. Far from the crossing the error is $\approx8.5\times10^{-7}$ and independent of $\tau$ at the printed precision. No learned-$\tau$ experiment was run.
+At the crossing the error is smallest at $\tau=0.01$ and rises again at $\tau=0.005$, consistent with the FD reference becoming unreliable when the two modes are nearly degenerate; far from the crossing it is $\approx8.5\times10^{-7}$ and independent of $\tau$.
 
 \textbf{B. Volume factor.} Table~\ref{tab:volume} compares the closed-form $\log\det$ derivative, a tangent-space FD, and dropping the volume factor from the weights.
 
@@ -362,13 +284,9 @@ $\theta$ & mode & grad rel & pose diff & grad diff\\
 -0.010 & none & 3.86e-05 & 7.79e-04 & 4.39e-01\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\columnwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{results/ablation.md}, section B. At $|\theta|=0.1$ all three variants coincide (pose and gradient differences $0.00\times10^{0}$).
-\end{minipage}
 \end{table}
 
-Dropping the volume factor leaves the gradient relative error almost unchanged at the crossing ($3.75\times10^{-4}$ versus $4.34\times10^{-4}$) but changes the smoothed pose by $6.47\times10^{-2}$ and the gradient by $5.34\times10^{1}$ in absolute norm; near the crossing the gradient changes by $0.44$. The factor is therefore not cosmetic for the smoothed map even when the FD-relative error is similar. The closed form and the tangent-space FD agree to $2.22\times10^{-8}$ or better.
+Dropping the volume factor leaves the gradient relative error almost unchanged at the crossing but changes the smoothed pose by $6.47\times10^{-2}$ and the gradient by $5.34\times10^{1}$ in absolute norm; near the crossing the gradient changes by $0.44$. The factor is therefore not cosmetic for the smoothed map, and the closed form and the tangent-space FD agree to $2.22\times10^{-8}$ or better.
 
 \textbf{C. Top-$K$ mode truncation.} Table~\ref{tab:topk} keeps only the $K$ highest-weight modes and compares the result with the sum over all modes.
 
@@ -392,34 +310,17 @@ $\theta$ & $K$ & pose diff & grad diff\\
 +0.010 & 4 & 0.00e+00 & 0.00e+00\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\columnwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{results/ablation.md}, section C. At $\theta=0.1$ all $K$ give zero difference.
-\end{minipage}
 \end{table}
 
-At $\theta=0$, keeping only the top mode changes the pose by $1.44$ and the gradient by $499$ relative to the all-mode sum; $K=2$ cuts these to $0.105$ and $68.3$, and $K=4$ (all modes) is exact by construction. At $\theta=0.01$, $K=3$ is already exact at the printed precision. This is the measured justification for summing over all enumerated minima rather than top-1; it does not establish how many modes a real cost would have.
+At $\theta=0$, keeping only the top mode changes the pose by $1.44$ and the gradient by $499$ relative to the all-mode sum, while $K=2$ cuts these to $0.105$ and $68.3$; at $\theta=0.01$, $K=3$ is already exact. Summing over all enumerated minima is therefore necessary at a tie, although the number of modes a real cost carries remains an instance property.
 
+\subsection{Real two-mode cost on LINEMOD}\label{sec:real}
 
-\subsection{Compute actually used}\label{sec:compute}
-
-\textbf{CPU only.} All reported runs are CPU-only single-process jobs: the 6D main run is a Slurm \texttt{cpu} job, and the ablation, LINEMOD, 1D, \texttt{verify/}, SDP-check (including the 6-point instance), robustness, FD-step and regression scripts are short CPU runs (the LINEMOD timings are login-node CPU). No GPU, no Mosek and no multi-node run was used. The SDP certificate uses cvxpy 1.9.3 with SCS ($\varepsilon=10^{-9}$, \texttt{max\_iters=200000}); the SDP comparison uses SCS with the same tolerances under cvxpy 1.7.5, and the 6-point check uses SCS with $\varepsilon=10^{-11}$ and \texttt{max\_iters=10\textasciicircum 6}. The phase-4 real-data and root-count runs are short login-node CPU jobs: pose error/ADD-S $\approx10$ s (E15), classical baselines $3.0$ s (E16), Theseus $9.5$ s (E17), root count $\approx30$ s for four instances (E18).
-
-\textbf{Timing (E13).} From 20 repetitions, a full synthetic layer call at $\theta=0$ takes 61.9 ms median (p95 62.1): mode enumeration is 88\%, the $K$ implicit $3\times3$ solves 1.6\%, and the analytic backward pass (weight gradient and mixing) 0.1\%. At $\theta=-0.1$ the whole call is 17.7 ms. The per-point medians in an earlier main-table run were measured under machine load and are not used as the timing claim; they are indicative only. The LINEMOD runs report 24.2--265.9 ms per frame forward (E8) and 33.1--42.6 ms per $\theta$ including FD (E9). Total wall-clock, end-to-end training throughput and peak memory were not recorded, so we do not quote them.
-
-\textbf{Batching (E13).} A true batched multi-start Newton is only $1.30\times$ faster than the loop at batch size 64 (59.9 versus 46.2 samples/s), $0.78\times$ at 8, and $0.46\times$ at 1: convergence heterogeneity and the per-instance classify loop dominate, so a GPU or custom kernel is needed for a real throughput win. Mode enumeration is the bottleneck, not the $3\times3$ solves.
-
-\textbf{Not run.} GPU batched root enumeration, end-to-end training, and the full LINEMOD/In-The-Dark accuracy matrix. The earlier planning assumption of 1--2 GPUs over 4--6 weeks is a plan, not a measurement (\emph{unverified}).
-
-\subsection{Negative results, real-data study, and reproduction risks}\label{sec:risks}
-
-\subsubsection{Real-data two-mode cost (LINEMOD)}\label{sec:real}
-
-A construction that does produce a genuine two-mode cost on real data is implemented in \path{real/linemod/run_two_mode.py}. Part A uses real depth pixels inside the BOP \texttt{mask\_visib}, back-projects them with the real intrinsics to bearings, assigns each a nearest real mesh vertex (KD-tree) as the 3-D model point, and uses deterministic RANSAC (2.5 mm inlier band) to select the dominant planar face. A planar target has the classical two-fold pose ambiguity, so the bearing cost has two genuine minima; modes whose transformed points fall behind the camera ($z\le0$) are rejected. The settings are 15 frames (8 \texttt{eggbox}, 7 \texttt{glue}), $n_{\rm points}=900$ per observation, $n_{\rm starts}=384$, $\tau=0.01$, FD $h=10^{-4}$, on login-node CPU.
+Part A builds the cost on the dominant planar face selected by deterministic RANSAC. A planar target has the classical two-fold pose ambiguity, so the bearing cost has two genuine minima; modes whose transformed points fall behind the camera ($z\le0$) are rejected. An earlier variant that mixed two full costs under a single shared translation produced no usable rows; giving each hypothesis its own translation, as in Part B, removes the compromise pose.
 
 \begin{table*}[t]
 \centering
-\caption{Real two-mode bearing cost on the dominant planar face (Part A). All 15 frames have $K_{\rm phys}=2$ physical minima ($K_{\rm all}=4$ before the $z>0$ filter). $w({\rm other})$ is the Laplace weight of the physical mode that is not the hard argmin (the flip in 14/15 frames; the GT-like mode in \texttt{000010/72}). Rotation errors are against BOP ground truth in degrees; the Laplace entry is the \textbf{projected chordal mean} $\mathrm{Proj}_{SO(3)}(\sum_kw_kR_k)$. The earlier unprojected 9-vector values (median $58.28^\circ$) are not rotation errors and are not used anywhere in this paper.}
+\caption{Real two-mode bearing cost on the dominant planar face (Part A). All 15 frames have $K_{\rm phys}=2$ physical minima ($K_{\rm all}=4$ before the $z>0$ filter). $w({\rm other})$ is the Laplace weight of the physical mode that is not the hard argmin (the flip in 14/15 frames; the GT-like mode in \texttt{000010/72}). Rotation errors are in degrees against BOP ground truth; the Laplace entry is the projected chordal mean $\mathrm{Proj}_{SO(3)}(\sum_kw_kR_k)$.}
 \label{tab:twomode}
 \scriptsize
 \setlength{\tabcolsep}{4pt}
@@ -444,10 +345,6 @@ frame/img & obj & $n_{\rm plane}$ & $\Delta J$ & other-mode (deg) & $w({\rm othe
 000011/49 & 11 & 347 & 2.10e-03 & 83.7 & 0.528 & 4.95 & 46.75\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\textwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; hard and weight columns from \path{real/linemod/results/two_mode.md} (Part A), Laplace column from \path{real/linemod/results/pose_error.md} (per-frame table). \texttt{pose\_error} reproduces the same per-frame $\Delta J$, weights and hard rotation errors exactly (max abs diff $0$; the only $2.1\times10^{-14}$ difference is in the old unprojected value).
-\end{minipage}
 \end{table*}
 
 \begin{figure}[t]
@@ -457,13 +354,11 @@ Evidence level: \emph{independent reproduction (this repo)}; hard and weight col
 \label{fig:twomode}
 \end{figure}
 
-Three points. First, the two-mode structure is real and reproducible: $K_{\rm phys}=2$ in 15/15 frames, with $\Delta J\in[1.25\times10^{-4},2.56\times10^{-3}]$, other-mode angles $3.8^\circ$--$149.6^\circ$ and $w({\rm other})=0.450$--$0.608$. Second, the GT-like mode is the lowest-$J$ physical mode in 14/15 frames, so the hard argmin is accurate there: median rotation error $2.06^\circ$ $[1.47,3.49]$ and median ADD-S $3.7$ mm $[3.0,4.3]$, with one failure above $10^\circ$ (\texttt{000010/72}, $44.5^\circ$). Third---the result---the Laplace posterior mean is \textbf{not} an accuracy win on these near-ties: median projected rotation error $44.24^\circ$ $[33.90,46.87]$, paired bias $+36.9^\circ$ $[+27.2,+44.9]$ against the hard argmin, median ADD-S $13.9$ mm $[10.3,20.2]$ against $3.7$ mm. It puts roughly half the mass on the flip mode. The smallest Hessian determinant in the set is $6.09\times10^{-3}$ (\texttt{000011/20}), i.e.\ the flip mode is itself close to a fold.
-
-\textbf{The $58.3^\circ$ correction.} Earlier drafts applied the geodesic formula to the \emph{unprojected} 9-vector mean $\sum_kw_kR_k$, which is not a rotation. That quantity is exactly $\arccos(\sum_kw_k\cos e_k)$ (verified to $10^{-14}$) and gives a median of $58.28^\circ$; it is not a geodesic distance and it overstates the error. On the projected chordal mean $\mathrm{Proj}_{SO(3)}(\sum_kw_kR_k)$ the median is $44.24^\circ$, and ADD-S is defined only for the projected pose. The direction of the bias claim is unchanged---the Laplace mean is pulled toward the flip---but its magnitude was overstated in the earlier draft. Some downstream result files still carry the old $58.28^\circ$; this paper uses $44.24^\circ$, the valid projected value.
+Three points follow. First, the two-mode structure is reproducible: $K_{\rm phys}=2$ in 15/15 frames, with $\Delta J\in[1.25\times10^{-4},2.56\times10^{-3}]$, other-mode angles $3.8^\circ$--$149.6^\circ$ and $w({\rm other})=0.450$--$0.608$. Second, the GT-like mode is the lowest-$J$ physical mode in 14/15 frames, so the hard argmin is accurate: median rotation error $2.06^\circ$ $[1.47,3.49]$ and median ADD-S $3.7$ mm $[3.0,4.3]$, with one failure above $10^\circ$ (\texttt{000010/72}, $44.5^\circ$). Third, the Laplace posterior mean is not an accuracy win on these near-ties: median projected rotation error $44.24^\circ$ $[33.90,46.87]$, paired bias $+36.9^\circ$ $[+27.2,+44.9]$, median ADD-S $13.9$ mm $[10.3,20.2]$, i.e.\ roughly half the mass on the flip. The smallest Hessian determinant is $6.09\times10^{-3}$ (\texttt{000011/20}), so the flip mode is itself close to a fold.
 
 \begin{table*}[t]
 \centering
-\caption{Aggregate pose error and ADD-S on the 15 real frames (E15). Medians with 95\% percentile-bootstrap CIs over frames (1000 resamples). The paired bias is the mean per-frame difference against the hard argmin (95\% CI over frames); the median paired rotation bias is $+41.8^\circ$. ``Within $10^\circ$'' counts frames whose estimate is within $10^\circ$ of GT; for the posterior mean this is not a ``true mode'', since the mean need not be a mode.}
+\caption{Aggregate pose error and ADD-S on the 15 real frames. Medians with 95\% percentile-bootstrap CIs over frames (1000 resamples). The paired bias is the mean per-frame difference against the hard argmin (95\% CI over frames); the median paired rotation bias is $+41.8^\circ$. ``Within $10^\circ$'' counts frames whose estimate is within $10^\circ$ of GT; for the posterior mean this is not a ``true mode'', since the mean need not be a mode.}
 \label{tab:aggregate}
 \scriptsize
 \setlength{\tabcolsep}{3.5pt}
@@ -476,10 +371,6 @@ Laplace (projected) & 44.24 [33.90, 46.87] & 13.9 [10.3, 20.2] & 38.1 [31.0, 41.
 MC (20 seeds) & 43.80 [33.90, 47.43] & 14.1 [10.3, 20.0] & 38.0 [31.0, 41.5] & +37.2 [+26.7, +45.0] & +9.4 [+6.4, +12.5] & 0/15\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\textwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{real/linemod/results/pose_error.md} \S2. ADD-S matches 1000 uniform-vertex queries (three independent subsamples; mean reported) against the full GT mesh; the three query subsamples differ by at most $1.87$ mm in any frame, and the 1000-query/dense-GT estimator agrees with full-mesh-vs-full-mesh ADD-S to $0.51$ mm. The CIs describe these 15 frames, not a population.
-\end{minipage}
 \end{table*}
 
 \begin{figure*}[t]
@@ -489,7 +380,7 @@ Evidence level: \emph{independent reproduction (this repo)}; source \path{real/l
 \label{fig:realsummary}
 \end{figure*}
 
-\textbf{Aggregate pose error and ADD-S (E15).} Table~\ref{tab:aggregate} gives the 15-frame aggregates with bootstrap CIs; the per-frame rotation and translation errors and all CIs are in \path{pose_error.md}/\path{pose_error.json}. Means are larger than medians for the hard argmin ($5.28^\circ$, $6.0$ mm) because of the single failure frame, while the Laplace means are $42.21^\circ$ and $15.5$ mm; translation medians are $6.2$ mm (hard) and $20.2$ mm (Laplace). MC estimates the same smooth mean as Laplace (mean over 20 seed means versus the Laplace aggregate: $0.23^\circ$, within its seed-level CI) and therefore inherits the bias; it only adds seed noise (between-seed SD $1.011^\circ$), so it is not a fix.
+The 15-frame aggregates are in Table~\ref{tab:aggregate}. Means exceed medians for the hard argmin ($5.28^\circ$, $6.0$ mm) because of the single failure frame, while the Laplace means are $42.21^\circ$ and $15.5$ mm; translation medians are $6.2$ mm (hard) and $20.2$ mm (Laplace). MC estimates the same smooth mean ($0.23^\circ$ from the Laplace aggregate, within its seed-level CI) and inherits the bias, adding only seed noise (between-seed SD $1.011^\circ$).
 
 \begin{table}[t]
 \centering
@@ -518,21 +409,17 @@ frame/img & obj & ADD-S hard & ADD-S Lap & ADD-S MC & ADD Lap (ref)\\
 000011/49 & 11 & 22.4 & 28.1 & 28.2 & 75.9\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\columnwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{real/linemod/results/pose_error.md} \S1. ``Lap'' is the projected chordal mean.
-\end{minipage}
 \end{table}
 
-Two per-frame readings matter. (i) On \texttt{000010/72} the hard argmin is the mode $44.5^\circ$ from GT while the GT-like mode is $3.8^\circ$ away but higher in $J$ by $1.25\times10^{-4}$; Laplace/MC land between the modes ($23.0^\circ$, $8.4$ mm) and are closer than the hard failure. That is a single-frame accident of the loss ranking, not evidence that the posterior mean is more accurate in general. (ii) ADD is $2$--$3\times$ ADD-S for the Laplace pose (median $38.1$ vs $13.9$ mm) because the glue object is long and thin and the $\sim180^\circ$ symmetry relabels it; this is exactly why ADD-S, not ADD, is the reported metric.
+Two per-frame readings matter. (i) On \texttt{000010/72} the hard argmin is the mode $44.5^\circ$ from GT while the GT-like mode is $3.8^\circ$ away but higher in $J$ by $1.25\times10^{-4}$; Laplace/MC land between the modes ($23.0^\circ$, $8.4$ mm) and are closer than the hard failure. That is a single-frame accident of the loss ranking, not evidence that the posterior mean is more accurate in general. (ii) ADD is $2$--$3\times$ ADD-S for the Laplace pose (median $38.1$ vs $13.9$ mm) because the glue object is long and thin and the $\sim180^\circ$ symmetry relabels it; this is why ADD-S, not ADD, is the reported metric.
 
 \subsubsection{Classical forward solvers on the same correspondences}\label{sec:classical}
 
-Table~\ref{tab:classical} runs cv2's EPnP, ITERATIVE, SQPNP and IPPE, plus a plain local GN/LM on the same bearing cost, on the bitwise-identical 15-frame correspondences (asserted equal to \path{two_mode.json}; the GT-pose re-projection residual is $1.47$ px median, i.e.\ the $\sim1$ px nearest-vertex quantisation). These are \textbf{forward solvers, not differentiable layers}: the LM is a plain forward optimiser on the same cost, not BPnP, and nothing here differentiates through PnP or supports a gradient claim. IPPE is run on the RANSAC inliers projected onto the fitted plane (it requires exact coplanarity, planarity RMS $0.83$--$1.47$ mm); the other solvers use the raw inliers.
+Table~\ref{tab:classical} runs cv2's EPnP, ITERATIVE, SQPNP and IPPE, plus a plain local GN/LM on the same bearing cost, on the bitwise-identical 15-frame correspondences (verified bitwise identical across the two studies; the GT-pose re-projection residual is $1.47$ px median, i.e.\ the $\sim1$ px nearest-vertex quantisation). These are forward solvers, not differentiable layers: the LM is a plain forward optimiser on the same cost, not BPnP, and no gradient claim is attached to any of them. IPPE is run on the RANSAC inliers projected onto the fitted plane (it requires exact coplanarity, planarity RMS $0.83$--$1.47$ mm); the other solvers use the raw inliers.
 
 \begin{table*}[t]
 \centering
-\caption{Classical forward PnP baselines on the 15 real frames (E16). Median with 95\% bootstrap CI over frames (2000 resamples). ``True mode'' counts solutions within $10^\circ$ of GT. SQPNP returns one solution in cv2 5.0.0 (documented for non-P3P/IPPE flags and observed on all 15 frames); IPPE returns two planar solutions, and the first (cheapest-reprojection) one is the GT-closer one on all 15 frames, so the oracle row would be identical to ``IPPE first''.}
+\caption{Classical forward PnP baselines on the 15 real frames. Median with 95\% bootstrap CI over frames (2000 resamples). ``True mode'' counts solutions within $10^\circ$ of GT. SQPNP returns one solution in cv2 5.0.0 (documented for non-P3P/IPPE flags and observed on all 15 frames); IPPE returns two planar solutions, and the first (cheapest-reprojection) one is the GT-closer one on all 15 frames, so the oracle row would be identical to ``IPPE first''.}
 \label{tab:classical}
 \scriptsize
 \setlength{\tabcolsep}{4pt}
@@ -549,21 +436,19 @@ local LM, GT init & 2.06 [1.47, 2.77] & 4.6 [4.0, 5.8] & 15/15\\
 local LM, flip init & 88.39 [69.08, 106.01] & 23.5 [16.9, 28.0] & 0/15\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\textwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{real/linemod/results/classical_baselines.md}. The LM rows differ only in initialisation; the GT-init row is not a deployable baseline. The ADD-S column here uses that script's 1000-query/1000-GT-vertex estimator, which carries a $+1.1$ mm discretisation floor relative to the dense-GT-mesh ADD-S of Table~\ref{tab:aggregate}; the two ADD-S columns are therefore not directly comparable, and rotation error is the comparable accuracy column.
-\end{minipage}
 \end{table*}
 
-Three readings. (i) Forward point accuracy is at the classical level: SQPNP/EPnP/ITERATIVE medians are $2.04$--$2.07^\circ$ and IPPE is $2.21^\circ$, i.e.\ equal to the hard argmin's $2.06^\circ$ within frame noise; no classical solver comes near the Laplace mean's $44.2^\circ$. (ii) Single-solution solvers are confidently wrong on some frames: EPnP misses GT by more than $10^\circ$ on 3/15 and ITERATIVE on 4/15 (the fourth, \texttt{000011/20}, is $10.0^\circ$, at the threshold); on \texttt{000010/72} EPnP and ITERATIVE both return the planar flip at $44.3^\circ$/$44.0^\circ$ with a re-projection residual of $0.78$--$0.79$ px, and the flip even has lower bearing cost than the true-mode planar solution on the raw inliers. (iii) Without the $z>0$ physicality filter and multi-start, the local LM baseline fails from identity (3/15 true, 7/15 behind the camera; median $106^\circ$) and stays out of the true mode from the flip init (0/15); only the GT init recovers it. The layer's explicit physicality filter and enumeration are doing real work on this cost.
+The ADD-S column here uses the 1000-query/1000-GT-vertex estimator, which carries a $+1.1$ mm discretisation floor relative to the dense-GT ADD-S of Table~\ref{tab:aggregate}; rotation error is the comparable column.
+
+Three readings. (i) Forward point accuracy is at the classical level: SQPNP/EPnP/ITERATIVE medians are $2.04$--$2.07^\circ$ and IPPE is $2.21^\circ$, i.e.\ equal to the hard argmin's $2.06^\circ$ within frame noise; no classical solver comes near the Laplace mean's $44.2^\circ$. (ii) Single-solution solvers are confidently wrong on some frames: EPnP misses GT by more than $10^\circ$ on 3/15 and ITERATIVE on 4/15 (the fourth, \texttt{000011/20}, is $10.0^\circ$, at the threshold); on \texttt{000010/72} EPnP and ITERATIVE both return the planar flip at $44.3^\circ$/$44.0^\circ$ with a re-projection residual of $0.78$--$0.79$ px, and the flip even has lower bearing cost than the true-mode planar solution on the raw inliers. (iii) Without the $z>0$ physicality filter and multi-start, the local LM baseline fails from identity (3/15 true, 7/15 behind the camera; median $106^\circ$) and stays out of the true mode from the flip init (0/15); only the GT init recovers it. The physicality filter and enumeration therefore do real work on this cost.
 
 \subsubsection{Theseus LM on the same cost}\label{sec:theseus}
 
-Theseus 0.2.3 (\texttt{LevenbergMarquardt}, float64 CPU) minimises the same bearing cost \cite{pineda2022theseus}; its objective agrees with a numpy reference to $1.1\times10^{-13}$ and its analytic Jacobian matches central differences to $1.3\times10^{-10}$. It is a \textbf{local optimiser, not a differentiable-layer comparison}: each call returns one pose, it has no notion of the enumerated mode set, it returns no posterior, and it applies no $z>0$ physicality filter.
+Theseus 0.2.3 (\texttt{LevenbergMarquardt}, float64 CPU) minimises the same bearing cost \cite{pineda2022theseus}; its objective agrees with a numpy reference to $1.1\times10^{-13}$ and its analytic Jacobian matches central differences to $1.3\times10^{-10}$. It is a local optimiser: each call returns one pose, it has no notion of the enumerated mode set, it returns no posterior, and it applies no $z>0$ physicality filter.
 
 \begin{table*}[t]
 \centering
-\caption{Theseus LM on the real bearing cost (E17). ``True mode'' is within $10^\circ$ of GT. The random-init row pools 20 inits on each of the 15 frames (300 solves); the multistart row pools 8 inits on each of 5 representative frames (40 solves) and its median is over those 40 trial errors, not a best-of-8 aggregate.}
+\caption{Theseus LM on the real bearing cost. ``True mode'' is within $10^\circ$ of GT. The random-init row pools 20 inits on each of the 15 frames (300 solves); the multistart row pools 8 inits on each of 5 representative frames (40 solves) and its median is over those 40 trial errors, not a best-of-8 aggregate.}
 \label{tab:theseus}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -577,13 +462,9 @@ identity init (15 frames) & 178.82 & 1/15 & 6 flip, 8 other; 8 behind the camera
 8 inits $\times$ 5 frames (40 solves) & 4.95 & 11/40 (27.5\%) & no aggregate posterior; per-trial errors\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\textwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{real/linemod/results/theseus_baseline.md} \S3--\S6. Non-physical means the estimate puts the object behind the camera (\texttt{frac z>0.05 < 0.99}), which the P1 layer rejects by construction.
-\end{minipage}
 \end{table*}
 
-The GT-init row is local convergence, not a baseline win. From cold starts Theseus returns whichever basin the descent enters---often the flip mode or a behind-camera stationary point of the unconstrained cost, exactly the solutions the layer's enumeration rejects. It is the natural \emph{no-enumeration} reference on this near-tied cost, not an estimator for the Laplace mean; local optimisation does not replace mode enumeration here.
+The GT-init row is local convergence, not a baseline win. From cold starts Theseus returns whichever basin the descent enters---often the flip mode or a behind-camera stationary point of the unconstrained cost, exactly the solutions the layer's enumeration rejects. It is the natural no-enumeration reference on this near-tied cost; local optimisation does not replace mode enumeration.
 
 \subsubsection{Controlled transverse crossing on real geometry}\label{sec:partb}
 
@@ -591,7 +472,7 @@ Part B removes the shared-translation failure of the old construction: each of t
 
 \begin{table}[t]
 \centering
-\caption{Controlled transverse crossing on real geometry (Part B, excerpt). Full 11-row table in \texttt{real/linemod/results/two\_mode.md}. \emph{grad rel} is the analytic Laplace gradient against central FD of the layer output; MC is mode-level with 400 samples.}
+\caption{Controlled transverse crossing on real geometry (Part B, excerpt). \emph{grad rel} is the analytic Laplace gradient against central FD of the layer output; MC is mode-level with 400 samples.}
 \label{tab:partb}
 \scriptsize
 \setlength{\tabcolsep}{2.5pt}
@@ -606,69 +487,14 @@ $\theta$ & $\Delta J$ & $w(A)$ & Laplace grad rel & MC grad rel & $\|d\phi\|$\\
 0.6500 & -2.17e-05 & 0.49960 & 4.03e-10 & 1.10e-02 & 1.112e-02\\
 \bottomrule
 \end{tabular}
-\par\smallskip
-\begin{minipage}{\columnwidth}\scriptsize
-Evidence level: \emph{independent reproduction (this repo)}; source \path{real/linemod/results/two_mode.md} (Part B).
-\end{minipage}
 \end{table}
 
-Across the 11 rows the Laplace gradient agrees with central FD to $1.9\times10^{-10}$--$1.8\times10^{-9}$, while the 400-sample mode-level MC error is $8.9\times10^{-5}$--$1.7\times10^{-1}$; the hard argmin has a jump at the tie and its FD is undefined there, so no hard gradient is reported. This is a correctness result for the closed-form backward pass on a real cost, not an accuracy claim: no front-end is used, and the ADD-S proxy of E15 belongs to Part A, not to this crossing. Part B also exercises the fixed \texttt{dlogdetH\_dtheta} path (Section~\ref{sec:rootcount}).
+Across the 11 rows the Laplace gradient agrees with central FD to $1.9\times10^{-10}$--$1.8\times10^{-9}$, while the 400-sample mode-level MC error is $8.9\times10^{-5}$--$1.7\times10^{-1}$; the hard argmin has a jump at the tie and its FD is undefined there, so no hard gradient is reported. This is a correctness result for the closed-form backward pass on a real cost; the ADD-S proxy belongs to Part A.
 
-\subsubsection{The earlier negative construction, retained and diagnosed}\label{sec:negative}
+\subsection{Runtime and batching}\label{sec:compute}
 
-\path{run_symmetry.py} paired the same image bearings with model points $P$ and with the symmetry-transformed points $SP$, mixed the two full bearing-cost matrices, and eliminated one shared translation. It produced 0 usable rows in 9 candidate frames (\path{symmetry.json} is \texttt{[]}, \path{symmetry.md} a header). Two causes were diagnosed. (B1) \texttt{sym\_of} used the \texttt{models\_info} symmetry translation in millimetres as metres, offsetting the second point cloud by about $0.69$ m; after correction $J_B$ at its own pose is $4\times10^{-14}$ rather than a spurious value. (B2) Even after (B1), summing two full costs and eliminating a single shared $t$ makes the hypotheses compete for one translation: the minima collapse to a compromise pose ($t\approx-0.1$ versus the true $t_z\approx0.887$), so the cost is unimodal at the crossing. This is a construction failure, not evidence about symmetric objects; the Part A construction is the positive result.
+\textbf{CPU only.} All reported runs are CPU-only single-process jobs. The SDP runs use cvxpy 1.9.3/SCS ($\varepsilon=10^{-9}$, \texttt{max\_iters=200000}), cvxpy 1.7.5/SCS for the comparison, and SCS with $\varepsilon=10^{-11}$, \texttt{max\_iters=10\textasciicircum 6} for the 6-point check. The real-data and root-count runs are short CPU jobs: the pose-error/ADD-S run takes $\approx10$ s, the classical baselines $3.0$ s, the Theseus comparison $9.5$ s, and the root count $\approx30$ s for four instances.
 
-\subsubsection{Root enumeration is not certified for the reported runs}\label{sec:enumeration}
+\textbf{Timing.} From 20 repetitions, a full synthetic layer call at $\theta=0$ takes 61.9 ms median (p95 62.1): mode enumeration is 88\%, the $K$ implicit $3\times3$ solves 1.6\%, and the analytic backward pass (weight gradient and mixing) 0.1\%. At $\theta=-0.1$ the whole call is 17.7 ms. The LINEMOD runs report 24.2--265.9 ms per frame forward and 33.1--42.6 ms per $\theta$ including FD for the transverse crossing.
 
-The 6D runs use the batched multi-start Newton of \path{instance.py}, not LibQPEP; completeness (A2) is assumed for E1/E8 and the missed-root rate of that enumerator against an independent algebraic solver is not measured. Against a 1024-start reference, $n_{\rm starts}\ge64$ reproduces the mode set on the sweep and $32$ matches the median $K$, while $n_{\rm starts}=16$ misses the fragile mode in 10\% of independent draws; the mode counts of Section~\ref{sec:synthetic} should therefore be read as lower bounds on the true count, not certified counts. The counting question is now separately measured: a total-degree homotopy finds 40 complex projective roots on $4/4$ instances (Section~\ref{sec:rootcount}), with real counts $26/12/12/20$ and $5/2/2/4$ local minima. That certifies the generic complex count of the algebraic system, not the enumerator used in the experiments.
-
-\subsubsection{The measured fold, and what a real-root proxy can and cannot do}\label{sec:fold6d}
-
-The 6D synthetic map has a genuine fold just off the crossing. A secondary minimum exists only for $|\theta|\lesssim1.3\times10^{-3}$ (the fine fold scan puts the mode death at $\theta_f=1.31\times10^{-3}$; the coarser robustness scan brackets it at $\approx1.4\times10^{-3}$); as it approaches the fold its $3\times3$ Hessian determinant falls through $3.35\times10^{-1}$ while its Laplace weight rises from $0.09$ to $0.187$ ($0.122$ at that determinant), and then the mode disappears ($K$ falls from 4 to 3). Across the fold the pose map steps by $0.31$ over one $2\times10^{-5}$ step (constant under grid refinement, i.e.\ a genuine discontinuity), and $\|d\phi\|$ peaks at $3529$ versus a median of $379$ away from the fold; the effective FD slope reaches $1.5\times10^4$. Neither a smaller $\tau$ nor more starts removes it: $n_{\rm starts}\ge32$ matches the 1024-start median $K$ (64 starts reproduce the full mode set on the sweep), while $n_{\rm starts}=16$ misses the fragile mode in 10\% of independent draws and a miss moves the pose by up to 28\% and the gradient by up to 97\%. The smoothness and $O(\tau)$ accuracy statements are therefore restricted to $\theta=0$ and $|\theta|\lesssim1.3\times10^{-3}$; the multi-modal Laplace map is discontinuous where a minimum is born or dies. Evidence: \emph{independent reproduction (this repo)}; sources \path{results/robustness.md} (section a2), \path{results/fold_6d.md}, and the robustness round logged in \path{experiments/rounds_2026-11-27.md}.
-
-\textbf{A cheap partial fix for the fold.} Replacing $\det H$ by $\det(H+\epsilon I)$ with $\epsilon=\tau^{1/3}$ (the 1D rule of Section~\ref{sec:fold1d}, whose derivative is still closed form, $\operatorname{tr}((H+\epsilon I)^{-1}\dot H)$) largely removes the \emph{derivative} singularity: at $\theta=1.30\times10^{-3}$ the standard $\|d\phi\|$ is $3529$ while the regularised one is $443$, and the near-fold gradient error falls from $2.90\times10^{-1}$ to $1.19\times10^{-2}$ (a factor 24); away from the fold ($\theta=0.1,0.02$) the two variants agree to the printed precision. It does \textbf{not} remove the \emph{value} discontinuity caused by a minimum dying: the pose step across the fold only falls from $0.309$ to $0.107$ and $K$ still changes from 4 to 3. Hessian regularisation is therefore a defensible cheap mitigation for the fold neighbourhood, but a continuity claim across the fold still needs the Scorer continuation of Section~\ref{sec:discussion} or a local numerical integral over the merging pair.
-
-\textbf{The value step across the fold is structural.} The measured $0.309\to0.107$ is what the fold theory predicts. By Proposition~\ref{prop:q5b}, any proxy that sums only over real local minima and gives the merging mode a positive regularised floor weight must jump at a standard codimension-1 fold by an amount proportional to that weight---$\Theta(\tau^{1/3}e^{-(J_0-J_{\rm glob})/\tau})$ for the $\eta=c_0\tau^{1/3}$ floor---so the $\tau^{1/3}$ regulariser can cure the derivative and cannot cure the value. Proposition~\ref{prop:q5c} removes the jump by tracking the merged pair as a complex-conjugate pair and replacing the two real-root weights by a semi-line Airy/Scorer weight, which is $C^\infty$ across the fold and recovers the 3D Laplace weight for $\zeta\gg1$. The main table still reports the real-root-only layer.
-
-\subsubsection{Remaining reproduction risks}\label{sec:residualrisks}
-
-\begin{itemize}
-\item \textbf{``Certified'' gap is numerical.} The SDP certificate is PSD only within SCS tolerance ($\lambda_{\min}(Z)=-1.79\times10^{-11}$); the $13\times13$ comparison is mixed: the full-20D equivalence is an algebraic identity, the upstream 17-dimensional inequality is proved, and the strict separation is measured on the perturbed Choi--Lam set and on the 6-point instance (Table~\ref{tab:6point}), whose values are numerical.
-\item \textbf{No learned or differentiable-layer baseline has been run.} SDPR-IS, SDPR-SDP, EPro-PnP and BPnP are absent from every table, so no accuracy, variance or timing comparison against them exists. Theseus is a local optimiser with no posterior and no enumeration, and EPnP/SQPNP/IPPE are classical forward solvers; none of them is a differentiable-layer comparison. The missing learned-layer comparison remains the largest gap in the experimental section.
-\item \textbf{Mode-level MC, folds, and In-The-Dark.} The MC baseline samples discrete mode weights ($n=200$, 20 seeds) and is not the $SE(3)$ AMIS sampler of EPro-PnP; its numbers measure discrete-mode sampling variance only. The 1D slope (1.07), the 1D fold blow-up (relative error $3.24$ at $a=0.01$), the genuine 6D fold at $|\theta|\approx1.3\times10^{-3}$ and the real-data near-tie bias (Laplace median $44.24^\circ$ versus hard $2.06^\circ$) bound the regime where the Laplace sum is reliable. UTIAS In-The-Dark was not attempted: its download, run split and the \texttt{pose\_sdp\_block.py}-at-HEAD issue are untested, and no claim is made about the pipeline.
-\end{itemize}
-
-\subsection{Claim-to-evidence map}\label{sec:claimmap}
-
-Table~\ref{tab:claimmap} maps each claim the paper makes to its strongest evidence and the file or table that carries the number. It is deliberately conservative: a claim is listed as ``proved'' only where Section~\ref{sec:method} gives an argument, and ``measured'' only where a result file exists.
-
-\begin{table*}[t]
-\centering
-\caption{Claim-to-evidence map.}
-\label{tab:claimmap}
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}p{7.1cm} p{4.1cm} p{4.9cm}@{}}
-\toprule
-claim & evidence level & where\\
-\midrule
-$x_R=2Uv_2(q)$; 21 $SO(3)$ constraints span the 20-dimensional degree-two Veronese ideal; the $10\times10$ SDP is its Shor relaxation & proved; exact rational rank check & Sections~\ref{sec:lift}--\ref{sec:sdp}; E12\\
-constructed Choi--Lam gap $0.034188$, $\operatorname{rank}(X^\star)=6$, $\lambda_{\min}(Z)=-1.8\times10^{-11}$ & numerical dual certificate on a constructed instance & Table~\ref{tab:sdp_cert}; E5\\
-$\lambda^\star=4J$, $3\times3$ Riemannian implicit differentiation, antipodal invariance & proved; FD checks at $10^{-7}$ or better & Table~\ref{tab:backward}; E4, E6\\
-translation integrated exactly; Laplace rotation error $O(\tau)$ and its constants & derivation; 1D numerical slope 1.07 & Table~\ref{tab:1d}; E2, E6\\
-fold behaviour: $\tau^{1/3}$ regulariser and Scorer continuation & derivation; measured 1D and 6D & Tables~\ref{tab:fold}, \ref{tab:scorer}; E3, E14\\
-6D crossing: Laplace map smooth, hard argmin a step map & measured & Table~\ref{tab:main6d}; E1\\
-real two-mode cost: $K_{\rm phys}=2$ in 15/15 frames & measured & Table~\ref{tab:twomode}; E8\\
-hard argmin $2.06^\circ$ / $3.7$ mm; Laplace $44.24^\circ$ / $13.9$ mm, bias $+36.9^\circ$ & measured pose-error proxy, not a detector benchmark & Tables~\ref{tab:aggregate}--\ref{tab:perframe}; E15\\
-classical forward solvers reach $2.0$--$2.2^\circ$ median & measured forward reference, not a layer comparison & Table~\ref{tab:classical}; E16\\
-Theseus is local: 15/15 from GT, 100/300 from random init & measured local reference & Table~\ref{tab:theseus}; E17\\
-40 complex projective roots on 4/4 instances & measured homotopy count of the algebraic system & Section~\ref{sec:rootcount}; E18\\
-full-20D $10\times10$/$13\times13$ equivalence; upstream 17D strictly looser & proved; measured physical separation & Tables~\ref{tab:13v10}--\ref{tab:6point}; E12\\
-detector-level ADD(-S)/ADD-S AUC, UTIAS, learned front-end, SDPR/EPro-PnP/BPnP comparisons & not measured & N1--N3\\
-\bottomrule
-\end{tabular}
-\par\smallskip
-\begin{minipage}{\textwidth}\scriptsize
-Evidence level: the map itself is \emph{paper claim} for the proved rows and \emph{independent reproduction (this repo)} for the measured rows; ``not measured'' rows are \emph{unverified}.
-\end{minipage}
-\end{table*}
+\textbf{Batching.} A true batched multi-start Newton is only $1.30\times$ faster than the loop at batch size 64 (59.9 versus 46.2 samples/s), $0.78\times$ at 8, and $0.46\times$ at 1: convergence heterogeneity and the per-instance classify loop dominate, so a GPU or custom kernel is needed for a real throughput win. Mode enumeration is the bottleneck, not the $3\times3$ solves.

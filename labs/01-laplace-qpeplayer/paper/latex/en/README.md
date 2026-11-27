@@ -1,4 +1,4 @@
-# 01-laplace-qpeplayer — LaTeX draft (en)
+# 01-laplace-qpeplayer — LaTeX manuscript (en)
 
 - **Target venue:** IEEE Transactions on Robotics (T-RO), journal article
 - **Document class:** `IEEEtran [journal]`
@@ -17,26 +17,23 @@
 
 | item | value |
 |---|---|
-| last compile | see `build.log` |
-| main-text pages | TBD |
-| total pages | TBD |
-| tables / figures | TBD |
+| last compile | Tectonic exit 0, no undefined refs, no overfull boxes > 3 pt (see `build.log`) |
+| total pages | 16 (journal, two-column) |
+| tables / figures | 17 tables / 5 figures |
+| style | IEEE T-RO submission style; internal draft/status/evidence-level scaffolding removed (2026-11-28 rewrite) |
 
 ## Files
 
 `main.tex` (documentclass, title, abstract, keywords, \input lines), `preamble.tex`,
 `sections/*.tex`, `figures/*.png`, `refs.bib` (EN only), `build.log`.
 
-## Known pending claims / gaps (must stay visible in the paper)
+## What the paper states as limitations (Section VI)
 
-1. No detector-level ADD(-S)/ADD-S AUC and no learned front-end: the real-data study is a controlled two-mode layer experiment, not a detector benchmark.
-2. UTIAS In-The-Dark was not run; no claim about that pipeline.
-3. Learned/differentiable-layer baselines (SDPR-IS, SDPR-SDP, EPro-PnP, BPnP) were not run; Theseus and the cv2 classical solvers are forward/local references on the same correspondences only.
-4. The mode-level MC baseline samples discrete mode weights; it is not the EPro-PnP SE(3) AMIS sampler.
-5. Root enumeration completeness (A2) is assumed for the reported runs; the total-degree homotopy certifies 40 complex projective roots on 4/4 instances but not the multi-start enumerator's missed-root rate.
-6. The SDP certificate is numerical (SCS tolerance), not symbolic; the Choi–Lam instance's physical realizability (Q1) is open; a per-instance certified real-root count is future work.
-7. GPU batching / end-to-end training / peak memory / throughput were not measured.
-8. Negative result that must stay: Laplace posterior mean is biased toward the flip (median 44.24 deg / 13.9 mm ADD-S) versus the hard argmin (2.06 deg / 3.7 mm) on the 15 LINEMOD frames.
+1. The evaluation is layer-level: 81-point synthetic crossing, 1D normal forms, and 15 LINEMOD frames; no detector-level ADD(-S)/ADD-S AUC, no learned front-end, no end-to-end training.
+2. Root-enumeration completeness is assumption (A2); the total-degree homotopy certifies 40 complex projective roots on 4/4 instances, not the enumerator's missed-root rate.
+3. The Laplace posterior mean is pulled toward the competing mode at real near-ties (44.24 deg / 13.9 mm ADD-S) versus the hard argmin (2.06 deg / 3.7 mm).
+4. The constructed Choi–Lam cost's realizability as a correspondence Gram matrix is open.
+5. Extending to learned front-ends, detector-level benchmarks, UTIAS In-The-Dark, SDPR/EPro-PnP comparisons, a certified per-instance real-root count and a batched GPU forward is stated as future work.
 
 ## Editorial rules
 

@@ -1,7 +1,7 @@
 \documentclass[journal]{IEEEtran}
 \input{preamble}
 
-% Float placement: the paper carries 19 tables and 5 figures, most of them
+% Float placement: the paper carries 17 tables and 5 figures, most of them
 % two-column floats. Relax the defaults so that floats are packed onto the
 % text pages instead of being deferred to the end of the document.
 \setcounter{topnumber}{4}
@@ -15,11 +15,21 @@
 \renewcommand{\dbltopfraction}{0.92}
 \renewcommand{\dblfloatpagefraction}{0.6}
 
+% Tighter float separation: the paper carries many measurement tables, and the
+% IEEEtran defaults leave large gaps between them and the text.
+\setlength{\textfloatsep}{12pt plus 2pt minus 3pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{12pt plus 2pt minus 3pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\dblfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{0pt}
+
 \begin{document}
 
 \title{Laplace-QPEPLayer: Zero-Lift Differentiable Pose Estimation via Quaternion Algebra and Multi-Modal Laplace Smoothing}
 
-\author{First Author and Second Author\thanks{Manuscript received [date pending]. This work was supported by [funding agency and grant number --- verification pending]. The authors are with [department, institution, city, country] (e-mail: [email]).}}
+\author{First Author and Second Author\thanks{The authors are with [department, institution, city, country] (e-mail: [email]).}}
 
 \maketitle
 
@@ -39,7 +49,6 @@ differentiable pose estimation, quaternion algebra, Veronese relaxation, Laplace
 \input{sections/06_discussion}
 \input{sections/07_conclusion}
 
-\balance
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
 
