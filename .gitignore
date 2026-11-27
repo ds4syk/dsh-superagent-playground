@@ -17,3 +17,10 @@ labs/02-constrained-qpeplayer/experiments/code/__pycache__/
 
 # vendored baseline clones are fetched on demand, not committed
 labs/03-robust-qpeplayer/experiments/baselines/vendor/
+
+# P3 large re-generatable raw outputs (summaries are committed)
+labs/03-robust-qpeplayer/experiments/real/threedmatch_full/results/*raw.jsonl
+labs/03-robust-qpeplayer/experiments/real/threedmatch_full/results/full_scenes.json
+labs/03-robust-qpeplayer/experiments/real/threedmatch_full/results/overlap_scan.json
+labs/03-robust-qpeplayer/experiments/real/kitti_odom/results/*raw.jsonl
+labs/03-robust-qpeplayer/experiments/baselines/results/*raw.jsonl
