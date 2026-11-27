@@ -14,3 +14,6 @@ artifacts/
 !labs/02-constrained-qpeplayer/experiments/code/
 !labs/02-constrained-qpeplayer/experiments/code/**
 labs/02-constrained-qpeplayer/experiments/code/__pycache__/
+
+# vendored baseline clones are fetched on demand, not committed
+labs/03-robust-qpeplayer/experiments/baselines/vendor/
