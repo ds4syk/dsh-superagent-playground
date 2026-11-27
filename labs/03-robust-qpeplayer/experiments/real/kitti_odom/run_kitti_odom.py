@@ -20,7 +20,7 @@ Two differences from the raw drives, both documented in the README:
    (|t| per pair, i.e. speed at 10 Hz).
 
 Run (srun, ~10 min):
-  srun --partition=cpu --time=00:40:00 --ntasks=1 --cpus-per-task=2 \
+  srun --partition=cpu --time=00:30:00 --ntasks=1 --cpus-per-task=2 \
     /home/syk/miniconda3/envs/WM/bin/python run_kitti_odom.py
 """
 from __future__ import annotations
@@ -148,6 +148,7 @@ def fit_all(methods, x, y, p, trial, tag, seed_salt=0):
 
 def main():
     t_start = time.time()
+    manifest = json.loads((K.DATA / "manifest.json").read_text())
     methods = make_methods()
     per_seq, raw_all, motion_pairs, gap_rows = {}, [], [], []
 
@@ -248,7 +249,10 @@ def main():
         print(f"seq {seq} motion pairs done ({time.time()-t_seq:.0f}s)", flush=True)
 
         # --- motion phase B: larger frame gaps (bigger |t|) ------------------
-        base_frames = [0, n_frames // 2]
+        # The dataset holds only the 33 selected frames per sequence (manifest
+        # "frames"/"sweep"), not the full 4.5k Velodyne stream, so anchor the
+        # gap sweep on frames that were actually fetched instead of n_frames//2.
+        base_frames = sorted({int(pr[0]) for pr in manifest[seq]["sweep"]})
         need = sorted({b + g for b in base_frames for g in GAPS} | set(base_frames))
         clouds2 = K.load_clouds(seq, need, voxel=VOXEL, max_range=30.0)
         for bi, i in enumerate(base_frames):
@@ -307,8 +311,12 @@ def main():
                 te = [r["trans"] for r in sel]
                 tm = [r["time_ms"] / 1000.0 for r in sel]
                 s = cm.summarize_errors(re, te, tm)
-                pooled.append(dict(dataset="pooled_odom", p=p, outlier_type=otype,
-                                   method=m, n_trials=len(sel), **s))
+                row = dict(dataset="pooled_odom", p=p, outlier_type=otype,
+                           method=m, n_trials=len(sel), **s)
+                if otype == "coherent":
+                    vals = [r.get("picked_outlier", False) for r in sel]
+                    row["frac_picked_outlier"] = float(np.mean(vals)) if vals else None
+                pooled.append(row)
 
     # ---------------- raw-drive comparison (parent results) ----------------
     compare = {}
@@ -321,20 +329,20 @@ def main():
                motion_trials=MOTION_TRIALS, motion_p=MOTION_P, gaps=GAPS,
                data_root=str(K.DATA),
                note="exact odometry GT poses (dataset/poses), not OXTS")
-    cm.json_dump(OUT / "more_drives.json", dict(
+    cm.json_dump(OUT / "kitti_odom.json", dict(
         config=cfg, per_sequence=per_seq, pooled=pooled,
         motion_pairs=motion_pairs, motion_gaps=gap_rows,
         raw_drive_rows={k: v["rows"] for k, v in compare.items()},
         raw_drive_config={k: v["config"] for k, v in compare.items()},
         elapsed_s=round(time.time() - t_start, 1)))
 
-    with open(OUT / "more_drives_raw.jsonl", "w") as f:
+    with open(OUT / "kitti_odom_raw.jsonl", "w") as f:
         for r in raw_all:
             f.write(json.dumps(r) + "\n")
-    with open(OUT / "motion_raw.jsonl", "w") as f:
+    with open(OUT / "kitti_odom_motion_raw.jsonl", "w") as f:
         for r in motion_pairs + gap_rows:
             f.write(json.dumps(r) + "\n")
-    print(f"wrote {OUT/'more_drives.json'} ({len(raw_all)} raw trials, "
+    print(f"wrote {OUT/'kitti_odom.json'} ({len(raw_all)} raw trials, "
           f"{len(pooled)} pooled rows, {len(motion_pairs)+len(gap_rows)} motion rows)", flush=True)
 
 
