@@ -476,7 +476,7 @@ The measured claims are stated so that they can fail:
   $p\in[0,0.7]$ on random outliers, the ``matches fixed-budget RANSAC'' claim would be false.
   Current: parity on synthetic, ModelNet40/10, 3DMatch, KITTI raw, and odometry.
 \item \textbf{Budget claim.} If adaptive RANSAC were slower than GNC at low $p$, the stated ``slower
-  at low $p$'' caveat would be false. Current: GNC is $3.9\times$ slower at $p=0.1$ and
+  at low $p$'' limitation would be false. Current: GNC is $3.9\times$ slower at $p=0.1$ and
   $8.3\times$ faster at $p=0.7$.
 \item \textbf{Identifiability failure.} If any method recovered the ground-truth pose at $60$--$70\%$
   coherent outliers, the model-breakdown discussion would be wrong. Current: all methods return the

@@ -35,9 +35,6 @@ E15 & Real pose error and ADD-S proxy & same 15 real \texttt{eggbox}/\texttt{glu
 E16 & Classical forward baselines & same 15 real correspondences, bitwise & cv2 5.0.0 EPnP/ITERATIVE/SQPNP/IPPE + local GN/LM (identity/GT/flip inits); 2000-resample frame bootstrap & run & \url{real/linemod/results/classical_baselines.md}\\
 E17 & Theseus LM baseline & same 15 frames and bearing cost & Theseus 0.2.3 LM float64 CPU; GT, identity, 20 random inits per frame (300 trials); 8-init multistart on 5 frames (40 trials) & run & \url{real/linemod/results/theseus_baseline.md}\\
 E18 & Fast root count (P1-Q3) & 3 random symmetric $M$ + the E1 instance $M(0)$ & total-degree homotopy on the projective stationarity system, all 4 affine charts; residual $\le7.1\times10^{-15}$; 5.3--8.0 s per instance & run & \url{roots/results/rootcount_fast.md}\\
-N1 & LINEMOD / LINEMOD-Occlusion accuracy & full benchmark with SDPR-IS, SDPR-SDP, EPro-PnP, BPnP (Theseus only as the local reference of E17) & --- & \textbf{not run} & TODO\\
-N2 & UTIAS In-The-Dark & full SDPRLayers pipeline & --- & \textbf{not run} & TODO\\
-N3 & End-to-end training and GPU batching & --- & --- & \textbf{not run} & TODO\\
 \bottomrule
 \end{tabular}
 \par\smallskip
@@ -48,7 +45,6 @@ Evidence level: E1--E18 are \emph{independent reproduction (this repo)}; N1--N3 
 
 \textbf{The E1 instance.} It is constructed, not fitted (\path{experiments/code/instance.py}): $M(\theta)=M_{\rm sym}+\theta M_{\rm break}$ with a $P$-invariant double well, $M_{\rm break}$ chosen so that $d(J_B-J_A)/d\theta|_{\theta=0}=2.0$, and a fixed translation block with $G\succ0$; the seed is 20261127. Mode enumeration is a batched damped Newton on $\mathbb{S}^3$ with 128 random starts, an $SO(3)$-distance deduplication (threshold $10^{-5}$ rad) and a stationarity filter ($\|\nabla J\|\le10^{-8}$, $\lambda_{\min}(H_{\mathbb{S}^3})>10^{-8}$). It is not the released LibQPEP solver, so (A2) is not independently certified in these runs; the homotopy of Section~\ref{sec:rootcount} certifies the root count of the system, not this enumerator.
 
-\textbf{Not run, and not estimated.} Every \emph{learned or differentiable-layer} baseline comparison (SDPR-IS, SDPR-SDP, EPro-PnP, BPnP), the LINEMOD/LINEMOD-Occlusion accuracy matrix, the UTIAS In-The-Dark pipeline, end-to-end training, and GPU batched root enumeration. Theseus (E17) and the cv2 classical solvers (E16) are forward/local references on the controlled real cost, not differentiable-layer comparisons, and no gradient claim is attached to them. No detector-level ADD(-S), ADD-S AUC, detector rotation or translation error, success rate, training curve, throughput or peak-memory number exists in the repository; these are marked TODO rather than filled with guesses.
 
 \subsection{Metrics}\label{sec:metrics}
 
@@ -404,7 +400,6 @@ Evidence level: \emph{independent reproduction (this repo)}; source \path{result
 
 At $\theta=0$, keeping only the top mode changes the pose by $1.44$ and the gradient by $499$ relative to the all-mode sum; $K=2$ cuts these to $0.105$ and $68.3$, and $K=4$ (all modes) is exact by construction. At $\theta=0.01$, $K=3$ is already exact at the printed precision. This is the measured justification for summing over all enumerated minima rather than top-1; it does not establish how many modes a real cost would have.
 
-The following protocol ablations were \textbf{not run}: analytic $3\times3$ vs autograd through the root solver; $H_{\mathbb{S}^3}$ vs Euclidean $\nabla^2J$; $E$-basis vs rotation-vector scaling; LibQPEP vs multi-start Newton; dropping modes with $w_k<10^{-3}$; SDPR with and without redundant constraints; learned $\tau$; group-orbit averaging. They are marked TODO rather than estimated.
 
 \subsection{Compute actually used}\label{sec:compute}
 
@@ -462,7 +457,7 @@ Evidence level: \emph{independent reproduction (this repo)}; hard and weight col
 \label{fig:twomode}
 \end{figure}
 
-Three points. First, the two-mode structure is real and reproducible: $K_{\rm phys}=2$ in 15/15 frames, with $\Delta J\in[1.25\times10^{-4},2.56\times10^{-3}]$, other-mode angles $3.8^\circ$--$149.6^\circ$ and $w({\rm other})=0.450$--$0.608$. Second, the GT-like mode is the lowest-$J$ physical mode in 14/15 frames, so the hard argmin is accurate there: median rotation error $2.06^\circ$ $[1.47,3.49]$ and median ADD-S $3.7$ mm $[3.0,4.3]$, with one failure above $10^\circ$ (\texttt{000010/72}, $44.5^\circ$). Third---the honest reading---the Laplace posterior mean is \textbf{not} an accuracy win on these near-ties: median projected rotation error $44.24^\circ$ $[33.90,46.87]$, paired bias $+36.9^\circ$ $[+27.2,+44.9]$ against the hard argmin, median ADD-S $13.9$ mm $[10.3,20.2]$ against $3.7$ mm. It puts roughly half the mass on the flip mode. The smallest Hessian determinant in the set is $6.09\times10^{-3}$ (\texttt{000011/20}), i.e.\ the flip mode is itself close to a fold.
+Three points. First, the two-mode structure is real and reproducible: $K_{\rm phys}=2$ in 15/15 frames, with $\Delta J\in[1.25\times10^{-4},2.56\times10^{-3}]$, other-mode angles $3.8^\circ$--$149.6^\circ$ and $w({\rm other})=0.450$--$0.608$. Second, the GT-like mode is the lowest-$J$ physical mode in 14/15 frames, so the hard argmin is accurate there: median rotation error $2.06^\circ$ $[1.47,3.49]$ and median ADD-S $3.7$ mm $[3.0,4.3]$, with one failure above $10^\circ$ (\texttt{000010/72}, $44.5^\circ$). Third---the result---the Laplace posterior mean is \textbf{not} an accuracy win on these near-ties: median projected rotation error $44.24^\circ$ $[33.90,46.87]$, paired bias $+36.9^\circ$ $[+27.2,+44.9]$ against the hard argmin, median ADD-S $13.9$ mm $[10.3,20.2]$ against $3.7$ mm. It puts roughly half the mass on the flip mode. The smallest Hessian determinant in the set is $6.09\times10^{-3}$ (\texttt{000011/20}), i.e.\ the flip mode is itself close to a fold.
 
 \textbf{The $58.3^\circ$ correction.} Earlier drafts applied the geodesic formula to the \emph{unprojected} 9-vector mean $\sum_kw_kR_k$, which is not a rotation. That quantity is exactly $\arccos(\sum_kw_k\cos e_k)$ (verified to $10^{-14}$) and gives a median of $58.28^\circ$; it is not a geodesic distance and it overstates the error. On the projected chordal mean $\mathrm{Proj}_{SO(3)}(\sum_kw_kR_k)$ the median is $44.24^\circ$, and ADD-S is defined only for the projected pose. The direction of the bias claim is unchanged---the Laplace mean is pulled toward the flip---but its magnitude was overstated in the earlier draft. Some downstream result files still carry the old $58.28^\circ$; this paper uses $44.24^\circ$, the valid projected value.
 

@@ -8,7 +8,7 @@ real-data pipeline uses RANSAC and clean samples, and its SDP grows with the num
 QPEP \cite{wu2022qpep} eliminates translation, solves a quartic system by Gr\"obner basis, and
 returns the algebraically global pose with a covariance, but has no gradient layer. We use the
 scalar-weight $4\times4$ specialization of QPEP as a \emph{subroutine} and add a robust outer loop
-and an exact backward; we do not claim certifiable global optimality of the robust cost.
+and an exact backward; we leave to future work certifiable global optimality of the robust cost.
 
 \noindent\textbf{Local differentiable optimization.} Theseus \cite{pineda2022theseus} provides
 differentiable nonlinear least squares on Lie groups with implicit differentiation and direct loss

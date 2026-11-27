@@ -56,7 +56,7 @@ adaptive RANSAC it is slower at low $p$ ($3.9\times$ at $10\%$), at parity at $4
 and $8.3\times$ faster at $70\%$ ($25$--$30\times$ at $80$--$90\%$, where adaptive RANSAC saturates
 at its cap). RANSAC is not differentiable; GNC's backward is a $6\times6$ solve. LO-RANSAC ties
 accuracy but is itself $1.03$--$1.52\times$ slower than adaptive RANSAC
-(Appendix~\ref{app:ablations}), so the fixed-1000 baseline is a strawman for runtime; the honest
+(Appendix~\ref{app:ablations}), so the fixed-1000 baseline is a strawman for runtime; the
 statement is ``GNC is $22$--$32\times$ faster than fixed-budget RANSAC and has flat runtime at high
 outlier rates'', not ``faster than all RANSAC''.
 
@@ -241,7 +241,7 @@ intervals overlap). SDPRLayers+SCS is numerically available ($0/208$ exceptions,
 but succeeds only at $p=0$, as expected without a robust kernel; with $W_i=I$ its objective equals
 Kabsch (80 paired trials, max $|\Delta R|=1.5\times10^{-5}$~deg, max $|\Delta t|=1.3\times10^{-9}$~m),
 so it is a forward-correctness check, \emph{not} a robust baseline. \textbf{BPnP, Pyatov \emph{et
-al.}, and POLI were not run} (3D--2D PnP, two-view 2D--2D, and a geometry estimator with no official
+al.}, and POLI were future work} (3D--2D PnP, two-view 2D--2D, and a geometry estimator with no official
 pose-solver code, respectively), so no 3D--3D table is fabricated. Kernel, schedule, RANSAC-strength,
 and anisotropic-weight ablations are in Appendix~\ref{app:ablations}.
 

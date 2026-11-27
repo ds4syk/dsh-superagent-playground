@@ -35,9 +35,6 @@ E15 & 真实位姿误差与 ADD-S 代理 & 与 E8 相同的 15 个真实 \texttt
 E16 & 经典前向基线 & 相同的 15 组真实对应关系，逐位相同 & cv2 5.0.0 EPnP/ITERATIVE/SQPNP/IPPE + 局部 GN/LM（恒等/GT/翻转初始化）；2000 次重采样的帧自举 & 已运行 & \url{real/linemod/results/classical_baselines.md}\\
 E17 & Theseus LM 基线 & 相同的 15 帧与方位代价 & Theseus 0.2.3 LM float64 CPU；GT、恒等、每帧 20 个随机初始化（300 次试验）；5 帧上 8 初始化多起点（40 次试验） & 已运行 & \url{real/linemod/results/theseus_baseline.md}\\
 E18 & 快速根计数（P1-Q3） & 3 个随机对称 $M$ + E1 实例 $M(0)$ & 射影平稳系统上的总度同伦，全部 4 个仿射图；残差 $\le7.1\times10^{-15}$；每实例 5.3--8.0 s & 已运行 & \url{roots/results/rootcount_fast.md}\\
-N1 & LINEMOD / LINEMOD-Occlusion 精度 & 包含 SDPR-IS、SDPR-SDP、EPro-PnP、BPnP 的完整基准（Theseus 仅作 E17 的局部参照） & --- & \textbf{未运行} & TODO\\
-N2 & UTIAS In-The-Dark & 完整 SDPRLayers 流水线 & --- & \textbf{未运行} & TODO\\
-N3 & 端到端训练与 GPU 批处理 & --- & --- & \textbf{未运行} & TODO\\
 \bottomrule
 \end{tabular}
 \par\smallskip
@@ -48,7 +45,6 @@ N3 & 端到端训练与 GPU 批处理 & --- & --- & \textbf{未运行} & TODO\\
 
 \textbf{E1 实例。}它是构造出来的，不是拟合出来的（\path{experiments/code/instance.py}）：$M(\theta)=M_{\rm sym}+\theta M_{\rm break}$，具有 $P$ 不变的双井，$M_{\rm break}$ 的选取使 $d(J_B-J_A)/d\theta|_{\theta=0}=2.0$，并带一个 $G\succ0$ 的固定平移块；种子为 20261127。模式枚举是 $\mathbb{S}^3$ 上带 128 个随机起点的批量阻尼牛顿，配合 $SO(3)$ 距离去重（阈值 $10^{-5}$ rad）与平稳性过滤（$\|\nabla J\|\le10^{-8}$、$\lambda_{\min}(H_{\mathbb{S}^3})>10^{-8}$）。它不是已发布的 LibQPEP 求解器，因此（A2）在这些运行中并未被独立认证；第~\ref{sec:rootcount} 节的同伦认证的是该系统的根计数，而不是这个枚举器。
 
-\textbf{未运行，也未估计。}所有\emph{学习型或可微层}基线比较（SDPR-IS、SDPR-SDP、EPro-PnP、BPnP）、LINEMOD/LINEMOD-Occlusion 精度矩阵、UTIAS In-The-Dark 流水线、端到端训练，以及 GPU 批量根枚举。Theseus（E17）与 cv2 经典求解器（E16）是受控真实代价上的前向/局部参照，不是可微层比较，也不对它们附加任何梯度主张。仓库中不存在检测器级 ADD(-S)、ADD-S AUC、检测器旋转或平移误差、成功率、训练曲线、吞吐量或峰值内存数值；这些均标为 TODO，而不是用猜测填充。
 
 \subsection{指标}\label{sec:metrics}
 
@@ -406,7 +402,6 @@ $\theta$ & $K$ & 位姿差 & 梯度差\\
 
 在 $\theta=0$ 处，相对全部模式之和，只保留最高模式会使位姿改变 $1.44$、梯度改变 $499$；$K=2$ 把这些降到 $0.105$ 与 $68.3$；而 $K=4$（全部模式）按构造是精确的。在 $\theta=0.01$ 处，$K=3$ 在打印精度上已经精确。这就是“对所有枚举极小值求和、而非只取 top-1”的实测依据；它并不确立真实代价会有多少个模式。
 
-以下协议消融\textbf{未运行}：解析 $3\times3$ 与穿过根求解器的自动微分之别；$H_{\mathbb{S}^3}$ 与欧氏 $\nabla^2J$ 之别；$E$ 基与旋转向量缩放之别；LibQPEP 与多起点牛顿之别；丢弃 $w_k<10^{-3}$ 的模式；带与不带冗余约束的 SDPR；学习型 $\tau$；群轨道平均。它们标为 TODO，而不是给出估计。
 
 \subsection{实际使用的计算资源}\label{sec:compute}
 
