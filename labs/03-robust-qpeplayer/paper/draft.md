@@ -1,10 +1,10 @@
 # Robust-QPEPLayer: Curvature-Corrected Implicit Differentiation for RANSAC-Free Robust Pose Estimation
 
-**Draft v0.1 — work in progress. All experimental numbers are TODO; no result in this draft is claimed as measured.**
+**Draft v0.2 — measured subsets (2026-11-27). Synthetic 3D-3D, 6D gradients, ModelNet40/10, two 3DMatch scenes, KITTI drive 0001, systems, and ablations are independently measured in `experiments/`; SDPRLayers/Theseus/BPnP/Pyatov/POLI and In-The-Dark are not measured and are marked as such.**
 
 ## Abstract
 
-Differentiable pose-estimation layers promise end-to-end learning through geometric optimization, but their guarantees are fragile in the presence of outliers. The state of the art either wraps a non-differentiable RANSAC front-end around a certifiable solver, or differentiates a local robust M-estimator with a frozen-weight or unrolled approximation. We present **Robust-QPEPLayer**, a RANSAC-free differentiable pose layer that combines Black–Rangarajan (BR) duality, graduated non-convexity (GNC), and a constant-size quaternion pose solver (QPEP). The forward pass alternates a closed-form outlier-weight update with a globally solved weighted QPEP; the rotation dimension stays four (three on the tangent space) and the number of correspondences enters only through O(N) accumulation. The backward pass differentiates the robust fixed point exactly with a 6×6 system and O(1) memory in the number of GNC iterations. Our main theoretical results are: (i) an exact BR dual for the Geman–McClure family, with the optimal weight equal to the kernel derivative; (ii) a proof that a GNC fixed point is a stationary point of the robust cost, and that the redescending curvature correction is precisely the Schur complement of the BR weight block; (iii) the exact Riemannian Hessian on S³×R³, which contains a constraint-multiplier term −λ_rob I that is absent from the Euclidean formula and whose omission changes the spectrum by O(1); (iv) a rigorous one-dimensional sign-flip proposition showing that frozen-weight IRLS-StopGrad can have the opposite derivative sign to the exact fixed point, together with an existence construction; and (v) a per-observation O(‖r_i‖^{-4}) gradient bound under a uniform invertibility condition, which we explicitly distinguish from forward robustness. We also delineate what the method does **not** guarantee: GNC is not a global algorithm, coherent majority outliers can make the global robust optimum wrong, and a positive Hessian is a local stability certificate, not a robustness certificate. A full experimental protocol against SDPRLayers+RANSAC, Theseus, BPnP, Pyatov et al., and POLI is specified; results are TODO.
+Differentiable pose-estimation layers promise end-to-end learning through geometric optimization, but their guarantees are fragile in the presence of outliers. The state of the art either wraps a non-differentiable RANSAC front-end around a certifiable solver, or differentiates a local robust M-estimator with a frozen-weight or unrolled approximation. We present **Robust-QPEPLayer**, a RANSAC-free differentiable pose layer that combines Black–Rangarajan (BR) duality, graduated non-convexity (GNC), and a constant-size quaternion pose solver (QPEP). The forward pass alternates a closed-form outlier-weight update with a globally solved weighted QPEP; the rotation dimension stays four (three on the tangent space) and the number of correspondences enters only through O(N) accumulation. The backward pass differentiates the robust fixed point exactly with a 6×6 system and O(1) memory in the number of GNC iterations. Our main theoretical results are: (i) an exact BR dual for the Geman–McClure family, with the optimal weight equal to the kernel derivative; (ii) a proof that a GNC fixed point is a stationary point of the robust cost, and that the redescending curvature correction is precisely the Schur complement of the BR weight block; (iii) the exact Riemannian Hessian on S³×R³, which contains a constraint-multiplier term −λ_rob I that is absent from the Euclidean formula and whose omission changes the spectrum by O(1); (iv) a rigorous one-dimensional sign-flip proposition showing that frozen-weight IRLS-StopGrad can have the opposite derivative sign to the exact fixed point, together with an existence construction; and (v) a per-observation O(‖r_i‖^{-4}) gradient bound under a uniform invertibility condition, which we explicitly distinguish from forward robustness. We also delineate what the method does **not** guarantee: GNC is not a global algorithm, coherent majority outliers can make the global robust optimum wrong, and a positive Hessian is a local stability certificate, not a robustness certificate. We report measured synthetic and real 3D-3D results: GNC-GM matches RANSAC-1000 success at 0–70% random outliers and is 22–32× faster on synthetic, ModelNet, 3DMatch, and KITTI data; exact IFT matches finite differences at 3–5×10⁻⁸ relative error, while frozen-weight IRLS has a boundary cosine of 0.234 and a 1.07 relative error. The protocol against SDPRLayers+RANSAC, Theseus, BPnP, Pyatov et al., and POLI, and the In-The-Dark end-to-end experiment, remain future work.
 
 ---
 
@@ -289,91 +289,84 @@ We do not claim (i) global optimality of the robust cost, (ii) certified robustn
 
 ## 5. Experiments
 
-> **Status: design only. No number below is measured. Tables are placeholders and must not be cited as results.**
+> **Status (2026-11-27): measured subsets only.** The synthetic 3D-3D tables, the 6D gradient table, the GT-supervised boundary diagnostic, ModelNet40/ModelNet10, four 3DMatch scenes (oracle; two with an FPFH front-end audit), KITTI raw drive 0001, the inner-solver comparison, the batch benchmark, and four ablations are measured and reproducible from `experiments/`. The comparison against SDPRLayers/Theseus/BPnP/Pyatov/POLI and the UTIAS In-The-Dark end-to-end experiment are **not** measured and are not claimed. No number below is a preliminary author number; all are independent runs from this repository.
 
-### 5.1 Research questions
+### 5.1 Scope and evaluation protocol
 
-- **Q1 (forward robustness).** At 30–70% random outliers, does GNC-QPEP recover the inlier pose more often than SDPRLayers, SDPRLayers+RANSAC, Theseus-GM, and BPnP?
-- **Q2 (gradient correctness).** Does the exact backward match central finite differences better than naive IRLS-StopGrad, and does the gap grow for boundary outliers ($e\approx c^2$)?
-- **Q3 (does the curvature correction matter?).** Ablate $\Delta H_{\mathrm{redesc}}$ and the $-\lambda_{\mathrm{rob}}$ term; measure gradient cosine and end-to-end training quality.
-- **Q4 (systems).** Forward/backward latency and memory versus SDPRLayers+RANSAC and Theseus, at $N\in\{50,200,1000\}$.
-- **Q5 (end-to-end).** On UTIAS In-The-Dark, does training with the robust layer (no RANSAC) match or beat the RANSAC+clean-sample pipeline of SDPRLayers?
+The measured task is 3D-3D registration with correspondences $(p_i,y_i)$, residual $r_i=R(q)p_i+t-y_i$, Geman–McClure kernel with $c=0.05$ m unless stated otherwise, and success defined as rotation error $<5^\circ$ and translation error $<0.1$ m. RANSAC uses 3-point samples and threshold $\|r_i\|<c$; the fixed baseline always spends 1000 iterations (the v0 protocol), and the adaptive baseline uses the standard 0.999 confidence bound capped at 1000. Unless stated otherwise, each cell has 50–100 trials and fixed seeds. Runtimes are single-call wall-clock p50/p95 on a shared CPU node; absolute times drift with node load, so all speedups are within-run ratios.
 
-### 5.2 Datasets
+The main forward solver is weighted Kabsch, the closed-form scalar-weight 3D-3D specialization of QPEP; the robust outer loop is GNC-GM or IRLS-GM. This isolates the robust estimator and the backward, not the full QPEP polynomial algebra. A 4×4 Davenport/Horn inner solver is benchmarked separately (§5.6); no 40-root QPEP solver is implemented.
 
-- **UTIAS In-The-Dark** [1, 15]: stereo localization, 100k train / 20k validation samples, test runs 2, 11, 16, 17, 23, 28, 35. We use the same VGG16 + dual-UNet front-end and the same train/test splits as SDPRLayers for a fair comparison. The key difference is that we feed *raw* matches, including outliers, and remove RANSAC from the training loop.
-- **3DMatch / KITTI Odometry**: 3D-3D registration with 30–70% outliers, including a coherent-outlier protocol (outliers generated by a single rigid transform) and a boundary-outlier protocol (residuals near $e=c^2$).
-- **Synthetic 3D-3D**: controlled $N$, outlier fraction, outlier type (uniform, coherent, boundary), noise, and anisotropic $W_i$; used for ground-truth gradients and breakdown curves.
+### 5.2 Synthetic forward robustness and cost
 
-### 5.3 Baselines
+Table 5.1 reports random outliers (replaced observations uniform in $[-2,2]^3$), 100 trials/cell, $N=100$. GNC-GM and both RANSAC variants are at 100% through 70%; IRLS drops to 98% at 70%; non-robust Kabsch collapses after 10%.
 
-| Baseline | Role |
-|---|---|
-| SDPRLayers [1] | certifiable global pose layer; no outlier handling |
-| SDPRLayers + RANSAC | the current practical pipeline; non-differentiable front-end |
-| Theseus [6] (GM / Cauchy) | local differentiable robust baseline |
-| BPnP [7] | local PnP implicit layer, no robustness |
-| Pyatov et al. [9] | robust two-view implicit layer with learned weights |
-| POLI [10] + SDPRLayer | learned anisotropic geometry + global pose layer |
-| QPEP + GNC (no exact backward) | forward-only robust solver; isolates the value of the backward |
-| Naive IRLS-StopGrad | frozen-weight backward; the ablation of the curvature correction |
-| Finite differences | oracle for gradient correctness (small $N$) |
+| $p$ | Kabsch | RANSAC-1000 | RANSAC-adaptive | IRLS-GM | GNC-GM |
+|---|---|---|---|---|---|
+| 0% | 100 | 100 | 100 | 100 | 100 |
+| 10% | 52 | 100 | 100 | 100 | 100 |
+| 30% | 0 | 100 | 100 | 100 | 100 |
+| 50% | 0 | 100 | 100 | 100 | 100 |
+| 70% | 0 | 100 | 100 | 98 | 100 |
 
-### 5.4 Metrics
+Median rotation error is 0.13–0.21$^\circ$ for all robust methods; at $p=30\%$ RANSAC-1000 is 0.13$^\circ$ and GNC 0.14$^\circ$, i.e. tied at two decimals. The meaningful difference is cost: GNC p50 is 1.48–1.63 ms, RANSAC-1000 is 47.7–51.9 ms, and adaptive RANSAC is 0.41–12.36 ms. Against the fixed v0 baseline GNC is **31.6–32.5×** faster for $p\ge10\%$; against adaptive RANSAC it is slower at low $p$ (3× at 10%), comparable at 40%, and 8.3× faster at 70% (25–30× at 80–90%, where adaptive RANSAC saturates at its 1000-iteration cap). RANSAC is not differentiable; GNC's backward is a 6×6 solve.
 
-- Rotation error (degrees) and translation error (meters), median and IQR; AUC at 5°/0.1 m and 10°/0.2 m.
-- Outlier-rate vs recall/precision curves; breakdown point (largest outlier fraction with >90% success).
-- Gradient cosine and relative error versus central finite differences, per-observation and per-parameter; separately for inliers, boundary outliers, and gross outliers.
-- Runtime (forward, backward, end-to-end), peak memory, number of QPEP/GNC iterations, and CPU/GPU utilization.
-- $\lambda_{\min}(H_{\mathrm{rob}})$, condition number, fraction of indefinite Hessians, and gradient-norm spikes.
-- End-to-end task metrics: longitudinal/lateral localization error on In-The-Dark; ADD(-S) is out of scope (that is Prototype 2).
+Random outliers flatter every robust method. A finer breakdown sweep (100–200 trials/cell) shows the RANSAC failure at 80–90%: at 90% random outliers RANSAC-1000 is 51%, GNC 62%, IRLS 32%; at 80% GNC is 89% while RANSAC is 100%. With one coherent competing rigid transform, all methods are at 100% through 45% and then collapse: at 50% the two hypotheses tie (GNC 52%, RANSAC 50%), at 55% GNC is 2% and RANSAC 0%, and at 60% every method returns the **outlier** transform (100% recovered-outlier rate). This is the identifiability failure of Prop. 3.7, not a solver bug. With boundary outliers ($e/c^2\sim U(1/3,3)$), all methods remain at 100% success even at 70%; the robust methods are more accurate (GNC 0.27$^\circ$ vs RANSAC 0.62$^\circ$ and Kabsch 0.33$^\circ$ at 70%), but forward success is not where boundary outliers bite.
 
-### 5.5 Ablations
+### 5.3 Exact gradient vs frozen weights
 
-| Ablation | Question |
-|---|---|
-| Kernel: GM / Cauchy / Welsch / TLS | sensitivity of robustness and gradient conditioning |
-| $\mu$ schedule: $\gamma$, $\mu_0$, inner iterations | forward success vs compute |
-| Curvature correction on/off | does $\Delta H_{\mathrm{redesc}}$ change the gradient sign/cosine? |
-| $-\lambda_{\mathrm{rob}}$ term on/off | does the constraint term change $\lambda_{\min}$ and training? |
-| $W_i=I$ vs anisotropic vs POLI weights | value of matrix weights |
-| $N\in\{20,50,200,1000\}$ | constant-dimension claim |
-| Batch size / GPU | systems claim |
-| RANSAC on/off in training | the central end-to-end claim |
+The 6D gradient table uses $N=30$, ten 40%-boundary instances and ten 20%-random instances, GNC + Newton polish to $\|\Phi\|\sim10^{-13}$, and central finite differences of the polished fixed-point branch ($h=10^{-5}$). The exact IFT Jacobian matches FD to a relative Frobenius error of **4.9e-8** (inliers), **3.1e-8** (boundary), and 1.25e-4 (gross, limited by FD cancellation), with cosine 1.000000. The naive frozen-weight Jacobian is 0.212 (inlier) and **1.07** (boundary) relative error; its boundary cosine is 0.234 (min −0.358). Omitting only the $-\lambda_{\rm rob}$ term gives 9e-4–1e-3 relative error, so the curvature correction is the dominant missing term, not the constraint term.
 
-### 5.6 Compute budget (estimate; to be confirmed)
+| bin | method | $n$ | rel. error p50 | cosine p50 | cosine min |
+|---|---|---|---|---|---|
+| inlier | exact | 414 | 4.9e-8 | 1.000000 | 1.000000 |
+| inlier | naive | 414 | 2.12e-1 | 0.985 | 0.791 |
+| boundary | exact | 122 | 3.1e-8 | 1.000000 | 1.000000 |
+| boundary | naive | 122 | **1.07** | **0.234** | **−0.358** |
+| gross | exact | 64 | 1.25e-4* | 1.000000 | 0.9986 |
+| gross | naive | 64 | 1.16 | −0.118 | −0.397 |
 
-- In-The-Dark end-to-end: 30 epochs × 10k samples, one modern GPU; estimate 3–7 GPU-days per run, 3 seeds → 2–3 GPU-weeks. The SDPR baseline is CPU-bound and may dominate wall-clock.
-- 3DMatch/KITTI: inference and gradient checks, 1–2 GPU-days; the algebraic QPEP solver may be CPU-bound, so batched GPU timing is a separate engineering task.
-- Synthetic and ablations: 2–4 GPU-days.
-- Total: ~4–6 GPU-weeks; this is a conservative estimate and should be revised after the first timing run.
+\*FD-cancellation-limited; the absolute error remains small and the cosine is 1.
 
-### 5.7 Reproduction risks
+For observations with $e>c^2/3$, the mapping-level radial response has the opposite sign for exact vs naive in **100%** of boundary (122/122) and gross (64/64) observations; the pose-translation level also flips in 100% of this well-conditioned 6D sample. The 1D statement is a theorem (Prop. 1); the 6D statement remains a numerical observation, not a theorem.
 
-1. **QPEP solver dependency.** LibQPEP is C++/MATLAB with Gröbner bases; GPU batching is not available out of the box. A pure-PyTorch batched polynomial solver or a C++/PyBind bridge is needed. Root completeness and numerical failure rates must be measured.
-2. **SDPRLayers environment.** The official code needs Mosek for some paths, and the SDP is CPU-bound; fair timing requires the same hardware and warm-up protocol. The repository's known 28% SDPR-IS failure rate under SCS must be handled with adaptive retries and reported.
-3. **In-The-Dark data.** Image download and the 100k/20k split must match SDPRLayers; otherwise the end-to-end comparison is not fair.
-4. **RANSAC fairness.** RANSAC has many hyperparameters (threshold, iterations, confidence); we must tune it on a validation split and report the budget, not use a strawman.
-5. **Finite-difference oracle.** Step size, non-smoothness at $e=c^2/3$, and ill-conditioned $H_{\mathrm{rob}}$ can make FD unreliable; use multiple step sizes and report the condition number.
-6. **GNC randomness.** Initialization and $\mu_0$ affect the basin; run multiple seeds and report success rates, not only medians.
-7. **Coherent outliers.** Random outliers flatter every robust method; the coherent protocol is the honest test, and we expect degradation.
+### 5.4 End-to-end boundary diagnostic
 
-### 5.8 Result tables (TODO)
+A GT-supervised test-time refinement updates only the injected boundary observations for 20 Adam steps, re-solving the fixed point after each step. At $p=0.5$ and lr $10^{-3}$, the exact gradient reaches a final loss of 1.90e-6 vs 1.66e-5 for naive (ratio 0.07, 14× lower) and a rotation error of 0.029$^\circ$ vs 0.087$^\circ$; exact wins 10/10 paired seeds. At $p=0.7$ and lr $10^{-3}$ the ratio is 0.095 and exact wins 9/10. The all-points control is not discriminative (4–9/10, ratio 0.64–1.04), because inliers can compensate the wrong boundary direction. The diagnostic's gradient check is exact to 1.6e-7 / 3.9e-8 / 9.3e-8 relative error per coordinate; naive is 1.42 / 0.60 / 0.38.
 
-| Method | In-The-Dark long. (m) | lat. (m) | 3DMatch recall @70% | grad cos (inlier) | grad cos (boundary) | fwd (ms) | bwd (ms) | mem (MB) |
-|---|---|---|---|---|---|---|---|---|
-| SDPRLayers | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
-| SDPRLayers+RANSAC | TODO | TODO | TODO | n/a | n/a | TODO | TODO | TODO |
-| Theseus-GM | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
-| BPnP | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
-| Pyatov et al. | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
-| POLI+SDPRLayer | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
-| Naive IRLS-StopGrad | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
-| **Ours** | TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
+A real float64 PyTorch `autograd.Function` now implements the same forward (GNC + Newton polish) with exact IFT, naive frozen-weight, and stopgrad backwards. `torch.autograd.gradcheck` passes for the exact backward at N=6/8/10 (max absolute error 6–8e-10; max relative 8e-9–1.1e-8, except one near-zero element at 8e-6); the naive backward fails at relative error 1.5–1.8. The torch port agrees with the NumPy implementation to 1e-16 in pose and 3e-16 in dL/dy. A small learned refinement (per-point MLP producing bounded observation corrections, 5 seeds, p=0.4 boundary outliers, 50 Adam steps) reduces median rotation from 0.635$^\circ$ to 0.068$^\circ$ for exact vs 0.106$^\circ$ for naive; exact wins 4/5 paired seeds with a median loss ratio of 0.56. A disjoint held-out protocol is **negative**: a local per-point MLP cannot identify the random global pose correction, both arms overfit, and exact also hits one basin switch. This is a toy validation of the layer implementation, not a trained real-data system; In-The-Dark remains unmeasured (§5.8).
 
-**Preliminary observations (author's preliminary runs, not independently reproduced; treat as hypotheses, not results).** Preliminary internal runs (not independently reproduced) report a 50%-outlier 3D-3D run in which GNC-QPEP recovers 0.69° / 0.017 m while vanilla QPEP fails at 72.05° / 0.6672 m; an exact-vs-FD gradient cosine of +1.0 versus a naive IRLS cosine of −0.079 on a boundary outlier; and a log-log slope of −4.00 for the outlier-gradient decay. We do not report these as measurements; the experimental program above is designed to reproduce or falsify them.
+### 5.5 Real geometry
 
----
+**ModelNet40 / ModelNet10.** With real object point clouds, 50 trials/cell and uniform outliers, GNC-GM is 100% at 0–70% on both datasets; RANSAC-1000 is 100%, IRLS is 98–100%, and Kabsch collapses at 50%. GNC is 1.7–1.9 ms vs 53.5–61.5 ms for fixed RANSAC, i.e. **30–32.5×** faster. ModelNet10 is a second dataset (908 test objects, 10 classes, OFF meshes resampled to 2048 points); robust-method success differs by at most 2 pp and median rotation by at most 0.038$^\circ$ from ModelNet40.
+
+**3DMatch.** Four official fragment scenes (redkitchen, sun3d-home_at, sun3d-hotel_uc, sun3d-home_md) are processed with the official TSDF point clouds and `gt.log`. The file's transform maps fragment `id2` into `id1`; this was verified empirically (forward median NN 0.50 m vs inverse 0.05 m). Base correspondences are GT-mapped nearest neighbours on real overlapping fragments (oracle matches with real scan/occlusion residual), $N=300$, $c=0.05$ m, 20 trials/cell, 8 high-overlap pairs/scene. On random outliers GNC and RANSAC-1000 are 100% through 70%; GNC p50 is 2.2–2.5 ms vs 61–71 ms (27–30×). On the two unseen scenes the pooled random-outlier success is again GNC/RANSAC 100% through 70% (IRLS 98% at 70%), GNC p50 0.83–2.56 ms vs RANSAC 62.5–74.2 ms (~29×), and boundary at 70% is GNC 0.373$^\circ$ vs RANSAC 0.718$^\circ$. Coherent outliers collapse at 60–70% for every method (0%); at 50% the extra-scene GNC success is 38% and IRLS 57%, a tie regime. A separate FPFH front-end (mutual NN + pairwise-distance consistency, no GT in matching) has a natural inlier rate of 80.0% / 67.8%; GNC succeeds 100% / 100%, RANSAC-1000 100% / 97%, Kabsch 100% / 83%. This is a hand-crafted FPFH front-end, not FCGF/Predator.
+
+**KITTI.** Two raw drives (2011_09_26 drives 0001 and 0002, 108 and 77 frames) provide real outdoor LiDAR. Ego motion is derived from OXTS (Mercator + roll/pitch/yaw) and mapped to Velodyne with `calib_imu_to_velo`; the direction is verified (correct NN 0.10–0.12 m vs inverse 0.14–0.18 m). With $N=300$, $c=0.25$ m (LiDAR spacing is ~0.1 m), 10 consecutive-frame pairs and 20 trials/cell, GNC and RANSAC-1000 are 100% through 70% random outliers; GNC p50 is 2.7–2.8 ms vs 61–64 ms (~22×). Coherent 60–70% collapses for all methods; boundary is 100% for GNC and IRLS, with GNC at 0.07–0.09$^\circ$ vs RANSAC 0.14–0.16$^\circ$ at 70%. Drive 0002 reproduces the drive-0001 success table (max 5 pp difference), the coherent transition, and the ~21–23× speedup; two independent runs agree in all non-timing fields. A threshold sweep shows GNC remains 100% at $c\in\{0.15,0.25,0.35\}$, while c=0.25 is the defensible match to the ~0.10 m point spacing.
+
+| dataset | task | random 0–70% | GNC vs fixed RANSAC | failure mode |
+|---|---|---|---|---|
+| synthetic | 3D-3D, N=100 | 100% | 31.6–32.5× | coherent majority; boundary gradient |
+| ModelNet40 | object clouds, N=200 | 100% | 30–31.7× | none up to 70% |
+| ModelNet10 | object clouds, N=200 | 100% | 31.7–32.5× | none up to 70% |
+| 3DMatch | indoor fragments, 4 scenes, N=300 | 100% | 27–30× | coherent 60–70% |
+| KITTI | outdoor LiDAR, N=300 | 100% | ~22× | coherent 60–70% |
+
+### 5.6 Systems and inner solver
+
+A vectorized numpy GNC implementation over $(B,N,3)$ reproduces the loop to rotation $\le1.1\times10^{-14}$ and translation $\le1.2\times10^{-15}$ with identical $\mu$-schedules. At $B=32,N=100$, batch p50 is 8.5 ms vs 56.2 ms for the loop (**6.60×**); at $B=8$ the speedup is 2.95× (N=100) and 3.27× (N=500). $B=1$ is slower in the batch path (0.54×), so the loop remains the right choice for single instances. On an RTX 5090 in float64 eager torch, GPU is launch-bound at ~40 ms and only wins at $B=128$ (5–10×); no CUDA-graph/torch.compile fusion or fp32 is claimed.
+
+A 4×4 Davenport/Horn inner solver is numerically equivalent to weighted Kabsch (max $\|R_d-R_k\|_F=1.07\times10^{-14}$, max cost excess 9.4e-16) but its runtime is only better at large $N$: p50 0.93× (N=20), 1.01× (N=100), 1.27× (N=500). It is a large-N option, not a default-N=100 win. No 40-root polynomial QPEP solver was implemented; for scalar-weight 3D-3D the QPEP stationary-point problem reduces to this 4×4 eigenproblem.
+
+### 5.7 Ablations
+
+- **Kernel.** With the same weighted-Kabsch inner and schedule, GM, Cauchy, and Welsch are all 100% on random and boundary outliers through 70%. GM has the lowest boundary median rotation at 50–70% (0.199/0.229/0.340$^\circ$ vs Cauchy 0.241/0.264/0.370$^\circ$, Welsch 0.220/0.268/0.392$^\circ$). There is no evidence to switch the default.
+- **GNC schedule.** Sweeping $\gamma\in\{1.2,1.4,1.7,2.0\}$, $\mu_0$ multiplier $\{0.5,1,4\}$ and polish steps $\{0,5,10\}$ gives 100% success and identical median rotation at $p=0.3/0.5/0.7$; $\gamma=2.0$ is 1.1–1.7× faster than the default, $\gamma=1.2$ is 1.7–2.5× slower. The default is conservative, not uniquely optimal.
+- **Anisotropic $W_i$.** With a correct 6-DoF Gauss-Newton inner solve on Cholesky-whitened residuals, $W_i=I$ matches Kabsch to 5.3e-13. Scalar weighted Kabsch is **not** exact for anisotropic $W_i$: its objective ratio at converged GM weights is 1.002–1.007 (diagonal) and 1.035–1.088 (full SPD), with a single-trial maximum of 3.80. Under the isotropic synthetic noise, however, anisotropic $W_i$ is a misspecified model: full-W GNC has a paired median rotation change of +0.055 to +0.124$^\circ$, is better on only 8–32% of trials, and has 92% success at $p=0.7$ (identity: 100%). The exact inner solve is 5–23× slower than scalar Kabsch. We therefore report this as a correctness/negative result: use the nonlinear inner when $W_i$ is genuinely anisotropic, but do not claim an accuracy gain from anisotropy on this data.
+
+### 5.8 What is not measured
+
+The following are **not** claimed and remain required for the full paper: (i) SDPRLayers, SDPRLayers+RANSAC, Theseus-GM, BPnP, Pyatov et al., POLI, and finite-difference baselines on the same real data; (ii) the UTIAS In-The-Dark end-to-end pipeline (the current end-to-end result is a GT-supervised test-time diagnostic, not a trained layer); (iii) learned descriptors (the only descriptor front-end is hand-crafted FPFH); (iv) full 50-scene 3DMatch, low-overlap/long-baseline pairs, KITTI sequences 00–10, or more than two KITTI drives; (v) the full 40-root QPEP polynomial solver, its root-completeness/failure rate, and GPU batching; (vi) anisotropic $W_i$ under matched noise covariance; (vii) a 6D sign-flip theorem (the 6D result is numerical); (viii) global optimality of the robust cost, a breakdown-point guarantee, or adversarial robustness. The coherent-majority failure and the RANSAC-adaptive comparison are reported explicitly because they weaken the strongest possible claims.
 
 ## 6. Discussion and Limitations
 
@@ -397,7 +390,7 @@ We do not claim (i) global optimality of the robust cost, (ii) certified robustn
 
 ## 7. Conclusion
 
-We presented Robust-QPEPLayer, a RANSAC-free differentiable pose layer that combines BR duality, GNC, and a constant-size QPEP inner solver, and differentiates the robust fixed point exactly. The theory isolates two terms that the natural implementation drops: the redescending curvature correction, which is the Schur complement of the BR weight block, and the constraint-multiplier term of the unit-quaternion constraint. The one-dimensional sign-flip proposition gives a rigorous setting in which the frozen-weight gradient has the wrong sign, and the per-observation $O(\|\mathbf r\|^{-4})$ bound quantifies when the gradient through a gross outlier becomes negligible. The method is not a global robust solver and does not replace RANSAC in adversarial regimes; it is a principled, constant-dimension, exactly differentiable robust layer whose failure modes are stated. The experimental program is specified and will be reported in the next version.
+We presented Robust-QPEPLayer, a RANSAC-free differentiable pose layer that combines BR duality, GNC, and a constant-size QPEP inner solver, and differentiates the robust fixed point exactly. The theory isolates two terms that the natural implementation drops: the redescending curvature correction, which is the Schur complement of the BR weight block, and the constraint-multiplier term of the unit-quaternion constraint. The one-dimensional sign-flip proposition gives a rigorous setting in which the frozen-weight gradient has the wrong sign, and the per-observation $O(\|\mathbf r\|^{-4})$ bound quantifies when the gradient through a gross outlier becomes negligible. The method is not a global robust solver and does not replace RANSAC in adversarial regimes; it is a principled, constant-dimension, exactly differentiable robust layer whose failure modes are stated. Measured on synthetic, ModelNet40/10, 3DMatch, and KITTI 3D-3D data, it matches fixed-RANSAC success through 70% random outliers at 22–32× lower runtime, and its exact gradient is 3–5×10⁻⁸ relative to finite differences; the full baseline suite and In-The-Dark training remain future work.
 
 ---
 

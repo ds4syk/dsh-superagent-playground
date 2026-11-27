@@ -13,3 +13,4 @@ artifacts/
 !labs/01-laplace-qpeplayer/experiments/code/**
 !labs/02-constrained-qpeplayer/experiments/code/
 !labs/02-constrained-qpeplayer/experiments/code/**
+labs/02-constrained-qpeplayer/experiments/code/__pycache__/

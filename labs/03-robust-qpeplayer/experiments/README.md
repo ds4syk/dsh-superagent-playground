@@ -332,3 +332,62 @@ experiments/
 * **不能**说“e2e 训练赢了”：这是 GT 监督的 test-time 诊断，不是学习层；真实端到端（In-The-Dark）未做。
 
 **总体**：主表可以作为“同精度 + 对固定预算大幅加速 + 可微 + 明确失败边界”的合成证据；不足以单独支撑“精度胜出”或“任意鲁棒”。论文里应把 30× 的基线、边界档的定位、相干档的失败写清楚，梯度表单独作为核心贡献证据。
+
+---
+
+## 11. 各向异性权重 $W_i$ 消融（2026-11-27，`ablations/anisotropic/`）
+
+主表只用标量权重。真实前端给出的可能是逐观测 SPD 权重 $W_i$；此时正确的 GM 目标
+$\Phi=\sum_i\rho(r_i^\top W_i r_i)$ 的内层 $\min_{R,t}\sum_i u_i r_i^\top W_i r_i$
+是 6-DoF **非线性**最小二乘，标量加权 Kabsch 只在 $W_i\propto I$ 时精确。
+
+`ablations/anisotropic/run_anisotropic.py` 用 Cholesky 白化残差 + 6-DoF Gauss-Newton
+（每步重锚定旋转图卡）解内层，GNC-GM/IRLS 调度与 `common.solve_gnc` 一致，并用
+`scipy.optimize.least_squares` 独立校验。结论：
+
+* 正确性：$W_i=I$ 时与闭式 Kabsch 差 $5\times10^{-13}$（Frobenius），与
+  `common.solve_gnc` 差 $5\times10^{-12}$；scipy 相对代价差 $<10^{-9}$。
+* 标量 Kabsch 近似对 $W_i=I$ 的目标比 1.000000，对 diag/full 分别为
+  1.002–1.007 / 1.035–1.088（单 trial 最大 3.8）——**标量内层不是各向异性目标的最优解**。
+* 本协议噪声各向同性，$W_i$ 是错配模型：full-W 的 GNC-W 旋转误差
+  0.19–0.35° vs $W=I$ 0.11–0.19°，配对改善比例仅 8–32%，成功率 92–100%；
+  **各向异性权重没有提升精度**，但正确解在所有格子取得更低 $\Phi$。
+  p=0.7 的 2/25 次 full-W 失败是 159°/175° 的粗大局部极小（同实例 $W=I$
+  成功，且其 $\Phi=0.245$ 劣于 identity 的 0.182）。
+* 精确内层比标量近似慢 5–23×（p≥0.3 时约 20–48 ms vs 1.9–2.1 ms；计时固定 BLAS 单线程，
+  p50 仍有 run-to-run 波动，比较时看同 run 内的比值）。
+
+细节：`ablations/anisotropic/README.md`、`results/anisotropic.md`、
+`results/anisotropic.json`。
+
+---
+
+## 12. 真实数据扩展（2026-11-27）
+
+| 数据 | 目录 | 关键数字 | 限制 |
+|---|---|---|---|
+| ModelNet10（第二物体数据集） | `real/modelnet10/` | GNC 0–70% 全 100%；鲁棒方法相对 ModelNet40 成功偏差 ≤2 pp、中位旋转偏差 ≤0.038°；31.7–32.5× vs RANSAC-1000 | OFF 网格自采样 2048 点；仅 test split |
+| 3DMatch（室内片段，4 场景） | `real/threedmatch/` | 随机 0–70% GNC/RANSAC 100%；GNC 2.2–2.5 ms vs RANSAC 61–71 ms（27–30×）；相干 60–70% 全 0%；边界全 100%，70% GNC 0.25° vs RANSAC 0.74° | GT-NN oracle 基础匹配；2 主 + 2 unseen 场景；仅高重叠帧对 |
+| 3DMatch FPFH 前端 | `real/threedmatch/run_descriptor.py` | 自然内点 80.0%/67.8%；GNC 100%/100%，RANSAC-1000 100%/97%，Kabsch 100%/83% | 手工 FPFH，非 FCGF/Predator |
+| KITTI raw drive 0001（室外 LiDAR） | `real/kitti/` | 随机 0–70% GNC/RANSAC 100%；GNC 2.7–2.8 ms vs 61–64 ms（~22×）；相干 60–70% 全 0%；边界全 100%，70% GNC 0.07° vs RANSAC 0.14° | OXTS 位姿；单 drive；无真实描述子 |
+
+3DMatch 的 `gt.log` 实测方向是 **id2→id1**，runner 取逆；换发布版必须重跑 `verify_gt_direction.py`。KITTI 的阈值 `c=0.25 m` 来自 ~0.10 m 点距（见 `real/kitti/results/c_sensitivity.md`），不能直接套 3DMatch 的 0.05 m。
+
+## 13. 内层求解器与系统
+
+- `inner/`：Horn/Davenport 4×4 与加权 Kabsch 数值等价（max 旋转差 1.07e-14）；p50 仅 N=500 有 1.27× 收益，N=100 中性、N=20 慢 7%。**不是** 40 根 QPEP；标量权重 3D-3D 的 QPEP 退化为该 4×4 特征问题。
+- `systems/`：numpy 批量 GNC 在 B=32,N=100 时 56.2→8.5 ms（6.60×），B=1 反而慢；GPU float64 eager 在 B≤128 被 ~40 ms launch 地板限制，只在 B=128 有 5–10×。生产建议 B≥8 用批量，B=1 用循环。
+
+## 14. 消融与调度
+
+- `ablations/kernels/`：GM/Cauchy/Welsch 在随机/边界 0–70% 全 100%；GM 在边界 50–70% 中位旋转最低（0.199/0.229/0.340°）。默认 GM 有依据。
+- `ablations/gnc_schedule/`：gamma/mu0/polish 扫描 24 组全部 100%，中位旋转相同；gamma=2.0 快 1.1–1.7×，gamma=1.2 慢 1.7–2.5×。默认保守。
+- `ablations/anisotropic/`：correct full-W 内层在 W=I 与 Kabsch 差 5.3e-13；但各向同性噪声下 W 错配，full-W 精度反而下降（配对 Δrot +0.055..+0.124°），且慢 5–23×。保留为正确性/负结果。
+
+## 15. 仍未关闭的缺口
+
+1. SDPRLayers / Theseus / BPnP / Pyatov / POLI 的同数据对比未做（缺环境/权重），论文已标 not measured。
+2. UTIAS In-The-Dark 端到端训练未做；当前 e2e 只是 GT 监督的 test-time 诊断。
+3. 学习描述子（FCGF/Predator）未接；3DMatch 真实前端只有手工 FPFH。
+4. 3DMatch 全 50 场景 / 低重叠长基线、KITTI sequences 00–10 / 多 drive 未做。
+5. 完整 40 根 QPEP 多项式求解器、根完备性/失败率、GPU 批处理未做。

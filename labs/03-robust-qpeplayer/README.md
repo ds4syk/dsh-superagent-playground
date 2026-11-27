@@ -21,15 +21,15 @@
 |---|---|
 | 数学（BR 对偶、GNC、Schur 补、黎曼 Hessian、IFT、一维变号、$O(r^{-4})$） | **已写 + 已证/条件性证明**，见 `theory/proofs.md`、`theory/derivations.md` |
 | 最小数值 sanity check（2 个脚本） | **通过**，见 `verify/` |
-| 论文草稿（英文，结构完整） | **v0.1**，实验数字全是 TODO，见 `paper/draft.md` |
+| 论文草稿（英文，结构完整） | **v0.2**，§5 已填实测合成/ModelNet/3DMatch/KITTI/系统/消融；SDPR/Theseus/In-The-Dark 标 not measured，见 `paper/draft.md` |
 | 贡献/对比/审稿 Q&A | **完成**，见 `paper/contributions.md` |
 | 相关工作/引用核实 | **完成**，见 `related_work.md`（含 2 处引用勘误） |
-| 实验协议 | **设计完成；合成 E1–E4 + ModelNet40 真实几何已跑**；3DMatch/KITTI/In-The-Dark TODO，见 `experiments/protocol.md` |
+| 实验协议 | **设计完成；合成 E1–E4 + ModelNet40/10 + 3DMatch（2 场景 + FPFH）+ KITTI（2 drives）+ e2e torch + 系统/消融已跑**；SDPR/Theseus/In-The-Dark/学习描述子/全 40 根 QPEP 未做，见 `experiments/protocol.md`、`experiments/README.md` |
 | 合成实验（扩展主表 + 6D 梯度表 + 边界精化 + 校验） | **完成**（2026-11-27），见 `experiments/README.md`、`experiments/synthetic/results/` |
 | 路线图 | **完成**，见 `roadmap.md`（RA-L 首选 / IROS 2027 备选 / T-RO stretch） |
 | 未解决数学问题 | **12 条，P0×4**，见 `math_questions.md` |
 
-**没有做的**：3DMatch/KITTI/In-The-Dark、真实端到端训练（只有 GT 监督的 test-time 精化诊断）、QPEP C++/GPU 工程、6D 变号定理、GNC 分岔反例。**没有编造**任何实验数字；源文档的预实验数字在 `experiments/protocol.md` §8 标为“待独立复现”。**已修**：`verify/riemann_hessian_check.py` 的 `build_A` 原先用非齐次 `Rmat` 极化，已改为齐次式并重跑（25.9% / 9.9e-8 / 51.05），见 `experiments/README.md` §7.1。
+**没有做的**：SDPRLayers/Theseus/BPnP/Pyatov/POLI 同数据对比、UTIAS In-The-Dark 端到端训练、学习描述子（FCGF/Predator）、完整 40 根 QPEP 多项式求解器、6D 变号定理、GNC 分岔反例。**已做的真实数据**：ModelNet40/10、3DMatch 4 场景（GT-NN + 手工 FPFH）、KITTI raw 2 drives；**已做的工程**：torch autograd 层 gradcheck、批量 GNC、Davenport 内层、LO-RANSAC/核/GNC 调度/各向异性/噪声/崩溃点消融。**没有编造**任何实验数字；源文档的预实验数字在 `experiments/protocol.md` §8 标为“待独立复现”。**已修**：`verify/riemann_hessian_check.py` 的 `build_A` 原先用非齐次 `Rmat` 极化，已改为齐次式并重跑（25.9% / 9.9e-8 / 51.05），见 `experiments/README.md` §7.1。
 
 ---
 
@@ -65,7 +65,8 @@ labs/03-robust-qpeplayer/
 
 - 完成 `theory/proofs.md`（19 节，含 5 个 Lemma、3 个 Theorem、4 个 Proposition、1 个 Corollary、GAP 清单、源文档差异表）。
 - 完成 `theory/derivations.md`（9 节，含 BR 对偶全配方、Schur 补、$H_i^E$ 的 $A_k$ 技巧、$\lambda_\parallel$ 的完整求导、$O(r^{-4})$ 常数）。
-- 完成 `paper/draft.md`（英文，451 行；实验表格全 TODO）。
+- 完成 `paper/draft.md` v0.2（英文，442 行；§5 实测，0 TODO）。
+- 真实数据/工程/消融：`experiments/real/threedmatch/`、`real/kitti/`、`real/kitti2/`、`real/modelnet10/`、`e2e_torch/`、`systems/`、`inner/`、`ablations/`；一页图 `experiments/p3_summary.png`；复现审计 `experiments/REPRO_AUDIT.md`（PASS）。
 - 两个数值脚本通过：
   - BR 对偶值误差 $10^{-11}$；$\lambda_\parallel$ 闭式误差 $6.7\times10^{-16}$；一维精确 vs FD $1.2\times10^{-8}$，naive 误差 $137\%$，符号相反；$\log$-$\log$ 斜率 $-3.9979$。
   - 黎曼 Hessian：源公式 vs FD $2.59\times10^{-1}$；修正公式 $9.9\times10^{-8}$；$\lambda_i-4\mathbf u_i^\top W_i\mathbf r_i$ 误差 $7.1\times10^{-15}$，$\lambda_i-4e_i$ 差 $51.0$。
