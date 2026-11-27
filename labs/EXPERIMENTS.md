@@ -11,7 +11,7 @@
 | 线 | 任务 | 主表结论 | 代码/结果 |
 |-|-|-|-|
 | **P1** | 可控双峰位姿的分支交叉（81 个 θ，τ=0.01） | 交叉处 Laplace 梯度误差 **4.3e-4**，MC **3.3e-2**（std 0.11），硬 argmin **N/A**；远离交叉三者一致到 1e-6 | `01-laplace-qpeplayer/experiments/` |
-| **P2** | 合成桌面 PnP + BOP LINEMOD 真实网格/桌面 | 合成：ALM **0 mm、100% 可行、100% 认证**；LINEMOD：ALM **0 mm、100% 可行、50% 认证** vs 无约束 4.76 mm/39% | `02-constrained-qpeplayer/experiments/` |
+| **P2** | 合成桌面 PnP + BOP LINEMOD/LM-O/YCB-Video | 合成：ALM **0 mm、100% 可行、100% 认证**；真实：ALM 全部 0 mm/100% 可行（LM/LM-O/YCB），认证 50%/22%/83% | `02-constrained-qpeplayer/experiments/` |
 | **P3** | 合成 + ModelNet40 真实几何 3D-3D，0–70% 外点 | GNC 与 RANSAC 同精度 100%；对固定 1000 迭代 RANSAC **约 30× 加速**；exact 梯度 vs FD **5e-8**，naive 边界 cosine **0.23** | `03-robust-qpeplayer/experiments/` |
 
 ![真实数据实验](../docs/visuals/2026-11-27-real-data.png)
@@ -62,11 +62,27 @@
 
 
 
-**真实数据（BOP LINEMOD）**：真实物体网格 + 真实相机内参 + 从背景深度 RANSAC 拟合的桌面平面；30 个模型点按 GT 投影加 1 px 噪声与 10/20/30 px 向下偏置，16 个非穿透约束。18 trials：无约束 4.76 mm 穿透、39% 可行；ALM **0 mm、100% 可行、50% 认证**；软惩罚 0 mm/94% 可行/50% 认证；投影 0 mm/100% 可行/33% 认证。位姿误差四种方法接近——真实数据上约束买的是“硬可行 + 可认证”，不是精度。加载校验：模型投影 bbox 与 `scene_gt_info.bbox_obj` 对齐。代码/设置见 `02-constrained-qpeplayer/experiments/real/linemod/`。
+**真实数据（BOP LINEMOD / LM-O / YCB-Video）**：真实物体网格 + 真实相机内参 + 深度 RANSAC 桌面平面；30 个模型点按 GT 投影加 1 px 噪声与 10/20/30 px 向下偏置，16 个非穿透约束。
+
+| 数据集 | trials | 无约束 穿透/可行 | 软惩罚 可行/认证 | 投影 可行/认证 | **ALM 穿透/可行/认证** |
+|-|-|-|-|-|-|
+| LINEMOD | 18 | 4.76 mm / 39% | 94% / 50% | 100% / 33% | **0 mm / 100% / 50%** |
+| LM-O（遮挡） | 18 | 23.06 mm / **0%** | 89% / 17% | 100% / 6% | **0 mm / 100% / 22%** |
+| YCB-Video | 12 | 0 mm / 67% | 100% / 67% | 100% / 75% | **0 mm / 100% / 83%** |
+
+位姿误差四种方法接近（LM 2.0–2.2°/34–39 mm；LM-O 1.9–2.1°/29–63 mm；YCB 1.1–1.5°/16–20 mm）——真实数据上约束买的是“硬可行”，不是精度；认证率 22%–83%，SDP 不总紧，按 fail-safe 写。加载校验：LINEMOD 模型投影 bbox 与 `scene_gt_info.bbox_obj` 对齐。代码/设置见 `02-constrained-qpeplayer/experiments/real/README.md`。
 
 ## P3 `Robust-QPEPLayer`
 
-**真实数据（BOP LINEMOD）**：真实物体网格 + 真实相机内参 + 从背景深度 RANSAC 拟合的桌面平面；30 个模型点按 GT 投影加 1 px 噪声与 10/20/30 px 向下偏置，16 个非穿透约束。18 trials：无约束 4.76 mm 穿透、39% 可行；ALM **0 mm、100% 可行、50% 认证**；软惩罚 0 mm/94% 可行/50% 认证；投影 0 mm/100% 可行/33% 认证。位姿误差四种方法接近——真实数据上约束买的是“硬可行 + 可认证”，不是精度。加载校验：模型投影 bbox 与 `scene_gt_info.bbox_obj` 对齐。代码/设置见 `02-constrained-qpeplayer/experiments/real/linemod/`。
+**真实数据（BOP LINEMOD / LM-O / YCB-Video）**：真实物体网格 + 真实相机内参 + 深度 RANSAC 桌面平面；30 个模型点按 GT 投影加 1 px 噪声与 10/20/30 px 向下偏置，16 个非穿透约束。
+
+| 数据集 | trials | 无约束 穿透/可行 | 软惩罚 可行/认证 | 投影 可行/认证 | **ALM 穿透/可行/认证** |
+|-|-|-|-|-|-|
+| LINEMOD | 18 | 4.76 mm / 39% | 94% / 50% | 100% / 33% | **0 mm / 100% / 50%** |
+| LM-O（遮挡） | 18 | 23.06 mm / **0%** | 89% / 17% | 100% / 6% | **0 mm / 100% / 22%** |
+| YCB-Video | 12 | 0 mm / 67% | 100% / 67% | 100% / 75% | **0 mm / 100% / 83%** |
+
+位姿误差四种方法接近（LM 2.0–2.2°/34–39 mm；LM-O 1.9–2.1°/29–63 mm；YCB 1.1–1.5°/16–20 mm）——真实数据上约束买的是“硬可行”，不是精度；认证率 22%–83%，SDP 不总紧，按 fail-safe 写。加载校验：LINEMOD 模型投影 bbox 与 `scene_gt_info.bbox_obj` 对齐。代码/设置见 `02-constrained-qpeplayer/experiments/real/README.md`。
 
 ## P3 `Robust-QPEPLayer`
 

@@ -34,27 +34,34 @@ ax.set_title("P3 ModelNet40：真实物体点云 3D-3D")
 ax.text(0.03, 0.55, "p=70%: GNC 100%, IRLS 98%, Kabsch 0%\nGNC 1.7 ms vs RANSAC 54 ms (~30×)",
         transform=ax.transAxes, fontsize=8)
 
-# P2 LINEMOD
-rows = json.load(open(ROOT / "labs/02-constrained-qpeplayer/experiments/real/linemod/results/raw.json"))
-names = [("Unconstrained", "Unconstrained"), ("Soft penalty", "Soft"), ("Projection", "Projection"), ("ALM-QPEP", "ALM-QPEP")]
-pen, feas, cert = [], [], []
-for key, _ in names:
-    rs = [r for r in rows if r["method"] == key]
-    pen.append(np.median([r["pen_mm"] for r in rs]))
-    feas.append(100 * np.mean([r["feas"] for r in rs]))
-    cert.append(100 * np.mean([bool(r.get("cert")) for r in rs]))
+# P2 cross-dataset (LINEMOD / LM-O / YCB-Video)
+datasets = [
+    ("LINEMOD", ROOT / "labs/02-constrained-qpeplayer/experiments/real/linemod/results/raw.json"),
+    ("LM-O", ROOT / "labs/02-constrained-qpeplayer/experiments/real/bop/results/lmo/raw.json"),
+    ("YCB-Video", ROOT / "labs/02-constrained-qpeplayer/experiments/real/bop/results/ycbv/raw.json"),
+]
+unc_f, alm_f, alm_c, unc_pen = [], [], [], []
+for _, path in datasets:
+    rows = json.load(open(path))
+    u = [r for r in rows if r["method"] == "Unconstrained"]
+    a = [r for r in rows if r["method"] == "ALM-QPEP"]
+    unc_f.append(100 * np.mean([r["feas"] for r in u]))
+    alm_f.append(100 * np.mean([r["feas"] for r in a]))
+    alm_c.append(100 * np.mean([bool(r.get("cert")) for r in a]))
+    unc_pen.append(np.median([r["pen_mm"] for r in u]))
 ax = axes[1]
-x = np.arange(len(names))
-ax.bar(x - 0.2, feas, 0.4, color="#A8C8E8", label="可行率")
-ax.bar(x + 0.2, cert, 0.4, color="#2E6B3A", label="认证率")
-for i, (pe, n) in enumerate(zip(pen, names)):
-    ax.text(i, 106, f"pen {pe:.1f} mm", ha="center", fontsize=8)
-ax.set_xticks(x); ax.set_xticklabels([n for _, n in names], fontsize=8)
-ax.set_ylabel("百分比 (%)"); ax.set_ylim(0, 118)
-ax.set_title("P2 LINEMOD：真实网格 + 真实桌面平面")
-ax.legend(fontsize=8, loc="lower right"); ax.grid(alpha=0.3, axis="y")
+x = np.arange(len(datasets))
+ax.bar(x - 0.27, unc_f, 0.27, color="#C0504D", label="Unconstrained 可行")
+ax.bar(x, alm_f, 0.27, color="#2E6B3A", label="ALM 可行")
+ax.bar(x + 0.27, alm_c, 0.27, color="#7FA8C9", label="ALM 认证")
+for i, pen in enumerate(unc_pen):
+    ax.text(i, 106, f"unconstrained\npen {pen:.1f} mm", ha="center", fontsize=7.5)
+ax.set_xticks(x); ax.set_xticklabels([n for n, _ in datasets], fontsize=9)
+ax.set_ylabel("百分比 (%)"); ax.set_ylim(0, 122)
+ax.set_title("P2 三个真实数据集：硬可行 + 条件认证")
+ax.legend(fontsize=7.5, loc="lower right"); ax.grid(alpha=0.3, axis="y")
 
-fig.suptitle("真实数据实验（2026-11-27）—— P3 ModelNet40 / P2 BOP LINEMOD；P1 真实对称性尝试未产生双模式，未纳入主表",
+fig.suptitle("真实数据实验（2026-11-27）—— P3 ModelNet40 / P2 LINEMOD·LM-O·YCB-Video；P1 真实对称性尝试未产生双模式，未纳入主表",
              fontsize=13, fontweight="bold")
 fig.tight_layout(rect=(0, 0, 1, 0.93))
 fig.savefig(OUT, dpi=180, facecolor="white", bbox_inches="tight", pad_inches=0.15)
