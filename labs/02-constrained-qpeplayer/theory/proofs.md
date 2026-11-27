@@ -342,6 +342,65 @@ $$
 
 > **限制与版本说明**：(i) 同伦在仿射图 $\mathbf q_0=1$ 内计数，故不能直接数 $\mathbb S^3_{\mathbb C}$ 上 $\mathbf q_0=0$ 的根；上表的 40 是当前枚举器实际找到的**有限**射影根数，饱和计算（$\mathbb F_{32003}$）是用户证明，本仓库未复跑。(ii) `quartic_validation.md` 里的旧表（"实根 15–16、单 $\gamma$ 有限几何根 27–36、扰动 23→39"）来自更早一轮、更小的 20 实例版本，已被本 JSON 的 24 实例、`n_lost=0` 结果取代；本节以 JSON 为准。(iii) 用户证明中的"15–16 个实根"与当前 16–18 的差别只是噪声/worktree 版本，不改变 "$N_{\mathbb C}=40$、实根远少于 40" 的结论。
 
+#### 2.6.5 本仓库独立数值对照（二）：canonical form 与 Type I（主 worker，非证明）
+
+> **加性补充（2026-11-27 22:xx，主 worker）。** 下文不修改 §2.6.1–§2.6.4 的任何陈述，只补一份**独立脚本**（`code/verify_p2b_theorem.py`，与 roots 子代理的 `isotropic_roots.py` 不相干）对定理两个可数值检验分支的核验。所有数字见 `experiments/results/p2b_theorem_check.json` / `.md`，脚本用同一套 162 路径 total-degree 同伦（$n_\gamma=3$）。
+
+**(A) canonical form 复现 $4/12/16$ 谱系。** 直接取定理 (2.7) 的标准形 $J=(\mathbf q^\top\mathbf q)(\mathbf q^\top\mathbf K\mathbf q)+\mathbf w(\mathbf q)^\top\boldsymbol\Sigma_{\mathcal A}\mathbf w(\mathbf q)$，$\mathbf w=\mathbf R(\mathbf q)^\top\mathbf n$，扫 $\operatorname{rank}\boldsymbol\Sigma_{\mathcal A}$：
+
+| $\operatorname{rank}\boldsymbol\Sigma_{\mathcal A}$ | 复射影根 | 仿射根 | 实根 | 丢根 |
+|---|---|---|---|---|
+| 0（纯 Horn） | **4** | 8 | 4 | 0 |
+| 1（单平面，$r_{\rm eff}=1$） | **12** | 24 | 8 | 0 |
+| 2（单平面，$r_{\rm eff}=2$） | **16** | 32 | 12 | 0 |
+| 3 | **16** | 32 | 12 | 0 |
+
+$\operatorname{rank}=3$ 在 $\mathbf q^\top\mathbf q=0$ 上等价于 rank 2（因为该子流形上 $\|\mathbf w\|^2=(\mathbf q^\top\mathbf q)^2=0$），所以 16 而非新值——这与 (2.8) 的 $r_{\rm eff}\le\min(k,2)$ 一致，是定理的一个**独立数值确认**。$\mathbf w=W_{\rm mat}\mathbf v_2$ 的拟合残差 $1.1\times10^{-15}$。
+
+**(B) Type I：秩 9 不降根数。** 随机 PSD 秩 9（$\alpha=0$）与 $\mathbf M+\alpha\mathbf I$（$\alpha=0.05$）都给 **40 复射影 / 20 实根**；全部临界点 $\mathbf q$ 保持不变（最大失配 $1.1\times10^{-15}$），$\lambda$ 整体平移 $0.100=2\alpha$（本脚本 $\nabla f=2\lambda\mathbf q$ 约定；定理的 $\lambda\mapsto\lambda+4\alpha$ 对应 $\nabla f=\lambda\mathbf q$，即 $\lambda_{\rm theorem}=2\lambda_{\rm code}$），与 $2\alpha$ 差 $8.3\times10^{-17}$。PnP 的 $\mathbf M^{\rm red}_{\mathcal A}$（秩 9，$\lambda_{\min}=-1.3\times10^{-17}$）给 **40 复射影 / 80 仿射 / 16 实根**，与 §2.6.4 的 24 实例结果一致。各向同性 Horn 底座给 4，各向异性 Horn 给 40——说明**只有**"各向同性底座 + 公共平面法向"才坍缩，与定理二分一致。
+
+**(C) 一个仍然开放的映射问题（重要，不改变定理）。** 定理表中"双法向 → 32"与"$k\ge2$ → 16"来自约束组装后的 $\boldsymbol\Sigma_{\mathcal A}$。主 worker 发现：
+
+1. 把两条**不同法向**的 rank-1 $\mathbf w$ 项**直接相加**进 canonical form，得到 **16/32**，没有复现 32/64。即"两个 rank-1 项拼起来"不等于定理的双法向构造。
+2. 用 `qpep_core` 风格的 ρ-only 平面临近组装（同一法向 $k=1,2,3,4$ 条）给出 **12/12/12/14** 复射影根；双法向 $2+2$ 给 **24**（同一脚本另一次运行给过 32）。
+
+另一份更接近 committed `isotropic.alm_reduced` 装配的核对（主 worker，本轮）方向相同：$k=0,\dots,4$ 没有按定理的 $4/12/16$ 单调复现，双法向也没有复现 32。该核对尚未落成 `results/` 文件，故本节不引用其具体数字，只记录方向与"映射未对齐"的结论。
+
+也就是说：**标准形本身的谱系（rank $\boldsymbol\Sigma_{\mathcal A}=0/1/2\to4/12/16$）与 Type I 的 40 是稳定的、可重复的**；但"从 ALM 活跃集的 $\mu_j$/$\rho$ 项到定理 $\boldsymbol\Sigma_{\mathcal A}$ 的精确映射"尚未对齐，因此本文**不**声称"P2 的实际内层可直接套 16 根模板"，只声称"canonical form 的 4/12/16 与 Type I 的 40 已数值确认，双法向 32 仍为用户证明"。该映射的判定需要一份独立实现（roots 子代理的产出）。**该实现已在 22:13 落盘（`results/isotropic_spectrum.*`），结论是：committed `isotropic.alm_reduced` 组装确实落在标准形族内，此处观测到的 12 而非 16 是 census 策略问题，不是映射问题——见 §2.6.6。** 因此本节 (C) 的两条观测保留为"另一条朴素组装路径的读数"，但"映射未对齐"的结论已被 §2.6.6 推翻（对 committed ALM 组装而言）。
+
+**(D) 16 根饱和模板的仓库状态（务必不要写成"已实现"）。** 定理的 $16\times16$ 饱和作用矩阵、$k=1$ 的 12 元系统、$k=0$ 的 $4\times4$ Davenport 问题都只由**用户证明**给出（§2.6.1 的 $\mathbb F_{32003}$ 计算）。本仓库**没有**这些模板的数值实现，也**没有**已落盘的符号参考 JSON；`experiments/code/isotropic_roots.py` 当前对任意数值实例走 162 路径同伦 + 多起点回退，其文档自述为"numerical isolation, not an algebraic certification"。本仓库唯一独立确认的是 **(A) 的 $4/12/16$ 谱数**与 (B) 的 Type I 40。因此论文口径只能是"40 根模板 implemented+validated；$4/12/16$ 谱系 canonical-form 数值确认；16 根饱和模板 partial/absent"。
+
+#### 2.6.6 roots 子代理的独立测量：census 策略解释了 12 vs 16（2026-11-27 22:13）
+
+`results/isotropic_spectrum.json` / `.md`（脚本 `code/iso_spectrum.py`，$n_\gamma=2$，`norm_cap=1e5`，单线程 BLAS）对定理 (2.7) 的标准形与 **committed `isotropic.alm_reduced` 组装**同时做两种 census：
+
+* **committed**：已提交的 `quartic_roots.critical_points`，只对 `status ∈ {1,2,4}` 做 endgame polish，跟踪期判为 diverged（`status=3`）的路径**从不回捞**；
+* **corrected**：`isotropic_roots.count_roots(norm_cap=1e5)`，对**所有**路径做 endgame polish（含跟踪期 diverged 的路径）。
+
+| 组装 | $k$ | committed $N_{\mathbb C}$/$2N_{\mathbb C}$ | corrected | 定理预测 |
+|---|---|---|---|---|
+| canonical，$\operatorname{rank}\Sigma=0/1/2/3$（seed 0–4） | — | 4/8, 12/24, 16/32, 16/32 | 同左 | 4/12/16/16 |
+| `alm_reduced`，Horn + 同法向 | 0 | 4/8 | 4/8 | 4 |
+| | 1 | 12/24 | 12/24 | 12 |
+| | 2 | 12/24（seed 0）、16/32（seed 1）、14/28（seed 2） | **16/32**（全部 seed） | 16 |
+| | 3 | 14/28, 16/32, 16/32 | **16/32** | 16 |
+| | 4 | 16/32, 16/32, 14/28 | **16/32** | 16 |
+| `alm_reduced`，Horn + 双法向 1+1（$k=2$） | 2 | 20/40, 32/64, 26/52 | **32/64** | 32 |
+| `alm_reduced`，Horn + 双法向 2+1（$k=3$） | 3 | 24/48, 32/64, 28/56 | **36/72** | — |
+| `alm_reduced`，Horn + 双法向 2+2（$k=4$） | 4 | 38/76, 32/64, 28/56 | **40/80** | —（通用 40） |
+| `alm_reduced`，各向异性 Horn + 3 平面 | 3 | 40/80 | 40/80 | 40 |
+| `alm_reduced`，PnP + 3 平面 | 3 | 40/80 | 40/80 | 40 |
+
+三条结论，都直接支撑定理而不是替代它：
+
+1. **ALM 组装落在标准形族里。** committed `alm_reduced` 的 $\mathbf M^{\rm red}_{\mathcal A}$ 的四次多项式对 15 维族 $F_n$ 的相对残差在 $10^{-15}$ 量级（$k=0..4$、$\mu=0$ 与 $\mu>0$ 皆然），PSD 规范下 $\operatorname{rank}\Sigma_{\mathcal A}=0/1/2/2/2$，与定理的 $4/12/16/16/16$ 一致。
+2. **k=2 的 12 是 census 伪影。** 4 个额外复根位于 $\|\mathbf q\|\approx29$–$34$，其同伦路径在跟踪中越过 `div_tol=1e4` 被判 diverged，committed census 因此丢掉它们；对全部路径做 polish 后读到 16，且这 4 个根在 KKT 相对残差 $\sim10^{-16}$ 下是真正解。这解释了 §2.6.5(C) 与 §2.6.4 里"12 而非 16"的差异，**不是** $\mu_j/\rho$ 组装到 $\Sigma_{\mathcal A}$ 的映射错误。
+3. **双法向 32 对应"每条法向一条活跃约束"。** 1+1 布局（$k=2$）corrected 读到 32/64，与定理一致；2+1（$k=3$）读到 36/72；2+2（$k=4$）读到 40/80，说明每条法向两条约束时该额外结构把谱系推回通用 40 根。因此定理表中"双法向 → 32"应读作每条法向一条约束的情形。
+
+**结构判别器（副产品）。** 同一残差对 Type I 给出 $7\times10^{-2}$（各向异性 Horn）与 $6\times10^{-1}$（PnP 的 $F$-residual），即数量级拒绝，而 corrected/committed 都是 40/80。所以"对 $F_n$ 的相对残差"本身是一个可用的结构判别器：残差 $\sim10^{-15}$ 意味着落在 $4/12/16$ 紧凑族，$\ge10^{-2}$ 意味着 Type I 的 40。
+
+**限制（重要，不要写成"16 根模板已实现"）。** (i) corrected census 的 4 个额外复根在复二次曲面上 $\|\mathbf q\|\sim30$、条件数差，多线程 BLAS 下个别次运行会把它推到 $\|\mathbf q\|\sim8\times10^3$ 甚至丢失，故该表用单线程 BLAS 复现。(ii) $16\times16$ 饱和作用矩阵（17 元 Gröbner 阶梯）**本轮仍未实现为可发货的数值模板**；`isotropic_roots.solve_isotropic_plane` 仍是"全枚举 + endgame polish + 64 起点交叉验证"的 reduced homotopy 求解器。因此论文口径仍是 §2.6.5(D) 的"40 根模板 implemented+validated；$4/12/16$ 谱系数值确认；16 根饱和模板 partial/absent"，只是现在"$4/12/16$ 谱系"的确认从 canonical form 扩展到了 committed ALM 组装。
+
 ### 2.7 定理 P2-Cert（严格对偶修复；新增，用户证明）
 
 #### 2.7.1 陈述
