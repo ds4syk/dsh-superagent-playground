@@ -664,7 +664,7 @@ $$
 2. **$\lambda_\parallel$ 闭式**：数值 vs 闭式 $6.7\times10^{-16}$；零点 $c^2/3$；极小 $-1/2$ 在 $c^2$。
 3. **一维 sign flip**：精确 vs FD $1.2\times10^{-8}$；naive 误差 $137\%$；符号相反。
 4. **$O(r^{-4})$**：log-log 斜率 $-3.9979$。
-5. **黎曼 Hessian**：源公式 vs FD $2.97\times10^{-1}$；修正公式 $1.46\times10^{-7}$；常数测试 $H_{\mathrm{doc}}=I_3$ vs $H_{\mathrm{corr}}=0$。
-6. **$\lambda_i$**：$4\mathbf u_i^\top W_i\mathbf r_i$ 与 $\mathbf q^\top g_{i,q}$ 差 $7.1\times10^{-15}$；与 $4e_i$ 差 $52.4$。
+5. **黎曼 Hessian**：源公式 vs FD $2.59\times10^{-1}$；修正公式 $9.9\times10^{-8}$；常数测试 $H_{\mathrm{doc}}=I_3$ vs $H_{\mathrm{corr}}=0$。
+6. **$\lambda_i$**：$4\mathbf u_i^\top W_i\mathbf r_i$ 与 $\mathbf q^\top g_{i,q}$ 差 $7.1\times10^{-15}$；与 $4e_i$ 差 $51.0$。
 
 > 结论：源文档的 BR 对偶、$w^*$、$\lambda_\parallel$ 闭式、$O(r^{-4})$ 渐近**正确**；$H_{\mathrm{rob}}$ 公式**缺 $-\lambda_{\mathrm{rob}}$ 项**；6D 变号**未证**；GNC 全局性**过度声明**。

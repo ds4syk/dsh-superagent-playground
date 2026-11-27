@@ -1,0 +1,28 @@
+warm-up ...
+[main] random   p=0.0 done in 0.4s
+[main] random   p=0.1 done in 5.7s
+[main] random   p=0.2 done in 5.5s
+[main] random   p=0.3 done in 5.7s
+[main] random   p=0.4 done in 5.7s
+[main] random   p=0.5 done in 5.8s
+[main] random   p=0.6 done in 5.7s
+[main] random   p=0.7 done in 6.4s
+[main] coherent p=0.0 done in 0.3s
+[main] coherent p=0.1 done in 5.3s
+[main] coherent p=0.2 done in 5.4s
+[main] coherent p=0.3 done in 5.3s
+[main] coherent p=0.4 done in 5.4s
+[main] coherent p=0.5 done in 5.6s
+[main] coherent p=0.6 done in 5.5s
+[main] coherent p=0.7 done in 5.3s
+[main] boundary p=0.0 done in 0.3s
+[main] boundary p=0.1 done in 5.2s
+[main] boundary p=0.2 done in 5.2s
+[main] boundary p=0.3 done in 5.3s
+[main] boundary p=0.4 done in 5.2s
+[main] boundary p=0.5 done in 5.2s
+[main] boundary p=0.6 done in 5.2s
+[main] boundary p=0.7 done in 5.4s
+budget sweep ...
+scaling ...
+wrote /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/synthetic/results/main_table_extended.json etc. in 167.0s

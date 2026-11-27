@@ -1,0 +1,17 @@
+[10/160] p=0.5 boundary-only lr=0.001 exact done
+[20/160] p=0.5 boundary-only lr=0.001 naive done
+[30/160] p=0.5 boundary-only lr=0.005 exact done
+[40/160] p=0.5 boundary-only lr=0.005 naive done
+[50/160] p=0.5 all-points lr=0.001 exact done
+[60/160] p=0.5 all-points lr=0.001 naive done
+[70/160] p=0.5 all-points lr=0.005 exact done
+[80/160] p=0.5 all-points lr=0.005 naive done
+[90/160] p=0.7 boundary-only lr=0.001 exact done
+[100/160] p=0.7 boundary-only lr=0.001 naive done
+[110/160] p=0.7 boundary-only lr=0.005 exact done
+[120/160] p=0.7 boundary-only lr=0.005 naive done
+[130/160] p=0.7 all-points lr=0.001 exact done
+[140/160] p=0.7 all-points lr=0.001 naive done
+[150/160] p=0.7 all-points lr=0.005 exact done
+[160/160] p=0.7 all-points lr=0.005 naive done
+wrote e2e_table.* in 42.0s

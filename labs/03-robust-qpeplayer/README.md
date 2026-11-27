@@ -8,7 +8,7 @@
 
 1. **双向零升维（旋转 / 观测数）**：内层加权 QPEP 只有 $4+3$ 个变量；$N$ 只进 $O(N)$ 累加；反向只解 $6\times6$ 线性系统，不展开 GNC 迭代。
 2. **精确鲁棒隐微分**：显式保留降权曲率项 $\Delta H_{\mathrm{redesc}}=\sum_i\rho''(e_i)g_ig_i^\top$；证明它等于 BR 权重块的 **Schur 补**，不是“小修正”。
-3. **S³ 约束乘子修正**：源文档的 $H_{\mathrm{rob}}$ 公式若用欧氏 Hessian，缺少 $-\lambda_{\mathrm{rob}}\operatorname{diag}(I_3,0)$；我们给出精确黎曼 Hessian，并用有限差分验证（源公式误差 29.7%，修正 1.5e-7）。
+3. **S³ 约束乘子修正**：源文档的 $H_{\mathrm{rob}}$ 公式若用欧氏 Hessian，缺少 $-\lambda_{\mathrm{rob}}\operatorname{diag}(I_3,0)$；我们给出精确黎曼 Hessian，并用有限差分验证（源公式误差 25.9%，修正 9.9e-8）。
 4. **硬定理而非数值传说**：一维精确变号命题（真实导数负、naive 正）+ 存在性构造；6D 的 cos$=-0.079$ 降级为数值例，不冒充定理。
 5. **$O(\|\mathbf r\|^{-4})$ 逐观测梯度界**：显式常数与条件；同时指出前向偏差是 $O(\|\mathbf r\|^{-3})$，且“梯度免疫 ≠ 鲁棒”。
 6. **失败模式写清楚**：GNC 不全局；相干多数外点会让全局鲁棒解本身错误；边界半外点（$e\approx c^2$）梯度最毒；$H_{\mathrm{rob}}$ 可不定/奇异。
@@ -24,11 +24,12 @@
 | 论文草稿（英文，结构完整） | **v0.1**，实验数字全是 TODO，见 `paper/draft.md` |
 | 贡献/对比/审稿 Q&A | **完成**，见 `paper/contributions.md` |
 | 相关工作/引用核实 | **完成**，见 `related_work.md`（含 2 处引用勘误） |
-| 实验协议 | **设计完成，未跑**，见 `experiments/protocol.md` |
+| 实验协议 | **设计完成；合成 E1–E4 已跑**，真实数据 TODO，见 `experiments/protocol.md` |
+| 合成实验（扩展主表 + 6D 梯度表 + 边界精化 + 校验） | **完成**（2026-11-27），见 `experiments/README.md`、`experiments/synthetic/results/` |
 | 路线图 | **完成**，见 `roadmap.md`（RA-L 首选 / IROS 2027 备选 / T-RO stretch） |
 | 未解决数学问题 | **12 条，P0×4**，见 `math_questions.md` |
 
-**没有做的**：真实数据实验、端到端训练、QPEP C++/GPU 工程、6D 变号定理、GNC 分岔反例。**没有编造**任何实验数字；源文档的预实验数字在 `experiments/protocol.md` §8 标为“待独立复现”。
+**没有做的**：真实数据实验、真实端到端训练（只有 GT 监督的 test-time 精化诊断）、QPEP C++/GPU 工程、6D 变号定理、GNC 分岔反例。**没有编造**任何实验数字；源文档的预实验数字在 `experiments/protocol.md` §8 标为“待独立复现”。**待修**：`verify/riemann_hessian_check.py` 的 `build_A` 用非齐次 `Rmat` 做极化（重构的 $u(q)\neq R(q)p$），应换成 `Rhom` 后重跑；修正版与修正后的数值见 `experiments/README.md` §7.1。
 
 ---
 
@@ -67,7 +68,7 @@ labs/03-robust-qpeplayer/
 - 完成 `paper/draft.md`（英文，451 行；实验表格全 TODO）。
 - 两个数值脚本通过：
   - BR 对偶值误差 $10^{-11}$；$\lambda_\parallel$ 闭式误差 $6.7\times10^{-16}$；一维精确 vs FD $1.2\times10^{-8}$，naive 误差 $137\%$，符号相反；$\log$-$\log$ 斜率 $-3.9979$。
-  - 黎曼 Hessian：源公式 vs FD $2.97\times10^{-1}$；修正公式 $1.46\times10^{-7}$；$\lambda_i-4\mathbf u_i^\top W_i\mathbf r_i$ 误差 $7.1\times10^{-15}$，$\lambda_i-4e_i$ 差 $52.4$。
+  - 黎曼 Hessian：源公式 vs FD $2.59\times10^{-1}$；修正公式 $9.9\times10^{-8}$；$\lambda_i-4\mathbf u_i^\top W_i\mathbf r_i$ 误差 $7.1\times10^{-15}$，$\lambda_i-4e_i$ 差 $51.0$。
 - 修正源文档三处过度声明：GNC 全局、$H_{\mathrm{rob}}$ 缺 $-\lambda$、6D 变号。
 - 引用勘误：Black–Rangarajan 是 IJCV 1996（不是 CVPR 2014）；GNC 是 RA-L 2020（CVPR 2020 是 TEASER）。
 

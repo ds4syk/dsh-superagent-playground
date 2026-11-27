@@ -10,7 +10,7 @@
 |---|---|---|---|
 | **C1** | **精确 BR 对偶 + GNC-QPEP 前向**：GM 核的 $w^*=\rho_\mu'(e)$、对偶值 $=\rho_\mu(e)$；内层加权 QPEP 常数维数（4+3），$N$ 只进 $O(N)$ 累加 | Lemma 3.1、Theorem 3.1；`verify/ift_1d_signflip.py` §[0]（对偶值误差 $10^{-11}$） | **已证**；收敛部分条件性 |
 | **C2** | **精确不动点隐微分 + 降权曲率修正**：GNC 不动点 $\Rightarrow$ 稳定点；$\Delta H_{\mathrm{redesc}}$ = 权重块 Schur 补；$6\times6$ 反向，$O(1)$ 对 GNC 迭代数 | Lemma 3.2、3.3、Theorem 3.2；`verify/riemann_hessian_check.py`（$H_{\mathrm{alt}}=H_{\mathrm{corr}}$ 到 $2.3\times10^{-15}$） | **已证** |
-| **C3** | **S³ 约束乘子修正**：精确黎曼 Hessian 含 $-\lambda_{\mathrm{rob}}\operatorname{diag}(I_3,0)$；$\lambda_i=4\mathbf u_i^\top W_i\mathbf r_i\neq4e_i$ | Lemma 3.4、3.5；数值：源公式 vs FD 误差 $2.97\times10^{-1}$，修正 $1.46\times10^{-7}$；常数测试 $H_{\mathrm{doc}}=I_3$ vs $H_{\mathrm{corr}}=0$ | **已证 + 数值** |
+| **C3** | **S³ 约束乘子修正**：精确黎曼 Hessian 含 $-\lambda_{\mathrm{rob}}\operatorname{diag}(I_3,0)$；$\lambda_i=4\mathbf u_i^\top W_i\mathbf r_i\neq4e_i$ | Lemma 3.4、3.5；数值：源公式 vs FD 误差 $2.59\times10^{-1}$，修正 $9.9\times10^{-8}$；常数测试 $H_{\mathrm{doc}}=I_3$ vs $H_{\mathrm{corr}}=0$ | **已证 + 数值** |
 | **C4** | **一维精确变号定理 + 存在性**：$\mathrm dt^*/\mathrm dy_j=\lambda_\parallel(e_j)/H_{\mathrm{rob}}$；$e_j>c^2/3$ 时真实导数负、naive 正 | Proposition 3.4、3.5；数值：精确 vs FD $1.2\times10^{-8}$，naive 误差 $137\%$，符号相反 | **已证 + 数值** |
 | **C5** | **$O(\|\mathbf r_i\|^{-4})$ 逐观测梯度界**：常数显式；前向偏差 $O(\|\mathbf r_i\|^{-3})$；区分“梯度免疫”与“前向鲁棒” | Proposition 3.6；数值 log-log 斜率 $-3.9979$ | **已证（条件性）** |
 | **C6** | **统一核框架**：GM/Cauchy/Welsch/TLS 的 BR 对偶表；同一前后向结构 | Lemma 3.1 备注、Appendix B | **已证**（TLS 非光滑边界另注） |
@@ -71,7 +71,7 @@
 
 **回应**：不是。它是 $\mathbb S^3$ 约束的拉格朗日乘子。给出三个证据：
 1. 解析反例：$f=\frac12\|\mathbf q\|^2$ 在 $\mathbb S^3$ 上常数，正确 Hessian 为 0；不含 $-\lambda$ 的公式给 $I_3$。
-2. 数值反例：$c=1.0$ 的 3D-3D，源公式 vs 测地线 FD 误差 29.7%，修正公式 1.46e-7；$\lambda_{\mathrm{rob}}=1.056$。
+2. 数值反例：$c=1.0$ 的 3D-3D，源公式 vs 测地线 FD 误差 25.9%，修正公式 9.9e-8；$\lambda_{\mathrm{rob}}=1.033$。
 3. 文献：Absil et al. (2008) 的球面 Hessian 公式；这是标准结果。
 同时说明：如果源文档的 $\nabla^2e_i$ 本来就指黎曼 Hessian，则公式正确，但必须明确符号；我们给出两种等价写法 (7.5)/(7.6)。
 

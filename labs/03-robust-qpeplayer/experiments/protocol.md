@@ -1,6 +1,6 @@
 # 实验协议（Robust-QPEPLayer）
 
-> 状态：**设计完成，结果 TODO**。本文件不包含任何实测数字；源文档的预实验数字只以“作者预实验（待独立复现）”出现。所有表格的 `TODO` 必须在真实运行后填写。
+> 状态：**设计完成；合成 E1–E4（随机/相干/边界外点、RANSAC 预算、N scaling）与 E3（6D 梯度表）已跑（2026-11-27）**，结果与命令见 `experiments/README.md`，原始数据在 `experiments/synthetic/results/`。真实数据（3DMatch/KITTI/In-The-Dark）、E5 消融、E7/E8 仍 TODO。本文件不包含实测数字；源文档的预实验数字只以“作者预实验（待独立复现）”出现。
 
 ---
 

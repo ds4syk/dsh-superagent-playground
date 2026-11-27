@@ -47,11 +47,16 @@ def d2rho(e):
 def Rmat(q):
     """Homogeneous (quadratic) quaternion rotation map; R(q) for ||q||=1."""
     w, x, y, z = q
+    # Homogeneous (quadratic) form: equal to the usual rotation matrix on
+    # ||q||=1, but *quadratic everywhere*, so q^T A q can represent R(q)p
+    # by polarization.  The previous version had a constant 1 on the
+    # diagonal, which made build_A reconstruct a proxy (u != R p off the
+    # unit sphere) and invalidated the reported lambda/H numbers.
     return np.array(
         [
-            [1 - 2 * (y * y + z * z), 2 * (x * y - w * z), 2 * (x * z + w * y)],
-            [2 * (x * y + w * z), 1 - 2 * (x * x + z * z), 2 * (y * z - w * x)],
-            [2 * (x * z - w * y), 2 * (y * z + w * x), 1 - 2 * (x * x + y * y)],
+            [w * w + x * x - y * y - z * z, 2 * (x * y - w * z), 2 * (x * z + w * y)],
+            [2 * (x * y + w * z), w * w - x * x + y * y - z * z, 2 * (y * z - w * x)],
+            [2 * (x * z - w * y), 2 * (y * z + w * x), w * w - x * x - y * y + z * z],
         ]
     )
 

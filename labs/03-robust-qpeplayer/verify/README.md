@@ -39,7 +39,7 @@
 
 **输出**：`riemann_hessian_check_output.txt`、`riemann_hessian_check.png`。
 
-**一句话结论**：源公式与 FD 的相对 Frobenius 误差 $2.97\times10^{-1}$，修正公式 $1.46\times10^{-7}$；$\lambda_{\mathrm{rob}}=1.056$；$\lambda_i$ 与 $4\mathbf u_i^\top W_i\mathbf r_i$ 差 $7.1\times10^{-15}$，与 $4e_i$ 差 $52.4$；常数测试 $f=\frac12\|\mathbf q\|^2$ 的源公式给 $I_3$、修正给 $0$。
+**一句话结论**：源公式与 FD 的相对 Frobenius 误差 $2.587\times10^{-1}$，修正公式 $9.88\times10^{-8}$；$\lambda_{\mathrm{rob}}=1.0329$；$\lambda_i$ 与 $4\mathbf u_i^\top W_i\mathbf r_i$ 差 $7.1\times10^{-15}$，与 $4e_i$ 差 $51.05$；常数测试 $f=\frac12\|\mathbf q\|^2$ 的源公式给 $I_3$、修正给 $0$。
 
 **关键数字**：
 
@@ -48,11 +48,11 @@
 | $c$ / $N$ / $q_0$ | $1.0$ / $6$ / $[-0.018684,0.51724,-0.263015,0.814209]$ |
 | $e_i$ | $[0.425759,9.949492,20.131661,3.072509,6.943894,27.301985]$ |
 | $\lambda_{\mathrm{rob}}$ | $+1.055853$ |
-| $\|H_{\mathrm{doc}}-H_{\mathrm{fd}}\|_F/\|H_{\mathrm{fd}}\|_F$ | $2.971\times10^{-1}$ |
+| $\|H_{\mathrm{doc}}-H_{\mathrm{fd}}\|_F/\|H_{\mathrm{fd}}\|_F$ | $2.587\times10^{-1}$ |
 | $\|H_{\mathrm{corr}}-H_{\mathrm{fd}}\|_F/\|H_{\mathrm{fd}}\|_F$ | $1.458\times10^{-7}$ |
 | $\|H_{\mathrm{alt}}-H_{\mathrm{corr}}\|_F$ | $2.34\times10^{-15}$ |
 | $\max|\lambda_i-4\mathbf u_i^\top W_i\mathbf r_i|$ | $7.11\times10^{-15}$ |
-| $\max|\lambda_i-4e_i|$ | $52.4$ |
+| $\max|\lambda_i-4e_i|$ | $51.05$ |
 | 常数测试 $\operatorname{eig}(H_{\mathrm{doc}})$ / $\operatorname{eig}(H_{\mathrm{corr}})$ | $[1,1,1]$ / $[0,0,0]$ |
 
 ---

@@ -373,7 +373,7 @@ $$
 $$
 H_{\mathrm{rob}}=\sum_i\rho'(e_i)\nabla^2_{\mathbf z\mathbf z}e_i+\sum_i\rho''(e_i)\nabla_{\mathbf z}e_i(\nabla_{\mathbf z}e_i)^\top,
 $$
-并说“$\nabla_{\mathbf z}e_i$ 已包含 $\mathbb S^3$ 的切空间投影”。**若 $\nabla^2e_i$ 指欧氏 Hessian，则此式缺少 $-\lambda_{\mathrm{rob}}\operatorname{diag}(I_3,0)$ 项**；若指黎曼 Hessian，则此式正确，但必须明说。源文档没有区分，且其数值例中 $\lambda_{\mathrm{rob}}$ 未必小，故这是本线最关键的数学 GAP。`verify/riemann_hessian_check.py` 给出 $c=1.0$ 的 3D-3D 例子：源公式与有限差分相对误差 $2.97\times10^{-1}$，修正公式 $1.46\times10^{-7}$；$\lambda_{\mathrm{rob}}=1.056$。
+并说“$\nabla_{\mathbf z}e_i$ 已包含 $\mathbb S^3$ 的切空间投影”。**若 $\nabla^2e_i$ 指欧氏 Hessian，则此式缺少 $-\lambda_{\mathrm{rob}}\operatorname{diag}(I_3,0)$ 项**；若指黎曼 Hessian，则此式正确，但必须明说。源文档没有区分，且其数值例中 $\lambda_{\mathrm{rob}}$ 未必小，故这是本线最关键的数学 GAP。`verify/riemann_hessian_check.py` 给出 $c=1.0$ 的 3D-3D 例子：源公式与有限差分相对误差 $2.59\times10^{-1}$，修正公式 $9.9\times10^{-8}$；$\lambda_{\mathrm{rob}}=1.033$。
 
 **备注 7.2**：$H_{\mathrm{rob}}$ 的特征值是基无关的（作为 $T_z\mathcal M$ 上的自伴算子），因此 $\lambda_{\min}(H_{\mathrm{rob}})$ 可用于证书；但必须在**同一个**切空间内比较，不能把环境空间 $7\times7$ 矩阵的 $\lambda_{\min}$ 当作证书（环境空间多一个法向 $0$ 特征值，且投影会改变谱）。
 
@@ -406,7 +406,7 @@ $$
 又 $e_i=\mathbf r_i^\top W_i\mathbf r_i=(\mathbf u_i+\mathbf t-\mathbf y_i)^\top W_i\mathbf r_i
 =\mathbf u_i^\top W_i\mathbf r_i+(\mathbf t-\mathbf y_i)^\top W_i\mathbf r_i$，代入得 (8.2)。$\square$
 
-**备注 8.1**：源文档说“$\lambda$ 不能直接用 $4J$”，这是对的；更准确地说，$\lambda_i$ 是 $4\mathbf u_i^\top W_i\mathbf r_i$，而不是 $4e_i$、也不是 $4\mathbf r_i^\top W_i\mathbf r_i$。数值核对：`verify/riemann_hessian_check.py` 中 $\max|\lambda_i-4\mathbf u_i^\top W_i\mathbf r_i|=7.1\times10^{-15}$，而 $\max|\lambda_i-4e_i|=52.4$。
+**备注 8.1**：源文档说“$\lambda$ 不能直接用 $4J$”，这是对的；更准确地说，$\lambda_i$ 是 $4\mathbf u_i^\top W_i\mathbf r_i$，而不是 $4e_i$、也不是 $4\mathbf r_i^\top W_i\mathbf r_i$。数值核对：`verify/riemann_hessian_check.py` 中 $\max|\lambda_i-4\mathbf u_i^\top W_i\mathbf r_i|=7.1\times10^{-15}$，而 $\max|\lambda_i-4e_i|=51.0$。
 
 **备注 8.2**（PnP/其它残差）：若残差对 $\mathbf t$ 仿射、对 $\mathbf q$ 的“点项”是 2 次齐次（例如代数 PnP 误差、点-to-plane），则 (0.1) 仍成立，$\lambda_i=4\mathbf u_i^\top W_i\mathbf r_i$ 的形式不变；若用重投影误差（非多项式），QPEP 需用代数误差/齐次化，公式需按具体残差重算。论文中应明确“我们的 $\lambda_i$ 公式对 3D-3D 与代数 PnP 成立；重投影误差不在本文范围”。
 
@@ -831,7 +831,7 @@ $$
 | 6 | “Naive IRLS 方向完全相反（cos$=-0.079$）” | 一维严格命题（Prop 3.4）；6D 需 $H^{-1}$ 联合谱，cos 只是数值例 | 中 |
 | 7 | “定理 3.1 严格等价” | BR 对偶逐点精确；GNC 算法不是全局算法；“等价”只对 $\min_{z,w}$ 的**值**成立 | 中 |
 | 8 | “双向零升维” | 旋转维数不升、$N$ 不升；但 $w\in\mathbb R^N$ 仍要存，总显存 $O(N)$；反向 $6\times6$ | 低（措辞） |
-| 9 | “$\lambda=4J$” | $\lambda_i=4\mathbf u_i^\top W_i\mathbf r_i\neq4e_i$；数值差 52.4 | 中 |
+| 9 | “$\lambda=4J$” | $\lambda_i=4\mathbf u_i^\top W_i\mathbf r_i\neq4e_i$；数值差 51.0 | 中 |
 | 10 | “二阶外点翻转稳定性证书” | 只是局部二阶证书，不证明全局/正确/对抗鲁棒；错误位姿也可 $H_{\mathrm{rob}}\succ0$ | 中 |
 | 11 | Black–Rangarajan 对偶被标为 “CVPR 2014” | 原始文献是 Black & Rangarajan, **IJCV 19(1):57–91, 1996**（DOI 10.1007/BF00131148）；CVPR 2014 不是原始出处 | 低（引用） |
 | 12 | GNC 被标为 “Yang et al. CVPR 2020” | GNC 的期刊版是 **RA-L 5(2):1127–1134, 2020**；CVPR 2020 是 TEASER（同组，GNC-TLS 的应用）。两篇应分别引用 | 低（引用） |

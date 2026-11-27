@@ -182,7 +182,7 @@ $$
 $$
 which differs from $4e_i$ whenever $(\mathbf t-\mathbf y_i)^\top W_i\mathbf r_i\neq0$.
 
-*Why the $\lambda$ term matters.* On the sphere, $f(\mathbf q)=\frac12\|\mathbf q\|^2$ is constant; its Riemannian Hessian is zero. The Euclidean formula without the multiplier gives $I_3$ in tangent coordinates. In a six-dimensional 3D-3D example with $c=1.0$, the uncorrected formula differs from a geodesic finite-difference Hessian by 29.7% in relative Frobenius norm, while the corrected formula agrees to $1.5\times10^{-7}$; the multiplier is $\lambda_{\mathrm{rob}}=1.056$. This is not a cosmetic correction.
+*Why the $\lambda$ term matters.* On the sphere, $f(\mathbf q)=\frac12\|\mathbf q\|^2$ is constant; its Riemannian Hessian is zero. The Euclidean formula without the multiplier gives $I_3$ in tangent coordinates. In a six-dimensional 3D-3D example with $c=1.0$, the uncorrected formula differs from a geodesic finite-difference Hessian by 25.9% in relative Frobenius norm, while the corrected formula agrees to $9.9\times10^{-8}$; the multiplier is $\lambda_{\mathrm{rob}}=1.033$. This is not a cosmetic correction.
 
 **Lemma 5 (3D-3D weights).** With the notation above,
 $$
