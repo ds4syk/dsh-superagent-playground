@@ -12,8 +12,8 @@
 
 | 交付 | 状态 |
 |-|-|
-| `paper/draft.md` 英文论文草稿 | 结构完整（Title/Abstract/Intro/RW/Formulation/Method/Experiments/Discussion/Conclusion/References），实验节已填真实测量（12 张表，合成 6D + 1D + SDP + 真实 LINEMOD 双峰），无编造数字 |
-| `theory/proofs.md` 定理 0.1/0.2/0.3、1.1、1.2、1.3 | 已证明 / 有明确 GAP / 数值验证；2026-11-27 P2 证明结案 Q5/Q4/Q8/Q11/Q15；Q1/Q9/Q3/Q6/Q7 已结案。**P1-Q2/Q13 的 13×13 等价被 SDP 数值反例推翻（13×13 缺 3 条行正交，严格更松），重新打开**，见 `experiments/sdp/results/sdp_check.md` |
+| `paper/draft.md` 英文论文草稿 | 结构完整（Title/Abstract/Intro/RW/Formulation/Method/Experiments/Discussion/Conclusion/References），实验节已填真实测量（12 张表，合成 6D + 1D + SDP + 真实 LINEMOD 双峰），无编造数字。**Q2/Q13 以修订版定理 P1-2 为准**（满 20D 13×13 ≡ 10×10 同值同秩；上游 17D 严格更松，6 点物理反例 $f^\star_{13,\text{up}}=3.59431373<5.41500000=f^\star_{10}=f^\star_{\text{QPEP}}$，rank 4 vs 1）。论文 §5.3.4 与 Discussion 已同步为修订版三段式（2026-11-27 论文轮次），不再有 “Q2 open / proof revision pending” 表述 |
+| `theory/proofs.md` 定理 0.1/0.2/0.3、1.1、1.2、1.3 | 已证明 / 有明确 GAP / 数值验证；2026-11-27 P2 证明结案 Q5/Q4/Q8/Q11/Q15；Q1/Q9/Q3/Q6/Q7 已结案。**P1-Q2/Q13 已于 2026-11-27 以修订版定理 P1-2 结案（CLOSED）**：上游 `sdprlayer@62d8ac6` 的 24 条约束只张成 17 维（缺 3 条行正交），补齐后**满 20D** 13×13 与 10×10 同值同秩；上游 17D 恒有 $f^\star_{13,\text{up}}\le f^\star_{10,\text{full}}$ 且严格更松，**6 点物理 3D-3D 反例**给出 $f^\star_{13,\text{up}}=3.59431373 < f^\star_{10,\text{full}}=f^\star_{\text{QPEP}}=5.41500000$（rank 4 vs 1）。见 `experiments/sdp/results/six_point.md` 与 `experiments/sdp/results/sdp_check.md` |
 | `theory/derivations.md` | U 构造、21 约束与 20 维理想、$E(q)$、$\lambda^*=4J$、$H_{\mathbb S^3}$、对跖不变性、Laplace 常数与误差阶、KL 梯度 |
 | `verify/` 两个最小数值脚本 | 已运行并保存 JSON；定理 0 的“21 约束 = Veronese 二次理想”为符号+秩证明；Choi–Lam 构造实例有对偶证书 |
 | `experiments/protocol.md` | 数据集、baseline、指标、消融、算力、复现风险 |

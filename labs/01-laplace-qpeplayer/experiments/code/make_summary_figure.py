@@ -72,20 +72,29 @@ def main():
     ax[1, 0].set_title("C. real LINEMOD: 15/15 frames K=2 (planar face)")
     ax[1, 0].grid(alpha=0.3)
 
-    # D
+    # D: f*_10 (full 20D) vs f*_13 upstream (17D); full-20D 13x13 equals 10x10
     m = sdp["main"]
     f10 = np.array([r["f_10"] for r in m]); f13 = np.array([r["f_13"] for r in m])
     names = [r["name"] for r in m]
-    ax[1, 1].scatter(f10, f13, s=28)
+    ax[1, 1].scatter(f10, f13, s=28, label="10 instances (full 20D vs upstream)")
+    try:
+        six = json.load(open(EXP / "sdp" / "results" / "six_point.json"))
+        ax[1, 1].scatter([six["f10"]], [six["f13_up"]], s=70, marker="*", color="C3",
+                         label="6-point physical counterexample")
+        ax[1, 1].annotate("6-point: 5.415 vs 3.594\n(full 20D 13x13 = 5.415)",
+                          (six["f10"], six["f13_up"]), fontsize=7, color="C3",
+                          xytext=(6, -18), textcoords="offset points")
+    except Exception:
+        pass
     lo = min(f10.min(), f13.min()) - 0.2; hi = max(f10.max(), f13.max()) + 0.2
-    ax[1, 1].plot([lo, hi], [lo, hi], "k--", lw=1, label="f13 = f10")
+    ax[1, 1].plot([lo, hi], [lo, hi], "k--", lw=1, label="f13 = f10 (tight)")
     for n, x, y in zip(names, f10, f13):
-        if n in ("rowdot", "CL_exact", "CL_pert5"):
+        if n in ("rowdot", "CL_exact"):
             ax[1, 1].annotate(n, (x, y), fontsize=7, xytext=(3, 3), textcoords="offset points")
-    ax[1, 1].set_xlabel("f*_10 (Veronese, 21 constraints)")
-    ax[1, 1].set_ylabel("f*_13 (SDPRLayers, 24 constraints)")
-    ax[1, 1].set_title("D. 13x13 is strictly looser (8/8 perturbed, gap 2.0 counterexample)")
-    ax[1, 1].legend(fontsize=8); ax[1, 1].grid(alpha=0.3)
+    ax[1, 1].set_xlabel("f*_10 full 20D (21 constraints)")
+    ax[1, 1].set_ylabel("f*_13 upstream (24 constraints, 17D)")
+    ax[1, 1].set_title("D. upstream 13x13 is looser; full 20D = 10x10")
+    ax[1, 1].legend(fontsize=7); ax[1, 1].grid(alpha=0.3)
 
     fig.tight_layout()
     out = OUT / "p1_summary.png"

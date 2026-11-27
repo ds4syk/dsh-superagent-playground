@@ -1030,25 +1030,26 @@ def write_markdown(res, path):
     A("    --check-upstream /home/syk/labs/SDPR/code/sdprlayer")
     A("```")
     A("")
-    A("## 5. 结论（一段话）")
+    A("## 5. 结论（修订版 P1-2 分层）")
     A("")
-    A("P1-Q2 的「13×13 与 10×10 同最优值、同秩相关解」**不成立**：13×13 的 24 条 SDPRLayers 约束"
-      "（6 正交 + 9 handedness + 9 row/col-norm）在 $\\mathrm{Sym}^{10}$ 中只张成 %d 维，比 10×10 的 21 条"
-      "（3 列范数 + 3 列点积 + 3 行范数 + 3 行点积 + 9 handedness，%d 维）少 3 维，少的恰好是三条行正交约束 "
-      "$r_a\\cdot r_b=0$；因此 13×13 是 10×10 的一个**严格更松**的松弛，恒有 "
-      "$f^\\star_{13}\\le f^\\star_{10}\\le f_{\\rm nonconvex}$。项目自己的 Choi–Lam 松实例因为对称性使 13×13 "
-      "最优解恰好满足行正交，两者数值一致（%.10f，rank 均 %d），这很可能就是「看起来等价」的来源；"
-      "但把该实例做 8 个 $10^{-2}$ 量级的对称破缺扰动后，%d/%d 都严格出现 $f^\\star_{13}<f^\\star_{10}$"
-      "（差 %.1e–%.1e，$\\mathrm{rank}(X_{13}^\\star)$ 从 6 降到 %s），而构造目标 $-r_1\\cdot r_2+I/4$ 给出 "
-      "$f^\\star_{10}=%.2f$、$f^\\star_{13}=%.2f$ 的 %.1f 差距。**可用话术**：定理 0.3 的 10×10 Veronese/Shor "
-      "结论只覆盖「消去 $t$、且带 3 条行正交约束」的旋转子问题；把它写成「SDPRLayers 的 13×13 实现」是错的，"
-      "除非额外证明 13×13 的最优解落在行正交面上（即这 3 条缺失约束恰好无效）。按当前证据，Q2 应改写为"
-      "「一般情形已证否不等价（$f^\\star_{13}\\le f^\\star_{10}$，构造实例差 %.1f）+ 对称实例上数值巧合相等」。"
-      % (st["rank_24_rotation_blocks_exact"], st["rank_21_constraints_exact"],
-         reg["cl_f10"], reg["cl_rank10"], sm["pert_n_strict"], sm["pert_n"],
-         sm["pert_gap_min"], sm["pert_gap_max"],
+    A("用户 2026-11-27 的修订证明把 13×13 分成两层。**(i) 满 20D 层**：补齐 3 条行正交 "
+      "$r_1\\cdot r_2=r_1\\cdot r_3=r_2\\cdot r_3=0$ 后，$SE(3)$ 的极大二次消没理想为 "
+      "$\\mathcal I_2(SE(3))=\\mathcal I_2(SO(3))\\oplus 0_{3\\times3}$（20 维，与 $t$ 零耦合），由 Schur 补双射 "
+      "$X^\\star_{13}=LX^\\star_{10}L^\\top$ 得 $f^\\star_{13,\\rm full}\\equiv f^\\star_{10,\\rm full}$ 且秩相同；"
+      "本脚本的 10×10 与“24 约束 + 3 行正交”的 13×13 数值一致（CL 实例 %.10f / rank %d）。"
+      "**(ii) 上游 17D 层**：`sdprlayer@62d8ac6` 的 24 条约束在 $\\mathrm{Sym}^{10}$ 中只张成 %d 维（比 10×10 的 %d 维少 3 维，"
+      "缺的正是三条行正交），故 $f^\\star_{13,\\rm up}\\le f^\\star_{13,\\rm full}=f^\\star_{10,\\rm full}\\le f_{\\rm nonconvex}$，"
+      "一般是**严格更松**。本脚本 8 个 1e-2 对称破缺扰动 %d/%d 严格 $f^\\star_{13,\\rm up}<f^\\star_{10}$"
+      "（差 %.1e–%.1e，rank 6→%s），构造目标 $-r_1\\cdot r_2+I/4$ 差 %.1f；独立的 6 点物理 3D-3D 反例"
+      "（`six_point.md`）给出 $f^\\star_{10}=5.41500000$（rank 1）、$f^\\star_{13,\\rm full}=5.41500000$（rank 1）、"
+      "$f^\\star_{13,\\rm up}=3.59431373$（rank 4），且 10/10 个 W/y 小扰动保持严格间隙。"
+      "**因此**：不能说“上游 13×13 与 10×10 同值同秩”（错），也不能笼统说“13×13 与 10×10 不等价”（满 20D 版本是等价的）；"
+      "正确表述是「满 20D 13×13 ≡ 10×10；上游 17D 实现严格更松，且 6 点物理反例证明该间隙可 O(1)」。"
+      % (reg["cl_f10"], reg["cl_rank10"],
+         st["rank_24_rotation_blocks_exact"], st["rank_21_constraints_exact"],
+         sm["pert_n_strict"], sm["pert_n"], sm["pert_gap_min"], sm["pert_gap_max"],
          ",".join(str(v) for v in sm["pert_ranks13"]),
-         rdref["f10"], rdref["f13"], rdref["f10"] - rdref["f13"], rdref["f10"] - rdref["f13"]))
+         rdref["f10"] - rdref["f13"]))
     A("")
     with open(path, "w") as fh:
         fh.write("\n".join(L) + "\n")

@@ -61,6 +61,7 @@ srun --partition=cpu --time=00:40:00 --ntasks=1 \
 - 交叉处 Laplace 的 $4\times10^{-4}$ 残差是 **FD 参考的截断**（严格 $h^2$，见 `results/fd_step.md`），不是解析公式误差：解析梯度对 $h=10^{-6}$ 的 FD 只差 $4.3\times10^{-8}$。
 - **Fold（2026-11-27 实测）**：多峰 Laplace 映射在 $\lvert\theta\rvert\approx1.315\times10^{-3}$ 处有真实 fold；次级极小在该邻域外消失（$K:4\to3$），接近 fold 时 $\det H\to0$、体积权重 $1/\sqrt{\det H}$ 发散、$|\mathrm d\,\mathrm{pose}|$ 从 548 跳到 8362 再落到 412。不能靠更小 $\tau$ 或更多初值修复；"交叉处光滑"只能限定在排除该邻域的区间。
 - **Fold 的部分修复（2026-11-27）**：把 $\det H$ 换成 $\det(H+\tau^{1/3}I)$（导数仍闭式 $\mathrm{tr}((H+\epsilon I)^{-1}\dot H)$）后，$|\mathrm d\,\mathrm{pose}|$ 尖峰 3529→443、近 fold 梯度误差 2.90e-1→1.19e-2，远离 fold 与标准版一致；但模式生灭造成的**值**跳变只从 0.309 降到 0.107，$K$ 仍 4→3。即正则化修导数奇点、不修值不连续；后者需要 Airy 一致展开或对合并模式做局部数值积分。见 `results/fold_6d.md`。
+- **P1-Q5b/Q5c（2026-11-27 证明，理论结果）**：**命题 P1-Q5b** 证明任何“只对实局部极小求和 + 对合并模式加正则化下界”的实根代理，在 fold 处必然有 $\Theta(\tau^{1/3}e^{-(J_0-J_{\text{glob}})/\tau})$ 量级的**值跳变**（与实测 0.309→0.107 一致，不是实现 bug）；**定理 P1-Q5c** 用 40 根 Action Matrix 在 fold 另一侧自然生成的复共轭根对做半线 Airy/Scorer 一致延拓，证明跨 fold 严格 $C^\infty$、值跳变恒为 0，且 $\zeta\gg1$ 时回到 3D Laplace。**2026-11-27 晚更新：6D Scorer 延拓已实现**（`theory/run_scorer_fold.py`，结果 `theory/results/scorer_fold.md`）：1D 三路复现（标准 0.867→0、$\tau^{1/3}$ 0.496→0、Scorer 0.33838→0.33834）；6D fold $\theta_f=1.3185\times10^{-3}$ 的复共轭根对追踪成功，四个不变量跨 fold 连续（$J_0$ 相对残差 $1.7\times10^{-12}$），位姿最大跳变 **1.21e-2**（标准 3.04e-1、$\tau^{1/3}$ 1.07e-1），jump/step 6.0e2 与真实 $|\mathrm d\,\mathrm{pose}|$ 同量级。限制：6D fold 很浅（$\Delta J\ll\tau$）、规范形是首阶近似（$\varphi''''\approx8.3$）。工程主表仍未启用复根追踪。
 
 ![主表](results/main_table.png)
 
@@ -71,7 +72,13 @@ srun --partition=cpu --time=00:40:00 --ntasks=1 \
 
 诚实结论：**真实近简并处 Laplace 不是精度优势**——hard argmin 中位旋转误差 2.06°（1/15 帧失败），Laplace 后验均值中位 58.3°（被错误模式拉偏）。同一真实几何上的受控横截交叉（两个标注各自消去平移）给出 Laplace 解析梯度 rel **1.9e-10–1.8e-9**，MC **9e-5–1.7e-1**。详见 `real/linemod/results/two_mode.md`。
 
-## 6. 限制
+## 6. Q2/Q13 修订：满 20D 等价，上游 17D 严格更松（2026-11-27）
+
+- **修订版定理 P1-2**：上游 `sdprlayer@62d8ac6` 的 24 条约束在 $\mathbb{S}^{10}$ 上只张成 17 维（缺 3 条行正交 $r_1^\top r_2=r_1^\top r_3=r_2^\top r_3=0$）。补齐这 3 条后的**满 20 维** 13×13 与 10×10 **同值同秩**；上游 17 维 13×13 对任意实例恒满足 $f^\star_{13,\text{up}}\le f^\star_{10,\text{full}}\le f^\star_{\text{QPEP}}$，且可严格更松。Q2/Q13 **结案**。
+- **6 点物理 3D-3D 反例**（`sdp/run_6point_check.py`）：$p_i=\pm e_1,\pm e_2,\pm e_3$，$y_i=\varepsilon p_i$，$\varepsilon=0.05$，共享严格正定权重 $W$（eigs $0.4/1/1.6$），$D=0$，$G=6W$。实测 $f^\star_{10}=f^\star_{13,\text{full}}=5.41500000$（rank 1），$f^\star_{13,\text{up}}=3.59431373$（rank 4），差 $1.82068627$；10×10/full-20D 在该实例上严格 rank-1 紧，所以上游 17D 的间隙**不能**归因于“数据退化”。与证明值 $3.59430886$ 差约 $5\times10^{-6}$（SCS 精度，见 `REPRO.md` B9）。表见 [`sdp/results/six_point.md`](sdp/results/six_point.md)。
+- 复核：`./run_all.sh --with-sdp` 会把 `six_point.*` 写进临时副本的 `sdp/results/` 并归档到 `results/logs/<ts>/outputs/sdp_results/`；确定性见 `REPRO.md` §4.1。
+
+## 7. 限制
 
 - 合成双峰实例；$\theta=0$ 处两个全局极小严格简并，Laplace 的 FD 参考在简并处受模式集变化影响（$4\times10^{-4}$ 已确认是 FD 截断，见 `results/fd_step.md`）。
 - 真实数据实验只到「几何代价 + 层可微性」层，没有图像前端，不能给 ADD(-S)/AUC 精度 claim。
@@ -128,10 +135,10 @@ srun --partition=cpu --time=00:40:00 --ntasks=1 \
 ## D. 补充证明核验结论
 
 - **完备（证明层面）**：P1-Q1/Q9（Carathéodory 物理实现 + 正测度）、P1-Q2/Q13、P1-Q3（40 根）、P1-Q6（闭式 logdet）、P1-Q7（Haar 常数）、P1-Q5 的**期望值**部分。
-- **Q2/Q13 本地数值核验给出相反结果（2026-11-27）**：`sdp/run_sdp_check.py` 逐行复刻 SDPRLayers 的 24 条约束后发现，13×13 的约束在 $\mathrm{Sym}^{10}$ 上比 10×10 的 21 条**少 3 条行正交** $r_1\cdot r_2=r_1\cdot r_3=r_2\cdot r_3=0$，因此 $f^\star_{13}\le f^\star_{10}$ 且一般**严格更松**：构造反例 $Q=-r_1\cdot r_2+I/4$ 给出 $f^\star_{10}=+1.0$、$f^\star_{13}=-1.0$（差 2.0）；项目自己的 Choi–Lam 实例两者相等（1.9658119658，rank 6）只是对称性巧合，8 个 $10^{-2}$ 破缺扰动后 **8/8** 严格 $f^\star_{13}<f^\star_{10}$。这与 `theory/proofs.md` 的 GAP 标注一致，但与「Q2/Q13 已证等价」的表述冲突；**不能把 13×13 写成与 10×10 同值同秩**。详见 `sdp/results/sdp_check.md`。
+- **Q2/Q13 修订结论（2026-11-27）**：`sdp/run_sdp_check.py` 逐行复刻 SDPRLayers 的 24 条约束后发现，13×13 的约束在 $\mathrm{Sym}^{10}$ 上比 10×10 的 21 条**少 3 条行正交** $r_1\cdot r_2=r_1\cdot r_3=r_2\cdot r_3=0$，所以**上游 17 维实现**对任意实例恒有 $f^\star_{13,\text{up}}\le f^\star_{10,\text{full}}$，且一般**严格更松**：构造反例 $Q=-r_1\cdot r_2+I/4$ 给出 $f^\star_{10}=+1.0$、$f^\star_{13}=-1.0$（差 2.0）；Choi–Lam 实例两者相等（1.9658119658，rank 6）只是对称性巧合，8 个 $10^{-2}$ 破缺扰动后 **8/8** 严格更松。**补齐 3 条行正交后的满 20 维 13×13 则与 10×10 同值同秩**（修订版定理 P1-2），并用 6 点真实物理反例（$f^\star_{10}=f^\star_{13,\text{full}}=5.41500000$ rank 1 vs 上游 $f^\star_{13,\text{up}}=3.59431373$ rank 4）证明上游 17 维的严格松弛在物理实例上也会发生。详见 `sdp/results/sdp_check.md` 与 `sdp/results/six_point.md`。
 - **fold 核验（2026-11-27）**：多峰 Laplace 映射在 $|\theta|\approx1.31\times10^{-3}$ 处有模式生灭（fold），$\det H\to0$、权重尖峰、$|\mathrm d\,\mathrm{pose}|$ 峰值 3529（常规 379），且映射本身在该点不连续；这不是漏根，也不能靠更小 $\tau$/更多初值修复。详见 `results/robustness.md`。
-- **可复现**：`run_all.sh`（任意 cwd）默认 6 脚本 34–38 s，非计时字段与已提交结果逐位一致；`REPRO.md` 记录 clean-cwd、确定性与 B1–B7 脆弱点。
-- **仍需补**：**P1-Q5 的梯度一致界**仍是证明草图：定理要求 $\|\nabla E-\nabla\bar\ell\|=O(1)$ 且相对误差 $O(\tau)$，但需要 (i) 局部余项 $\partial_\theta r_k$ 的界，(ii) 交叉的横截性/真梯度 $\Theta(1/\tau)$ 的下界。1D 数值算例（slope 1.07，relG 3.4e-3 @ $\tau=0.01$）支持该结论，但还不是严格证明。
+- **可复现**：`run_all.sh`（任意 cwd）默认 6 脚本 **35.1 s**，`--with-sdp` **39.0 s**（6 点检查 +1.5 s），`--with-linemod --with-sdp` **43.0 s**；非计时字段与已提交结果逐位一致，`six_point.json` 两次运行字节相同。`REPRO.md` 记录 clean-cwd、确定性与 B1–B11 脆弱点。
+- **仍需补**：**P1-Q5 的跨交叉梯度一致界**仍是证明草图（注意：2026-11-27 的 **Q5b/Q5c 只关闭 Fold 连续性**，不是这件事；以并行的 `theory/proofs.md` 更新为准）：定理要求 $\|\nabla E-\nabla\bar\ell\|=O(1)$ 且相对误差 $O(\tau)$，但需要 (i) 局部余项 $\partial_\theta r_k$ 的界，(ii) 交叉的横截性/真梯度 $\Theta(1/\tau)$ 的下界。1D 数值算例（slope 1.07，relG 3.4e-3 @ $\tau=0.01$）支持该结论，但还不是严格证明。
 - P1 级（非 P0）仍 open：Q4（精确充要条件）、Q8（$\tau$ 学习/尺度）、Q11（重根梯度）、Q12（EPro 公平对比）、Q14（措辞）、Q15（群轨道平均）。
 
 ![P1 补充证明后的主表/消融](../../../docs/visuals/2026-11-27-p1-theory.png)

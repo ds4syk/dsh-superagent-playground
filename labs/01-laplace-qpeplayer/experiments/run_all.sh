@@ -5,21 +5,28 @@
 #   合成 6D 实验（code/run_main.py, code/run_ablation.py）
 # + theory 1D 实验（theory/run_unequal.py, run_uniform.py, run_fold.py,
 #                  verify_q6.py）
-# 默认不跑 real/linemod（需要 BOP LINEMOD 数据，且当前是空表负结果）；
+# + 可选 sdp 组（sdp/run_6point_check.py，6 点物理反例，约 1.5 s）
+# 默认不跑 real/linemod（需要 BOP LINEMOD 数据；run_symmetry.py 仍是已诊断的负结果，
+# run_two_mode.py 是新的真实双峰实验，也需该数据）；
 # 加 --with-linemod 可追加。
+# 默认不跑 sdp 组；加 --with-sdp 可追加 6 点检查。
 #
 # 用法（在任意 cwd 下都可执行）：
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh
+#   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-sdp
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-linemod
+#   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-sdp-upstream
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh --no-compare
 #   PYTHON=/path/to/python labs/.../run_all.sh          # 换解释器
 #   P1_STEP_TIMEOUT=1200 labs/.../run_all.sh            # 单脚本超时（秒）
 #   P1_KEEP_TMP=1 labs/.../run_all.sh                   # 保留临时副本供排查
+#   P1_SDPRLAYER=/path/to/sdprlayer labs/.../run_all.sh --with-sdp-upstream
+#                                                       # 慢的 upstream 交叉校验
 #
 # 设计决定（详见 REPRO.md §1）：
 #   * 不 in-place 覆盖：把 experiments/ 整棵树复制到 mktemp 目录，在副本里跑，
-#     已提交的 results/、theory/results/ 不会被写坏（脚本结束前会校验 sha256）。
-#   * fresh 输出（主表 JSON/MD/PNG 等）连同日志一起放到
+#     已提交的 results/、theory/results/、sdp/results/ 不会被写坏（结束前校验 sha256）。
+#   * fresh 输出（主表 JSON/MD/PNG、6 点表等）连同日志一起放到
 #     results/logs/<timestamp>/outputs/，方便对照，但不污染已提交结果。
 #   * 每个脚本都在一个空 cwd 下执行（clean-cwd 检查）；输出必须落回副本的
 #     results/ 目录，否则记为失败。
@@ -41,18 +48,23 @@ TMP_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/p1-repro.${TS}.XXXXXX")
 WORK="$TMP_ROOT/work"
 CLEAN_CWD="$TMP_ROOT/clean_cwd"
 WITH_LINEMOD=0
+WITH_SDP=0
+WITH_SDP_UPSTREAM=0
 DO_COMPARE=1
 FAIL=0
 
 usage() {
-  sed -n '2,42p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+  # print the leading comment block only (stop at the first non-comment line)
+  awk 'NR > 1 { if ($0 ~ /^#/) { sub(/^# ?/, ""); print } else { exit } }' "${BASH_SOURCE[0]}"
 }
 
 for arg in "$@"; do
   case "$arg" in
-    --with-linemod) WITH_LINEMOD=1 ;;
-    --no-compare)   DO_COMPARE=0 ;;
-    -h|--help)      usage; exit 0 ;;
+    --with-linemod)     WITH_LINEMOD=1 ;;
+    --with-sdp)         WITH_SDP=1 ;;
+    --with-sdp-upstream) WITH_SDP=1; WITH_SDP_UPSTREAM=1 ;;
+    --no-compare)       DO_COMPARE=0 ;;
+    -h|--help)          usage; exit 0 ;;
     *) echo "unknown argument: $arg" >&2; usage; exit 2 ;;
   esac
 done
@@ -83,6 +95,16 @@ if ! command -v timeout >/dev/null 2>&1; then
   echo "ERROR: GNU timeout not found (needed for per-step timeout)" >&2
   exit 1
 fi
+if [[ "$WITH_SDP" == "1" && ! -f "$EXP_DIR/sdp/run_6point_check.py" ]]; then
+  echo "ERROR: --with-sdp requires $EXP_DIR/sdp/run_6point_check.py" >&2
+  exit 1
+fi
+if [[ "$WITH_SDP_UPSTREAM" == "1" ]]; then
+  if [[ -z "${P1_SDPRLAYER:-}" || ! -d "${P1_SDPRLAYER:-}" ]]; then
+    echo "ERROR: --with-sdp-upstream requires P1_SDPRLAYER=/path/to/sdprlayer (an existing dir)" >&2
+    exit 1
+  fi
+fi
 
 # ---- environment snapshot --------------------------------------------------
 {
@@ -102,6 +124,7 @@ print("platform", platform.platform())
 PY
   echo "git-head: $(git -C "$EXP_DIR" rev-parse HEAD 2>/dev/null || echo n/a)"
   echo "git-branch: $(git -C "$EXP_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo n/a)"
+  echo "sdp-upstream-path: ${P1_SDPRLAYER:-<unset>}"
 } >"$LOG_DIR/env.txt" 2>&1
 
 # ---- work in a throwaway copy so committed results are never touched -------
@@ -114,13 +137,17 @@ if [[ -d "$WORK/real/linemod/results" ]]; then
   mkdir -p "$TMP_ROOT/baseline/real/linemod"
   cp -a "$WORK/real/linemod/results" "$TMP_ROOT/baseline/real/linemod/results"
 fi
+if [[ -d "$WORK/sdp/results" ]]; then
+  mkdir -p "$TMP_ROOT/baseline/sdp"
+  cp -a "$WORK/sdp/results" "$TMP_ROOT/baseline/sdp/results"
+fi
 if [[ ! -d "$TMP_ROOT/baseline/theory/results" ]]; then
   echo "ERROR: failed to snapshot committed theory results for comparison" >&2
   exit 1
 fi
 
 results_manifest() {
-  ( cd "$EXP_DIR" && find results theory/results real/linemod/results \
+  ( cd "$EXP_DIR" && find results theory/results real/linemod/results sdp/results \
       -type f ! -path 'results/logs/*' -print0 2>/dev/null \
     | sort -z | xargs -0 -r sha256sum 2>/dev/null )
 }
@@ -135,7 +162,7 @@ host      : $(hostname 2>/dev/null || echo n/a)
 exp_dir   : $EXP_DIR
 python    : $PYTHON
 workdir   : $TMP_ROOT (throwaway copy; committed results untouched)
-flags     : with_linemod=$WITH_LINEMOD compare=$DO_COMPARE
+flags     : with_linemod=$WITH_LINEMOD with_sdp=$WITH_SDP with_sdp_upstream=$WITH_SDP_UPSTREAM compare=$DO_COMPARE
 EOF
 
 say "== preflight ok: $("$PYTHON" -V 2>&1)"
@@ -157,6 +184,10 @@ expected_for() {
       echo "theory/results/fold.json theory/results/fold_table.md" ;;
     verify_q6.py)
       echo "theory/results/q6_verify.json theory/results/q6_verify.md" ;;
+    run_6point_check.py)
+      echo "sdp/results/six_point.json sdp/results/six_point.md" ;;
+    run_sdp_check.py)
+      echo "sdp/results/sdp_check.json sdp/results/sdp_check.md" ;;
     run_symmetry.py)
       echo "real/linemod/results/symmetry.json real/linemod/results/symmetry.md" ;;
     *)
@@ -172,6 +203,15 @@ SCRIPTS=(
   theory/run_fold.py
   theory/verify_q6.py
 )
+declare -A EXTRA_ARGS=()
+if [[ "$WITH_SDP" == "1" ]]; then
+  SCRIPTS+=(sdp/run_6point_check.py)
+fi
+if [[ "$WITH_SDP_UPSTREAM" == "1" ]]; then
+  # slow (~1 min, needs an external sdprlayer checkout); never on by default
+  SCRIPTS+=(sdp/run_sdp_check.py)
+  EXTRA_ARGS[sdp/run_sdp_check.py]="--check-upstream $P1_SDPRLAYER"
+fi
 if [[ "$WITH_LINEMOD" == "1" ]]; then
   if [[ ! -d /mnt/storage1/syk/data/bop/lm/test ]]; then
     say "ERROR: --with-linemod requires BOP LINEMOD at /mnt/storage1/syk/data/bop/lm"
@@ -190,8 +230,12 @@ for rel in "${SCRIPTS[@]}"; do
   # remove stale copies of this script's outputs first, so a crashed script can
   # never "pass" by leaving the committed numbers in place
   for f in $(expected_for "$rel"); do rm -f -- "$WORK/$f"; done
+  extra=()
+  if [[ -n "${EXTRA_ARGS[$rel]:-}" ]]; then
+    read -r -a extra <<<"${EXTRA_ARGS[$rel]}"
+  fi
   t0=$(date +%s%N)
-  ( cd "$CLEAN_CWD" && timeout "${STEP_TIMEOUT}s" "$PYTHON" "$WORK/$rel" ) >"$out" 2>"$err"
+  ( cd "$CLEAN_CWD" && timeout "${STEP_TIMEOUT}s" "$PYTHON" "$WORK/$rel" "${extra[@]}" ) >"$out" 2>"$err"
   rc=$?
   t1=$(date +%s%N)
   ms=$(( (t1 - t0) / 1000000 ))
@@ -247,6 +291,11 @@ if [[ "$DO_COMPARE" == "1" ]]; then
   if [[ "$WITH_LINEMOD" == "1" ]]; then
     PAIRS+=(real/linemod/results/symmetry.json)
   fi
+  if [[ "$WITH_SDP" == "1" ]]; then
+    PAIRS+=(sdp/results/six_point.json)
+  fi
+  # the slow --with-sdp-upstream run is a smoke test only: outputs must exist,
+  # but sdp_check.json is not compared numerically (solver-dependent fields).
   "$PYTHON" - "$WORK" "$TMP_ROOT/baseline" "${PAIRS[@]}" <<'PY' | tee -a "$RUN_LOG"
 import json, math, sys
 from pathlib import Path
@@ -326,6 +375,9 @@ cp -a "$WORK/results" "$LOG_DIR/outputs/results"
 cp -a "$WORK/theory/results" "$LOG_DIR/outputs/theory_results"
 if [[ "$WITH_LINEMOD" == "1" && -d "$WORK/real/linemod/results" ]]; then
   cp -a "$WORK/real/linemod/results" "$LOG_DIR/outputs/linemod_results"
+fi
+if [[ "$WITH_SDP" == "1" && -d "$WORK/sdp/results" ]]; then
+  cp -a "$WORK/sdp/results" "$LOG_DIR/outputs/sdp_results"
 fi
 ( cd "$LOG_DIR/outputs" && find . -type f -print0 | sort -z | xargs -0 -r sha256sum ) \
   >"$LOG_DIR/outputs.sha256"
