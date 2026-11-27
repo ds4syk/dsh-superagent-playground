@@ -209,7 +209,7 @@ $$2\operatorname{tr}(\mathbf W\mathbf R\mathbf R^\top)=2\big(\|\mathbf r_1\|^2+\
 | $\operatorname{rank}(\mathbf X^*_{10})$ / $\operatorname{rank}(\mathbf X^*_{13,\text{up}})$ | 1 / 4 | 1 / 4 |
 | $f^*_{\text{QPEP}}$（解析：$\max_{\mathbf R\in SO(3)}\operatorname{tr}(\mathbf W\mathbf R)=3$ 在 $\mathbf R=\mathbf I$） | 5.415 | 5.415 |
 
-实测与证明引用的 $3.59430886$ 差 $4.9\times10^{-6}$。该残差**不是**求解器容差：SCS（$\varepsilon=10^{-11}$）与 CLARABEL 内点法分别给出 $3.59431373$ 与 $3.59431371$，二者一致到 $<10^{-9}$；因此最后 5 位未能由本仓库的同一 SDP 构造复现，但严格分离（$1.82$ 间隙、rank $1$ 对 $>1$）完全确认。$\operatorname{rank}(X^\star_{13,\rm up})$ 在 $10^{-5}$ 阈值下为 4、$10^{-6}$ 下为 6（4 个 $O(1)$ 特征值后接 $\sim10^{-5}$ 小特征值），定理只需要 rank $>1$。$f^*_{13,\text{full}}=f^*_{10}=5.415$ 且 rank 均为 1，也在数值上支持 (i)；但 (i) 的成立性依据是上面的 Schur 恒等式，不是这个实例。
+实测与证明引用的 $3.59430886$ 差 $4.9\times10^{-6}$。**取证结论（2026-11-27 phase-3）**：这不是求解器容差，也不是本仓库构造的差异——用显式对偶解 + **精确有理数 LDL$^\top$**（$\eta=10^{-11}$ 正则化，最小主元 $1.00\times10^{-11}$，mpmath 60 位 $\lambda_{\min}=+8.03\times10^{-12}$）得到**严格下界** $f^\star_{13,\rm up}\ge3.594313732834$；证明引用的 $3.59430886$ 比该下界还低 $4.87\times10^{-6}$，因此它**不可能是该 24 约束 SDP 的最优值**。36 个自然变体（行正交尺度 $s$、只加 $k$ 条行正交、布局/转置、$h$ 归一化、$t$ 块、约束消融、SCS/CLARABEL 容差）中没有 1 个在 $10^{-8}$ 内命中它，最近值仍差 $4.1\times10^{-6}$。唯一与同 SDP 相容的解释是“对偶可行但非最优”的欠收敛对偶值（合法下界）；建议改引 $f^\star_{13,\rm up}=3.5943137\ldots$、$f^\star_{10}-f^\star_{13,\rm up}=1.8206863\ldots$。定性结论（间隙 $>1.8$、rank $1$ 对 $>1$）不受影响。证据：`experiments/sdp/results/f13up_forensics.md`（`[exact]` + `[measured-here]`）。$f^*_{13,\text{full}}=f^*_{10}=5.415$ 且 rank 均为 1，也在数值上支持 (i)；但 (i) 的成立性依据是上面的 Schur 恒等式，不是这个实例。
 
 **边界与不声称**：
 

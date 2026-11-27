@@ -1,7 +1,7 @@
 # P1 实验套件复现报告（REPRO）
 
 > 日期：2026-11-27（第二轮，P1-Q2/Q13 + sdp 组） · 工作区：`wt-p1-repro2`（branch `opt/p1-repro2`，HEAD `3fa99be`）
-> 范围：`labs/01-laplace-qpeplayer/experiments/` 下 8 个实验脚本（6 个默认 + `sdp/run_6point_check.py` + LINEMOD）的 clean-cwd 可执行性、输出落盘位置、墙钟时间、确定性与脆弱点；`run_all.sh` 新增可选 `--with-sdp` / `--with-sdp-upstream` 组。
+> 范围：`labs/01-laplace-qpeplayer/experiments/` 下 8 个实验脚本（6 个默认 + `sdp/run_6point_check.py` + LINEMOD）的 clean-cwd 可执行性、输出落盘位置、墙钟时间、确定性与脆弱点；`run_all.sh` 新增可选 `--with-sdp` / `--with-sdp-upstream` 组；phase-3 再新增 `--with-scorer`（P1-Q5c 的 1D+6D Scorer 延拓，~21 s），`--with-sdp` 同时跑 6 点检查 + 证书 + Q2 图。
 > 本轮**只改了 `run_all.sh`、本文件与两个 README**（`experiments/README.md`、`labs/01-laplace-qpeplayer/README.md`），没有修改任何现有 `.py`、没有 commit、没有 push；发现的问题只记录在本文件并给出最小修复建议。
 
 ## 0. 一分钟结论
@@ -9,8 +9,9 @@
 | 检查项 | 结论 |
 |---|---|
 | 6 个快速脚本 clean-cwd（空目录）执行 | **全部通过**，rc=0，无 cwd 残留文件 |
-| `--with-sdp` 追加 6 点物理反例检查 | **通过**，rc=0，`six_point.json/.md` 落到副本 `sdp/results/`，并归档到 `outputs/sdp_results/`；额外墙钟 **1.5–1.6 s** |
-| 墙钟（本轮同机、串行） | 默认 **35.1 s**；`--with-sdp` **39.0 s**；`--with-linemod --with-sdp` **43.0 s**（脚本净和，随同机负载 ±10%–20%） |
+| `--with-sdp` 追加 6 点物理反例检查/证书/Q2 图 | **通过**，rc=0，`six_point.*`、`six_point_cert.*`、`q2_summary.*` 落到副本 `sdp/results/`，并归档到 `outputs/sdp_results/`；三脚本合计 **3.8 s**（phase-3 实测 1.36+1.38+1.11 s） |
+| `--with-scorer` 追加 P1-Q5c Scorer 延拓 | **通过**，rc=0，`scorer_fold.json/.md/.png` 落到副本 `theory/results/`；脚本 **20.8 s**，`scorer_fold.json` 非计时字段与已提交一致 |
+| 墙钟（本轮同机、串行） | 默认 **35.1 s**；`--with-sdp` **34.9–39.0 s**（phase-3 加证书+图后仍 34.9 s）；`--with-linemod --with-sdp` **43.0 s**；`--with-sdp --with-scorer` **55.4 s**（脚本净和，随同机负载 ±10%–20%） |
 | 输出落盘 | 全部写到脚本自身位置对应的 `results/` / `theory/results/` / `sdp/results/`，与 cwd 无关 |
 | 确定性（6 点检查跑两次 + 已提交结果对比） | **通过**：`six_point.json` 两次运行**字节完全一致**（sha256 相同），且与提交基线非计时字段一致；`run_main` 上一轮两跑逐位相同，本轮 3 次 harness 运行均与提交基线一致 |
 | 已提交 `results/`、`sdp/results/` 是否被覆盖 | **否**：harness 在临时副本里跑；运行前后 sha256 manifest 不变 |
@@ -29,7 +30,8 @@ cd /tmp/p1_round2_clean
 
 EXP=/mnt/storage1/syk/.superagent-work/wt-p1-repro2/labs/01-laplace-qpeplayer/experiments
 "$EXP/run_all.sh"                    # 快速合成 + theory 套件（默认）
-"$EXP/run_all.sh" --with-sdp         # 追加 6 点物理反例检查（约 1.5 s）
+"$EXP/run_all.sh" --with-sdp         # 追加 6 点检查 + 证书 + Q2 图（约 4 s）
+"$EXP/run_all.sh" --with-scorer      # 追加 P1-Q5c Scorer 1D+6D 延拓（约 21 s）
 "$EXP/run_all.sh" --with-linemod     # 追加 real/linemod（需要 BOP LINEMOD）
 "$EXP/run_all.sh" --no-compare       # 跳过与已提交结果的数值比对
 PYTHON=/path/to/python P1_STEP_TIMEOUT=1200 "$EXP/run_all.sh"   # 换解释器/超时
@@ -255,7 +257,7 @@ mkdir -p /tmp/p1_round2_clean && cd /tmp/p1_round2_clean
 
 - 证明（`sdp/p1_new_proof.md`）写 $f^\star_{13,\text{up}} = 3.59430886$、$f^\star_{10}-f^\star_{13,\text{up}} = 1.82069114$；`run_6point_check.py` 实测为 $3.5943137329$ 与 $1.8206862671$，差 $4.9\times10^{-6}$ / $4.9\times10^{-6}$（相对约 $1.4\times10^{-6}$ / $2.7\times10^{-6}$）。
 - 精确/结构结论（$f^\star_{10}=f^\star_{13,\text{full}}=5.415$、rank 1 vs 4、$f^\star_{13,\text{up}}<f^\star_{10,\text{full}}$、间隙 $>1.82$）全部成立；只是“8 位小数”这一表述超出了 SCS 的 `eps=1e-11` 实际精度。
-- **补充（Round 5，主 worktree）**：该 4.9e-6 残差**不是** SCS 求解器容差——主 worktree 用 CLARABEL 内点法独立求解得 $f^\star_{13,\text{up}}=3.59431371$，与 SCS 的 $3.59431373$ 一致到 $<10^{-9}$。因此正确表述是“同一实例、同一 SDP 构造下，rank 与不等式方向完全一致，值与证明引用值一致到约 $5\times10^{-6}$；最后 5 位未能由我们的构造复现”，**不要**写成“求解器级差异”。`run_6point_check.py` 现同时打印 SCS / CLARABEL 两列。
+- **补充（phase-3 取证，主 worktree）**：该 4.9e-6 残差**不是**求解器容差，也不是本仓库构造问题——精确有理数对偶证书给出 $f^\star_{13,\text{up}}\ge3.594313732834$（最小主元 $1.0\times10^{-11}$，mpmath 60 位 $\lambda_{\min}=+8.0\times10^{-12}$），证明引用的 $3.59430886$ 比下界低 $4.87\times10^{-6}$，36 个自然变体无一命中（`sdp/results/f13up_forensics.md`）；SCS $3.59431373$ 与 CLARABEL $3.59431371$ 的差为 $2\times10^{-8}$。建议引用时写 $3.5943137\ldots$ / $1.8206863\ldots$，**不要**写成“求解器级差异”。
 - 最小修复建议（未落地）：要么放宽 proof claim 列的位数/改成 `≈`，要么加 `--tight` 用更高精度 solver（如 Mosek，本机未装）。
 
 ### B10 `--with-sdp-upstream` 端到端无法在本机验证

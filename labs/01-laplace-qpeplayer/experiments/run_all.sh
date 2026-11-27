@@ -9,11 +9,13 @@
 # 默认不跑 real/linemod（需要 BOP LINEMOD 数据；run_symmetry.py 仍是已诊断的负结果，
 # run_two_mode.py 是新的真实双峰实验，也需该数据）；
 # 加 --with-linemod 可追加。
-# 默认不跑 sdp 组；加 --with-sdp 可追加 6 点检查。
+# 默认不跑 sdp/scorer 组；加 --with-sdp 追加 6 点检查/证书/Q2 图，加 --with-scorer 追加
+# P1-Q5c 的 1D+6D Scorer 延拓（~21 s）。
 #
 # 用法（在任意 cwd 下都可执行）：
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-sdp
+#   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-scorer
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-linemod
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-sdp-upstream
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh --no-compare
@@ -50,6 +52,7 @@ CLEAN_CWD="$TMP_ROOT/clean_cwd"
 WITH_LINEMOD=0
 WITH_SDP=0
 WITH_SDP_UPSTREAM=0
+WITH_SCORER=0
 DO_COMPARE=1
 FAIL=0
 
@@ -62,6 +65,7 @@ for arg in "$@"; do
   case "$arg" in
     --with-linemod)     WITH_LINEMOD=1 ;;
     --with-sdp)         WITH_SDP=1 ;;
+    --with-scorer)      WITH_SCORER=1 ;;
     --with-sdp-upstream) WITH_SDP=1; WITH_SDP_UPSTREAM=1 ;;
     --no-compare)       DO_COMPARE=0 ;;
     -h|--help)          usage; exit 0 ;;
@@ -97,6 +101,10 @@ if ! command -v timeout >/dev/null 2>&1; then
 fi
 if [[ "$WITH_SDP" == "1" && ! -f "$EXP_DIR/sdp/run_6point_check.py" ]]; then
   echo "ERROR: --with-sdp requires $EXP_DIR/sdp/run_6point_check.py" >&2
+  exit 1
+fi
+if [[ "$WITH_SCORER" == "1" && ! -f "$EXP_DIR/theory/run_scorer_fold.py" ]]; then
+  echo "ERROR: --with-scorer requires $EXP_DIR/theory/run_scorer_fold.py" >&2
   exit 1
 fi
 if [[ "$WITH_SDP_UPSTREAM" == "1" ]]; then
@@ -162,7 +170,7 @@ host      : $(hostname 2>/dev/null || echo n/a)
 exp_dir   : $EXP_DIR
 python    : $PYTHON
 workdir   : $TMP_ROOT (throwaway copy; committed results untouched)
-flags     : with_linemod=$WITH_LINEMOD with_sdp=$WITH_SDP with_sdp_upstream=$WITH_SDP_UPSTREAM compare=$DO_COMPARE
+flags     : with_linemod=$WITH_LINEMOD with_sdp=$WITH_SDP with_sdp_upstream=$WITH_SDP_UPSTREAM with_scorer=$WITH_SCORER compare=$DO_COMPARE
 EOF
 
 say "== preflight ok: $("$PYTHON" -V 2>&1)"
@@ -186,6 +194,10 @@ expected_for() {
       echo "theory/results/q6_verify.json theory/results/q6_verify.md" ;;
     run_6point_check.py)
       echo "sdp/results/six_point.json sdp/results/six_point.md" ;;
+    run_six_point_cert.py)
+      echo "sdp/results/six_point_cert.json sdp/results/six_point_cert.md" ;;
+    make_q2_summary.py)
+      echo "sdp/results/q2_summary.json sdp/results/q2_summary.png" ;;
     run_sdp_check.py)
       echo "sdp/results/sdp_check.json sdp/results/sdp_check.md" ;;
     run_symmetry.py)
@@ -205,7 +217,14 @@ SCRIPTS=(
 )
 declare -A EXTRA_ARGS=()
 if [[ "$WITH_SDP" == "1" ]]; then
-  SCRIPTS+=(sdp/run_6point_check.py)
+  SCRIPTS+=(sdp/run_6point_check.py sdp/run_six_point_cert.py sdp/make_q2_summary.py)
+fi
+if [[ "$WITH_SCORER" == "1" ]]; then
+  SCRIPTS+=(theory/run_scorer_fold.py)
+fi
+if [[ "$WITH_SCORER" == "1" && ! -f "$EXP_DIR/theory/run_scorer_fold.py" ]]; then
+  echo "ERROR: --with-scorer requires $EXP_DIR/theory/run_scorer_fold.py" >&2
+  exit 1
 fi
 if [[ "$WITH_SDP_UPSTREAM" == "1" ]]; then
   # slow (~1 min, needs an external sdprlayer checkout); never on by default
@@ -293,6 +312,9 @@ if [[ "$DO_COMPARE" == "1" ]]; then
   fi
   if [[ "$WITH_SDP" == "1" ]]; then
     PAIRS+=(sdp/results/six_point.json)
+  fi
+  if [[ "$WITH_SCORER" == "1" ]]; then
+    PAIRS+=(theory/results/scorer_fold.json)
   fi
   # the slow --with-sdp-upstream run is a smoke test only: outputs must exist,
   # but sdp_check.json is not compared numerically (solver-dependent fields).

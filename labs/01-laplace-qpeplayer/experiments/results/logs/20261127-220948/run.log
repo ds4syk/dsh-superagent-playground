@@ -1,0 +1,44 @@
+# P1 Laplace-QPEPLayer fast-suite reproduction
+timestamp : 20261127-220948
+host      : ls
+exp_dir   : /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/01-laplace-qpeplayer/experiments
+python    : /home/syk/miniconda3/envs/WM/bin/python
+workdir   : /tmp/p1-repro.20261127-220948.V48Lok (throwaway copy; committed results untouched)
+flags     : with_linemod=0 with_sdp=1 with_sdp_upstream=0 with_scorer=0 compare=1
+== preflight ok: Python 3.10.22
+== log dir: /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/01-laplace-qpeplayer/experiments/results/logs/20261127-220948
+
+[run_main.py           ] rc=0  wall=13.582s  
+[run_ablation.py       ] rc=0  wall=4.076s  
+[run_unequal.py        ] rc=0  wall=1.162s  
+[run_uniform.py        ] rc=0  wall=8.752s  
+[run_fold.py           ] rc=0  wall=2.945s  
+[verify_q6.py          ] rc=0  wall=0.390s  
+[run_6point_check.py   ] rc=0  wall=1.363s  
+[run_six_point_cert.py ] rc=0  wall=1.380s  
+[make_q2_summary.py    ] rc=0  wall=1.105s  
+COMPARE results/main_table.json: OK (non-timing fields match committed)
+COMPARE results/raw_grid.json: OK (non-timing fields match committed)
+COMPARE results/ablation.json: OK (non-timing fields match committed)
+COMPARE theory/results/uniform_unequal.json: OK (non-timing fields match committed)
+COMPARE theory/results/uniform.json: OK (non-timing fields match committed)
+COMPARE theory/results/deltaJ_sweep.json: OK (non-timing fields match committed)
+COMPARE theory/results/fold.json: OK (non-timing fields match committed)
+COMPARE theory/results/q6_verify.json: OK (non-timing fields match committed)
+COMPARE sdp/results/six_point.json: OK (non-timing fields match committed)
+
+## summary (20261127-220948)
+| script | rc | wall (s) | note |
+|-|-|-|-|
+| code/run_main.py | 0 | 13.582 | ok |
+| code/run_ablation.py | 0 | 4.076 | ok |
+| theory/run_unequal.py | 0 | 1.162 | ok |
+| theory/run_uniform.py | 0 | 8.752 | ok |
+| theory/run_fold.py | 0 | 2.945 | ok |
+| theory/verify_q6.py | 0 | 0.390 | ok |
+| sdp/run_6point_check.py | 0 | 1.363 | ok |
+| sdp/run_six_point_cert.py | 0 | 1.380 | ok |
+| sdp/make_q2_summary.py | 0 | 1.105 | ok |
+
+total wall: 34.877s | env: env.txt | fresh outputs: outputs/ | hashes: outputs.sha256
+RESULT: PASS (log: /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/01-laplace-qpeplayer/experiments/results/logs/20261127-220948/run.log)

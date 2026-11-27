@@ -75,8 +75,8 @@ srun --partition=cpu --time=00:40:00 --ntasks=1 \
 ## 6. Q2/Q13 修订：满 20D 等价，上游 17D 严格更松（2026-11-27）
 
 - **修订版定理 P1-2**：上游 `sdprlayer@62d8ac6` 的 24 条约束在 $\mathbb{S}^{10}$ 上只张成 17 维（缺 3 条行正交 $r_1^\top r_2=r_1^\top r_3=r_2^\top r_3=0$）。补齐这 3 条后的**满 20 维** 13×13 与 10×10 **同值同秩**；上游 17 维 13×13 对任意实例恒满足 $f^\star_{13,\text{up}}\le f^\star_{10,\text{full}}\le f^\star_{\text{QPEP}}$，且可严格更松。Q2/Q13 **结案**。
-- **6 点物理 3D-3D 反例**（`sdp/run_6point_check.py`）：$p_i=\pm e_1,\pm e_2,\pm e_3$，$y_i=\varepsilon p_i$，$\varepsilon=0.05$，共享严格正定权重 $W$（eigs $0.4/1/1.6$），$D=0$，$G=6W$。实测 $f^\star_{10}=f^\star_{13,\text{full}}=5.41500000$（rank 1），$f^\star_{13,\text{up}}=3.59431373$（rank 4），差 $1.82068627$；10×10/full-20D 在该实例上严格 rank-1 紧，所以上游 17D 的间隙**不能**归因于“数据退化”。与证明值 $3.59430886$ 差约 $5\times10^{-6}$（SCS 精度，见 `REPRO.md` B9）。表见 [`sdp/results/six_point.md`](sdp/results/six_point.md)。
-- 复核：`./run_all.sh --with-sdp` 会把 `six_point.*` 写进临时副本的 `sdp/results/` 并归档到 `results/logs/<ts>/outputs/sdp_results/`；确定性见 `REPRO.md` §4.1。
+- **6 点物理 3D-3D 反例**（`sdp/run_6point_check.py`）：$p_i=\pm e_1,\pm e_2,\pm e_3$，$y_i=\varepsilon p_i$，$\varepsilon=0.05$，共享严格正定权重 $W$（eigs $0.4/1/1.6$），$D=0$，$G=6W$。实测 $f^\star_{10}=f^\star_{13,\text{full}}=5.41500000$（rank 1），$f^\star_{13,\text{up}}=3.59431373$（rank 4），差 $1.82068627$；10×10/full-20D 在该实例上严格 rank-1 紧，所以上游 17D 的间隙**不能**归因于“数据退化”。与证明值 $3.59430886$ 差约 $5\times10^{-6}$；这**不是** SCS 容差：精确有理数对偶证书给 $f^\star_{13,\text{up}}\ge3.594313732834$，证明值比下界低 $4.87\times10^{-6}$，36 个自然变体无一命中（`sdp/results/f13up_forensics.md`）；建议改引 $3.5943137\ldots$ / $1.8206863\ldots$。数值区间证书：`sdp/results/six_point_cert.md`；图：`sdp/results/q2_summary.png`。表见 [`sdp/results/six_point.md`](sdp/results/six_point.md)。
+- 扰动：`sdp/run_six_point_perturb.py` 的 10/10 个 $W/y$ 小扰动保持间隙 $[0.106,1.821]$ 严格正。复核：`./run_all.sh --with-sdp` 会跑 6 点检查 + 证书 + Q2 图（约 35 s），并在 `--with-scorer` 下追加 Scorer 延拓；输出归档到 `results/logs/<ts>/outputs/`；确定性见 `REPRO.md` §4.1。
 
 ## 7. 限制
 
