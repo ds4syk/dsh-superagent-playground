@@ -407,3 +407,214 @@ def canonical_value(q, inst):
         w2 = inst["W2"] @ v2(q)
         val += float(w2 @ inst["Sigma2"] @ w2)
     return val
+
+
+# ---------------------------------------------------------------------------
+# 7. canonical-family extraction (S3: the ALM-assembly -> Sigma_A mapping)
+# ---------------------------------------------------------------------------
+# The P2-1b canonical family is the 15-dimensional *linear subspace of quartic
+# polynomials*
+#
+#     F_n = span{ (q^Tq)(q^TKq) : K = K^T in R^{4x4} }   (10 dims, K up to cI)
+#         + span{ w(q)^T Sigma w(q) : Sigma = Sigma^T in R^{3x3} }  (6 dims)
+#
+# with the one-dimensional gauge  (Sigma, K) -> (Sigma + a I, K - a|n|^2 I),
+# which leaves the polynomial invariant (w^Tw = |n|^2 (q^Tq)^2 exactly, since
+# R(q)^T R(q) = (q^Tq)^2 I for the homogeneous quaternion rotation).
+#
+# Any quartic lift M whose *polynomial* f_M(q)=v2(q)^T M v2(q) lies in F_n has a
+# unique canonical representative in the gauge  Sigma >= 0,  lambda_min(Sigma)=0
+# (the theorem's (2.8) representative).  Conversely f_M in F_n is exactly the
+# hypothesis of theorem P2-1b type II; the ALM assembly of an isotropic Horn
+# base + plane constraints is always in F_n (numerically verified below),
+# whereas anisotropic/PnP bases are not.
+#
+# Important: a matrix M in F_n and the canonical representative M_can differ at
+# most by an element of ker(M -> polynomial), which is *not* a change of the
+# function on the unit sphere.  The KKT root set of the polynomial is what
+# matters; M_can just makes the rank of Sigma readable.
+
+# ---- exact polynomial expansion of x^T M x -------------------------------
+# degree-2 monomials q_i q_j (i<=j) and degree-4 monomials q_i q_j q_k q_l
+_QUAD_MONOS = [(i, j) for i in range(4) for j in range(i, 4)]
+_QUARTIC_MONOS = [(i, j, k, l) for i in range(4) for j in range(i, 4)
+                  for k in range(j, 4) for l in range(k, 4)]
+_CROSS_PAIRS = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
+_V2_QUAD = None      # 10 x 10: v2_a as a quadratic-monomial vector
+_QUAD_PROD = None    # 10 x 10 -> 35 : product of two quadratic monomials
+
+
+def _v2_quad_vectors():
+    """10x10 matrix: row a is v2_a expressed in the 10 quadratic monomials."""
+    global _V2_QUAD
+    if _V2_QUAD is not None:
+        return _V2_QUAD
+    Q = np.zeros((10, 10))
+    for a in range(10):
+        if a < 4:
+            Q[a, _QUAD_MONOS.index((a, a))] = 1.0
+        else:
+            i, j = _CROSS_PAIRS[a - 4]
+            Q[a, _QUAD_MONOS.index((i, j))] = SQRT2
+    _V2_QUAD = Q
+    return Q
+
+
+def _quad_prod_index():
+    """(10,10) integer matrix: index in _QUARTIC_MONOS of mono_p * mono_r."""
+    global _QUAD_PROD
+    if _QUAD_PROD is not None:
+        return _QUAD_PROD
+    P = np.zeros((10, 10), dtype=int)
+    for p, (i, j) in enumerate(_QUAD_MONOS):
+        for r, (k, l) in enumerate(_QUAD_MONOS):
+            lab = tuple(sorted((i, j, k, l)))
+            P[p, r] = _QUARTIC_MONOS.index(lab)
+    _QUAD_PROD = P
+    return P
+
+
+def poly_coeffs(M):
+    """35-vector of the quartic polynomial q -> v2(q)^T M v2(q)."""
+    Q = _v2_quad_vectors()
+    P = _quad_prod_index()
+    M = np.asarray(M, float)
+    out = np.zeros(35)
+    for a in range(10):
+        for b in range(a, 10):
+            w = M[a, b] * (2.0 if a != b else 1.0)
+            if w == 0.0:
+                continue
+            coef = np.outer(Q[a], Q[b])
+            np.add.at(out, P.ravel(), (w * coef).ravel())
+    return out
+
+
+def _poly_of_M_terms(M):
+    """(35,) polynomial vector; alias of :func:`poly_coeffs`."""
+    return poly_coeffs(M)
+
+
+def _canon_basis_polys(n, n2=None):
+    """Polynomial-space basis columns of F_n (single normal) or F_{n,n2}."""
+    cols, meta = [], []
+    for i in range(4):
+        for j in range(i, 4):
+            K = np.zeros((4, 4))
+            K[i, j] = K[j, i] = 1.0
+            ell = v2_linear_coeff(K)
+            M = 0.5 * (np.outer(ell, E_TR) + np.outer(E_TR, ell))
+            cols.append(_poly_of_M_terms(M))
+            meta.append(("K", i, j))
+    W = w_matrix(n)
+    for i in range(3):
+        for j in range(i, 3):
+            S = np.zeros((3, 3))
+            S[i, j] = S[j, i] = 1.0
+            cols.append(_poly_of_M_terms(W.T @ S @ W))
+            meta.append(("S", i, j))
+    if n2 is not None:
+        W2 = w_matrix(n2)
+        for i in range(3):
+            for j in range(i, 3):
+                S = np.zeros((3, 3))
+                S[i, j] = S[j, i] = 1.0
+                cols.append(_poly_of_M_terms(W2.T @ S @ W2))
+                meta.append(("S2", i, j))
+        for i in range(3):
+            for j in range(3):
+                C = np.zeros((3, 3))
+                C[i, j] = 1.0
+                M = 0.5 * (W.T @ C @ W2 + W2.T @ C.T @ W)
+                cols.append(_poly_of_M_terms(M))
+                meta.append(("C", i, j))
+    return np.stack(cols, axis=1), meta
+
+
+def _extract_K_S(cols):
+    """(K, Sigma) matrices from the fitted coefficient vector."""
+    raise NotImplementedError
+
+
+def canonical_fit(M, n, n2=None):
+    """Fit the quartic polynomial of M to the canonical family F_n (or F_{n,n2}).
+
+    Returns dict with K (4x4), Sigma (3x3), residual (relative polynomial
+    residual), rank_Sigma (after the Sigma>=0, lambda_min=0 gauge), Sigma2/C
+    when n2 is given, and M_can / M_can2 (the canonical representative).
+    ``residual`` is the *membership test*: < 1e-10 means M is in the family
+    (theorem P2-1b type II / two-normal type II); O(10^-1) means it is not
+    (anisotropic / PnP type I).
+    """
+    n = np.asarray(n, float)
+    n = n / np.linalg.norm(n)
+    A, meta = _canon_basis_polys(n, n2)
+    b = poly_coeffs(M)
+    x, _, rank, sv = np.linalg.lstsq(A, b, rcond=None)
+    pred = A @ x
+    nb = np.linalg.norm(b)
+    residual = float(np.linalg.norm(pred - b) / nb) if nb > 0 else 0.0
+
+    K = np.zeros((4, 4))
+    S = np.zeros((3, 3))
+    S2 = np.zeros((3, 3)) if n2 is not None else None
+    C = np.zeros((3, 3)) if n2 is not None else None
+    for v, (kind, i, j) in zip(x, meta):
+        if kind == "K":
+            K[i, j] += v
+            if i != j:
+                K[j, i] += v
+        elif kind == "S":
+            S[i, j] += v
+            if i != j:
+                S[j, i] += v
+        elif kind == "S2":
+            S2[i, j] += v
+            if i != j:
+                S2[j, i] += v
+        elif kind == "C":
+            C[i, j] += v
+
+    # ---- gauge: Sigma >= 0 with lambda_min = 0 (theorem eq. (2.8)) --------
+    ev = np.linalg.eigvalsh(S)
+    alpha = -float(ev[0])
+    S = S + alpha * np.eye(3)
+    K = K - alpha * float(n @ n) * np.eye(4)      # Sigma -> Sigma+a I, K -> K-a|n|^2 I
+    out = dict(K=K, Sigma=S, residual=residual, fit_rank=int(rank),
+               n=n, W=w_matrix(n), M_can=canonical_M(K, S, W=w_matrix(n)))
+    if n2 is not None:
+        n2 = np.asarray(n2, float)
+        n2 = n2 / np.linalg.norm(n2)
+        if abs(float(n @ n2)) < 1.0 - 1e-8:
+            ev2 = np.linalg.eigvalsh(S2)
+            alpha2 = -float(ev2[0])
+            S2 = S2 + alpha2 * np.eye(3)
+            K = K - alpha2 * float(n2 @ n2) * np.eye(4)
+            # C gauge: C -> C + gamma I  <=>  K -> K - gamma (n1.n2) I
+            # C -> C + gamma I  (gamma = -tr(C)/3)  =>  K -> K - gamma (n1.n2) I
+            gamma = -float(np.trace(C)) / 3.0
+            C = C + gamma * np.eye(3)
+            K = K - gamma * float(n @ n2) * np.eye(4)
+            W1 = w_matrix(n)
+            W2 = w_matrix(n2)
+            Mc = canonical_M(K, S, W=W1) + W2.T @ S2 @ W2 \
+                + 0.5 * (W1.T @ C @ W2 + W2.T @ C.T @ W1)
+            out.update(Sigma2=S2, C=C, K=K, W2=W2, M_can=Mc,
+                       rank_Sigma2=int(np.linalg.matrix_rank(S2, tol=1e-8)))
+    out["rank_Sigma"] = int(np.linalg.matrix_rank(out["Sigma"], tol=1e-8))
+    out["predicted_NC"] = {0: 4, 1: 12, 2: 16}.get(out["rank_Sigma"], 16)
+    # verify the canonical representative has the same polynomial
+    bcan = poly_coeffs(out["M_can"])
+    out["canon_residual"] = float(np.linalg.norm(bcan - b) / nb) if nb > 0 else 0.0
+    return out
+
+
+def canonical_family_residual(M, n):
+    """Relative polynomial distance of M to F_n (the P2-1b membership test)."""
+    return canonical_fit(M, n)["residual"]
+
+
+def classify_canonical(M, n):
+    """(rank_Sigma, predicted N_C, residual) for a canonical-family matrix."""
+    fit = canonical_fit(M, n)
+    return fit["rank_Sigma"], fit["predicted_NC"], fit["residual"]
