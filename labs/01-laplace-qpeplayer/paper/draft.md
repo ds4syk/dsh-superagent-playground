@@ -635,10 +635,14 @@ These results were added in the final push; all are `independent reproduction (t
 
 **End-to-end toy (smoke only).** A gradient-descent fit through the layer (`code/run_e2e_fit.py`) is implemented, but only the smoke configuration (4 seeds, 40 steps) was run before the time cap, so it is reported as `unverified` smoke: the two-branch average pose is not representable at finite tau (Laplace floor 1.1e-2, 0% success), Laplace gradient variance is ~0, mode-level MC relative std is 5.1e-2, and the hard map differs across the tie by 1.87 in relative terms. A full 20-seed/120-step run is left as future work.
 
+**Table 5.20. LINEMOD vs LMO, hard/Laplace/MC** (median [95% bootstrap CI]; LMO n=37, LINEMOD n=15). ADD-S in mm; AUC over 0-0.1 m (LMO; not measured on the 15-frame LINEMOD set).
+
 | instance | n | K=2 | hard rot | Laplace rot | MC rot | hard ADD-S | Laplace ADD-S | AUC hard | AUC Laplace |
 |-|-|-|-|-|-|-|-|-|-|
 | LINEMOD (E15) | 15 | 15/15 | 2.06 [1.47,3.49] | 44.24 [33.90,46.87] | 43.80 | 3.7 [3.0,4.3] | 13.9 [10.3,20.2] | not measured | not measured |
 | LMO | 37 | 37/37 | 2.95 [2.19,8.10] | 43.73 [39.96,47.30] | 43.47 | 10.2 [6.6,13.7] | 19.0 [17.1,23.5] | 0.862 (mean; median 0.898) | 0.766 |
+
+**Table 5.21. Simulated detector noise on the 15 real LINEMOD frames** (median over 10 noise seeds; CIs in `detector_noise.md`). The outlier row is a breakdown test (no robust kernel), not an accuracy row.
 
 | sigma (px) | K_phys | hard rot | Laplace rot | hard ADD-S | Laplace ADD-S | hard fail >10 deg |
 |-|-|-|-|-|-|-|
@@ -648,12 +652,16 @@ These results were added in the final push; all are `independent reproduction (t
 | 5 | 2 | 20.49 | 41.83 | 164.2 mm | 168.4 mm | 66% |
 | outliers f=0.05 | K>=1 in 5% | 151.7 | — | 888.6 mm | — | 100% |
 
+**Table 5.22. SDPRLayers-style forward baseline** (10x10 Veronese SDP; upstream 24-constraint 13x13 for comparison). Forward only, no differentiable claim; 5 of 15 real frames were solved (SDP cost per frame).
+
 | setting | n | SDP value vs QPEP | rank(X*) | pose | note |
 |-|-|-|-|-|-|
 | synthetic theta=0 | 1 | gap 3.3e-10 | 2 | mixture of the two global modes | exact degeneracy |
 | synthetic theta=0.01, 0.1 | 2 | gap <= 1.3e-12 | 1 | equals hard argmin | tight |
 | real planar frames | 5 solved | gap <= 1e-6 | 1 | equals hard argmin | tight |
 | upstream 13x13 | 5 | ~1e-6 below the 10x10 value | 2 in 1/5 | — | looser (as proved) |
+
+**Table 5.23. EPro-PnP-style continuous sampling and BPnP-style IFT reference** (same instance, tau=0.01, n=4000 samples, 20 seeds). The Laplace row is the mode-level analytic estimate; it is a different estimand from the continuous posterior mean. At theta=0 the EPro-style estimate is inconclusive (ESS and symmetry-breaking).
 
 | theta | method | pose (rot deg) | grad rel vs FD | ESS | seed std | runtime |
 |-|-|-|-|-|-|-|
