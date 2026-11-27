@@ -11,8 +11,8 @@
 | 线 | 任务 | 主表结论 | 代码/结果 |
 |-|-|-|-|
 | **P1** | 可控双峰位姿的分支交叉（81 个 θ，τ=0.01） | 交叉处 Laplace 梯度误差 **4.3e-4**，MC **3.3e-2**（std 0.11），硬 argmin **N/A**；远离交叉三者一致到 1e-6 | `01-laplace-qpeplayer/experiments/` |
-| **P2** | 合成桌面 6-DoF PnP，p=8–64 约束（50 trials/格） | ALM **0 mm 穿透、100% 可行、100% 认证**；无约束 **103 mm** 穿透；软惩罚/投影可行但认证 0% | `02-constrained-qpeplayer/experiments/` |
-| **P3** | 合成 3D-3D 配准，0–70% 外点（100 trials/格） | GNC 与 RANSAC 同精度 100% 成功；对固定 1000 迭代 RANSAC **31–33× 加速**；exact 梯度 vs FD **5e-8**，naive 边界 cosine **0.23** | `03-robust-qpeplayer/experiments/` |
+| **P2** | 合成桌面 PnP + BOP LINEMOD 真实网格/桌面 | 合成：ALM **0 mm、100% 可行、100% 认证**；LINEMOD：ALM **0 mm、100% 可行、50% 认证** vs 无约束 4.76 mm/39% | `02-constrained-qpeplayer/experiments/` |
+| **P3** | 合成 + ModelNet40 真实几何 3D-3D，0–70% 外点 | GNC 与 RANSAC 同精度 100%；对固定 1000 迭代 RANSAC **约 30× 加速**；exact 梯度 vs FD **5e-8**，naive 边界 cosine **0.23** | `03-robust-qpeplayer/experiments/` |
 
 **判断（prototype 级）**：三张主表都站得住——P1 证明平滑层在交叉处仍可微且比采样方差低；P2 证明硬约束与 sound 证书同时成立；P3 证明同精度下大幅加速 + 精确梯度。**但都还不是论文级主表**：真实数据（3DMatch/KITTI/LINEMOD/YCB/In-The-Dark）、QPEP 多项式内层、端到端训练/反向层仍未做。
 
@@ -33,6 +33,8 @@
 - 代码校验：`ift_dq` 对分支 FD 5e-9、`dpose_dq` 2e-9、`dlogdet` 3e-8；修复了 `ift_dq` 缺因子 2、`dpose_dq` einsum 下标、Laplace 权重导数误用 $g$ 而非 $\dot g$、`dlogdet` 漏显式 $\theta$ 项等 bug。详见 `01-laplace-qpeplayer/experiments/README.md`。
 
 **限制**：合成双峰实例；mode-level MC 不是 $SE(3)$ 连续 MCMC；交叉处 $4\times10^{-4}$ 残差主要来自严格简并处模式集变化。
+
+**真实数据尝试（未纳入主表）**：用 BOP LINEMOD eggbox/glue 的真实对称性构造双峰，混合代价未产生两个极小（`find_modes` 只返回 1 个），因此没有真实数据主表；已记录为负结果、未伪造。P1 主表仍是合成双峰。
 
 ## P2 `Constrained-QPEPLayer`
 
@@ -58,7 +60,11 @@
 
 
 
+**真实数据（BOP LINEMOD）**：真实物体网格 + 真实相机内参 + 从背景深度 RANSAC 拟合的桌面平面；30 个模型点按 GT 投影加 1 px 噪声与 10/20/30 px 向下偏置，16 个非穿透约束。18 trials：无约束 4.76 mm 穿透、39% 可行；ALM **0 mm、100% 可行、50% 认证**；软惩罚 0 mm/94% 可行/50% 认证；投影 0 mm/100% 可行/33% 认证。位姿误差四种方法接近——真实数据上约束买的是“硬可行 + 可认证”，不是精度。加载校验：模型投影 bbox 与 `scene_gt_info.bbox_obj` 对齐。代码/设置见 `02-constrained-qpeplayer/experiments/real/linemod/`。
+
 ## P3 `Robust-QPEPLayer`
+
+**真实数据（BOP LINEMOD）**：真实物体网格 + 真实相机内参 + 从背景深度 RANSAC 拟合的桌面平面；30 个模型点按 GT 投影加 1 px 噪声与 10/20/30 px 向下偏置，16 个非穿透约束。18 trials：无约束 4.76 mm 穿透、39% 可行；ALM **0 mm、100% 可行、50% 认证**；软惩罚 0 mm/94% 可行/50% 认证；投影 0 mm/100% 可行/33% 认证。位姿误差四种方法接近——真实数据上约束买的是“硬可行 + 可认证”，不是精度。加载校验：模型投影 bbox 与 `scene_gt_info.bbox_obj` 对齐。代码/设置见 `02-constrained-qpeplayer/experiments/real/linemod/`。
 
 ## P3 `Robust-QPEPLayer`
 
@@ -83,6 +89,8 @@
 m rob}$ 对 FD $4.8	imes10^{-7}$、1D sign flip FD $1.2	imes10^{-8}$；详见 `verify_smoke.txt`。
 
 **限制**：合成数据；前向用加权 Kabsch（3D-3D 特化），不涉及 QPEP 多项式求解器；真实数据/端到端训练未做。
+
+**真实几何（ModelNet40）**：从 test split 随机取 200 点/物体，随机刚体变换 + 0–70% 均匀外点，50 trials/cell。成功率：GNC 0–70% 全 100%；RANSAC 100%；IRLS 98%@70%；Kabsch 50% 时 0。中位旋转误差两位小数持平（p=30: 0.19 vs 0.20；p=70: 0.26 vs 0.25）。runtime p50：GNC 1.7–1.8 ms vs RANSAC 53.5–56.1 ms（约 30×）。真实物体几何复现了合成结论；设置/代码见 `03-robust-qpeplayer/experiments/real/modelnet/`。
 
 
 

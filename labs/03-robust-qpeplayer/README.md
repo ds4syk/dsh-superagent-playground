@@ -24,12 +24,12 @@
 | 论文草稿（英文，结构完整） | **v0.1**，实验数字全是 TODO，见 `paper/draft.md` |
 | 贡献/对比/审稿 Q&A | **完成**，见 `paper/contributions.md` |
 | 相关工作/引用核实 | **完成**，见 `related_work.md`（含 2 处引用勘误） |
-| 实验协议 | **设计完成；合成 E1–E4 已跑**，真实数据 TODO，见 `experiments/protocol.md` |
+| 实验协议 | **设计完成；合成 E1–E4 + ModelNet40 真实几何已跑**；3DMatch/KITTI/In-The-Dark TODO，见 `experiments/protocol.md` |
 | 合成实验（扩展主表 + 6D 梯度表 + 边界精化 + 校验） | **完成**（2026-11-27），见 `experiments/README.md`、`experiments/synthetic/results/` |
 | 路线图 | **完成**，见 `roadmap.md`（RA-L 首选 / IROS 2027 备选 / T-RO stretch） |
 | 未解决数学问题 | **12 条，P0×4**，见 `math_questions.md` |
 
-**没有做的**：真实数据实验、真实端到端训练（只有 GT 监督的 test-time 精化诊断）、QPEP C++/GPU 工程、6D 变号定理、GNC 分岔反例。**没有编造**任何实验数字；源文档的预实验数字在 `experiments/protocol.md` §8 标为“待独立复现”。**待修**：`verify/riemann_hessian_check.py` 的 `build_A` 用非齐次 `Rmat` 做极化（重构的 $u(q)\neq R(q)p$），应换成 `Rhom` 后重跑；修正版与修正后的数值见 `experiments/README.md` §7.1。
+**没有做的**：3DMatch/KITTI/In-The-Dark、真实端到端训练（只有 GT 监督的 test-time 精化诊断）、QPEP C++/GPU 工程、6D 变号定理、GNC 分岔反例。**没有编造**任何实验数字；源文档的预实验数字在 `experiments/protocol.md` §8 标为“待独立复现”。**已修**：`verify/riemann_hessian_check.py` 的 `build_A` 原先用非齐次 `Rmat` 极化，已改为齐次式并重跑（25.9% / 9.9e-8 / 51.05），见 `experiments/README.md` §7.1。
 
 ---
 
