@@ -1,0 +1,232 @@
+\section{Method and Theory}\label{sec:method}
+
+% Theorem numbering follows the draft's scheme: draft Theorem 0.1 -> Thm 4.2,
+% 0.2 -> 4.3, 0.3 -> 4.4, Example 4.5 -> 4.5, Theorem 1.1 -> 4.6, 1.2 -> 4.7,
+% 1.3 -> 4.8. The three-part 10x10/13x13 result (draft "Theorem P1-2") is Thm 4.9.
+
+\subsection{Exact reduction and the zero lift}\label{sec:reduction}
+
+The only nonlinear constraint is $q^\top q=1$. Translation is eliminated exactly, not relaxed, so the nonconvex problem is a quartic on $\mathbb{S}^3$. ``Zero lift'' refers to the optimisation variable: no matrix variable is introduced at inference. The $10$-dimensional objects $v_2$ and $x_R$ are \emph{analysis} devices; they are never optimised over in the layer.
+
+\begin{lemma}[Exact translation elimination]\label{lem:translation}
+For $G\succ0$, $\min_t J_\theta(q,t)=J_{\mathrm{red}}(q;\theta)$, attained at $t^\star(q)=-G^{-1}Dv_2(q)$, and
+\begin{equation}
+\int_{\mathbb{R}^3}e^{-J_\theta(q,t)/\tau}\,dt=\frac{(\pi\tau)^{3/2}}{\sqrt{\det G}}\,e^{-J_{\mathrm{red}}(q;\theta)/\tau}.
+\label{eq:gaussint}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Completing the square gives $J_\theta(q,t)=(t-t^\star)^\top G(t-t^\star)+J_{\mathrm{red}}(q;\theta)$ with $t^\star=-G^{-1}Dv_2(q)$; the Gaussian integral over $\mathbb{R}^3$ is standard.
+\end{proof}
+
+\subsection{The rotation lift is an orthogonal image of the Veronese map}\label{sec:lift}
+
+\begin{theorem}\label{thm:lift}
+There exists $U\in O(10)$ such that for all $q\in\mathbb{R}^4$,
+\begin{equation}
+x_R(q)=2Uv_2(q),\qquad \|x_R(q)\|^2=4\|v_2(q)\|^2=4\|q\|^4 .
+\label{eq:bridge}
+\end{equation}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Every entry of $x_R$ is a quadratic form in $q$, and $v_2$ is a basis of $\mathrm{Sym}^2(\mathbb{R}^4)$; hence $x_R=Bv_2$ for a unique $B$. Since $R(q)$ is orthogonal, $\|x_R\|^2=\|q\|^4+3\|q\|^4=4\|q\|^4=4\|v_2\|^2$; as $\{v_2(q)\}$ spans $\mathbb{R}^{10}$, $B^\top B=4I$. Set $U=B/2$. The block structure is explicit: after permuting rows and columns, $U=\mathrm{diag}(\tfrac12H_4,\tfrac1{\sqrt2}H_2,\tfrac1{\sqrt2}H_2,\tfrac1{\sqrt2}H_2)$ with $H_4$ the Sylvester Hadamard matrix.
+\end{proof}
+
+\textbf{A reproducibility subtlety.} $x_R$ must be the \emph{homogeneous} lift \eqref{eq:lift}, whose first entry is $\|q\|^2$. With a literal constant $1$ in that slot, the identity $x_R=2Uv_2$ holds only on $\mathbb{S}^3$ and the orthogonality of $U$ is lost off the sphere; the homogeneous lift is what makes Theorem~\ref{thm:lift} an identity in $\mathbb{R}^4$ and what makes the conic argument of Section~\ref{sec:sdp} valid.
+
+\subsection{The 21 \texorpdfstring{$SO(3)$}{SO(3)} constraints span the degree-two Veronese ideal}\label{sec:ideal}
+
+\begin{theorem}\label{thm:ideal}
+Let $A_i\in\mathbb{S}^{10}$ be the matrices of the 21 standard $SO(3)$ constraints: 3 column norms, 3 column inner products, 3 row norms, 3 row inner products, and 9 homogeneous cross-product equations $c_a\times c_b-x_0c_c=0$. Then
+\begin{equation}
+\dim\operatorname{span}\{A_i\}=20,
+\label{eq:span20}
+\end{equation}
+and this span is exactly the degree-two vanishing ideal $\mathcal{I}_2(\nu_2(\mathbb{RP}^3))$ after the change of coordinates $x=2Uv_2$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Each $A_i$ vanishes on $x_R(\mathbb{S}^3)$; the pullback is a homogeneous quartic vanishing on the sphere, hence identically zero, so $A_i$ lies in the kernel of $\phi:\mathbb{S}^{10}\to\mathbb{R}[q]_4$, $Q\mapsto Q(x_R(q))$. The map $\phi$ is surjective (the entries of $R_{ij}$ span all quadratics, and products of quadratics span all quartics), so $\dim\ker\phi=55-35=20$. An exact rational rank computation gives $\operatorname{rank}\{A_i\}=20$; the only linear dependency is $\operatorname{tr}(R^\top R)=\operatorname{tr}(RR^\top)$. A 20-dimensional subspace of a 20-dimensional kernel is the kernel.
+\end{proof}
+
+\textbf{Why both arguments are needed.} A dimension count alone, $55-\binom74=20$, is necessary but not sufficient: it does not show that the 21 constraint matrices reach the count. Conversely, the rank computation alone does not identify the span with the ideal. The two together do. The count is also sensitive to the constraint set: six off-diagonal inner products alone give rank 15, not 20, which is why the constraint deficit of the released 24-constraint implementation (Section~\ref{sec:thirteen}) is not a bookkeeping detail.
+
+\subsection{The rotation SDP is a Veronese relaxation}\label{sec:sdp}
+
+\begin{theorem}\label{thm:sdp}
+Let $\{B_k\}_{k=1}^{20}$ be a basis of $\mathcal{I}_2$, and let $M\in\mathbb{S}^{10}$. The SDP
+\begin{equation}
+\min_{Y\succeq0}\ \langle M,Y\rangle\quad\text{s.t.}\quad \langle B_k,Y\rangle=0\ (k=1,\dots,20),\quad \operatorname{tr}Y=1
+\label{eq:sdpY}
+\end{equation}
+is the Shor (Veronese) relaxation of $\min_{q\in\mathbb{S}^3}v_2(q)^\top Mv_2(q)$. In $x$-coordinates, with $Q=\tfrac14UMU^\top$, it is equivalent to
+\begin{equation}
+\min_{X\succeq0}\ \langle Q,X\rangle\quad\text{s.t.}\quad X_{00}=1,\quad \langle A_i,X\rangle=0,
+\label{eq:sdpX}
+\end{equation}
+under $X=4UYU^\top$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The two PSD cones are related by an orthogonal congruence. On $(\mathcal{I}_2)^\perp$, $\operatorname{tr}Y=\langle ee^\top,Y\rangle$ with $e=(1,1,1,1,0,\dots,0)^\top$, because both sides agree on the rank-one generators $v_2(q)v_2(q)^\top$; since $U^\top e_0=\tfrac12e$, $X_{00}=\langle ee^\top,Y\rangle$. The objectives agree by orthogonality. The dual is $\max\mu$ s.t. $M-\mu I-\sum_k\lambda_kB_k\succeq0$, an SOS-modulo-ideal certificate.
+\end{proof}
+
+\textbf{Scope of the identification.} This is the rotation subproblem after exact translation elimination. We do not identify our SDP with the textbook second-order Lasserre moment relaxation with a sphere localising matrix \cite{lasserre2001,laurent2009}; we call it the degree-two Veronese/Shor relaxation, and the localising constraint is the single trace/$X_{00}$ condition rather than a moment matrix of a polynomial ideal. We make no claim about higher-order relaxations. The relation to the released $13\times13$ implementation is Theorem~\ref{thm:thirteen}.
+
+\subsection{A constructed instance with a certified gap}\label{sec:example}
+
+\begin{example}\label{ex:choilam}
+Let
+\begin{equation}
+C(q)=q_0^2q_1^2+q_1^2q_2^2+q_2^2q_0^2+q_3^4-4q_0q_1q_2q_3\ge0,
+\label{eq:choilam}
+\end{equation}
+the Choi--Lam nonnegative non-SOS quartic \cite{choi1977extremal,choi1980zeros}, and let $M=M_{CL}+2I_{10}$, where $M_{CL}$ is the symmetric matrix of $C$ in the $v_2$ basis. The true minimum is $f^\star=2$ (since $C\ge0$ and $\|v_2\|^2=1$). Solving the $10\times10$ rotation SDP \eqref{eq:sdpX} gives $f^\star_{\mathrm{SDP}}=1.9658119658$, with a dual certificate $Z=Q-\mu E_{00}-\sum_i\lambda_iA_i$ satisfying $\lambda_{\min}(Z)=-1.8\times10^{-11}$ and $\mu=1.9658119658$. The certified gap is therefore at least $0.034188$; the primal solution has $\operatorname{rank}(X^\star)=6$ and $\lambda_1/\lambda_2=1.451$.
+\end{example}
+
+This is our own construction. A different perturbation can change the numerical gap and eigen-ratios, so we report only the certified instance above, and Table~\ref{tab:sdp_cert} lists every quantity together with its evidence level. ``Certified'' here means that the dual matrix is PSD at solver tolerance, not a symbolic proof. Whether $M$ is realisable as the Gram matrix of an actual PnP or matrix-weighted correspondence set is \emph{open} (Section~\ref{sec:discussion}, item~2); the physical six-point instance of Section~\ref{sec:thirteen} is the complementary, realisable separation result. The existence of nonnegative non-SOS forms is classical \cite{hilbert1888,blekherman2006}, and the Choi--Lam form is the standard explicit witness; the point of Example~\ref{ex:choilam} is not that such forms exist, but that the degree-two Veronese relaxation provably fails on a cost in the QPEP class.
+
+\subsection{The \texorpdfstring{$3\times3$}{3x3} Riemannian implicit differentiation}\label{sec:implicit}
+
+\begin{theorem}\label{thm:implicit}
+Let $J(q)=v_2(q)^\top Mv_2(q)$ and let $q^\star$ be a stationary point on $\mathbb{S}^3$. Then:
+\begin{enumerate}
+\item $\nabla J(q^\star)=\lambda^\star q^\star$ with $\lambda^\star=q^{\star\top}\nabla J(q^\star)=4J(q^\star)$.
+\item The Riemannian Hessian in the basis $E$ is
+\begin{equation}
+H_{\mathbb{S}^3}(q^\star)=E(q^\star)^\top\big(\nabla^2J(q^\star)-4J(q^\star)I_4\big)E(q^\star),
+\label{eq:hess}
+\end{equation}
+where $\nabla^2J=2J_v^\top MJ_v+2\sum_{a=1}^{10}(Mv_2)_aH_{v,a}$.
+\item If $H_{\mathbb{S}^3}(q^\star)\succ0$, then the local minimiser is locally $C^\infty$ in $\theta$ and
+\begin{align}
+\frac{\partial q^\star}{\partial\theta}&=-E H_{\mathbb{S}^3}^{-1}E^\top\Big(2J_v^\top\frac{\partial M}{\partial\theta}v_2\Big),\label{eq:dq}\\
+\frac{\partial t^\star}{\partial\theta}&=-G^{-1}\Big(\frac{\partial G}{\partial\theta}t^\star+\frac{\partial D}{\partial\theta}v_2+DJ_v\frac{\partial q^\star}{\partial\theta}\Big).\label{eq:dt}
+\end{align}
+\item The map is antipodally invariant: $H_{\mathbb{S}^3}(-q^\star)=H_{\mathbb{S}^3}(q^\star)$, $\partial(-q^\star)/\partial\theta=-\partial q^\star/\partial\theta$, and $\partial\,\mathrm{vec}(R(q^\star))/\partial\theta$ is identical for $\pm q^\star$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Euler homogeneity gives the multiplier. Differentiating $F=E^\top\nabla J=0$ along $\delta q=E\delta\xi$ and using $(\delta E)^\top q=-E^\top\delta q$ gives the Hessian \eqref{eq:hess}. The implicit Jacobians \eqref{eq:dq}--\eqref{eq:dt} follow by differentiating $F(q^\star(\theta),\theta)=0$ and $t^\star=-G^{-1}Dv_2$, i.e.\ from the implicit-function theorem for the reduced stationarity system \cite{dontchev2009}. Antipodal invariance follows from $v_2(-q)=v_2(q)$, $J_v(-q)=-J_v(q)$ and $E(-q)=-E(q)$.
+\end{proof}
+
+\textbf{Factor conventions.} The conventions are worth stating once, because they are the most common source of silent disagreement between implementations. $\delta q=E\delta\xi$ corresponds to a rotation vector $2\delta\xi$, so the Hessian in rotation-vector coordinates is $H_\omega=\tfrac14H_{\mathbb{S}^3}$; a covariance reported in one convention differs from the other by a factor of 16 in the corresponding eigenvalues. QPEP's observability and covariance analysis \cite{wu2022qpep} is defined in its own parameterisation, and comparisons should be made up to this constant. The backward pass \eqref{eq:dq} is a single $3\times3$ positive-definite solve per active mode; it never touches the $10\times10$ data matrix except through the fixed $4\times10$ Jacobian $J_v$.
+
+\subsection{A differentiability certificate, and what is not true}\label{sec:cert}
+
+\begin{theorem}[Sufficient condition]\label{thm:cert}
+Suppose the global minimiser is unique up to $q\leftrightarrow-q$, $G\succ0$, $H_{\mathbb{S}^3}(q^{(1)})\succ0$, and $\Delta J=J(q^{(2)})-J(q^{(1)})>0$ for the next-best distinct $SO(3)$ class. Then there is a neighbourhood of $\theta$ on which the global pose map is $C^\infty$ and its derivative is given by Theorem~\ref{thm:implicit}.
+\end{theorem}
+
+\begin{proof}
+The implicit-function theorem gives a smooth local minimiser; continuity of $\Delta J$ keeps it globally optimal; $G\succ0$ makes $t^\star$ unique.
+\end{proof}
+
+\textbf{A natural ``exact iff'' claim is false as written.} Two counterexamples delimit what the theorem does and does not say.
+(i) $\Delta J=0$ does not preclude a smooth global \emph{selection}: with $J_1\equiv0$ and $J_2(\theta)=(\theta-\theta_0)^2$, branch 1 is a smooth global minimiser for all $\theta$, although the two branches tie at $\theta_0$. The correct statement concerns uniqueness of the global minimiser, not differentiability of every selection.
+(ii) $H_{\mathbb{S}^3}\succ0$ is not necessary: for $J(x;\theta)=x^4+\theta^2x^2$, the unique minimiser $x^\star(\theta)\equiv0$ is smooth at $\theta=0$ although the Hessian vanishes. The sharp necessary condition is that the reduced stationarity system admits a differentiable single-valued selection that is globally optimal at every point; $H\succ0$ is the standard sufficient condition \cite{dontchev2009}.
+
+\textbf{A QPEP-specific counting issue.} A naive count gives $K\le27$ real minima. The released LibQPEP solver returns up to 40 candidate complex roots; 27 has no cited source, and an odd count is incompatible with the free antipodal symmetry $(q,\lambda)\mapsto(-q,\lambda)$ for a finite root set. We therefore write ``$K$ enumerated real minima, at most 40 candidates in the released solver'', treat enumeration completeness as assumption (A2), and verify residuals numerically rather than assuming them. The generic complex count of 40 is confirmed independently on four instances by a total-degree homotopy (Section~\ref{sec:rootcount}): 40 complex projective roots (80 affine roots with the $\pm$ double cover) on $4/4$ instances, with the real projective count varying by instance.
+
+\subsection{Multi-modal Laplace smoothing}\label{sec:laplace}
+
+\begin{theorem}\label{thm:laplace}
+Let $q^{(k)}$, $k=1,\dots,K$, be the enumerated nondegenerate local minima of $J_{\mathrm{red}}$ on $\mathbb{S}^3/\{\pm1\}$, with $H_k=H_{\mathbb{S}^3}(q^{(k)})\succ0$. For the Boltzmann posterior $p_\theta(q,t)\propto e^{-J_\theta(q,t)/\tau}$:
+\begin{enumerate}
+\item \textbf{Translation is exact.} $\int_{\mathbb{R}^3}e^{-J_\theta(q,t)/\tau}dt=(\pi\tau)^{3/2}(\det G)^{-1/2}e^{-J_{\mathrm{red}}(q;\theta)/\tau}$.
+\item \textbf{Rotation is Laplace-approximated.} With the Haar measure $\int_{SO(3)}dR=8\pi^2$ \cite{chirikjian2012},
+\begin{equation}
+\begin{split}
+&\int_{SO(3)}e^{-J_{\mathrm{red}}/\tau}dR\\
+&\quad=8(2\pi\tau)^{3/2}\sum_{k=1}^K\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}}\big(1+O(\tau)\big),
+\end{split}
+\label{eq:rotationint}
+\end{equation}
+and the mode weights are
+\begin{equation}
+w_k=\operatorname{softmax}_k\Big(-\frac{J_k}{\tau}-\frac12\log\det H_k\Big).
+\label{eq:weights}
+\end{equation}
+\item \textbf{Gradients.} For a downstream loss $\ell$,
+\begin{equation}
+\begin{split}
+\nabla_\theta\bar\ell={}&\sum_kw_k\nabla_\theta\ell_k\\
+&+\operatorname{Cov}_w\Big(\ell_k,\ -\frac1\tau\nabla_\theta J_k-\frac12\nabla_\theta\log\det H_k\Big),
+\end{split}
+\label{eq:smgrad}
+\end{equation}
+with $\nabla_\theta J_k=v_k^\top(\partial_\theta M)v_k$ and
+\begin{equation}
+\begin{split}
+\nabla_\theta\log\det H_k&=\operatorname{tr}\Big(H_k^{-1}\frac{dH_k}{d\theta}\Big),\\
+\frac{dH_k}{d\theta}&=\frac{\partial H}{\partial\theta}\Big|_{q^{(k)}}+\frac{\partial H}{\partial q}\Big|_{q^{(k)}}\frac{\partial q^{(k)}}{\partial\theta}.
+\end{split}
+\label{eq:dlogdet}
+\end{equation}
+The second term contains third $q$-derivatives of $J$.
+\item \textbf{Temperature limit.} As $\tau\to0$ with $\Delta J>0$, the posterior mean and the soft argmin converge to the deterministic global minimiser, and their gradients converge to Theorem~\ref{thm:implicit}. The KL loss itself, $\mathcal{L}_{\mathrm{KL}}=\tau^{-1}J_{\mathrm{gt}}+\log Z_{\mathrm{Laplace}}$, has a gradient that scales as $1/\tau$ and does not converge without a $\tau$-rescaling.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The translation integral is Lemma~\ref{lem:translation}. For rotation, expand $J$ to second order around each $q^{(k)}$ in the normal chart $q(u)=\mathrm{normalize}(q^{(k)}+E_ku)$; the Gaussian integral gives $(2\pi\tau)^{3/2}(\det H_k)^{-1/2}$. The local Jacobian is $dR=8\,dq$ per sheet; the two sheets of $\pm q$ and the double-cover factor $1/2$ combine to $8$ per $SO(3)$ mode. The standard Laplace expansion gives relative error $O(\tau)$ \cite{bleistein1986,wong1989}. The gradient formula is the chain rule with the envelope theorem for $J_k$ and the softmax Jacobian for $w_k$.
+\end{proof}
+
+\textbf{What ``smooth at branch crossings'' means.} The \emph{exact} Boltzmann posterior is $C^\infty$ in $\theta$ for every $\tau>0$, because $\mathbb{S}^3$ (and $SO(3)$) is compact and $J_\theta$ is smooth; this follows from dominated convergence and does not require $\Delta J>0$. The \emph{Laplace approximation} is not uniformly accurate at a branch crossing: as $\Delta J\to0$ and an eigenvalue of $H_k$ tends to zero, the two Gaussians overlap and the $1/\sqrt{\det H_k}$ weights diverge. A uniform (Airy) expansion, or a one-dimensional numerical integral in the merging direction, is required \cite{bleistein1986}. We therefore claim smoothness for the exact smoothed layer, and $O(\tau)$ accuracy for the Laplace implementation away from bifurcations; we do not claim that the Laplace approximation is exact at the crossing.
+
+\textbf{Normalisation.} The constants matter for $Z$ but cancel in $w_k$. A commonly used normalisation $Z_{\mathrm{Lap}}=(\pi\tau)^3(\det G)^{-1/2}\sum_k e^{-J_k/\tau}/\sqrt{\det H_k}$ is missing the $2^{3/2}$-type factor from the rotation integral; with fixed $\tau$ this is a $\theta$-independent constant and does not affect gradients, but it should be written correctly. If rotation-vector coordinates $\omega=2\delta\xi$ are used instead of $E$, then $\det H_\omega=\det H_{\mathbb{S}^3}/64$, and the convention must be fixed once and used consistently in \eqref{eq:weights}--\eqref{eq:dlogdet}.
+
+\subsection{Relation to the released \texorpdfstring{$13\times13$}{13x13} relaxation}\label{sec:thirteen}
+
+The relation between the $10\times10$ rotation SDP and the released $13\times13$ SDP is not one equality or one inequality. It has three layers: an exact equivalence, an inequality hierarchy, and a strict physical separation.
+
+\begin{theorem}[Three-part $10\times10$/$13\times13$ relation]\label{thm:thirteen}
+Let $x_{13}=[x_R;t]$ with $t\in\mathbb{R}^3$ unconstrained,
+$Q_{13}=\begin{bmatrix}Q_{RR}&Q_{Rt}\\Q_{Rt}^\top&G\end{bmatrix}$ with $G\succ0$, and $Q_{10}=Q_{RR}-Q_{Rt}G^{-1}Q_{Rt}^\top$. Write $f^\star_{10,\mathrm{full}}$, $f^\star_{13,\mathrm{full}}$ and $f^\star_{13,\mathrm{up}}$ for (a) the $10\times10$ value under the full 20-dimensional ideal, (b) the $13\times13$ value under the same full ideal, i.e.\ the upstream 24 constraints plus the three row-orthogonality equations (27 constraints, 20 dimensions), and (c) the $13\times13$ value under the released 24 constraints, whose span is 17-dimensional. Then:
+\begin{enumerate}
+\item \textbf{Full 20D equivalence (proved).} The degree-two vanishing ideal of $SE(3)$ in $\mathbb{S}^{13}$ is $\mathcal{I}_2(SE(3))=\mathcal{I}_2(SO(3))\oplus\mathbf{0}_{3\times3}$: dimension 20, with no coupling to $t$. Hence the block Schur-complement bijection $X^\star_{13,\mathrm{full}}=LX^\star_{10,\mathrm{full}}L^\top$, with $L=[I_{10};\,-G^{-1}Q_{Rt}^\top]$ of full column rank, gives
+\begin{equation}
+f^\star_{13,\mathrm{full}}\equiv f^\star_{10,\mathrm{full}},\quad\operatorname{rank}\big(X^\star_{13,\mathrm{full}}\big)\equiv\operatorname{rank}\big(X^\star_{10,\mathrm{full}}\big).
+\label{eq:schur}
+\end{equation}
+This is an algebraic identity, not a numerical coincidence.
+\item \textbf{The upstream 17D implementation is looser, strictly so in general (proved).} The released 24 constraints span only 17 of the 20 dimensions, so $\mathcal{V}_{17}\subsetneq\mathcal{I}_2(SO(3))$ and the upstream feasible set strictly contains the full-20D one. Therefore, for \emph{every} instance,
+\begin{equation}
+f^\star_{13,\mathrm{up}}\;\le\;f^\star_{13,\mathrm{full}}=f^\star_{10,\mathrm{full}}\;\le\;f^\star_{\mathrm{QPEP}},
+\label{eq:hierarchy}
+\end{equation}
+the last inequality being the relaxation bound of Theorem~\ref{thm:sdp}. Because the argument is instance-independent, every full-20D instance that is not tight is automatically a non-tight instance of the released implementation.
+\item \textbf{Physical 6-point separation (proved and independently reproduced).} Layer (2) is strict on a genuine matrix-weighted 3D--3D cost with positive weights and a unique ground-truth rotation, even where the full-20D SDP is exactly tight at rank one (Table~\ref{tab:6point}). By continuity the strict inequality persists on an open neighbourhood of that instance, so the separation is not a measure-zero pathology.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+(1) The degree-two vanishing ideal of $SE(3)$ in $\mathbb{S}^{13}$ is the ideal of $SO(3)$ in the $x_R$ block with the $t$ block free, so there is no coupling to $t$; the coupling in the cost is quadratic and is completed by the Schur complement, which is exactly the map $L$. Substituting $X_{13}=LX_{10}L^\top$ leaves the constraints and the objective invariant, and $L$ has full column rank because $G\succ0$. (2) A subspace inclusion is strict when the spanning set misses three dimensions; feasibility is monotone under a larger feasible set, and the last inequality in \eqref{eq:hierarchy} is the standard relaxation bound. (3) The instance is analysed in Section~\ref{sec:results_sdp}; its exact solution has $r_1^\top r_2=0$ at the full-ideal optimum and $r_1^\top r_2>0$ at the upstream optimum, so the inclusion is strict there, and strictness is an open condition.
+\end{proof}
+
+\textbf{Exact constraint comparison.} The 21 $SO(3)$ constraints of the $10\times10$ SDP span 20 dimensions (Theorem~\ref{thm:ideal}). The 24 upstream constraints of the $13\times13$ SDP span only 17, and projecting the 21 constraints one at a time onto that 17-dimensional span leaves exactly three nonzero residuals---the row orthogonality equations $r_1\cdot r_2=r_1\cdot r_3=r_2\cdot r_3=0$ (residuals 1.63--1.73; the other 18 are $\le6.2\times10^{-16}$). Row norms $\|r_i\|^2=h^2$ are already implied by the nine norm constraints together with column orthogonality, so the row dot products are the whole deficit. The $13\times13$ constraint generators were replicated row-by-row from the released SDPRLayers \texttt{pose\_est.py} (commit \texttt{62d8ac6}, lines 341--417) and compared element-wise against the AST-extracted upstream generator bodies: all 24 constraints match (24/24) with max $|\Delta|=0$, and $\max_i|x^\top A_i x|=1.4\times10^{-16}$ on random rotations. This replication is a check of our reimplementation, not a claim about the upstream code's intent. The measured consequences are in Tables~\ref{tab:13v10} and~\ref{tab:6point}.
+
+\subsection{Algorithm and complexity}\label{sec:algorithm}
+
+\begin{algorithm}[t]
+\caption{Forward and backward pass of \textsc{Laplace-QPEPLayer} (one batch element).}
+\label{alg:layer}
+\begin{algorithmic}[1]
+\State \textbf{Forward:}
+\State build $M_0,D,G$ from $\theta$;\ \ $M\gets M_0-D^\top G^{-1}D$
+\State enumerate all real KKT roots $q^{(k)}$ of $\nabla J=4Jq$, $q^\top q=1$
+\State keep local minima with $H_k\succ0$; sort by $J_k$; compute $w_k$ by \eqref{eq:weights}
+\State \Return $(q^{(1)},t^\star(q^{(1)}))$ and/or $\{(q^{(k)},w_k)\}_{k=1}^{K}$
+\State \textbf{Backward:}
+\For{each active mode $k$}
+  \State form $H_k$ by \eqref{eq:hess} and $dH_k/d\theta$ by \eqref{eq:dlogdet}
+  \State solve $H_k\,x=E^\top\big(2J_v^\top(\partial_\theta M)v_2\big)$ and set $\partial q^{(k)}/\partial\theta=-Ex$
+\EndFor
+\State assemble the deterministic Jacobian \eqref{eq:dq}--\eqref{eq:dt} or the smoothed gradient \eqref{eq:smgrad}
+\end{algorithmic}
+\end{algorithm}
+
+The nonconvex problem has 4 variables and 1 constraint. The dense linear algebra per mode is a $4\times10$ Jacobian, a $4\times4$ Euclidean Hessian and a $3\times3$ solve. The data-dependent cost is building $M$ (a sum over correspondences) and enumerating roots; both are independent of the SDP dimension, and neither scales with the number of modes. In the deterministic regime the backward pass is $O(1)$ per sample. In the smoothed regime it is $O(K)$ with $K$ the number of active modes, plus the third-derivative contraction for $\nabla\log\det H_k$ in \eqref{eq:dlogdet}. Root enumeration, not the $3\times3$ solves, dominates wall-clock time (Section~\ref{sec:compute}).

@@ -1,0 +1,46 @@
+\documentclass[journal]{IEEEtran}
+\input{preamble}
+
+% Float placement: the paper carries 19 tables and 5 figures, most of them
+% two-column floats. Relax the defaults so that floats are packed onto the
+% text pages instead of being deferred to the end of the document.
+\setcounter{topnumber}{4}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{6}
+\setcounter{dbltopnumber}{3}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.5}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.6}
+\renewcommand{\dbltopfraction}{0.92}
+\renewcommand{\dblfloatpagefraction}{0.6}
+
+\begin{document}
+
+\title{Laplace-QPEPLayer: Zero-Lift Differentiable Pose Estimation via Quaternion Algebra and Multi-Modal Laplace Smoothing}
+
+\author{First Author and Second Author\thanks{Manuscript received [date pending]. This work was supported by [funding agency and grant number --- verification pending]. The authors are with [department, institution, city, country] (e-mail: [email]).}}
+
+\maketitle
+
+\begin{abstract}
+\input{sections/00_abstract}
+\end{abstract}
+
+\begin{IEEEkeywords}
+differentiable pose estimation, quaternion algebra, Veronese relaxation, Laplace approximation, implicit differentiation, global optimization.
+\end{IEEEkeywords}
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_formulation}
+\input{sections/04_method}
+\input{sections/05_experiments}
+\input{sections/06_discussion}
+\input{sections/07_conclusion}
+
+\balance
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

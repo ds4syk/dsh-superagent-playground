@@ -1,0 +1,55 @@
+% Preamble for the English IEEE T-RO journal submission draft (P1).
+% Requires: \documentclass[journal]{IEEEtran} before \input{preamble}.
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs,multirow,array,tabularx}
+\usepackage[caption=false]{subfig}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{url}
+\usepackage{textcomp}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{bm}
+\usepackage{balance}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{figures/}}
+
+% Theorem-like environments (shared counter, numbered within section).
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Notation shortcuts.
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Sm}{\mathbb{S}}
+\newcommand{\bq}{\mathbf{q}}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bM}{\mathbf{M}}
+\newcommand{\bD}{\mathbf{D}}
+\newcommand{\bG}{\mathbf{G}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\bE}{\mathbf{E}}
+\newcommand{\bJ}{\mathbf{J}}
+\newcommand{\vtwo}{v_2}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\Proj}{\operatorname{Proj}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+
+% Visible marker for an item that the source draft marks pending / unverified.
+% Keep these honest and rare; never use it to hide a missing number.
+\newcommand{\pend}[1]{\textcolor{red}{[#1]}}
+\newcommand{\ev}[1]{\emph{#1}}
