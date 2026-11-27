@@ -1,0 +1,119 @@
+{
+ "n_cases": 11,
+ "all_40": true,
+ "n_40": 11,
+ "max_chart_residual": 7.105427357601002e-15,
+ "cases": [
+  {
+   "name": "random_seed1",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 12,
+   "n_complex": 28,
+   "n_minima": 2,
+   "max_chart_residual": 5.329070518200751e-15,
+   "runtime_s": 5.680379629135132
+  },
+  {
+   "name": "random_seed2",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 18,
+   "n_complex": 22,
+   "n_minima": 3,
+   "max_chart_residual": 3.972054645195637e-15,
+   "runtime_s": 5.1920623779296875
+  },
+  {
+   "name": "random_seed3",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 14,
+   "n_complex": 26,
+   "n_minima": 2,
+   "max_chart_residual": 7.105427357601002e-15,
+   "runtime_s": 9.0529465675354
+  },
+  {
+   "name": "random_seed4",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 12,
+   "n_complex": 28,
+   "n_minima": 3,
+   "max_chart_residual": 3.552713678800501e-15,
+   "runtime_s": 6.253989219665527
+  },
+  {
+   "name": "random_seed5",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 14,
+   "n_complex": 26,
+   "n_minima": 2,
+   "max_chart_residual": 4.572178254219406e-15,
+   "runtime_s": 7.734187841415405
+  },
+  {
+   "name": "random_seed6",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 22,
+   "n_complex": 18,
+   "n_minima": 4,
+   "max_chart_residual": 7.105427357601002e-15,
+   "runtime_s": 6.91663932800293
+  },
+  {
+   "name": "random_seed7",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 12,
+   "n_complex": 28,
+   "n_minima": 3,
+   "max_chart_residual": 3.820199830714189e-15,
+   "runtime_s": 4.708676099777222
+  },
+  {
+   "name": "random_seed8",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 14,
+   "n_complex": 26,
+   "n_minima": 3,
+   "max_chart_residual": 5.443490401604861e-15,
+   "runtime_s": 10.953192472457886
+  },
+  {
+   "name": "random_seed9",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 22,
+   "n_complex": 18,
+   "n_minima": 4,
+   "max_chart_residual": 7.105427357601002e-15,
+   "runtime_s": 5.515624284744263
+  },
+  {
+   "name": "random_seed10",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 20,
+   "n_complex": 20,
+   "n_minima": 3,
+   "max_chart_residual": 4.528839093602941e-15,
+   "runtime_s": 7.061937570571899
+  },
+  {
+   "name": "instance_M_theta0",
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 20,
+   "n_complex": 20,
+   "n_minima": 4,
+   "max_chart_residual": 2.220446049250313e-15,
+   "runtime_s": null
+  }
+ ],
+ "command": "python roots/run_rootcount_many.py"
+}

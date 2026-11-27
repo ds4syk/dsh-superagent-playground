@@ -1,0 +1,54 @@
+=== cmd: timeout 1800 nice -n 10 /home/syk/miniconda3/envs/WM/bin/python -u /mnt/storage1/syk/.superagent-work/wt-final-p1-e2e2/labs/01-laplace-qpeplayer/experiments/code/run_e2e_fit.py ===
+=== cwd: /tmp/e2e_clean.xJUkMA ===
+=== nproc: 40 ===
+=== lscpu:  ===
+=== date: 2026-11-28T00:58:56+08:00 ===
+building instance ...
+  [phase 5.5s] mix floor: hard 2.0503 laplace 1.1083e-02 mc 2.1943e-02
+  star floor: laplace 0.0000e+00
+fit runs ...
+  fit mix  hard    median final 2.064e+00 success 0%
+  fit mix  laplace median final 1.697e+00 success 0%
+  fit mix  mc      median final 1.663e+00 success 0%
+  fit star hard    median final 5.962e-04 success 25%
+  fit star laplace median final 5.962e-04 success 25%
+  fit star mc      median final 5.962e-04 success 25%
+  [phase 491.9s]
+gradient variance ...
+  theta 0: hard std 1.33e+01 lap std 7.69e-13 mc std 3.46e+01 (rel 6.92e-02)
+  theta 0.01: hard std 3.92e-14 lap std 4.15e-14 mc std 1.42e+00 (rel 3.24e-02)
+  [phase 3.2s]
+throughput ...
+  [phase 20.6s]
+landscape ...
+  [phase 10.0s]
+clip control ...
+  clip 1.00: median final 1.875e+00 min 9.777e-02
+  clip 0.10: median final 2.204e+00 min 9.777e-02
+  clip 0.02: median final 2.947e+00 min 2.784e+00
+  [phase 132.9s]
+wrote /mnt/storage1/syk/.superagent-work/wt-final-p1-e2e2/labs/01-laplace-qpeplayer/experiments/results/e2e_fit.json, /mnt/storage1/syk/.superagent-work/wt-final-p1-e2e2/labs/01-laplace-qpeplayer/experiments/results/e2e_fit.md, /mnt/storage1/syk/.superagent-work/wt-final-p1-e2e2/labs/01-laplace-qpeplayer/experiments/results/e2e_fit.png  (wall 664.2s)
+	Command being timed: "timeout 1800 nice -n 10 /home/syk/miniconda3/envs/WM/bin/python -u /mnt/storage1/syk/.superagent-work/wt-final-p1-e2e2/labs/01-laplace-qpeplayer/experiments/code/run_e2e_fit.py"
+	User time (seconds): 640.61
+	System time (seconds): 0.52
+	Percent of CPU this job got: 96%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 11:06.30
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 104460
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 28289
+	Voluntary context switches: 126
+	Involuntary context switches: 7045
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 2184
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+=== exit=0 date=2026-11-28T01:10:02+08:00 ===

@@ -1,0 +1,2268 @@
+{
+  "figure": "/mnt/storage1/syk/.superagent-work/wt-final-p1-fig2/labs/01-laplace-qpeplayer/experiments/real/linemod/results/final_summary.png",
+  "script": "/mnt/storage1/syk/.superagent-work/wt-final-p1-fig2/labs/01-laplace-qpeplayer/experiments/real/linemod/make_final_summary.py",
+  "generated_utc": "2026-11-27T17:17:05+00:00",
+  "python": "3.10.22",
+  "matplotlib": "3.10.9",
+  "numpy": "2.2.6",
+  "dpi": 300,
+  "figsize_in": [
+    11.0,
+    11.0
+  ],
+  "evidence_tag": "independent reproduction (this repo) - E15, E16, E17, E18; N1 controlled estimator (partially run)",
+  "caption": "Figure 1 | Real-data evidence for the two-mode QPEP/Laplace layer. (a) ADD-S on the controlled two-mode cost\n(median [95% bootstrap CI over frames]): LINEMOD eggbox/glue n=15, LMO sequence 000002 n=177 (0 eggbox + 0 glue). The hard\nargmin is less accurate under occlusion (LINEMOD 3.74 mm vs LMO 9.42 mm) while the posterior mean is 13.94 vs 18.70 mm\n(MC 18.38 mm); both datasets show the same hard\u2192Laplace bias. The earlier 37-frame LMO subset gives 10.17/19.02 mm, consistent.\n(b) Simulated i.i.d. Gaussian detector noise on the 15 LINEMOD frames (clean RANSAC subset fixed, never re-fit; per-frame mean over\n10 seeds, median and 95% CI over the 15 frames). Up to 1 px there is no measurable change; between 2 and 5 px the hard argmin slides along\nthe flat valley (2.06\u00b0\u219220.49\u00b0, frames >10\u00b0: 7%\u219266%) while the already-biased Laplace mean changes by 0.95\u00d7. (c) Same-data\nforward/local references on the bitwise-identical 15-frame correspondences: the five solver/initialisation rows land at the hard argmin (2.04\u20132.21\u00b0);\ncold-start local optimisers (grey) do not recover it from identity. Official SDPR/BPnP checks are text-only because they report no degree\nmetric: SDPR's tight rows (\u03b8=0.01, 0.1) return the hard argmin (0.0\u00b0), \u03b8=0 is non-tight; BPnP's released algebraic cost equals the P1\nbearing cost (max |\u0394| 1.3e-15). (d) Total-degree homotopy: 40/40 complex projective roots on 11/11 instances (max chart residual\n7.1e-15; 80 affine roots per projective root); the real/complex split and the number of real minima are instance properties, not constants.\nEvidence tag: independent reproduction (this repo) \u2014 E15 (pose/ADD-S), E16 (classical), E17 (Theseus), E18 (root count); N1 (LMO,\ndetector-noise) are controlled estimator experiments with GT-associated correspondences, not detector benchmarks. Official SDPR (cb3aed2)\nand BPnP (f1f4f6a) forward/cost checks used the released code on CPU; no training, no GPU.",
+  "checks": {
+    "n_values": 122,
+    "n_mismatches": 0,
+    "n_structural": 26,
+    "structural_failures": 0,
+    "rows": [
+      {
+        "panel": "a",
+        "item": "LINEMOD (n=15) / hard argmin ADD-S median",
+        "value": 3.7441985976388943,
+        "lo": 3.027543743513245,
+        "hi": 4.328638860745055,
+        "unit": "mm",
+        "source_file": "real/linemod/results/pose_error.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "hard",
+          "median"
+        ],
+        "source_value": 0.0037441985976388943,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LINEMOD (n=15) / hard argmin ADD-S CI low",
+        "value": 3.027543743513245,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/pose_error.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "hard",
+          "median_ci",
+          0
+        ],
+        "source_value": 0.003027543743513245,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LINEMOD (n=15) / hard argmin ADD-S CI high",
+        "value": 4.328638860745055,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/pose_error.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "hard",
+          "median_ci",
+          1
+        ],
+        "source_value": 0.004328638860745055,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LINEMOD (n=15) / Laplace mean ADD-S median",
+        "value": 13.937938266118257,
+        "lo": 10.327424632436577,
+        "hi": 20.196702124716982,
+        "unit": "mm",
+        "source_file": "real/linemod/results/pose_error.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "laplace",
+          "median"
+        ],
+        "source_value": 0.013937938266118256,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LINEMOD (n=15) / Laplace mean ADD-S CI low",
+        "value": 10.327424632436577,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/pose_error.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "laplace",
+          "median_ci",
+          0
+        ],
+        "source_value": 0.010327424632436577,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LINEMOD (n=15) / Laplace mean ADD-S CI high",
+        "value": 20.196702124716982,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/pose_error.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "laplace",
+          "median_ci",
+          1
+        ],
+        "source_value": 0.02019670212471698,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LINEMOD (n=15) / MC mean ADD-S median",
+        "value": 14.148262318586788,
+        "lo": 10.315574179219096,
+        "hi": 20.02845297431577,
+        "unit": "mm",
+        "source_file": "real/linemod/results/pose_error.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "mc",
+          "median"
+        ],
+        "source_value": 0.014148262318586787,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LINEMOD (n=15) / MC mean ADD-S CI low",
+        "value": 10.315574179219096,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/pose_error.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "mc",
+          "median_ci",
+          0
+        ],
+        "source_value": 0.010315574179219095,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LINEMOD (n=15) / MC mean ADD-S CI high",
+        "value": 20.02845297431577,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/pose_error.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "mc",
+          "median_ci",
+          1
+        ],
+        "source_value": 0.02002845297431577,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LMO (n=177) / hard argmin ADD-S median",
+        "value": 9.41758896225651,
+        "lo": 7.37978960290658,
+        "hi": 10.765675120416471,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_full.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "hard",
+          "median"
+        ],
+        "source_value": 0.00941758896225651,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LMO (n=177) / hard argmin ADD-S CI low",
+        "value": 7.37978960290658,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_full.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "hard",
+          "median_ci",
+          0
+        ],
+        "source_value": 0.00737978960290658,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LMO (n=177) / hard argmin ADD-S CI high",
+        "value": 10.765675120416471,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_full.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "hard",
+          "median_ci",
+          1
+        ],
+        "source_value": 0.01076567512041647,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LMO (n=177) / Laplace mean ADD-S median",
+        "value": 18.70153958306729,
+        "lo": 17.48706662624236,
+        "hi": 20.907961818950188,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_full.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "laplace",
+          "median"
+        ],
+        "source_value": 0.018701539583067292,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LMO (n=177) / Laplace mean ADD-S CI low",
+        "value": 17.48706662624236,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_full.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "laplace",
+          "median_ci",
+          0
+        ],
+        "source_value": 0.01748706662624236,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LMO (n=177) / Laplace mean ADD-S CI high",
+        "value": 20.907961818950188,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_full.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "laplace",
+          "median_ci",
+          1
+        ],
+        "source_value": 0.020907961818950188,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LMO (n=177) / MC mean ADD-S median",
+        "value": 18.375436710785934,
+        "lo": 17.36647397112882,
+        "hi": 21.02737590590468,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_full.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "mc",
+          "median"
+        ],
+        "source_value": 0.018375436710785932,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LMO (n=177) / MC mean ADD-S CI low",
+        "value": 17.36647397112882,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_full.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "mc",
+          "median_ci",
+          0
+        ],
+        "source_value": 0.01736647397112882,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a",
+        "item": "LMO (n=177) / MC mean ADD-S CI high",
+        "value": 21.02737590590468,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_full.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "mc",
+          "median_ci",
+          1
+        ],
+        "source_value": 0.02102737590590468,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a-note",
+        "item": "37-frame LMO subset / hard argmin ADD-S (caption note)",
+        "value": 10.169966707212883,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_two_mode.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "hard",
+          "median"
+        ],
+        "source_value": 0.010169966707212883,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "a-note",
+        "item": "37-frame LMO subset / Laplace mean ADD-S (caption note)",
+        "value": 19.01624400079806,
+        "lo": null,
+        "hi": null,
+        "unit": "mm",
+        "source_file": "real/linemod/results/lmo_two_mode.json",
+        "source_path": [
+          "aggregate",
+          "adds_m",
+          "laplace",
+          "median"
+        ],
+        "source_value": 0.01901624400079806,
+        "scale": 1000.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
+        "item": "official SDPR theta=0 tight",
+        "value": 0.0,
+        "lo": null,
+        "hi": null,
+        "unit": "bool",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          0,
+          "official",
+          "upstream_tight"
+        ],
+        "source_value": false,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
+        "item": "official SDPR theta=0 official rank",
+        "value": 2.0,
+        "lo": null,
+        "hi": null,
+        "unit": "rank",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          0,
+          "official",
+          "rank"
+        ],
+        "source_value": 2,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
+        "item": "official SDPR theta=0.01 tight",
+        "value": 1.0,
+        "lo": null,
+        "hi": null,
+        "unit": "bool",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          1,
+          "official",
+          "upstream_tight"
+        ],
+        "source_value": true,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
+        "item": "official SDPR theta=0.01 official rank",
+        "value": 1.0,
+        "lo": null,
+        "hi": null,
+        "unit": "rank",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          1,
+          "official",
+          "rank"
+        ],
+        "source_value": 1,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
+        "item": "official SDPR theta=0.01 xs-vs-hard rot",
+        "value": 0.0,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          1,
+          "diffs",
+          "official_xs_vs_hard",
+          "rot_deg"
+        ],
+        "source_value": 0.0,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
+        "item": "official SDPR theta=0.1 tight",
+        "value": 1.0,
+        "lo": null,
+        "hi": null,
+        "unit": "bool",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          2,
+          "official",
+          "upstream_tight"
+        ],
+        "source_value": true,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
+        "item": "official SDPR theta=0.1 official rank",
+        "value": 1.0,
+        "lo": null,
+        "hi": null,
+        "unit": "rank",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          2,
+          "official",
+          "rank"
+        ],
+        "source_value": 1,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
+        "item": "official SDPR theta=0.1 xs-vs-hard rot",
+        "value": 0.0,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          2,
+          "diffs",
+          "official_xs_vs_hard",
+          "rot_deg"
+        ],
+        "source_value": 0.0,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
+        "item": "official BPnP cost identity max |delta|",
+        "value": 1.3322676295501878e-15,
+        "lo": null,
+        "hi": null,
+        "unit": "residual",
+        "source_file": "results/official_bpnp.json",
+        "source_path": [
+          "cost_equivalence",
+          "max_abs"
+        ],
+        "source_value": 1.3322676295501878e-15,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=0px median",
+        "value": 2.0586813235621237,
+        "lo": 1.472293187129788,
+        "hi": 3.486767822625128,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0",
+          "metrics",
+          "hard_rot",
+          "median"
+        ],
+        "source_value": 2.0586813235621237,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=0px CI low",
+        "value": 1.472293187129788,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0",
+          "metrics",
+          "hard_rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 1.472293187129788,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=0px CI high",
+        "value": 3.486767822625128,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0",
+          "metrics",
+          "hard_rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 3.486767822625128,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=0px median",
+        "value": 44.23942419299949,
+        "lo": 33.90117829354101,
+        "hi": 51.59680622368817,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0",
+          "metrics",
+          "laplace_rot",
+          "median"
+        ],
+        "source_value": 44.23942419299949,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=0px CI low",
+        "value": 33.90117829354101,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0",
+          "metrics",
+          "laplace_rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 33.90117829354101,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=0px CI high",
+        "value": 51.59680622368817,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0",
+          "metrics",
+          "laplace_rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 51.59680622368817,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=0.5px median",
+        "value": 2.027011366160133,
+        "lo": 1.3974318825615988,
+        "hi": 3.5381690421440326,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0.5",
+          "metrics",
+          "hard_rot",
+          "median"
+        ],
+        "source_value": 2.027011366160133,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=0.5px CI low",
+        "value": 1.3974318825615988,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0.5",
+          "metrics",
+          "hard_rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 1.3974318825615988,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=0.5px CI high",
+        "value": 3.5381690421440326,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0.5",
+          "metrics",
+          "hard_rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 3.5381690421440326,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=0.5px median",
+        "value": 43.64073432321001,
+        "lo": 33.876558222015454,
+        "hi": 46.66680291212366,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0.5",
+          "metrics",
+          "laplace_rot",
+          "median"
+        ],
+        "source_value": 43.64073432321001,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=0.5px CI low",
+        "value": 33.876558222015454,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0.5",
+          "metrics",
+          "laplace_rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 33.876558222015454,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=0.5px CI high",
+        "value": 46.66680291212366,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_0.5",
+          "metrics",
+          "laplace_rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 46.66680291212366,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=1px median",
+        "value": 1.9755736905587162,
+        "lo": 1.2917291722786421,
+        "hi": 3.3046731515313765,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_1",
+          "metrics",
+          "hard_rot",
+          "median"
+        ],
+        "source_value": 1.9755736905587162,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=1px CI low",
+        "value": 1.2917291722786421,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_1",
+          "metrics",
+          "hard_rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 1.2917291722786421,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=1px CI high",
+        "value": 3.3046731515313765,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_1",
+          "metrics",
+          "hard_rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 3.3046731515313765,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=1px median",
+        "value": 43.65861432269209,
+        "lo": 33.89483321875501,
+        "hi": 46.52373541048389,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_1",
+          "metrics",
+          "laplace_rot",
+          "median"
+        ],
+        "source_value": 43.65861432269209,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=1px CI low",
+        "value": 33.89483321875501,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_1",
+          "metrics",
+          "laplace_rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 33.89483321875501,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=1px CI high",
+        "value": 46.52373541048389,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_1",
+          "metrics",
+          "laplace_rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 46.52373541048389,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=2px median",
+        "value": 2.7361642019205266,
+        "lo": 1.9066254918362109,
+        "hi": 10.838504794259268,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_2",
+          "metrics",
+          "hard_rot",
+          "median"
+        ],
+        "source_value": 2.7361642019205266,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=2px CI low",
+        "value": 1.9066254918362109,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_2",
+          "metrics",
+          "hard_rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 1.9066254918362109,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=2px CI high",
+        "value": 10.838504794259268,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_2",
+          "metrics",
+          "hard_rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 10.838504794259268,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=2px median",
+        "value": 42.51156618193313,
+        "lo": 33.62074659989066,
+        "hi": 46.46883415752196,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_2",
+          "metrics",
+          "laplace_rot",
+          "median"
+        ],
+        "source_value": 42.51156618193313,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=2px CI low",
+        "value": 33.62074659989066,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_2",
+          "metrics",
+          "laplace_rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 33.62074659989066,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=2px CI high",
+        "value": 46.46883415752196,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_2",
+          "metrics",
+          "laplace_rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 46.46883415752196,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=5px median",
+        "value": 20.485875557835584,
+        "lo": 7.537280596642944,
+        "hi": 30.862458334848554,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_5",
+          "metrics",
+          "hard_rot",
+          "median"
+        ],
+        "source_value": 20.485875557835584,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=5px CI low",
+        "value": 7.537280596642944,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_5",
+          "metrics",
+          "hard_rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 7.537280596642944,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "hard argmin rot @ sigma=5px CI high",
+        "value": 30.862458334848554,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_5",
+          "metrics",
+          "hard_rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 30.862458334848554,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=5px median",
+        "value": 41.82648952518539,
+        "lo": 31.870053213130156,
+        "hi": 46.56228361797796,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_5",
+          "metrics",
+          "laplace_rot",
+          "median"
+        ],
+        "source_value": 41.82648952518539,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=5px CI low",
+        "value": 31.870053213130156,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_5",
+          "metrics",
+          "laplace_rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 31.870053213130156,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "Laplace mean rot @ sigma=5px CI high",
+        "value": 46.56228361797796,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "conditions",
+          "sigma_5",
+          "metrics",
+          "laplace_rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 46.56228361797796,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "b",
+        "item": "10 deg failure threshold",
+        "value": 10.0,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/detector_noise.json",
+        "source_path": [
+          "meta",
+          "fail_deg"
+        ],
+        "source_value": 10.0,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "SQPNP (first) median",
+        "value": 2.0402621495865985,
+        "lo": 1.4683226759652765,
+        "hi": 2.7665043737091524,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "SQPNP first",
+          "rot",
+          "median"
+        ],
+        "source_value": 2.0402621495865985,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "SQPNP (first) CI low",
+        "value": 1.4683226759652765,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "SQPNP first",
+          "rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 1.4683226759652765,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "SQPNP (first) CI high",
+        "value": 2.7665043737091524,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "SQPNP first",
+          "rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 2.7665043737091524,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "IPPE (first, planar) median",
+        "value": 2.209643739491975,
+        "lo": 1.6813273202006742,
+        "hi": 2.7636462436534366,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "IPPE first",
+          "rot",
+          "median"
+        ],
+        "source_value": 2.209643739491975,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "IPPE (first, planar) CI low",
+        "value": 1.6813273202006742,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "IPPE first",
+          "rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 1.6813273202006742,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "IPPE (first, planar) CI high",
+        "value": 2.7636462436534366,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "IPPE first",
+          "rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 2.7636462436534366,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "EPnP median",
+        "value": 2.052729260860816,
+        "lo": 1.4120791093867189,
+        "hi": 3.709267722324947,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "EPnP",
+          "rot",
+          "median"
+        ],
+        "source_value": 2.052729260860816,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "EPnP CI low",
+        "value": 1.4120791093867189,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "EPnP",
+          "rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 1.4120791093867189,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "EPnP CI high",
+        "value": 3.709267722324947,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "EPnP",
+          "rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 3.709267722324947,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "LM, GT init (E16) median",
+        "value": 2.0586812855665615,
+        "lo": 1.4722931382092146,
+        "hi": 2.768913149314661,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "LM GT init",
+          "rot",
+          "median"
+        ],
+        "source_value": 2.0586812855665615,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "LM, GT init (E16) CI low",
+        "value": 1.4722931382092146,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "LM GT init",
+          "rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 1.4722931382092146,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "LM, GT init (E16) CI high",
+        "value": 2.768913149314661,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "LM GT init",
+          "rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 2.768913149314661,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "Theseus, GT init (E17) median",
+        "value": 2.0591533844198127,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/theseus_baseline.json",
+        "source_path": [
+          "main_summary",
+          "gt",
+          "rot_err_deg",
+          "median"
+        ],
+        "source_value": 2.0591533844198127,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "context: LM, identity init median",
+        "value": 106.00873737251924,
+        "lo": 69.14444791851538,
+        "hi": 179.8194312439931,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "LM identity init",
+          "rot",
+          "median"
+        ],
+        "source_value": 106.00873737251924,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "context: LM, identity init CI low",
+        "value": 69.14444791851538,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "LM identity init",
+          "rot",
+          "median_ci",
+          0
+        ],
+        "source_value": 69.14444791851538,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "context: LM, identity init CI high",
+        "value": 179.8194312439931,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/classical_baselines.json",
+        "source_path": [
+          "aggregate",
+          "LM identity init",
+          "rot",
+          "median_ci",
+          1
+        ],
+        "source_value": 179.8194312439931,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "context: Theseus, identity init",
+        "value": 178.81916946171913,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/theseus_baseline.json",
+        "source_path": [
+          "main_summary",
+          "identity",
+          "rot_err_deg",
+          "median"
+        ],
+        "source_value": 178.81916946171913,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c",
+        "item": "reference: P1 hard argmin",
+        "value": 2.0586813235617694,
+        "lo": null,
+        "hi": null,
+        "unit": "deg",
+        "source_file": "real/linemod/results/pose_error.json",
+        "source_path": [
+          "aggregate",
+          "rot_deg",
+          "hard",
+          "median"
+        ],
+        "source_value": 2.0586813235617694,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed1 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          0,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed1 / n_real",
+        "value": 12.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          0,
+          "n_real"
+        ],
+        "source_value": 12,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed1 / n_complex",
+        "value": 28.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          0,
+          "n_complex"
+        ],
+        "source_value": 28,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed1 / n_minima",
+        "value": 2.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          0,
+          "n_minima"
+        ],
+        "source_value": 2,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed2 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          1,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed2 / n_real",
+        "value": 18.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          1,
+          "n_real"
+        ],
+        "source_value": 18,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed2 / n_complex",
+        "value": 22.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          1,
+          "n_complex"
+        ],
+        "source_value": 22,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed2 / n_minima",
+        "value": 3.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          1,
+          "n_minima"
+        ],
+        "source_value": 3,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed3 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          2,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed3 / n_real",
+        "value": 14.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          2,
+          "n_real"
+        ],
+        "source_value": 14,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed3 / n_complex",
+        "value": 26.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          2,
+          "n_complex"
+        ],
+        "source_value": 26,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed3 / n_minima",
+        "value": 2.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          2,
+          "n_minima"
+        ],
+        "source_value": 2,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed4 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          3,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed4 / n_real",
+        "value": 12.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          3,
+          "n_real"
+        ],
+        "source_value": 12,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed4 / n_complex",
+        "value": 28.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          3,
+          "n_complex"
+        ],
+        "source_value": 28,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed4 / n_minima",
+        "value": 3.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          3,
+          "n_minima"
+        ],
+        "source_value": 3,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed5 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          4,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed5 / n_real",
+        "value": 14.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          4,
+          "n_real"
+        ],
+        "source_value": 14,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed5 / n_complex",
+        "value": 26.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          4,
+          "n_complex"
+        ],
+        "source_value": 26,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed5 / n_minima",
+        "value": 2.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          4,
+          "n_minima"
+        ],
+        "source_value": 2,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed6 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          5,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed6 / n_real",
+        "value": 22.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          5,
+          "n_real"
+        ],
+        "source_value": 22,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed6 / n_complex",
+        "value": 18.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          5,
+          "n_complex"
+        ],
+        "source_value": 18,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed6 / n_minima",
+        "value": 4.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          5,
+          "n_minima"
+        ],
+        "source_value": 4,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed7 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          6,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed7 / n_real",
+        "value": 12.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          6,
+          "n_real"
+        ],
+        "source_value": 12,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed7 / n_complex",
+        "value": 28.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          6,
+          "n_complex"
+        ],
+        "source_value": 28,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed7 / n_minima",
+        "value": 3.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          6,
+          "n_minima"
+        ],
+        "source_value": 3,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed8 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          7,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed8 / n_real",
+        "value": 14.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          7,
+          "n_real"
+        ],
+        "source_value": 14,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed8 / n_complex",
+        "value": 26.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          7,
+          "n_complex"
+        ],
+        "source_value": 26,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed8 / n_minima",
+        "value": 3.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          7,
+          "n_minima"
+        ],
+        "source_value": 3,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed9 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          8,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed9 / n_real",
+        "value": 22.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          8,
+          "n_real"
+        ],
+        "source_value": 22,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed9 / n_complex",
+        "value": 18.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          8,
+          "n_complex"
+        ],
+        "source_value": 18,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed9 / n_minima",
+        "value": 4.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          8,
+          "n_minima"
+        ],
+        "source_value": 4,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed10 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          9,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed10 / n_real",
+        "value": 20.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          9,
+          "n_real"
+        ],
+        "source_value": 20,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed10 / n_complex",
+        "value": 20.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          9,
+          "n_complex"
+        ],
+        "source_value": 20,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "random_seed10 / n_minima",
+        "value": 3.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          9,
+          "n_minima"
+        ],
+        "source_value": 3,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "instance_M_theta0 / n_projective",
+        "value": 40.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          10,
+          "n_projective"
+        ],
+        "source_value": 40,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "instance_M_theta0 / n_real",
+        "value": 20.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          10,
+          "n_real"
+        ],
+        "source_value": 20,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "instance_M_theta0 / n_complex",
+        "value": 20.0,
+        "lo": null,
+        "hi": null,
+        "unit": "roots",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          10,
+          "n_complex"
+        ],
+        "source_value": 20,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "d",
+        "item": "instance_M_theta0 / n_minima",
+        "value": 4.0,
+        "lo": null,
+        "hi": null,
+        "unit": "minima",
+        "source_file": "results/rootcount_many.json",
+        "source_path": [
+          "cases",
+          10,
+          "n_minima"
+        ],
+        "source_value": 4,
+        "scale": 1.0,
+        "match": true
+      }
+    ]
+  },
+  "sources_sha256": {
+    "real/linemod/results/classical_baselines.json": "349a2adaeaaf5cdf3726bc40b74e22e8a0a4f9257b09f4e0146871b557561a11",
+    "real/linemod/results/detector_noise.json": "640bbdf693e0755693ebe81fde76605ab00b5f240c5e372441c4a1512638c4b6",
+    "real/linemod/results/lmo_full.json": "0c685d3a1271f36d506491619a2b442e8cfa8aac53d4bb3f34d3ab3dd719708c",
+    "real/linemod/results/lmo_two_mode.json": "a357da24c58e596376f5770f89e8e1b05bc8e9b5e62f65eeafd2aa2e28b38bdd",
+    "real/linemod/results/pose_error.json": "5b62808819dbf8f41bd463b05da342d88e4973b9aaa1b05d9ac5672d757af9d8",
+    "real/linemod/results/theseus_baseline.json": "de5cf637b5f631073cca8b22f84a4e855b5c11d5d88cddd2b330bad32d7c4ff1",
+    "results/official_bpnp.json": "e25d88f74bd148e5f23b0146bbf51fd5e9ea00ec3f7c49c6b0b8ef9b795ce2c9",
+    "results/official_sdpr.json": "b56dab9468117793d7da8ac8d9ae7960985c31ebe00bf3027ab25ae24fd0103f",
+    "results/rootcount_many.json": "ee1cadacb1eac7b9fcc2e1301e5a5971c8102b3395ac1e544c1134513e1654f3"
+  },
+  "notes": {
+    "missing_sources": [],
+    "panel_a": "ADD-S in mm = metres x 1000; median and percentile bootstrap CI over frames; LMO full n=177 (96 eggbox + 81 glue); the 37-frame subset values are caption-only consistency checks.",
+    "panel_b": "per-frame mean over 10 noise seeds; median and 95% percentile bootstrap CI over the 15 frames.",
+    "panel_c": "classical/Theseus rotation medians (deg); Theseus GT/identity rows have no CI in the JSON; cold-start rows are context, not deployable baselines.",
+    "panel_c_official": "Official SDPR/BPnP are text annotations, not bars: neither provides a rotation-error metric on the real frames. SDPR: on the synthetic 10x10 QPEP instances, tight rows (theta=0.01, 0.1) return the hard argmin (official_xs_vs_hard.rot_deg = 0.0); theta=0 is non-tight (rank 2, xs=None). BPnP: cost_equivalence.max_abs = 1.33e-15 (released algebraic residual equals the P1 bearing residual); the JSON's same-data gradient comparison is not used in the figure because its arms are not mutually consistent (see report).",
+    "panel_d": "n_projective/n_real/n_complex are projective roots; each projective root is an 80-affine-root class; n_minima = real local minima.",
+    "official_provenance": {
+      "sdpr_commit": "cb3aed2",
+      "bpnp_commit": "f1f4f6a79ce2bd58a6340a59e64c0900bb6b0772"
+    }
+  }
+}

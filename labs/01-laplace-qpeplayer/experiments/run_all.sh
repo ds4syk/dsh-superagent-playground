@@ -23,6 +23,33 @@
 #                       labs/03-robust-qpeplayer/experiments/baselines；期望
 #                       real/linemod/results/theseus_baseline.{json,md}）
 #   后三组都需要 BOP LINEMOD 数据与已提交的 real/linemod/results/two_mode.json。
+# + 可选 phase-5 终稿组（默认都不跑；代码见 experiments/<path>，数字见 REPRO.md §3.1）：
+#   --with-official-sdpr    官方 SDPRLayers 前向基线（baselines/run_official_sdpr.py，
+#                           sdpr env，~7 s；要求 third_party/sdprlayer@cb3aed2 与
+#                           /home/syk/labs/SDPR/code/sdprlayer@62d8ac6；输出
+#                           results/official_sdpr.{json,md}）
+#   --with-official-bpnp    官方 BPnP 梯度基线（baselines/run_official_bpnp.py，sdpr env
+#                           的 torch+cv2+kornia，~60 s；要求 third_party/BPnP@f1f4f6a、
+#                           BOP LINEMOD；输出 results/official_bpnp.{json,md}）
+#   --with-feature-frontend 经典预计算特征前端（real/linemod/run_feature_frontend.py，
+#                           sdpr env 的 cv2，~35 s；要求 BOP LINEMOD 与已提交的
+#                           real/linemod/results/detector_noise.json；输出
+#                           real/linemod/results/feature_frontend.{json,md,png}）
+#   --with-structured-noise 结构化噪声研究（run_structured_noise.py，sdpr env 的 cv2，
+#                           ~2-4 min；同一 detector_noise.json 参考；输出
+#                           real/linemod/results/structured_noise.{json,md}）
+#   --with-roots-many       40 根计数扩到 11 个实例（roots/run_rootcount_many.py，WM
+#                           python，~80 s；输出 results/rootcount_many.json + 配套
+#                           roots/results/rootcount_many.md）
+#   --with-e2e              端到端 toy 训练/梯度方差/吞吐（code/run_e2e_fit.py，WM python，
+#                           完整 20 seeds x 150 steps 约 20-25 min；输出
+#                           results/e2e_fit.{json,md,png}）。慢组，默认 off。
+#   --with-e2e-smoke        同上但 --smoke（4 seeds x 15 steps，~45 s），输出
+#                           results/_smoke_e2e.{json,md,png}；只用于验证接线
+#   --with-lmo-full         LMO 全序列两模 + SQPNP（real/linemod/run_two_mode_lmo_full.py，
+#                           WM python + sdpr 子进程，177 帧，实测 138 s @ Slurm cpu）。
+#                           **重组**：按实验室规范用 srun 提交，见 REPRO.md §3.2；
+#                           输出 real/linemod/results/lmo_full.{json,md,png}
 #
 # 用法（在任意 cwd 下都可执行）：
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh
@@ -34,11 +61,22 @@
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-classical
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-theseus
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-sdp-upstream
+#   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-official-sdpr
+#   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-official-bpnp
+#   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-feature-frontend
+#   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-structured-noise
+#   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-roots-many
+#   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-e2e-smoke
+#   labs/01-laplace-qpeplayer/experiments/run_all.sh --with-e2e
+#   srun --partition=cpu -n1 --time=00:45:00 \
+#     labs/01-laplace-qpeplayer/experiments/run_all.sh --with-lmo-full
 #   labs/01-laplace-qpeplayer/experiments/run_all.sh --no-compare
 #   PYTHON=/path/to/python labs/.../run_all.sh          # 换解释器（默认组）
 #   PYTHON_SDPR=/path/to/python labs/.../run_all.sh --with-classical
 #   PYTHON_THESEUS=/path/to/python labs/.../run_all.sh --with-theseus
 #   P1_STEP_TIMEOUT=1200 labs/.../run_all.sh            # 单脚本超时（秒）
+#   P1_E2E_TIMEOUT=3600 labs/.../run_all.sh --with-e2e  # e2e 单独超时（默认 2400 s）
+#   P1_LMO_FULL_TIMEOUT=3600 labs/.../run_all.sh --with-lmo-full
 #   P1_KEEP_TMP=1 labs/.../run_all.sh                   # 保留临时副本供排查
 #   P1_SDPRLAYER=/path/to/sdprlayer labs/.../run_all.sh --with-sdp-upstream
 #                                                       # 慢的 upstream 交叉校验
@@ -68,6 +106,12 @@ PYTHON=${PYTHON:-/home/syk/miniconda3/envs/WM/bin/python}
 PYTHON_SDPR=${PYTHON_SDPR:-/home/syk/miniconda3/envs/sdpr/bin/python}
 PYTHON_THESEUS=${PYTHON_THESEUS:-/mnt/storage1/syk/venvs/theseus/bin/python}
 STEP_TIMEOUT=${P1_STEP_TIMEOUT:-600}
+# phase-5 long groups get their own (generous) per-step budgets; a one-click run
+# must not die on the shared 600 s default half-way through
+E2E_TIMEOUT=${P1_E2E_TIMEOUT:-2400}
+LMO_FULL_TIMEOUT=${P1_LMO_FULL_TIMEOUT:-1800}
+E2E_SMOKE=${P1_E2E_SMOKE:-0}
+E2E_PREFIX=e2e_fit
 TS=$(date +%Y%m%d-%H%M%S)
 LOG_DIR="$EXP_DIR/results/logs/$TS"
 RUN_LOG="$LOG_DIR/run.log"
@@ -77,6 +121,13 @@ TMP_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/p1-repro.${TS}.XXXXXX")
 LABS_ROOT="$TMP_ROOT/labs"
 WORK="$LABS_ROOT/01-laplace-qpeplayer/experiments"
 P3_BASELINES_SRC="$EXP_DIR/../../03-robust-qpeplayer/experiments/baselines"
+# phase-5 external checkouts / data (hard-coded inside the scripts themselves;
+# the harness only preflights them so a missing checkout fails fast)
+BOP_LM_TEST=/mnt/storage1/syk/data/bop/lm/test
+BOP_LMO_TEST=/mnt/storage1/syk/data/bop/lmo/test/000002
+OFFICIAL_SDPR_SRC=/mnt/storage1/syk/third_party/sdprlayer
+OFFICIAL_SDPR_FORK=/home/syk/labs/SDPR/code/sdprlayer
+BPNP_SRC=/mnt/storage1/syk/third_party/BPnP
 CLEAN_CWD="$TMP_ROOT/clean_cwd"
 WITH_LINEMOD=0
 WITH_SDP=0
@@ -86,6 +137,13 @@ WITH_ROOTS=0
 WITH_POSE_ERROR=0
 WITH_CLASSICAL=0
 WITH_THESEUS=0
+WITH_OFFICIAL_SDPR=0
+WITH_OFFICIAL_BPNP=0
+WITH_FEATURE_FRONTEND=0
+WITH_STRUCTURED_NOISE=0
+WITH_ROOTS_MANY=0
+WITH_E2E=0
+WITH_LMO_FULL=0
 DO_COMPARE=1
 FAIL=0
 
@@ -104,11 +162,25 @@ for arg in "$@"; do
     --with-classical)   WITH_CLASSICAL=1 ;;
     --with-theseus)     WITH_THESEUS=1 ;;
     --with-sdp-upstream) WITH_SDP=1; WITH_SDP_UPSTREAM=1 ;;
+    --with-official-sdpr)   WITH_OFFICIAL_SDPR=1 ;;
+    --with-official-bpnp)   WITH_OFFICIAL_BPNP=1 ;;
+    --with-feature-frontend) WITH_FEATURE_FRONTEND=1 ;;
+    --with-structured-noise) WITH_STRUCTURED_NOISE=1 ;;
+    --with-roots-many)      WITH_ROOTS_MANY=1 ;;
+    --with-e2e)             WITH_E2E=1 ;;
+    --with-e2e-smoke)       WITH_E2E=1; E2E_SMOKE=1 ;;
+    --with-lmo-full)        WITH_LMO_FULL=1 ;;
     --no-compare)       DO_COMPARE=0 ;;
     -h|--help)          usage; exit 0 ;;
     *) echo "unknown argument: $arg" >&2; usage; exit 2 ;;
   esac
 done
+
+# the smoke variant writes a different prefix so a full run's committed
+# results/e2e_fit.* is never mistaken for a 4-seed smoke output
+if [[ "$E2E_SMOKE" == "1" ]]; then
+  E2E_PREFIX=_smoke_e2e
+fi
 
 say() { printf '%s\n' "$*" >&2; printf '%s\n' "$*" >>"$RUN_LOG"; }
 
@@ -202,6 +274,108 @@ if [[ "$WITH_POSE_ERROR" == "1" || "$WITH_CLASSICAL" == "1" || "$WITH_THESEUS" =
   fi
 fi
 
+# ---- phase-5 optional groups (final push) ---------------------------------
+need_sdpr_python() {  # $1 = group name, $2 = modules to import
+  if [[ ! -x "$PYTHON_SDPR" ]]; then
+    echo "ERROR: $1 requires the sdpr env python at PYTHON_SDPR=$PYTHON_SDPR (missing/not executable); set PYTHON_SDPR=/path/to/python or omit $1" >&2
+    exit 1
+  fi
+  if ! "$PYTHON_SDPR" -c "import $2" >/dev/null 2>&1; then
+    echo "ERROR: $PYTHON_SDPR cannot import $2 (needed by $1)" >&2
+    exit 1
+  fi
+}
+if [[ "$WITH_OFFICIAL_SDPR" == "1" ]]; then
+  if [[ ! -f "$EXP_DIR/baselines/run_official_sdpr.py" ]]; then
+    echo "ERROR: --with-official-sdpr requires $EXP_DIR/baselines/run_official_sdpr.py" >&2
+    exit 1
+  fi
+  need_sdpr_python --with-official-sdpr 'cvxpy, torch, sdprlayers'
+  if [[ ! -d "$OFFICIAL_SDPR_SRC/.git" ]]; then
+    echo "ERROR: --with-official-sdpr requires the released tree at $OFFICIAL_SDPR_SRC (git repo @ cb3aed2, exported with git archive)" >&2
+    exit 1
+  fi
+  if [[ ! -d "$OFFICIAL_SDPR_FORK" ]]; then
+    echo "ERROR: --with-official-sdpr requires the local sdprlayer fork at $OFFICIAL_SDPR_FORK (checked as the second implementation)" >&2
+    exit 1
+  fi
+fi
+if [[ "$WITH_OFFICIAL_BPNP" == "1" ]]; then
+  if [[ ! -f "$EXP_DIR/baselines/run_official_bpnp.py" ]]; then
+    echo "ERROR: --with-official-bpnp requires $EXP_DIR/baselines/run_official_bpnp.py" >&2
+    exit 1
+  fi
+  need_sdpr_python --with-official-bpnp 'torch, cv2, kornia'
+  if [[ ! -f "$BPNP_SRC/BPnP.py" ]]; then
+    echo "ERROR: --with-official-bpnp requires the released BPnP at $BPNP_SRC (BPnP.py)" >&2
+    exit 1
+  fi
+  if [[ ! -d "$BOP_LM_TEST" ]]; then
+    echo "ERROR: --with-official-bpnp requires BOP LINEMOD at $BOP_LM_TEST (2 real frames)" >&2
+    exit 1
+  fi
+fi
+if [[ "$WITH_FEATURE_FRONTEND" == "1" || "$WITH_STRUCTURED_NOISE" == "1" ]]; then
+  grp=--with-feature-frontend; script=run_feature_frontend.py
+  [[ "$WITH_STRUCTURED_NOISE" == "1" ]] && { grp=--with-structured-noise; script=run_structured_noise.py; }
+  if [[ ! -f "$EXP_DIR/real/linemod/$script" ]]; then
+    echo "ERROR: $grp requires $EXP_DIR/real/linemod/$script" >&2
+    exit 1
+  fi
+  need_sdpr_python "$grp" 'cv2, PIL, scipy'
+  if [[ ! -d "$BOP_LM_TEST" ]]; then
+    echo "ERROR: $grp requires BOP LINEMOD at $BOP_LM_TEST" >&2
+    exit 1
+  fi
+  if [[ ! -f "$EXP_DIR/real/linemod/results/detector_noise.json" ]]; then
+    echo "ERROR: $grp requires the committed reference $EXP_DIR/real/linemod/results/detector_noise.json (frame set + clean baseline)" >&2
+    exit 1
+  fi
+fi
+if [[ "$WITH_ROOTS_MANY" == "1" ]]; then
+  if [[ ! -f "$EXP_DIR/roots/run_rootcount_many.py" ]]; then
+    echo "ERROR: --with-roots-many requires $EXP_DIR/roots/run_rootcount_many.py" >&2
+    exit 1
+  fi
+  if [[ ! -f "$EXP_DIR/roots/run_rootcount_fast.py" ]]; then
+    echo "ERROR: --with-roots-many requires $EXP_DIR/roots/run_rootcount_fast.py (imported as a module)" >&2
+    exit 1
+  fi
+fi
+if [[ "$WITH_E2E" == "1" ]]; then
+  if [[ ! -f "$EXP_DIR/code/run_e2e_fit.py" ]]; then
+    echo "ERROR: --with-e2e/--with-e2e-smoke requires $EXP_DIR/code/run_e2e_fit.py" >&2
+    exit 1
+  fi
+fi
+if [[ "$WITH_LMO_FULL" == "1" ]]; then
+  if [[ ! -f "$EXP_DIR/real/linemod/run_two_mode_lmo_full.py" ]]; then
+    echo "ERROR: --with-lmo-full requires $EXP_DIR/real/linemod/run_two_mode_lmo_full.py" >&2
+    exit 1
+  fi
+  if [[ ! -f "$EXP_DIR/real/linemod/sqpnp_lmo_helper.py" ]]; then
+    echo "ERROR: --with-lmo-full requires $EXP_DIR/real/linemod/sqpnp_lmo_helper.py (SQPNP runs in the sdpr env)" >&2
+    exit 1
+  fi
+  if [[ ! -d "$BOP_LMO_TEST" ]]; then
+    echo "ERROR: --with-lmo-full requires the BOP LMO test sequence at $BOP_LMO_TEST (1214 frames)" >&2
+    exit 1
+  fi
+  if [[ ! -x "$PYTHON_SDPR" ]] || ! "$PYTHON_SDPR" -c 'import cv2' >/dev/null 2>&1; then
+    echo "ERROR: --with-lmo-full needs cv2 (SQPNP helper) in PYTHON_SDPR=$PYTHON_SDPR" >&2
+    exit 1
+  fi
+  if [[ ! -f "$EXP_DIR/real/linemod/results/lmo_two_mode.json" ]]; then
+    echo "WARN: --with-lmo-full will skip the 37-frame stability cross-check ($EXP_DIR/real/linemod/results/lmo_two_mode.json missing)" >&2
+  fi
+  if [[ -z "${SLURM_JOB_ID:-}" && "${P1_ALLOW_LOGIN_NODE:-0}" != "1" ]]; then
+    echo "WARN: --with-lmo-full is a heavy group (177 frames, ~2.5 min on a quiet cpu node, more under load)." >&2
+    echo "      Lab policy: submit through Slurm, e.g." >&2
+    echo "      srun --partition=cpu -n1 --time=00:45:00 $0 --with-lmo-full" >&2
+    echo "      (set P1_ALLOW_LOGIN_NODE=1 to silence this warning)" >&2
+  fi
+fi
+
 # ---- environment snapshot --------------------------------------------------
 {
   echo "timestamp: $(date -Is)"
@@ -221,12 +395,31 @@ PY
   echo "git-head: $(git -C "$EXP_DIR" rev-parse HEAD 2>/dev/null || echo n/a)"
   echo "git-branch: $(git -C "$EXP_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo n/a)"
   echo "sdp-upstream-path: ${P1_SDPRLAYER:-<unset>}"
-  if [[ "$WITH_CLASSICAL" == "1" ]]; then
+  if [[ "$WITH_CLASSICAL" == "1" || "$WITH_OFFICIAL_SDPR" == "1" || \
+        "$WITH_OFFICIAL_BPNP" == "1" || "$WITH_FEATURE_FRONTEND" == "1" || \
+        "$WITH_STRUCTURED_NOISE" == "1" || "$WITH_LMO_FULL" == "1" ]]; then
     echo "python-sdpr: $PYTHON_SDPR"
     "$PYTHON_SDPR" - <<'PY'
-import cv2, numpy, scipy
-print("cv2", cv2.__version__, "| numpy", numpy.__version__, "| scipy", scipy.__version__)
+import numpy, scipy
+print("numpy", numpy.__version__, "| scipy", scipy.__version__)
+for name in ("cv2", "torch", "kornia", "cvxpy", "sdprlayers"):
+    try:
+        m = __import__(name)
+        print(name, getattr(m, "__version__", "ok"))
+    except Exception as e:  # noqa: BLE001 - report, never abort the snapshot
+        print(name, "MISSING", type(e).__name__)
 PY
+  fi
+  if [[ "$WITH_OFFICIAL_SDPR" == "1" ]]; then
+    echo "official-sdpr-released: $(git -C "$OFFICIAL_SDPR_SRC" rev-parse --short HEAD 2>/dev/null || echo n/a) ($OFFICIAL_SDPR_SRC)"
+    echo "official-sdpr-fork: $(git -C "$OFFICIAL_SDPR_FORK" rev-parse --short HEAD 2>/dev/null || echo n/a) ($OFFICIAL_SDPR_FORK)"
+  fi
+  if [[ "$WITH_OFFICIAL_BPNP" == "1" ]]; then
+    echo "official-bpnp: $(git -C "$BPNP_SRC" rev-parse --short HEAD 2>/dev/null || echo n/a) ($BPNP_SRC)"
+  fi
+  if [[ "$WITH_LMO_FULL" == "1" ]]; then
+    echo "lmo-test: $BOP_LMO_TEST"
+    echo "slurm-job-id: ${SLURM_JOB_ID:-<none>}"
   fi
   if [[ "$WITH_THESEUS" == "1" ]]; then
     echo "python-theseus: $PYTHON_THESEUS"
@@ -278,9 +471,14 @@ host      : $(hostname 2>/dev/null || echo n/a)
 exp_dir   : $EXP_DIR
 python    : $PYTHON
 workdir   : $TMP_ROOT (throwaway copy; committed results untouched)
-flags     : with_linemod=$WITH_LINEMOD with_sdp=$WITH_SDP with_sdp_upstream=$WITH_SDP_UPSTREAM with_scorer=$WITH_SCORER with_roots=$WITH_ROOTS with_pose_error=$WITH_POSE_ERROR with_classical=$WITH_CLASSICAL with_theseus=$WITH_THESEUS compare=$DO_COMPARE
+flags     : with_linemod=$WITH_LINEMOD with_sdp=$WITH_SDP with_sdp_upstream=$WITH_SDP_UPSTREAM with_scorer=$WITH_SCORER
+            with_roots=$WITH_ROOTS with_pose_error=$WITH_POSE_ERROR with_classical=$WITH_CLASSICAL with_theseus=$WITH_THESEUS
+            with_official_sdpr=$WITH_OFFICIAL_SDPR with_official_bpnp=$WITH_OFFICIAL_BPNP with_feature_frontend=$WITH_FEATURE_FRONTEND
+            with_structured_noise=$WITH_STRUCTURED_NOISE with_roots_many=$WITH_ROOTS_MANY with_e2e=$WITH_E2E with_lmo_full=$WITH_LMO_FULL
+            compare=$DO_COMPARE
 python_sdpr  : $PYTHON_SDPR
 python_theseus: $PYTHON_THESEUS
+step_timeouts: default=${STEP_TIMEOUT}s e2e=${E2E_TIMEOUT}s lmo_full=${LMO_FULL_TIMEOUT}s
 EOF
 
 say "== preflight ok: $("$PYTHON" -V 2>&1)"
@@ -322,6 +520,21 @@ expected_for() {
       # the script only writes the JSON; roots/results/rootcount_fast.md is a
       # committed human-readable summary checked separately below
       echo "results/rootcount_fast.json" ;;
+    run_rootcount_many.py)
+      echo "results/rootcount_many.json" ;;
+    run_official_sdpr.py)
+      echo "results/official_sdpr.json results/official_sdpr.md" ;;
+    run_official_bpnp.py)
+      echo "results/official_bpnp.json results/official_bpnp.md" ;;
+    run_feature_frontend.py)
+      echo "real/linemod/results/feature_frontend.json real/linemod/results/feature_frontend.md real/linemod/results/feature_frontend.png" ;;
+    run_structured_noise.py)
+      echo "real/linemod/results/structured_noise.json real/linemod/results/structured_noise.md" ;;
+    run_two_mode_lmo_full.py)
+      echo "real/linemod/results/lmo_full.json real/linemod/results/lmo_full.md real/linemod/results/lmo_full.png" ;;
+    run_e2e_fit.py)
+      # --smoke writes the _smoke_e2e prefix (never overwrites e2e_fit.*)
+      echo "results/${E2E_PREFIX}.json results/${E2E_PREFIX}.md results/${E2E_PREFIX}.png" ;;
     *)
       echo "" ;;
   esac
@@ -376,6 +589,46 @@ if [[ "$WITH_LINEMOD" == "1" ]]; then
   fi
   SCRIPTS+=(real/linemod/run_symmetry.py)
 fi
+# ---- phase-5 optional groups (final push; all off by default) -------------
+if [[ "$WITH_OFFICIAL_SDPR" == "1" ]]; then
+  SCRIPTS+=(baselines/run_official_sdpr.py)
+  STEP_PYTHON[baselines/run_official_sdpr.py]="$PYTHON_SDPR"
+fi
+if [[ "$WITH_OFFICIAL_BPNP" == "1" ]]; then
+  SCRIPTS+=(baselines/run_official_bpnp.py)
+  STEP_PYTHON[baselines/run_official_bpnp.py]="$PYTHON_SDPR"
+fi
+if [[ "$WITH_FEATURE_FRONTEND" == "1" ]]; then
+  SCRIPTS+=(real/linemod/run_feature_frontend.py)
+  STEP_PYTHON[real/linemod/run_feature_frontend.py]="$PYTHON_SDPR"
+fi
+if [[ "$WITH_STRUCTURED_NOISE" == "1" ]]; then
+  SCRIPTS+=(real/linemod/run_structured_noise.py)
+  STEP_PYTHON[real/linemod/run_structured_noise.py]="$PYTHON_SDPR"
+fi
+if [[ "$WITH_ROOTS_MANY" == "1" ]]; then
+  SCRIPTS+=(roots/run_rootcount_many.py)
+fi
+if [[ "$WITH_E2E" == "1" ]]; then
+  SCRIPTS+=(code/run_e2e_fit.py)
+  if [[ "$E2E_SMOKE" == "1" ]]; then
+    EXTRA_ARGS[code/run_e2e_fit.py]="--smoke"
+  fi
+fi
+if [[ "$WITH_LMO_FULL" == "1" ]]; then
+  # WM python (the estimator env); the SQPNP helper is spawned inside the
+  # script with the hard-coded sdpr interpreter
+  SCRIPTS+=(real/linemod/run_two_mode_lmo_full.py)
+fi
+
+# per-step timeout: the shared default would kill e2e / lmo_full mid-way
+step_timeout_for() {
+  case "$(basename "$1")" in
+    run_e2e_fit.py) echo "$E2E_TIMEOUT" ;;
+    run_two_mode_lmo_full.py) echo "$LMO_FULL_TIMEOUT" ;;
+    *) echo "$STEP_TIMEOUT" ;;
+  esac
+}
 
 declare -a NAMES RCS MSECS NOTES
 RUN_START=$(date +%s%N)
@@ -393,7 +646,8 @@ for rel in "${SCRIPTS[@]}"; do
   fi
   t0=$(date +%s%N)
   py=${STEP_PYTHON[$rel]:-$PYTHON}
-  ( cd "$CLEAN_CWD" && timeout "${STEP_TIMEOUT}s" "$py" "$WORK/$rel" "${extra[@]}" ) >"$out" 2>"$err"
+  step_to=$(step_timeout_for "$rel")
+  ( cd "$CLEAN_CWD" && timeout "${step_to}s" "$py" "$WORK/$rel" "${extra[@]}" ) >"$out" 2>"$err"
   rc=$?
   t1=$(date +%s%N)
   ms=$(( (t1 - t0) / 1000000 ))
@@ -442,6 +696,14 @@ if [[ "$WITH_ROOTS" == "1" ]]; then
     FAIL=1
   fi
 fi
+if [[ "$WITH_ROOTS_MANY" == "1" ]]; then
+  if [[ -s "$EXP_DIR/roots/results/rootcount_many.md" ]]; then
+    say "== docs check ok: roots/results/rootcount_many.md present (not regenerated by the script)"
+  else
+    say "!! --with-roots-many expects the committed summary roots/results/rootcount_many.md (the script only writes the JSON)"
+    FAIL=1
+  fi
+fi
 
 RUN_END=$(date +%s%N)
 TOTAL_MS=$(( (RUN_END - RUN_START) / 1000000 ))
@@ -471,6 +733,13 @@ if [[ "$DO_COMPARE" == "1" ]]; then
     # root counts / residuals are deterministic; only per-instance runtime differs
     PAIRS+=(results/rootcount_fast.json)
   fi
+  if [[ "$WITH_ROOTS_MANY" == "1" ]]; then
+    PAIRS+=(results/rootcount_many.json)
+  fi
+  if [[ "$WITH_E2E" == "1" && "$E2E_SMOKE" == "1" ]]; then
+    # the 4-seed smoke row is fully seeded; wall_seconds is stripped below
+    PAIRS+=("results/${E2E_PREFIX}.json")
+  fi
   # --with-pose-error / --with-classical / --with-theseus deliberately do NOT
   # add their JSONs to PAIRS: the committed snapshots were produced by earlier
   # script revisions (pose_error ADD-S target set changed to the dense GT mesh;
@@ -491,7 +760,8 @@ def strip(obj):
         return {k: strip(v) for k, v in obj.items()
                 if not (isinstance(k, str) and
                         (k.startswith("t_") or k.endswith("_ms") or
-                         k in ("runtime", "runtime_s", "wall_time_s")))}
+                         k in ("runtime", "runtime_s", "wall_time_s",
+                               "wall_seconds", "wall_s", "wall_s_total")))}
     if isinstance(obj, list):
         return [strip(v) for v in obj]
     return obj
@@ -558,7 +828,7 @@ fi
 mkdir -p "$LOG_DIR/outputs"
 cp -a "$WORK/results" "$LOG_DIR/outputs/results"
 cp -a "$WORK/theory/results" "$LOG_DIR/outputs/theory_results"
-if [[ "$WITH_LINEMOD$WITH_POSE_ERROR$WITH_CLASSICAL$WITH_THESEUS" == *1* && -d "$WORK/real/linemod/results" ]]; then
+if [[ "$WITH_LINEMOD$WITH_POSE_ERROR$WITH_CLASSICAL$WITH_THESEUS$WITH_FEATURE_FRONTEND$WITH_STRUCTURED_NOISE$WITH_LMO_FULL" == *1* && -d "$WORK/real/linemod/results" ]]; then
   cp -a "$WORK/real/linemod/results" "$LOG_DIR/outputs/linemod_results"
 fi
 if [[ "$WITH_SDP" == "1" && -d "$WORK/sdp/results" ]]; then
@@ -566,7 +836,7 @@ if [[ "$WITH_SDP" == "1" && -d "$WORK/sdp/results" ]]; then
 fi
 # rootcount_fast.json lands in results/, already archived above; keep the
 # committed roots/results/rootcount_fast.md snapshot in the archived tree too
-if [[ "$WITH_ROOTS" == "1" && -d "$WORK/roots/results" ]]; then
+if [[ "$WITH_ROOTS$WITH_ROOTS_MANY" == *1* && -d "$WORK/roots/results" ]]; then
   cp -a "$WORK/roots/results" "$LOG_DIR/outputs/roots_results"
 fi
 ( cd "$LOG_DIR/outputs" && find . -type f -print0 | sort -z | xargs -0 -r sha256sum ) \
