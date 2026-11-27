@@ -1,0 +1,34 @@
+{
+  "checks": {
+    "F1a a \u2208 (0,1]": true,
+    "F1b \u53ef\u884c\u70b9 g<=0 \u65f6 b \u2208 [0,1]": true,
+    "F1c \u4e00\u822c\u8fed\u4ee3\u70b9 (g>0) \u65f6 b \u2208 (1,2)": true,
+    "F2 \u03c6_\u03b5(\u4e92\u8865\u70b9) \u4e0e -\u03b5\u00b2/(2\u03bc)\u3001-\u03b5\u3001-\u03b5\u00b2/(2|g|) \u7684\u6e10\u8fd1\u4e00\u81f4": true,
+    "F3a \u03c6_\u03b5=0 \u21d2 \u03bcg = -\u03b5\u00b2/2\uff08\u6570\u503c\uff09": true,
+    "F3b \u03c6_\u03b5(5,0)=-1.00e-09 \u2260 0": true,
+    "F4a H\u227b0 & D\u227b0 \u21d2 \u6052\u53ef\u9006\uff08\u542b J \u79e9\u4e8f\uff09": true,
+    "F4b cond ~ 1/\u03b5\u00b2 \uff08|\u659c\u7387| in [1.6,2.4]\uff09": true,
+    "F6 rank(J_A)=3 < 4\uff084 \u70b9\u63a5\u89e6\u30013 \u4e2a\u51fa\u5e73\u9762\u81ea\u7531\u5ea6\uff09": true,
+    "F6b \u6781\u9650\u77e9\u9635 [[H,J^T],[J,0]] \u79e9\u4e8f": true,
+    "F5a \u76f8\u5bb9\u65f6 dz(\u03b5) \u2192 \u771f v": true,
+    "F5b \u76f8\u5bb9\u65f6 dz \u4e0e D_a \u5206\u5e03\u65e0\u5173\uff08\u4e58\u5b50\u9009\u62e9\u65e0\u5173\u6027\uff09": true,
+    "F5c \u4e0d\u76f8\u5bb9\u65f6 d\u03bc \u7206\u7834\uff08~1/D_a\uff09": true,
+    "F5d \u4e0d\u76f8\u5bb9\u65f6 dz \u6536\u655b\u5230\u67d0\u4e2a\u6709\u9650\u52a0\u6743\u89e3\uff08\u975e\u771f\u5bfc\u6570\uff09": true,
+    "F5e dz(\u03b5)\u2192H-\u52a0\u6743\u6700\u5c0f\u8303\u6570\u89e3\u95ed\u5f0f\uff08\u4e14 \u2260 \u6b27\u6c0f pinv\uff09": true,
+    "F7a a=0 (kink) \u5904 FB \u7ed9\u51fa 1/2\uff08Clarke \u4e2d\u70b9\uff09": true,
+    "F7b |a|>>eps \u65f6 FB -> \u771f\u5355\u4fa7\u5bfc\u6570 (0 \u6216 1)": true
+  },
+  "numbers": {
+    "a_min": 5.000000413701855e-11,
+    "a_max": 1.0,
+    "b_feas_max": 1.0,
+    "b_infeas_max": 1.9999999987500001,
+    "f3_hyperbola_err": 1.769810313656824e-15,
+    "f4_slope": -1.9995752954593184,
+    "f5_con_err": 1.3266951755598841e-11,
+    "f5_inc_dmu": 1000000.0000000012,
+    "f5_inc_dz": 0.7071067811864337,
+    "f5_resid": 0.009999999999999992,
+    "f5e_err": 7.01995780302774e-07
+  }
+}
