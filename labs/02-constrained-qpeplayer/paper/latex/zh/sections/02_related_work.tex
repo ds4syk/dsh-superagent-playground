@@ -1,0 +1,34 @@
+\section{相关工作}\label{sec:related}
+我们与四组工作定位比较；表~\ref{tab:positioning} 给出总结。
+
+\textbf{可认证的可微层。} SDPRLayers \cite{holmes2025sdpr} 是最接近的工作，也是我们明确的对照目标。它把齐次 QCQP 提升为 Shor SDP，在松弛紧时读出全局解，并用一个能容忍冗余等式约束的隐式选择论证对\emph{原始} KKT 系统求微分。有三点差异很重要。(i) \emph{约束类}：其理论针对二次\emph{等式}；不等式需要松弛变量，会膨胀 PSD 块并破坏严格互补性，而我们的约束是原生的。(ii) \emph{SDP 所处位置}：他们在前向传播中对每个样本、每一步求解 SDP；我们前向求解固定维数多项式系统，只在后验证书中异步使用 SDP。(iii) \emph{“全局”依赖什么}：他们依赖前向松弛；我们依赖一个独立的 $14\times14$ 松弛，因此紧性失效只会使我们失去证书，而不会失去前向求解。反过来，我们继承了 QPEP 的枚举完备性假设。
+
+\textbf{代数全局四元数求解器。} QPEP \cite{wu2022qpep} 把 PnP、PnL、手眼标定、点到面配准、圆锥位姿、基于距离的相对位姿、Stewart 平台运动学与多 GNSS 姿态统一为“二次位姿估计问题”，消去 $\mathbf t$，并用 Gr\"obner 基枚举所有 KKT 根（至多 40 个候选），取其中最优者。我们的工作可以读作\emph{为 QPEP 增加不等式与梯度}：保留其消元与枚举，加入仿射约束、ALM 循环、FB 微分与半定后验证书。在 QPEP 的意义上，“全局最优”指给定完全枚举时的最佳驻点；这不是凸证书，我们也从不单独把 QPEP 的输出当作证书。
+
+\textbf{可微凸优化层。} OptNet \cite{amos2017optnet} 通过内点求解的 KKT 系统对 QP 求微分；CVXPYLayers \cite{agrawal2019cvxpylayers} 对锥规划做同样的事；dQP \cite{magoon2025dqp} 将求解器与导数解耦，并表明活跃集决定二者。这些方法假设凸性、已辨识的活跃集以及 LICQ/严格互补性。我们的设定违反全部三条：可行集位于 $\mathbb{S}^3$ 上，LICQ 在四接触与三个面外自由度处失效，严格互补性在擦边接触处失效。我们借用 dQP 的\emph{精神}——把导数约简为由活跃集确定的小系统——并加入秩鲁棒正则化与极限理论。
+
+\textbf{局部位姿层与非光滑微分。} BPnP \cite{chen2020bpn} 通过隐式微分穿过 PnP 求解反向传播；EPro-PnP \cite{chen2022epropnp} 用 Monte Carlo 积分位姿后验；Theseus \cite{pineda2022theseus} 在流形上提供带隐式或展开导数的可微非线性最小二乘。它们都是局部的，支持惩罚但不支持硬约束。Fischer--Burmeister 函数 \cite{fischer1992} 及其光滑变体 \cite{kanzow1996} 把互补性转化为半光滑方程 \cite{facchinei2003}；非凸 ALM 是经典方法 \cite{bertsekas1982,rockafellar1998}，精确惩罚变体见 \cite{fletcher1987}；我们使用 \cite{bolte2021nonsmooth} 的非光滑隐式微分来刻画我们的极限是什么，而不是声称可微性。
+
+\begin{table*}[t]
+\centering
+\caption{定位比较。$\checkmark$ = 支持/原生，$\times$ = 不支持，$\sim$ = 部分支持/有条件。对引用论文的定性总结，不含新测量。}
+\label{tab:positioning}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}p{3.9cm}*{5}{>{\centering\arraybackslash}p{2.35cm}}@{}}
+\toprule
+ & SDPRLayers \cite{holmes2025sdpr} & dQP \cite{magoon2025dqp} & Theseus \cite{pineda2022theseus} & QPEP \cite{wu2022qpep} & \textbf{本文} \\
+\midrule
+前向非凸 & $\checkmark$（提升） & $\times$（凸 QP） & $\checkmark$（局部） & $\checkmark$（全局） & $\checkmark$ \\
+硬不等式 & $\times$（松弛变量） & $\checkmark$（线性） & $\times$（惩罚） & $\times$ & $\checkmark$（仿射） \\
+前向代价 vs.\ $p$ & $O((10+p)^6)$ & $O(\mathrm{QP}(p))$ & 每迭代 $O(p)$ & $O(\mathrm{const})$ & $O(p)$ 装配 $+\,O(1)$ 求解 \\
+前向全局保证 & 若紧 & 是（凸） & $\times$ & 枚举 & 枚举 \\
+后验证书 & 前向 & 不适用 & $\times$ & $\times$ & $\checkmark$（$14\times14$ SDP） \\
+对 LICQ 失效鲁棒 & $\checkmark$（等式） & $\times$ & $\times$ & 不适用 & $\checkmark$（FB） \\
+弱活跃/严格互补 & $\times$（需严格互补） & $\times$ & 不适用 & 不适用 & $\sim$（选定广义导数） \\
+反向系统规模 & $(n+m)$ 约简 & $n+|A|$ & $n$ & 不适用 & $6+|\mathcal A|$ \\
+GPU 可批处理 & $\times$（CPU SDP） & $\checkmark$ & $\checkmark$ & $\sim$ & $\sim$（固定规模求解） \\
+\bottomrule
+\end{tabular}}
+\end{table*}

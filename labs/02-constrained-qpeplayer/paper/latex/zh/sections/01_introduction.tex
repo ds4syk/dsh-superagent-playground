@@ -1,0 +1,17 @@
+\section{引言}\label{sec:intro}
+
+六自由度位姿层把学习得到的量 $\theta$ 可微地映射为位姿 $(\mathbf R,\mathbf t)$。\emph{局部}层——BPnP \cite{chen2020bpn}、Theseus \cite{pineda2022theseus}，以及多数 SLAM 系统中的 Gauss--Newton（GN）流程——从当前估计出发求解非线性最小二乘问题，并对该\emph{局部}解的 KKT 系统求微分。\emph{全局}层——SDPRLayers \cite{holmes2025sdpr}——求解一个凸半定松弛，并利用松弛的对偶证书对原始非凸 KKT 系统求微分。
+
+二者都是为\emph{等式}约束设计的。SDPRLayers 将其问题类表述为带 $\mathbf x^\top\mathbf A_i\mathbf x=0$ 的齐次二次约束二次规划（QCQP）\cite{holmes2025sdpr}；QPEP \cite{wu2022qpep} 恰好只有一个约束 $\|\mathbf q\|^2=1$。真实位姿问题却受\emph{不等式}约束：桌上的物体不能穿透桌面，相机前方的点具有正深度，车辆的横滚与俯仰有界，相机的视场限制了点的投影位置。这些是物理可容许条件，而非软偏好：违反它们的层会返回运动规划器必须拒绝的位姿。
+
+\textbf{现有层为何无法解决该问题。} 向 SDP 层加入 $p$ 个松弛变量，会把 PSD 矩阵从 $10\times10$ 提升到 $(10+p)\times(10+p)$：对 50 个顶点的网格，这意味着\emph{每个位姿、每个训练步}都要在 CPU 上求解一个 $60\times60$ 的 SDP，内点法代价为 $O((10+p)^6)$（我们修正了早先内部笔记中的 $O((10+p)^2)$）；随后反向传播还需要紧性与可辨识的乘子，而不等式约束松弛通常会违反严格互补性（$g_j^\star=\mu_j^\star=0$）。通用可微 QP 层——dQP \cite{magoon2025dqp}、OptNet \cite{amos2017optnet}、CVXPYLayers \cite{agrawal2019cvxpylayers}——原生处理线性不等式，但旋转流形不是凸的，且其活跃集机制继承了 LICQ 假设，而该假设在多接触构型下失效。软惩罚（如 Theseus \cite{pineda2022theseus}）以场景相关的权重在穿透与数据拟合之间折中，因此穿透由权重而非零来界定；DC3 \cite{donti2021dc3} 在推理时修正约束，但不对修正过程求微分。QPEP \cite{wu2022qpep} 在给定完全枚举时是代数全局的，但没有梯度，也不支持不等式。
+
+我们追问：一个位姿层能否同时具备硬不等式约束、与约束数量无关的逐样本代价、在冗余与弱活跃接触下仍存活的微分能力，以及全局最优性的后验证据。\textbf{贡献。}
+\begin{enumerate}
+\item \emph{加性常维约简}（定理~\ref{thm:dim}）。对于在 $(\mathbf v_2(\mathbf q),\mathbf t)$ 中仿射的约束——正深度、平面非穿透、视场、倾角锥——每个增广 Lagrange（ALM）内层子问题限制到活跃集后，经 $3\times3$ Schur 补坍缩为 $\mathbb{S}^3$ 上一个与 $p$ 无关的四次型：$O(p)$ 装配、$O(1)$ 内存。
+\item \emph{具有 $p$ 无关 PSD 块的可靠后验证书}（引理~\ref{lem:cert}）。$14\times14$ Veronese 增广 Shor 松弛对任意 $p$ 都给出严格界，并在紧时认证全局最优性；定理~\ref{thm:cert}（P2-Cert）修复求解器对偶，使每个报告的间隙按构造非负。在一个受控实例上，松弛紧到 $2\times10^{-11}$，而 Lagrange 对偶间隙为负（$-1.67\times10^{-11}$），因而不可用。
+\item \emph{FB 约简隐式微分与精确的极限理论}（定理~\ref{thm:fb}、命题~\ref{prop:limit}）。$(6+|\mathcal A|)\times(6+|\mathcal A|)$ 鞍点系统对任意 $\varepsilon>0$ 可逆，且对活跃 Jacobian \emph{无秩假设}；其极限是 $H$-加权最小范数解，在可检验的相容条件下为真导数，否则为\emph{一个选定的}广义导数。
+\item \emph{失效安全契约与协议。} 该层返回位姿、证书值、可行性违反量、活跃集与条件数；下游代码可依据认证状态分支。我们在合成桌面实例以及 BOP LINEMOD、LINEMOD-Occlusion、YCB-Video 上进行层级别评估。
+\end{enumerate}
+
+\textbf{我们刻意不声称的内容。} (i) ALM 找到的是 KKT 点，而非全局最优；全局性仅是后验的。(ii) FB 光滑化不是互补：对 $\varepsilon>0$，其零集为 $\mu g=-\varepsilon^2/2$，且仅用于微分。(iii) 该层并非总能认证；松弛不紧时给出“未认证”以及一个仅可行的 KKT 点。(iv) 距离约束 $\|\mathbf R\mathbf p+\mathbf t-\mathbf c\|\ge d$ 在 $(\mathbf v_2,\mathbf t)$ 中不是仿射的，不在范围内，分支交叉情形亦如此。(v) 我们不运行检测器、不运行学习型基线、也不做端到端训练：真实数据是真值投影对应。

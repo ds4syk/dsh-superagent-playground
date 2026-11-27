@@ -1,0 +1,404 @@
+\section{附录：详细结果（不计入六页限制）}\label{app:start}\label{app:details}
+
+\subsection{合成协议、方法与证据等级}\label{app:protocol}
+合成实例是受控的层测试，而非基准：$N=14$ 组 3D--2D 对应、视线型代数代价、逐点噪声 $\sigma$、系统性外参偏置，以及恰好与桌面接触的真值位姿。偏置在每格的竖直分量之外，总包含固定的 5~mm 横向分量（\texttt{bias\_xy=0.005}~m）；这就是连无噪声格也有非零平移误差的原因。约束数 $p\in\{8,16,32,64\}$ 是由四类约束族装配的\emph{标量}不等式行数：平面非穿透、正深度、视场（成对记录，每对贡献两行）与一个倾角锥。表~\ref{tab:app_comp} 给出组成。每格 50 次试验；种子即试验编号，因此相同场景在不同 $p$ 与不同噪声水平间复用。
+
+\begin{table}[H]
+\centering
+\caption{合成实例的约束组成（标量行）。}
+\label{tab:app_comp}
+\footnotesize
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+$p$ & 非穿透 & 正深度 & FoV（行） & 倾角锥 & 总计 \\
+\midrule
+8 & 5 & 2 & 0 & 1 & 8 \\
+16 & 9 & 4 & 2 & 1 & 16 \\
+32 & 17 & 8 & 6 & 1 & 32 \\
+64 & 33 & 12 & 18 & 1 & 64 \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\columnwidth}{\scriptsize 来源：\texttt{results/raw\_main.json}（\texttt{config.split} 与 \texttt{recs[].actypes}，后者在一格内的每条记录上均一致）。配置文件把 FoV 记为 1/3/9 对；每对是两行标量。}
+\end{table}
+
+\textbf{方法与内层求解器。} 在相同实例上比较四种方法：(1) \emph{无约束 QPEP}，相同视线代价但只有 $\|\mathbf q\|=1$，从 48 个随机起点数值求解；(2) \emph{软惩罚}，二次惩罚 $\lambda\sum_j[g_j]_+^2$，$\lambda=10^3$，14 个随机起点（权重扫描见附录~\ref{app:noise}）；(3) \emph{事后投影}，用 SLSQP 把无约束解投影到可行集；(4) \emph{ALM-QPEP（本文）}。四者使用相同的数值内层求解——单位四元数球面上的多起点 BFGS——而\emph{不是} QPEP 的多项式根枚举。这是“全局”一词的主要保留：附录~\ref{app:cert} 的证书是全局的，前向求解是数值的。在 48 个内层实例（$p\in\{8,16,32,64\}$，6 个种子，$\sigma=0.01$，偏置 $0.08$；来源 \texttt{results/inner\_baseline.json}）上的起点数基线量化了这种替代：4 个起点会使 8/24 个无约束矩阵欠解，最大目标间隙 $1.17\times10^{-3}$；8 个起点在全部 48 个实例上达到参考值，中位耗时 26~ms；256 个起点耗时 678~ms（$25\times$）且无目标收益。对 ALM 活跃集矩阵，即使 4 个起点也在全部 24 个实例上达到参考值。因此方法 1 的 48 起点设置高于此处发现的阈值；它仍不认证内层极小值。精确的 162 路径枚举器作为基线在附录~\ref{app:baselines} 中测量：它以中位 $47\times$ 的多起点代价达到相同的 ALM 目标（$1.8\times10^{-12}$），因此默认仍采用多起点。
+
+\begin{table}[H]
+\centering
+\caption{指标与通过准则（来自 \texttt{experiments/protocol.md} \S3）。}
+\label{tab:app_metrics}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{1.55cm}p{3.6cm}p{2.0cm}@{}}
+\toprule
+指标 & 定义 & 报告形式 \\
+\midrule
+穿透 & $d_{\rm pen}=\max_{v\in\mathcal V}[\mathbf n^\top(\mathbf R\mathbf v+\mathbf t)+d]_-$ (mm) & 中位 [IQR]；穿透率 = $d_{\rm pen}>1$~mm 的比例 \\
+旋转 / 平移误差 & 到真值的测地角 / 欧氏平移误差 & 中位 [IQR]，deg / mm \\
+可行 & $\max_j[g_j]_+\le10^{-6}$ & 比率 \\
+认证 & 可行 \textbf{且} $J-\mathrm{Shor}\le10^{-6}$ \textbf{且} $\lambda_2/\lambda_1\le10^{-6}$ & 比率 \\
+运行时 & 每实例墙钟时间（前向求解）；证书单独计时 & 中位，ms \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+报告中位数 [IQR] 而非均值，是因为少数试验落入镜像或坏局部极小并抬高均值；均值与标准差在 JSON 中。运行时依赖机器，仅用于规模比较，不作为硬件声明。证据等级为：附录~\ref{app:synthetic}--\ref{app:real} 为\emph{独立复现}（每张表附来源行）；附录~\ref{app:sanity} 为\emph{原型健全性检查}；附录~\ref{app:baselines} 所列各项为\emph{待完成}。
+
+\textbf{真实数据协议与计划中的协议。} 真实实验使用 BOP LINEMOD、LINEMOD-Occlusion 与 YCB-Video 测试帧，以及官方物体网格与真值位姿。对每帧，用 RANSAC 拟合背景深度的支撑平面（5~mm 内点阈值），法向指向物体内部，并校准其偏移使真值最低顶点接触。观测为 30 个随机模型顶点按真值位姿与相机矩阵投影，施加 1~px 噪声与 10/20/30~px 向下像素偏置；视线由 $\mathbf K^{-1}$ 得到。约束为沿桌面法向最低的 16 个模型顶点（非穿透），故 $p=16$，使用同样的四种方法。共有 90（LINEMOD）、72（LINEMOD-Occlusion）与 84（YCB-Video）次试验：分别为 30、24、28 个（帧、图像、物体）位姿，各在三种像素偏置下。这些不是独立视频帧。\emph{对应是真值投影的，不是检测器或匹配器产生的：这是层实验，不是端到端感知结果。} 平面偏移按真值校准，因此真值按构造可行。
+
+\texttt{experiments/protocol.md} 中其余协议在此列出以求完整，但\textbf{未}在本稿中测量。(i) \emph{T1-network}：在 SDPRLayers/BPnP 风格的关键点回归骨干网络中，用每个待比较层替换其位姿头；所有层使用相同骨干、训练计划与仅位姿监督（损失中无穿透项），指标为 YCB-Video 与 LINEMOD 上的 ADD(-S)、2~cm 以下 ADD(-S)、穿透深度/比率与前向/反向延迟。(ii) \emph{T2}：带横滚/俯仰倾角锥（$\alpha=10^\circ$）与正深度的 KITTI 里程计、带正深度的 TUM RGB-D，以及采用 SDPRLayers 双目设置的 UTIAS In-The-Dark；指标为平移/旋转 RMSE、违反率、认证率与延迟。(iii) \emph{T3}：带关节限位（倾角锥）先验的手眼标定与点到面配准，以展示提升形式中的等式约束。本稿不包含其中任何运行。
+
+\subsection{原型健全性检查（已完成；非论文结果）}\label{app:sanity}
+\textbf{证据等级：原型健全性检查。} 本小节全部内容是对合成 $p=12$ 实例上代数的数值检查，由 \texttt{verify/} 中两个脚本产生。它\emph{不是}基准上的实验，不使用最终多项式求解器，也不得被引用为论文结果。它的存在是为了 (i) 捕获第~\ref{sec:method} 节定理中的代数错误，(ii) 证明引理~\ref{lem:cert} 的证书构造至少能工作。
+
+\texttt{verify/} 中两个脚本在合成 $p=12$ 实例上验证代数与数值（PnP 型 QPEP 目标、12 组对应、8 个位于真值接触高度的桌角非穿透约束、4 个正深度约束、15~mm 逐点视线噪声加 10~cm 系统性视线偏置，以迫使无约束解进入桌面）。全部运算为双精度；内层求解使用 $\mathbb{S}^3$ 上的多起点 BFGS 作为 QPEP 多项式求解器的\emph{替代}，因此计时不代表最终层。
+
+\begin{table*}[t]
+\centering
+\caption{合成 $p=12$ 实例上的原型健全性检查（非论文结果）。}
+\label{tab:app_sanity}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{0.8cm}p{7.2cm}p{7.6cm}@{}}
+\toprule
+id & 检查内容 & 结果 \\
+\midrule
+C1 & $\mathbf R(\mathbf q)\mathbf p$ 在 $\mathbf v_2$ 中仿射；四类约束族均在 $(\mathbf v_2,\mathbf t)$ 中仿射 & 最大误差 $4.3\times10^{-15}$ / $3.7\times10^{-15}$ \\
+C2 & 增广 Lagrange 活跃集展开等于直接求值 & $3.6\times10^{-15}$（正确 $\kappa_{\mathcal A}$；朴素取法为 $5.6\times10^{-1}$） \\
+C3 & $3\times3$ Schur 补；内层目标在 $\mathbf q$ 中为四次 & $6.2\times10^{-15}$；四次拟合相对误差 $2.0\times10^{-16}$ \\
+C4 & 系数维数与 $p$ 无关 & $p=256$：仍为 $(10,10)/(3,10)/(3,3)$；单核装配 4.4~ms \\
+C5 & 证书行为 & $\delta=J(\hat z)-d(\hat\mu)=-1.67\times10^{-11}$（\textbf{为负} $\Rightarrow$ 不是证书）；$14\times14$ Shor $+$ Veronese $+$ 不等式 $=0.0680069355$，对 $J(\hat z)=0.06800693548$，$\lambda_2/\lambda_1=2.2\times10^{-12}$（\textbf{紧}） \\
+C6 & ALM 前向 & 30 次外层迭代内可行到 $2.4\times10^{-11}$；穿透 $18.94$~cm $\to2.4\times10^{-9}$~cm \\
+F1--F3 & FB 取值范围与零集 & 可行时 $a\in[0,1]$、$b\le1$；不可行时 $<2$；$\mu g=-\varepsilon^2/2$ 到 $1.8\times10^{-15}$ \\
+F4 & 鞍点可逆性与条件数 & 200/200 个随机秩亏情形可逆；$\log\kappa/\log\varepsilon=-2.00$ \\
+F5 & $\varepsilon\to0$ 极限 & 相容：$d\mathbf z\to$ 真值，误差 $1.3\times10^{-11}$，与乘子无关；不相容：$\|d\boldsymbol\mu\|=10^{-1}\to10^{6}$，$\|d\mathbf z\|$ 有限 \\
+F6 & 四腿 Jacobian & 秩 $3<4$；极限矩阵秩 $6/7$ \\
+F7 & 解析折点：$\min\tfrac12(z-a)^2$ s.t.\ $z\ge0$ 在 $a=0$ & 真映射 $\max(a,0)$ 不可微；Clarke 导数 $[0,1]$；\textbf{FB 恰好给出 $1/2$}，与 $\varepsilon$ 无关（17/17 项检查通过） \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\textwidth}{\scriptsize 来源：\texttt{verify/} 脚本及其输出；继承自前一稿，本轮未重新测量。本小节没有任何数字用于论文主张。}
+\end{table*}
+
+两点诚实的观察。(i) 该实例上的受约束位姿误差\emph{并不}优于无约束情形（$2.24^\circ$/9.96~cm 对 $1.38^\circ$/9.44~cm）：约束消除了 18.94~cm 穿透，但残余位姿误差由注入的视线偏置主导，桌面约束无法修正它。这警告我们不要假设物理约束会提高精度；该主张必须按数据集测量。(ii) 证书的故事推翻了早先内部稿：对偶间隙不可用，$14\times14$ 松弛是紧的。
+
+\subsection{详细合成表}\label{app:synthetic}
+表~\ref{tab:app_main_pen}--\ref{tab:app_main_rates} 给出四种方法在四个约束数下的穿透、位姿误差以及比率/运行时间。每格全部 50 次试验使用相同场景。
+
+\begin{table*}[t]
+\centering
+\caption{最大穿透深度（mm，中位 [IQR]），括号内为穿透率（$d_{\rm pen}>1$~mm）。}
+\label{tab:app_main_pen}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l*{4}{p{3.5cm}}@{}}
+\toprule
+方法 & $p=8$ & $p=16$ & $p=32$ & $p=64$ \\
+\midrule
+无约束 QPEP & 103.02 [84.69, 110.83] (100\%) & 103.02 [84.69, 110.83] (100\%) & 103.02 [84.69, 110.83] (100\%) & 103.02 [84.69, 110.83] (100\%) \\
+软惩罚（$\lambda{=}10^3$） & 0.01 [0.00, 0.06] (0\%) & 0.00 [0.00, 0.03] (0\%) & 0.00 [0.00, 0.03] (0\%) & 0.00 [0.00, 0.02] (0\%) \\
+事后投影 & 0.00 [0.00, 0.00] (0\%) & 0.00 [0.00, 0.00] (0\%) & 0.00 [0.00, 0.00] (0\%) & 0.00 [0.00, 0.00] (0\%) \\
+ALM-QPEP（本文） & 0.00 [0.00, 0.00] (0\%) & 0.00 [0.00, 0.00] (0\%) & 0.00 [0.00, 0.00] (0\%) & 0.00 [0.00, 0.00] (0\%) \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\textwidth}{\scriptsize 来源：\texttt{results/raw\_main.json}，每格 50 次试验；聚合由 \texttt{results/main\_table.md}/\texttt{main\_table.json} 复现。}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{位姿误差（旋转 deg / 平移 mm，中位 [IQR]）。}
+\label{tab:app_main_pose}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}l*{4}{p{4.2cm}}@{}}
+\toprule
+方法 & $p=8$ & $p=16$ & $p=32$ & $p=64$ \\
+\midrule
+无约束 QPEP & 5.30 [3.26, 6.70] / 97.90 [88.42, 107.73] & 5.30 [3.26, 6.70] / 97.90 [88.42, 107.73] & 5.30 [3.26, 6.70] / 97.90 [88.42, 107.73] & 5.30 [3.26, 6.70] / 97.90 [88.42, 107.73] \\
+软惩罚（$\lambda{=}10^3$） & 4.86 [3.73, 7.78] / 10.93 [9.26, 16.06] & 6.62 [3.70, 9.95] / 13.00 [8.69, 16.87] & 6.97 [3.94, 9.61] / 12.33 [10.19, 16.11] & 6.01 [4.14, 9.11] / 12.40 [8.99, 15.76] \\
+事后投影 & 4.16 [2.90, 5.34] / 9.10 [7.34, 10.94] & 4.16 [2.90, 5.34] / 9.10 [7.34, 10.94] & 4.16 [2.90, 5.34] / 9.10 [7.34, 10.94] & 4.16 [2.90, 5.34] / 9.10 [7.34, 10.94] \\
+ALM-QPEP（本文） & 4.17 [2.74, 5.10] / 10.63 [8.17, 12.69] & 4.17 [2.74, 5.10] / 10.63 [8.17, 12.69] & 4.17 [2.74, 5.10] / 10.63 [8.17, 12.69] & 4.17 [2.74, 5.10] / 10.63 [8.17, 12.69] \\
+\bottomrule
+\end{tabular}}
+
+\smallskip
+\parbox{\textwidth}{\scriptsize 来源：\texttt{results/raw\_main.json}，每格 50 次试验。}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{可行性、认证与运行时间（中位 ms）；末行为 $14\times14$ 证书。}
+\label{tab:app_main_rates}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}l*{4}{p{4.0cm}}@{}}
+\toprule
+方法 & $p=8$ & $p=16$ & $p=32$ & $p=64$ \\
+\midrule
+无约束 QPEP & 可行 0\% / 认证 0\% / 143~ms & 可行 0\% / 认证 0\% / 144~ms & 可行 0\% / 认证 0\% / 144~ms & 可行 0\% / 认证 0\% / 142~ms \\
+软惩罚（$\lambda{=}10^3$） & 可行 42\% / 认证 0\% / 96~ms & 可行 38\% / 认证 0\% / 94~ms & 可行 42\% / 认证 0\% / 98~ms & 可行 50\% / 认证 0\% / 97~ms \\
+事后投影 & 可行 100\% / 认证 0\% / 12~ms & 可行 100\% / 认证 0\% / 12~ms & 可行 100\% / 认证 0\% / 12~ms & 可行 100\% / 认证 0\% / 12~ms \\
+ALM-QPEP（本文） & 可行 100\% / 认证 100\% / 260~ms & 可行 100\% / 认证 100\% / 277~ms & 可行 100\% / 认证 100\% / 280~ms & 可行 100\% / 认证 100\% / 288~ms \\
+$14\times14$ SDP & 紧 100\% / 51~ms & 紧 100\% / 56~ms & 紧 100\% / 67~ms & 紧 100\% / 84~ms \\
+\bottomrule
+\end{tabular}}
+
+\smallskip
+\parbox{\textwidth}{\scriptsize 来源：\texttt{results/raw\_main.json}，每格 50 次试验；运行时为每实例墙钟中位，SDP 时间为证书时间中位。}
+\end{table*}
+
+六点观察。\textbf{(i) 硬可行性是区分性质。} 无约束解在每个 $p$ 下都在 100\% 的试验中穿透桌面（中位 103.02~mm）。ALM 在 100\% 的试验中返回 0.00~mm，其在 200 次主试验上的最大约束违反为 $1.0\times10^{-10}$，比 $10^{-6}$ 容差低四个数量级。软惩罚达到亚毫米的\emph{中位数}（0.00--0.01~mm），但仅在 38--50\% 的试验中可行（最大违反 0.81~mm）：“近零中位穿透”不是可行性。投影 100\% 可行且最廉价（12~ms），但其目标高于受约束最优（$p=8$ 时中位 $J-\mathrm{Shor}=2.9\times10^{-4}$），因此从未被认证。\textbf{(ii) 受约束求解在每个 $p$ 下都被认证。} ALM 在 $p=8,16,32,64$ 下 100\% 可行且 100\% 认证；证书是投影与惩罚无法提供的东西。\textbf{(iii) $p$ 饱和，因为平面接触在三个非共线点之后是冗余的。} 非穿透块从 5 行增至 33 行，但逐种子 ALM 位姿在 $p=8$ 与 $p=64$ 之间最多变化 $5.9\times10^{-7}$~deg 与 $5.6\times10^{-7}$~mm（投影：$1.7\times10^{-5}$~deg 与 $4.1\times10^{-5}$~mm）；无约束、投影与 ALM 行的中位数在打印精度下相同。ALM 活跃集仍随 $p$ 增长（$p=8$ 时中位 2，$p=64$ 时 4.5；最大 33），即额外接触是弱活跃的——恰是 LICQ 退化区域——证书仍成立。软惩罚是例外：冗余接触各自贡献惩罚项，因此其中位数在 $p$ 间移动最多 $2.1^\circ$ 与 $2.1$~mm。\textbf{(iv) 代价与 $O(p)$ 装配加 $p$ 无关内层维数一致。} ALM 运行时间随 $p$ 增大 $8\times$ 而从 260 增至 288~ms（对数--对数斜率：中位 0.045，均值 0.031），SDP 证书从 51 增至 84~ms。装配未单独插桩：这是端到端一致性检查，不是对 $O(p)$ 项本身的测量。\textbf{(v) 约束买来的是可容许性，不是精度。} ALM 的位姿误差在每个 $p$ 下都是 $4.17^\circ$/10.63~mm，投影是 $4.16^\circ$/9.10~mm：旋转基本相同，投影的平移好 1.5~mm，而（不可行的）无约束平移误差为 97.90~mm。软惩罚在每个 $p$ 下都更差（最高 $6.97^\circ$/13.00~mm），其中位数掩盖了灾难性局部极小：50 个种子中有一个在 $p=16$ 时达到 $156.5^\circ$、$p=32$ 时 $171.6^\circ$、$p=64$ 时 $84.8^\circ$（平移最高 633.6~mm）。因此惩罚路径即使中位数看起来不错也不可靠。\textbf{(vi) 关于中位数的保留。} 无约束方法偶发的手性镜像解（2\% 的试验：物体位于相机后方）被排除在中位数之外但存在于均值中；(v) 中软惩罚的局部极小同理。表~\ref{tab:app_main_rates} 的所有比率均按全部 50 次试验计算。
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig_main_cert.png}
+\caption{合成主扫描：约束可行率（左）与认证全局最优率（右）随 $p$ 的变化，每格 50 次试验。ALM-QPEP 在每个 $p$ 下 100\% 可行且 100\% 认证；投影可行但从未认证；软惩罚在 38--50\% 的试验中可行且从未认证。来源：\texttt{results/raw\_main.json}。}
+\label{fig:app_cert}
+\end{figure}
+
+\subsection{噪声、偏置与惩罚的代价}\label{app:noise}
+表~\ref{tab:app_noise} 固定 $p=16$，在四个格上变化逐点噪声 $\sigma$ 与竖直偏置。表~\ref{tab:app_pareto} 是在 $p=16$ 下对惩罚权重 $\lambda$ 的独立 50 次试验扫描。
+
+\begin{table*}[t]
+\centering
+\caption{$p=16$ 下的方法 $\times$ 噪声/外参偏置（每格 50 次试验；中位 [IQR]）。}
+\label{tab:app_noise}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+格（$\sigma$ / 偏置） & 方法 & 穿透 (mm) & 旋转 (deg) & 平移 (mm) & 可行 & 认证 \\
+\midrule
+0.000 / 0.000 & 无约束 QPEP & 0.00 [0.00, 0.00] & 0.00 [0.00, 0.00] & 7.07 [7.07, 7.07] & 100\% & 100\% \\
+ & 软惩罚 & 0.00 [0.00, 0.00] & 0.00 [0.00, 0.00] & 7.07 [7.07, 7.07] & 100\% & 100\% \\
+ & 事后投影 & 0.00 [0.00, 0.00] & 0.00 [0.00, 0.00] & 7.07 [7.07, 7.07] & 100\% & 100\% \\
+ & ALM-QPEP & 0.00 [0.00, 0.00] & 0.00 [0.00, 0.00] & 7.07 [7.07, 7.07] & 100\% & 100\% \\
+\midrule
+0.005 / 0.040 & 无约束 QPEP & 47.52 [38.74, 51.36] & 2.52 [1.58, 3.25] & 45.87 [40.56, 51.75] & 0\% & 0\% \\
+ & 软惩罚 & 0.01 [0.00, 0.03] & 5.10 [3.45, 7.36] & 9.46 [8.10, 11.27] & 24\% & 0\% \\
+ & 事后投影 & 0.00 [0.00, 0.00] & 2.18 [1.75, 3.16] & 7.79 [7.12, 8.58] & 100\% & 0\% \\
+ & ALM-QPEP & 0.00 [0.00, 0.00] & 2.52 [1.89, 3.33] & 8.46 [7.10, 9.65] & 100\% & 100\% \\
+\midrule
+0.010 / 0.080 & 无约束 QPEP & 103.02 [84.69, 110.83] & 5.30 [3.26, 6.70] & 97.90 [88.42, 107.73] & 0\% & 0\% \\
+ & 软惩罚 & 0.00 [0.00, 0.03] & 6.62 [3.70, 9.95] & 13.00 [8.69, 16.87] & 38\% & 0\% \\
+ & 事后投影 & 0.00 [0.00, 0.00] & 4.16 [2.90, 5.34] & 9.10 [7.34, 10.94] & 100\% & 0\% \\
+ & ALM-QPEP & 0.00 [0.00, 0.00] & 4.17 [2.74, 5.10] & 10.63 [8.17, 12.69] & 100\% & 100\% \\
+\midrule
+0.020 / 0.120 & 无约束 QPEP & 198.10 [177.14, 232.79] & 11.50 [7.92, 18.63] & 185.77 [170.38, 215.92] & 0\% & 0\% \\
+ & 软惩罚 & 0.00 [0.00, 0.04] & 11.13 [6.89, 14.36] & 17.01 [10.99, 21.60] & 38\% & 0\% \\
+ & 事后投影 & 0.00 [0.00, 0.00] & 7.97 [5.45, 11.86] & 12.61 [8.90, 17.11] & 100\% & 0\% \\
+ & ALM-QPEP & 0.00 [0.00, 0.00] & 5.83 [4.49, 7.55] & 13.39 [10.23, 17.43] & 100\% & 100\% \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\textwidth}{\scriptsize 来源：\texttt{results/raw\_main.json}，\texttt{agg\_noise}，每格 50 次试验；软惩罚取 $\lambda=10^3$。}
+\end{table*}
+
+\begin{table}[t]
+\centering
+\caption{$p=16$ 下的软惩罚 Pareto（独立 50 次试验扫描；中位数）。}
+\label{tab:app_pareto}
+\footnotesize
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+$\lambda$ & 穿透 (mm) & 旋转 (deg) & 平移 (mm) & 可行 \\
+\midrule
+$10^0$ & 8.72 & 4.34 & 13.32 & 0\% \\
+$10^1$ & 2.39 & 5.74 & 11.24 & 0\% \\
+$10^2$ & 0.22 & 6.24 & 12.00 & 26\% \\
+$10^3$ & 0.00 & 6.61 & 12.53 & 50\% \\
+$10^4$ & 0.00 & 6.85 & 12.94 & 48\% \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\columnwidth}{\scriptsize 来源：\texttt{results/raw\_main.json}，\texttt{pareto}（250 次试验 = 5 个权重 $\times$ 50 个种子）；数值与 \texttt{results/main\_table.md} 一致。}
+\end{table}
+
+三点观察。\textbf{(i) 无噪声格隔离了注入偏置。} 当 $\sigma=0$ 且竖直偏置为零时，四种方法完全一致：0.00~mm 穿透、$0.00^\circ$、7.07~mm 平移，均 100\% 可行且认证。7.07~mm 是固定的 5~mm 横向偏置（$\sqrt{5^2+5^2}=7.07$~mm），不是方法差异；没有噪声时约束不活跃。\textbf{(ii) 噪声与偏置把可行性与精度分开。} 在三个非零格上，无约束穿透从 47.52~$\to$~198.10~mm 增长且从不可行；ALM 在全部四格保持 0.00~mm、100\% 可行与认证；软惩罚在三个非零格中仅在 24--38\% 的试验中可行且从未认证；投影在那里 100\% 可行且从未认证。低噪声时三种受约束方法的位姿误差相当。在最高格上 ALM 的旋转误差最好（$5.83^\circ$，对无约束 $11.50^\circ$、软惩罚 $11.13^\circ$、投影 $7.97^\circ$），但投影的平移最好（12.61~mm 对 ALM 13.39~mm）；差异在离散范围之内。稳健效应是可容许性与认证，不是精度。\textbf{(iii) 更大的惩罚降低中位穿透，但从未达到可行性。} 表~\ref{tab:app_pareto}：中位穿透从 $\lambda=10^0$ 的 8.72~mm 单调降至 $\lambda=10^3$ 的 0.00~mm，代价是旋转误差从 $4.34^\circ$ 升至 $6.85^\circ$（平移基本持平，11.24--13.32~mm）。可行性从未超过 50\%，且非单调（$\lambda=10^3$ 时 50\%，$10^4$ 时 48\%）：惩罚逼近硬可行性但未达到。50 个种子中有一个对每个 $\lambda\ge10$ 都落入坏局部极小；$\lambda=10^4$ 时其旋转误差为 $132.9^\circ$、平移 202.6~mm，$\lambda=10^3$ 时平移误差 504.6~mm。这些离群值在中位数中不可见，也是惩罚路径无法被认证的原因。
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig_pareto.png}
+\caption{$p=16$ 下的软惩罚 Pareto：$\lambda$ 在 $10^0$--$10^4$ 间变化时，中位最大穿透对平移误差（左）与对旋转误差（右）。ALM-QPEP（星）与投影（菱形）作为参考。来源：\texttt{results/raw\_main.json}，\texttt{pareto}。}
+\label{fig:app_pareto}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig_noise.png}
+\caption{$p=16$ 下四种方法的中位穿透（左）与中位平移误差（右）随噪声/偏置格的变化。来源：\texttt{results/raw\_main.json}，\texttt{agg\_noise}。}
+\label{fig:app_noise}
+\end{figure}
+
+\subsection{证书裕量、Schur 修复与 RLT 消融}\label{app:cert}
+\begin{table*}[t]
+\centering
+\caption{全部 400 个合成实例（8 格 $\times$ 50）上的证书裕量。}
+\label{tab:app_margins}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+格 & $n$ & $\max\lambda_2/\lambda_1$ & 中位 $\lambda_2/\lambda_1$ & $\mathrm{Shor}-J_{\rm ALM}$ 范围 & SDP 时间（均值，ms） \\
+\midrule
+主 $p=8$ & 50 & $1.42\times10^{-9}$ & $9.07\times10^{-11}$ & $[-4.56, 4.29]\times10^{-9}$ & 52.9 \\
+主 $p=16$ & 50 & $1.03\times10^{-9}$ & $9.47\times10^{-11}$ & $[-3.28, 7.52]\times10^{-9}$ & 57.6 \\
+主 $p=32$ & 50 & $8.43\times10^{-10}$ & $2.94\times10^{-11}$ & $[-5.66, 5.99]\times10^{-9}$ & 70.0 \\
+主 $p=64$ & 50 & $1.51\times10^{-9}$ & $9.56\times10^{-11}$ & $[-3.93, 9.41]\times10^{-9}$ & 85.5 \\
+噪声 $0.000/0.000$ & 50 & $5.55\times10^{-10}$ & $1.93\times10^{-11}$ & $[-8.78, 3.57]\times10^{-9}$ & 62.5 \\
+噪声 $0.005/0.040$ & 50 & $8.56\times10^{-10}$ & $7.65\times10^{-11}$ & $[-6.31, 2.67]\times10^{-9}$ & 61.2 \\
+噪声 $0.010/0.080$ & 50 & $1.03\times10^{-9}$ & $9.47\times10^{-11}$ & $[-3.28, 7.52]\times10^{-9}$ & 56.7 \\
+噪声 $0.020/0.120$ & 50 & $1.08\times10^{-9}$ & $2.28\times10^{-11}$ & $[-4.25, 6.82]\times10^{-9}$ & 57.6 \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\textwidth}{\scriptsize 来源：\texttt{results/cert\_margins.json}（由 \texttt{results/raw\_main.json} 汇总）。}
+\end{table*}
+
+合成松弛以很大裕量保持紧：全部 400 个实例中最大的 $\lambda_2/\lambda_1$ 为 $1.5\times10^{-9}$，比 $10^{-6}$ 阈值低约三个数量级，因此表~\ref{tab:app_main_rates} 与表~\ref{tab:app_noise} 无噪声格的 100\% 认证率不是勉强通过。$\mathrm{Shor}-J_{\rm ALM}$ 位于 $\pm10^{-8}$ 内且改变符号；这是 SCS 容差而非理论间隙，严格的可靠性主张需要定理~\ref{thm:cert} 的对偶可行修复。证书代价随 $p$ 从 8 到 64 由 52.9 增至 85.5~ms（均值；中位 51~$\to$~84），与固定的 $14\times14$ PSD 块加 $p$ 个线性约束一致。
+
+\begin{table}[t]
+\centering
+\caption{定理 P2-Cert 的精确 Schur 界与保守 $P$-shift 对偶修复（6 个合成实例，$\sigma\in\{0.10,0.20\}$，$p=16$）。}
+\label{tab:app_schur}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+$\sigma$ & 种子 & $J$ & $J-\text{对偶修复}$ & $J-\text{Schur}$ \\
+\midrule
+0.10 & 0 & 9.0579e-01 & $2.00\times10^{-8}$ & $5.59\times10^{-12}$ \\
+0.10 & 1 & 6.8500e-01 & $2.00\times10^{-8}$ & $-6.69\times10^{-13}$ \\
+0.10 & 2 & 4.3643e-01 & $2.00\times10^{-8}$ & $5.31\times10^{-11}$ \\
+0.20 & 0 & 3.2392e+00 & $2.04\times10^{-8}$ & $4.22\times10^{-10}$ \\
+0.20 & 1 & 3.1128e+00 & $2.00\times10^{-8}$ & $3.81\times10^{-11}$ \\
+0.20 & 2 & 3.0309e+00 & $2.01\times10^{-8}$ & $6.21\times10^{-11}$ \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\columnwidth}{\scriptsize 来源：\texttt{results/p2b\_schur\_check.json}/\texttt{.md}（独立检查，\texttt{shor\_bound(..., schur=True)}；不修改 \texttt{certificate.py}）。六行均为 case~A。}
+\end{table}
+
+两个界都是可靠的；$13\times13$ 平移 Schur 补大约紧四个数量级。$P$-shift 修复因界定 $\|\mathbf t\|$ 而付出 $2c$ 损失，故其间隙固定在 $2\delta_{\rm round}\approx2\times10^{-8}$，而 Schur 界不需要 $\|\mathbf t\|$ 界，在六行中的五行留下 $5.6\times10^{-12}$--$4.2\times10^{-10}$。第六行记录 $J-d_{\rm sound}=-6.7\times10^{-13}$：这正是定理 P2-Cert 减去的浮点裕量 $\delta_{\rm round}\sim10^{-12}\|\mathbf S_{10}\|_F$ 的量级，即认证裕量水平上的舍入残差，而非结构性过冲——论文报告原始差，不把它舍入成“正”。结论：\texttt{rigorous\_schur} 是记录的界；$P$-shift \texttt{repair\_dual} 值仅作为保守回退保留（也是附录~\ref{app:baselines} 中 16/16 合成结果所引用的值，该结果早于 Schur 路径）。六行均为 case~A（$3\times3$ 平移块正定），故使用的是定理中较紧的分支。
+
+\begin{table*}[t]
+\centering
+\caption{四个噪声水平下的零维 RLT 消融（每格 4 个种子）。}
+\label{tab:app_rlt}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}lcccccccc@{}}
+\toprule
+$\sigma$ / 偏置 & $n$ & 基础认证 & +RLT 认证 & 基础中位绝对间隙 & +RLT 中位绝对间隙 & 基础时间 (s) & RLT 时间 (s) \\
+\midrule
+0.02 / 0.10 & 4 & 4/4 & 4/4 & $1.6\times10^{-10}$ & $8.1\times10^{-11}$ & 0.05 & 0.15 \\
+0.05 / 0.20 & 4 & 4/4 & 4/4 & $1.7\times10^{-9}$ & $9.4\times10^{-10}$ & 0.05 & 0.14 \\
+0.10 / 0.30 & 4 & 1/4 & 2/4 & $4.2\times10^{-4}$ & $2.9\times10^{-4}$ & 1.59 & 0.85 \\
+0.20 / 0.40 & 4 & 0/4 & 0/4 & $8.6\times10^{-3}$ & $7.8\times10^{-3}$ & 1.62 & 2.40 \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{\textwidth}{\scriptsize 来源：\texttt{experiments/theory/results/rlt.json}（16 个实例；全部 16 个可行）。}
+\end{table*}
+
+零维 RLT 割 $g_ig_j\ge0$（$p=16$ 时 136 行）只在基础间隙小到适度收紧即可越过阈值时有帮助，其余情形没有：
+\begin{itemize}
+\item 在 $\sigma=0.02$ 与 $0.05$ 时基础证书已是 4/4，RLT 不改变任何东西。
+\item 在 $\sigma=0.10$ 时基础认证 1/4；RLT 认证 2/4。增益来自一个种子，其间隙从 $2.4\times10^{-4}$ 降至 $7.6\times10^{-12}$；已认证种子保持认证，其余两个仍以 $3.1\times10^{-3}$ 与 $5.8\times10^{-4}$ 的间隙未认证。
+\item 在 $\sigma=0.20$ 时两种方法都认证 0/4。RLT 把逐种子间隙降低 10--17\%（中位 $8.6\times10^{-3}\to7.8\times10^{-3}$），仍比 $10^{-6}$ 容差高约四个数量级。
+\item 在低噪声格上 RLT 证书约为基础 SDP 的 $3\times$（0.05~$\to$~0.15~s），在高噪声格上每实例 0.1--2.6~s，那里两个求解都不精确。
+\end{itemize}
+$\sigma=0.10$ 与 $0.20$ 的失败正是本稿不声称零维 RLT 闭合间隙的原因。可靠的高阶 bound-RLT 族在合成格上确实闭合了它（附录~\ref{app:baselines}）；其真实数据对应物是附录~\ref{app:real} 报告的严格重跑。
+
+\textbf{适用哪种内层根计数。} 上述所有合成格使用 PnP 型基座，即定理~\ref{thm:spectrum} 的 Type~I：约简矩阵秩亏（$\sigma=0.01$ 时秩 9，$\sigma=0$ 时秩 8），但内层 KKT 系统仍具有 $N_{\mathbb C}=40$ 个复射影根与一般的 15-单项式 grevlex 阶梯，因为平移 $\mathbf M\mapsto\mathbf M+\alpha\mathbf I$ 只使 $f$ 改变 $\alpha(\mathbf q^\top\mathbf q)^2$，所有临界点保持不变。同伦算法每实例只找到 16--18 个\emph{实}根（\texttt{results/quartic\_validation.json}；早先一次运行引用 15--16），这是预期的 Type-I 图景，不是模板缺失的症状。紧致族则不同：各向同性 3D--3D（Horn）基座加 $k$ 个共享同一法向的活跃平面约束，在 $k=0/1/\ge2$ 时坍缩为 $N_{\mathbb C}=4/12/16$（Hopf 直纹线 $\mathcal L_{\mathbf n}$ 是必须饱和的多余分量），两个不同法向时为 $32$，各向异性/PnP 基座加任意平面时回到 $40$。在实现层面，只交付并端到端运行\textbf{一个}模板——用于一般/PnP 情形的 40 根未饱和模板。各向同性单平面情形（$k\ge2$；$k=1$ 为 12 根，$k=0$ 为 $4\times4$ Davenport）的 16 根\emph{饱和}模板仅\textbf{在用户证明中代数地}建立：$4/12/16$ 谱\textbf{在标准形下数值地}确认，而 $16\times16$ 饱和作用矩阵在本仓库中\textbf{未构建为已交付的数值模板}。拥有该族的模块用 162 路径同伦加多起点回退求解实例，而不是 16 根模板。因此我们\textbf{不}声称“两种规模的固定小模板”：我们的主张是 40 根模板在 Type-I 实例上实现并验证，$4/12/16$ 谱在标准形下数值验证，生产用 16 根数值模板部分存在/缺失。附录~\ref{app:baselines} 中的精确枚举计时仅在 Type-I 实例上测量。
+
+\subsection{真实数据层结果}\label{app:real}
+\begin{table*}[t]
+\centering
+\caption{真实数据层实验（$p=16$，真值投影对应；$n=90/72/84$）。}
+\label{tab:app_real}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llccccccc@{}}
+\toprule
+数据集 & $n$ & 方法 & 穿透 (mm) & 旋转 (deg) & 平移 (mm) & 可行 & 单边（上界） & 双边（必要） \\
+\midrule
+LINEMOD & 90 & 无约束 QPEP & 11.26 & 2.08 & 35.63 & 13.3\% & 13.3\% & 8.9\% \\
+ & & 软惩罚（$\lambda{=}10^3$） & 0.00 & 2.13 & 39.81 & 88.9\% & 26.7\% & 16.7\% \\
+ & & 事后投影 & 0.00 & 2.05 & 30.80 & 100\% & 15.6\% & 10.0\% \\
+ & & \textbf{ALM-QPEP（本文）} & \textbf{0.00} & \textbf{1.97} & \textbf{37.66} & \textbf{100\%} & \textbf{33.3\%} & \textbf{18.9\%} \\
+\midrule
+LM-O & 72 & 无约束 QPEP & 14.93 & 2.07 & 34.69 & 6.9\% & 6.9\% & 6.9\% \\
+ & & 软惩罚（$\lambda{=}10^3$） & 0.00 & 1.90 & 39.91 & 91.7\% & 26.4\% & 9.7\% \\
+ & & 事后投影 & 0.00 & 2.04 & 31.29 & 100\% & 8.3\% & 6.9\% \\
+ & & \textbf{ALM-QPEP（本文）} & \textbf{0.00} & \textbf{1.99} & \textbf{38.14} & \textbf{100\%} & \textbf{30.6\%} & \textbf{12.5\%} \\
+\midrule
+YCB-Video & 84 & 无约束 QPEP & 14.09 & 1.08 & 17.33 & 6.0\% & 6.0\% & 3.6\% \\
+ & & 软惩罚（$\lambda{=}10^3$） & 0.00 & 1.40 & 29.38 & 90.5\% & 21.4\% & 7.1\% \\
+ & & 事后投影 & 0.00 & 1.08 & 8.93 & 100\% & 7.1\% & 4.8\% \\
+ & & \textbf{ALM-QPEP（本文）} & \textbf{0.00} & \textbf{1.11} & \textbf{25.18} & \textbf{100\%} & \textbf{33.3\%} & \textbf{9.5\%} \\
+\bottomrule
+\end{tabular}}
+
+\smallskip
+\parbox{\textwidth}{\scriptsize 来源：\texttt{real/linemod/results/raw.json}、\texttt{real/bop/results/lmo/raw.json}、\texttt{real/bop/results/ycbv/raw.json}（$n=90/72/84$）；Wilson 置信区间见各 \texttt{main\_table.md}；软惩罚取 $\lambda=10^3$。单边标志为 $J-\mathrm{Shor}\le10^{-6}$，接受负间隙；双边标志为 $|J-\mathrm{Shor}|\le10^{-6}$。二者都不是严格证书：SCS 不是对偶可行的。严格替代见表~\ref{tab:rigorous}。}
+\end{table*}
+
+六点观察。\textbf{(i) 无约束求解在真实物体/桌面几何上不可行。} 它在 86.7\%（LM）、93.1\%（LM-O）与 94.0\%（YCB-Video）的行上违反可行性，中位穿透 11.26/14.93/14.09~mm。ALM 在三个数据集上 100\% 可行且穿透 0.00~mm；软惩罚在 88.9\%/91.7\%/90.5\% 的试验中可行。投影也 100\% 可行。\textbf{(ii) 约束买来的是可容许性，不是精度。} 四种方法都在 $1.1$--$2.1^\circ$ 旋转与 9--40~mm 平移内。ALM 并不比投影更精确（LM 平移 37.66 对 30.80~mm，LM-O 38.14 对 31.29~mm，YCB-Video 25.18 对 8.93~mm）。\textbf{(iii) 真实认证受上界限制且依赖数据集。} 单边 ALM 率为 33.3\% [24.5,43.6]（LM）、30.6\% [21.1,42.0]（LM-O）、33.3\% [24.2,43.9]（YCB-Video）；双边率为 18.9\%、12.5\%、9.5\%。零维 RLT 割\textbf{没有}给出可复现的真实增益：LM 33.3~$\to$~31.1（McNemar $p=0.85$），LM-O 30.6~$\to$~33.3（$p=0.86$），YCB 33.3~$\to$~23.8（$p=0.15$，更差）；在双边检验上 RLT 处处更差（18.9~$\to$~14.4，12.5~$\to$~4.2，9.5~$\to$~6.0）。因此我们把真实数据上的\emph{零维} RLT 报告为\textbf{负结果}。\textbf{(iv) 存储的真实数据证书标志是单边的。} 它检验 \texttt{feasible and J - Shor <= 1e-6}，不记录 $\lambda_2/\lambda_1$ 或 SDP 状态，并接受负间隙。在缩放运行中，18--26\% 的基础 ALM 行具有负间隙，双边率为 9.5--18.9\%。因此表~\ref{tab:app_real} 中的比率是\textbf{上界}；严格替代见表~\ref{tab:rigorous}。\textbf{(v) 严格认证与唯一正面的 RLT 结果。} 表~\ref{tab:rigorous} 用\emph{已证明}的下界替代两个标志：\texttt{rigorous\_schur}（13 维平移 Schur 补，记录的界），以及作为保守回退的 $P$-shift \texttt{repair\_dual} 值。计数在每个数据集上验证夹逼（单边 $\ge$ 严格 $\ge$ 双边）。\textbf{(vi) LM-O 纯平面行为何需要交叉方向割。} 见附录~\ref{app:lmo}。
+
+五点解读。\emph{(a) 严格率远低于单边上界}——LM 24.4\% 对 33.3\%，LM-O 15.3\% 对 30.6\%，YCB-Video 13.1\% 对 33.3\%——并一致高于双边必要性检验（18.9/12.5/9.5）。夹逼顺序符合要求，上界与可靠率之间的差距（9--20 个百分点）正是单边标志所报告的数值假象大小。\emph{(b) 未认证行是真正的松弛，不是数值失败。} Schur 间隙在全部 738 个重放行上非负（3 个割族 $\times$ 246 个实例；0 个负间隙，最小 $4.0\times10^{-12}$--$1.7\times10^{-11}$，处于舍入下限），基础配置上的中位间隙为 $9.1\times10^{-6}$/$1.6\times10^{-5}$/$2.1\times10^{-5}$——是 $10^{-6}$ 容差的 9--21$\times$。紧性而非舍入，才是真实数据上的约束性限制。\emph{(c) 真实数据上 Schur 界与 $P$-shift 界相差 1--2 行}（22 对 23、11 对 11、11 对 10），不同于合成高噪声格上的四个数量级差距（表~\ref{tab:app_schur}）；逐行看，Schur 值在 82/90、68/72 与 78/84 个基础行上是两者中较紧的，且全部 738 个重放行都是 case~A（$\tilde{\mathbf H}_{tt}\succ0$，最大条件数 1668），因此使用的是定理 P2-Cert 的紧分支，没有行需要 $R_t$ 球。原因见上一点：当间隙 $\ge10^{-5}$ 时，$P$-shift 的 $2\delta_{\rm round}\approx2\times10^{-8}$ 代价无关紧要。我们仍把 Schur 值报告为记录的界、把 $P$-shift 值作为回退，因为只要间隙达到舍入下限，顺序就相反（Schur 更紧）。\emph{(d) 单边计数在不同 SDP 重解之间不可复现。} 在相同实例上（ALM $J$ 位级相同），重放在 \texttt{eps=1e-9}、50k 次迭代（存储运行为 20k）下重解 SDP，其值差异中位 $2.3\times10^{-8}$、最大 $3.7\times10^{-2}$；把\emph{同一} $J-\mathrm{Shor}\le10^{-6}$ 规则应用于重放值得到 25/90、19/72、17/84，而存储表报告 30/90、22/72、28/84。一个自身计数在不同求解间移动 5--11 行的检验不是证书，这就是论文把它降为仅上界的原因。\emph{(e) 可靠 bound-RLT 是正面结果，早先的负面结论来自不可靠的值。} 与基础配置相比，可靠的高阶 bound-RLT 族在 Schur 界上把严格认证从 22~$\to$~46（LM）、11~$\to$~30（LM-O）、11~$\to$~20（YCB-Video）提高——$+26.7/+26.4/+10.7$ 个百分点——McNemar $p=8.4\times10^{-6}$、$1.6\times10^{-4}$、$3.5\times10^{-2}$（配对标志；$0\to1$ 翻转 27/22/12，对 $1\to0$ 翻转 3/3/3）。在更保守的 $P$-shift 界上，相同计数为 23~$\to$~43、11~$\to$~24、10~$\to$~19（$+22.2/+18.1/+10.7$~pp；配对检验仅在 Schur 值上报告）。在同一可靠规则下零维族为零或负增益（Schur 22~$\to$~19、11~$\to$~6、11~$\to$~6；$p=0.45/0.063/0.063$）。在\emph{存储值}上，零维 RLT 看似在 LM-O 上有帮助（22~$\to$~24），只是因为它把 22/72 行的值推到 $J$ 以上；用可靠界后这一表面增益消失，而被不可靠标志判为失败的 bound-RLT 族，才是真正闭合间隙的那个。
+
+\subsection{LM-O 深度与倾角增广}\label{app:lmo}
+定理~\ref{thm:cert} 的结构性诊断指出：当每个活跃约束共享桌面法向时，RLT 乘积只约束 $\mathbf n^\top\mathbf t$，留下一个可容许的秩 2 伪混合；正深度与倾角锥行补上切割它的交叉方向块。表~\ref{tab:app_lmo} 在基础配置下 Schur 间隙最大的六个 LM-O 行上检验该预测（全部为帧 000002，物体 5/8/12，偏置 20/30~px；72 个基础行中有 61 个未认证）。
+
+\begin{table*}[t]
+\centering
+\caption{LM-O 深度+倾角增广，前 $\to$ 后（6 个最差的基础未认证行）。}
+\label{tab:app_lmo}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+行（帧/图/物体/偏置） & 基础间隙 & bound-RLT 间隙（无增广） & 增广+基础间隙 & 增广+bound-RLT 间隙 & 增广后认证 \\
+\midrule
+000002/1/8/30 & $2.56\times10^{-4}$ & $1.45\times10^{-4}$ & $2.54\times10^{-4}$ & $9.0\times10^{-12}$ & 是 \\
+000002/0/8/30 & $2.56\times10^{-4}$ & $2.00\times10^{-4}$ & $2.37\times10^{-4}$ & $5.2\times10^{-11}$ & 是 \\
+000002/1/5/30 & $1.78\times10^{-4}$ & $3.54\times10^{-5}$ & $1.77\times10^{-4}$ & $1.0\times10^{-11}$ & 是 \\
+000002/0/5/30 & $1.15\times10^{-4}$ & $1.0\times10^{-10}$ & $1.15\times10^{-4}$ & $9.9\times10^{-11}$ & 是 \\
+000002/0/8/20 & $1.02\times10^{-4}$ & $6.17\times10^{-5}$ & $1.02\times10^{-4}$ & $1.9\times10^{-11}$ & 是 \\
+000002/0/12/30 & $1.00\times10^{-4}$ & $9.37\times10^{-5}$ & $9.9\times10^{-5}$ & $6.0\times10^{-11}$ & 是 \\
+\bottomrule
+\end{tabular}}
+
+\smallskip
+\parbox{\textwidth}{\scriptsize 来源：\texttt{results/rigorous\_lmo\_depth\_tilt.json}（\texttt{run\_rigorous\_real.py depth-tilt --select worst --max-rows 6 --alpha 12 --n-depth 4}）；“无增广”列为 \texttt{real/bop/results/lmo/rigorous/rigorous\_rows.json} 中的行级 \texttt{brlt} 间隙。增广在 16 个平面行之外加入 4 个正深度行与 1 个直立锥行（$\alpha=12^\circ$，$\cos\alpha=0.978$）（$n_{\rm ineq}=16\to21$）。}
+\end{table*}
+
+预测以具体且可检验的形式成立。(a) 增广不改变答案：$|\Delta J|\le7.4\times10^{-15}$，且 ALM 的位姿已经满足新增行（最小深度 0.85--0.88~m $\gg z_{\min}=0.02$~m；直立度 0.998--0.999 $\ge\cos12^\circ$），因此证书针对的是具有相同最优解的问题，而非不同问题。(b) 仅增加行\emph{本身}无济于事：增广问题上的基础割仍在全部六行失败（间隙 $9.9\times10^{-5}$--$2.5\times10^{-4}$，基本不变）。(c) 在增广问题上使用 bound-RLT 后全部六行认证，间隙 $9\times10^{-12}$--$1.0\times10^{-10}$；不做增广时，单独 bound-RLT 只认证 6 行中的 1 行（该行为 $1.0\times10^{-10}$，其余为 $3.5\times10^{-5}$--$2.0\times10^{-4}$）。因此正是\emph{交叉方向 RLT 乘积} $g_{\rm plane}g_{\rm depth}$ 与 $g_{\rm plane}g_{\rm tilt}$ 承载增益，恰如定理所论证，深度/倾角行是促成者而非解药。诚实的范围：这是 61 个未认证 LM-O 行中的 6 行，按最差选取；这是机制检查，不是数据集级比率，数据集级比率仍为表~\ref{tab:rigorous} 中的值。
+
+\subsection{基线、精确枚举与待完成项}\label{app:baselines}
+\textbf{本轮测量。} 所有数字均为层级别，产生于共享登录节点；绝对计时随负载漂移，仅用于相对比较。
+
+\begin{itemize}
+\item \textbf{精确 QPEP 内层枚举，端到端穿过 ALM。} 在 $p\in\{8,16,64\}$ 的 8 次 ALM 试验上（$p=16$ 时种子 0--3，$p=8,64$ 时种子 0--1），精确 162 路径全次数枚举器与默认 6 起点多起点返回相同目标（$\max|\Delta J|=1.8\times10^{-12}$）、相同位姿（$\max\|\Delta\mathbf q\|=7.9\times10^{-10}$）、相同可行性（最大违反 $7.6\times10^{-11}$），且 7/8 次试验的外层迭代数相同（剩余 $p=64$ 试验提前一次迭代停止）。完备性是条件性的且经过测量：89/114 次枚举（78.1\%）找到一般 40 个有限射影根，25 次（21.9\%）丢失一条同伦路径并回退到 64 起点 BFGS；114 次探测枚举中每一次都有新的 64 起点 BFGS 达到同一全局极小。在 $\sigma=0.01$ 时 ALM 活跃集矩阵满秩（10/10，最小特征值 $8.2\times10^{-4}$），而无约束 $\mathbf M^{\rm red}_{\mathcal A}$ 秩为 9；无噪声矩阵秩为 8，有 16--18 个实根（\texttt{results/quartic\_validation.json}）。因此 25 次回退是同伦路径丢失，不是秩亏。精确内层每个位姿耗时 5.0--15.9~s，多起点为 0.12--0.28~s（37--64$\times$，中位 $47\times$）；混合调度（每三次外层迭代做一次精确枚举）在相同目标下将其降至 2.1--4.0~s。因此它买来的是固定活跃集下内层块的正确性/全局最优性检查，而不是有竞争力的内层求解器；默认仍是多起点。来源：\texttt{results/exact\_alm.json}、\texttt{.md}；仅内层的 24 实例表为 \texttt{results/quartic\_validation.json}。
+\item \textbf{枚举代价更新（单独测量，未缩放）。} 上述 37--64$\times$ 比率是用优化前的枚举器测量的（一次 162 路径枚举平均 $\approx649$~ms）。同一代码的后续版本把形成 $\mathbf J^\top\mathbf M\mathbf J$ 的三操作数 \texttt{einsum} 替换为两次批量 BLAS 乘积（先 $\mathbf M\mathbf J$ 再 $\mathbf J^\top(\mathbf M\mathbf J)$，数学上等价），把一次枚举从 0.488~s 降至 0.168~s（2.92$\times$，356~$\to$~1077 路径/s），在 15 个案例上完全一致（相同根数、相同有限射影数，$\max|\Delta f|=3.3\times10^{-16}$），批量求值次数相同（中位 470）。由于此后\emph{未}重跑端到端 ALM 计时，我们\textbf{不}把 37--64$\times$ 范围除以 2.92：保留直接测得的 37--64$\times$ 作为保守数字，并把 2.92$\times$ 报告为孤立的内层循环加速。一个被否决的变体（提前剔除发散路径，\texttt{div\_tol} $10^3$--$10^2$）在 $10^3$ 时无收益、在 $10^2$ 时丢根，因此已回退。来源：\texttt{results/perf\_quartic.md}/\texttt{.json}。
+\item \textbf{SCP 基线（dQP + 局部线性化）。} 在合成主格（$p=8/16/32$，各 50 次试验）上，SCP 100\% 可行，位姿误差与 ALM 在打印精度内一致（$p=16$：0.00~mm / $4.17^\circ$ / 10.63~mm），其输出在 98\% 的试验中通过同一 $14\times14$ 证书检验，而 ALM 为 100\%；它在此实现中更快（中位 130--142~ms 对 218--239~ms），约 90\% 墙钟时间花在 SOCP 上。在压力格（$\sigma=0.020$，偏置 0.120，20 次试验）上，SCP 认证 85\%，ALM 为 100\%。六次 SCP 失败都从手性镜像无约束解出发，且不能被额外两个扰动起点救回。因此我们声称的差异点是镜像初始化鲁棒性与 $p$ 无关的复杂度论证，而不是逐实例精度；SCP 是必须的强基线，并按此报告。来源：\texttt{results/scp\_baseline.md}（逐试验原始数据在 \texttt{results/scp\_baseline.json}）。
+\item \textbf{可靠高阶 RLT（合成）。} 可靠 bound-RLT 族结合 \texttt{repair\_dual} 认证全部 16 个合成噪声实例（此前 9/16），最大严格间隙 $2.28\times10^{-8}$，证书时间中位 0.036~s $\to$ 0.180~s。增益集中在仅靠零维割失败处（$\sigma=0.10$：1/4~$\to$~4/4；$\sigma=0.20$：0/4~$\to$~4/4）。来源：\texttt{experiments/theory/results/round\_rlt.md}、\texttt{.json}。
+\item \textbf{严格真实数据认证与 bound-RLT 结果。} 存储的单边标志在三个数据集上均被已证明的下界替代（表~\ref{tab:rigorous}）。基础配置：严格 Schur 22/90（24.4\%）、11/72（15.3\%）、11/84（13.1\%）——均低于单边上界（33.3/30.6/33.3\%），高于双边必要性检验（18.9/12.5/9.5\%）。Schur 界在全部 738 个重放行上非负（最小 $4.0\times10^{-12}$），因此失效模式是松弛：基础间隙中位为 $9.1\times10^{-6}$/$1.6\times10^{-5}$/$2.1\times10^{-5}$，是容差的 9--21$\times$。加入可靠 bound-RLT 族后严格率升至 46/90（51.1\%）、30/72（41.7\%）、20/84（23.8\%），即在 Schur 界上 $+26.7/+26.4/+10.7$~pp（在 $P$-shift 计数上 $+22.2/+18.1/+10.7$~pp），配对 McNemar $p=8.4\times10^{-6}$、$1.6\times10^{-4}$、$3.5\times10^{-2}$，SDP 代价 0.9--1.5$\times$，Schur 修复 0.20--0.36~ms。零维 RLT 族在同一可靠规则下仍为零或负增益（Schur 22~$\to$~19、11~$\to$~6、11~$\to$~6；$p=0.45/0.063/0.063$）。这推翻了早先“RLT 在真实数据上为负”的解读：\textbf{零维 RLT 是负结果；可靠 bound-RLT 是真实增益}。来源：\texttt{results/rigorous\_lm.json}、\texttt{results/rigorous\_lmo.json}、\texttt{results/rigorous\_ycbv.json}，以及 \texttt{results/rigorous\_real.\{json,md\}}。
+\end{itemize}
+
+\textbf{仍待完成。} 以下内容被刻意排除，第~\ref{sec:intro}--\ref{sec:method} 节中的任何主张都不依赖它们：\emph{学习型与其余凸层基线}（无约束及带 $p$ 个松弛变量的 SDPRLayers、Theseus；dQP 族基线即上述 SCP 组合）；\emph{端到端训练}（附录~\ref{app:protocol} 的 T1-network、T2 与 T3 协议；ADD(-S)、真实帧上的穿透、KITTI/TUM/UTIAS）；\emph{反向传播与延迟拆分}（只计时前向求解；FB 反向传播、装配/内层/证书拆分，以及 Gauss--Newton 对精确 Hessian、FB $\varepsilon$、证书开关与内层求解器消融均未测量）；以及\emph{真实数据规模扩展}（真实表使用 $n=90/72/84$；Wilson 区间见附录~\ref{app:real}，RLT 差值在这些规模下不显著，故按负结果报告）。生产层（\texttt{torch.autograd.Function} 加参考 NumPy 实现）不属于本稿工件；实验在 \texttt{experiments/code/} 下运行研究实现。所有结果文件、聚合脚本与绘图脚本位于 \texttt{experiments/results/}；健全性检查脚本与输出位于 \texttt{verify/}。
