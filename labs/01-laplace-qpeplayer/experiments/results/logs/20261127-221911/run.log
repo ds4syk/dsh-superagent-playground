@@ -1,0 +1,19 @@
+# P1 Laplace-QPEPLayer fast-suite reproduction
+timestamp : 20261127-221911
+host      : ls
+exp_dir   : /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/01-laplace-qpeplayer/experiments
+python    : /home/syk/miniconda3/envs/WM/bin/python
+workdir   : /tmp/p1-repro.20261127-221911.maWSjS (throwaway copy; committed results untouched)
+flags     : with_linemod=0 with_sdp=1 with_sdp_upstream=0 with_scorer=1 compare=1
+== preflight ok: Python 3.10.22
+== log dir: /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/01-laplace-qpeplayer/experiments/results/logs/20261127-221911
+
+[run_main.py           ] rc=0  wall=14.434s  
+[run_ablation.py       ] rc=0  wall=3.962s  
+[run_unequal.py        ] rc=0  wall=1.163s  
+[run_uniform.py        ] rc=0  wall=7.770s  
+[run_fold.py           ] rc=0  wall=2.698s  
+[verify_q6.py          ] rc=0  wall=0.405s  
+[run_6point_check.py   ] rc=0  wall=1.250s  
+[run_six_point_cert.py ] rc=0  wall=1.256s  
+[make_q2_summary.py    ] rc=0  wall=1.036s  

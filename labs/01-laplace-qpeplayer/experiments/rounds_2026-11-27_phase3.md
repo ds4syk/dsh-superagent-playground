@@ -18,6 +18,9 @@
 | 12 | 论文与结果文件的数字应机器可查，且新表格/修正后仍 16/16 | 更新 `code/check_paper_numbers.py` 并运行 | `python code/check_paper_numbers.py` | 16/16 patterns found（含新 Table 5.8/5.16/5.17 数字） | keep | `code/check_paper_numbers.py` |
 | 13 | 6 点证书与 Q2 图应纳入 `--with-sdp` 一键复现 | `run_all.sh` 的 `--with-sdp` 追加 `run_six_point_cert.py` 与 `make_q2_summary.py` | `./run_all.sh --with-sdp` | 9 脚本全 rc=0，**34.877 s PASS**；证书 1.38 s、图 1.11 s；已提交 results 不变 | keep | `run_all.sh`、`results/logs/20261127-220948/` |
 | 14 | 论文应引用 Q2 图与证书区间，且区间不含证明引用值 | 在 §5.3.4 加图引用；6 点段加证书区间与“proof 值落在区间外” | — | 论文现引 `q2_summary.png` 与 `six_point_cert.md`；明确 proof 的 3.59430886/1.82069114 在区间外 | keep | `paper/draft.md` |
+| 15 | f13_up 的 4.9e-6 必须定性：是求解器容差、构造差异还是转写 | 并入 forensics：精确有理数对偶证书（Fraction LDL^T + mpmath 60 位）+ 36 个自然变体 | `python sdp/run_f13up_forensics.py`（147 s） | **f*13up ≥ 3.594313732834**（最小主元 1.0e-11，mpmath λmin +8.0e-12）；证明引用 3.59430886 **比下界低 4.87e-6**，36 变体 0 命中（最近差 4.1e-6）⇒ 只能是欠收敛对偶值/转写；rowdot 10 位复核 +1.0/−1.0/gap 2.0 确认 | keep | `sdp/run_f13up_forensics.py`、`sdp/results/f13up_forensics.{md,json}` |
+| 16 | Scorer 连续性需网格细化决定性检验 | 子 agent `wt-p1-scorerscale` 的 staggered-grid 细化（interim；md/json 未落盘即被时间上限中断） | — | d=4e-5→2.5e-6：**Scorer jump/d = 404.3/404.2/404.0/403.7/403.3（jump ∝ d，无地板）**；标准 7.6e3→2.1e5、正则 2.7e3→4.4e4（常数阶跃）⇒ Scorer 真连续 | keep（interim，脚本 `wt-p1-scorerscale/theory/run_scorer_scaling.py` 未并入） | 本轮日志；论文 Table 5.14 段 + theory §7.5 |
+| 17 | 共享 worktree 被其他 worker 的 `git checkout` 回退了 4 个 P1 文档；需重放并备份 | 重放 run_all.sh（--with-scorer + cert/fig）、REPRO、两份 README；把 phase-3 P1 文件备份到 `/tmp/p1_phase3_backup/` | `./run_all.sh --with-sdp --with-scorer` | 见下方 harness 结果；论文/理论补丁未受影响 | keep | `run_all.sh`、`REPRO.md`、`experiments/README.md`、`labs/01-laplace-qpeplayer/README.md` |
 
 ## 并行子 agent（phase-3 wave 1）
 
