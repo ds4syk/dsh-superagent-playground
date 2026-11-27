@@ -1,0 +1,105 @@
+
+=== V1: m(p) 精确公式 / v2 恒等式 / 齐次性 ===
+  [PASS] V1a R(q)p = m(p)v2(q)（精确公式与 lstsq 都对）  max err 6.38e-15
+  [PASS] V1b e_tr^T v2 = ||q||^2 = 1
+  [PASS] V1c R(q) 正交 det=+1
+  [PASS] V1d q_from_R(R(q)) 还原 v2
+
+=== V2: 四类约束对 (v2,t) 仿射 ===
+  [PASS] V2 depth/non-pen/FoV×2/tilt 仿射于 (v2,t)  max err 1.33e-15
+
+=== V3: 穿透度量 ===
+  [PASS] V3a GT 穿透 = 0（GT 恰好接触桌面）  pen=0.000e+00 mm
+  [PASS] V3b 下移 7.3mm ⇒ pen = 7.3mm  pen=7.300000 mm
+  [PASS] V3c 密集网格 min_z = 角点 min_z (tz=0.000)  0.00e+00
+  [PASS] V3c 密集网格 min_z = 角点 min_z (tz=-0.013)  0.00e+00
+  [PASS] V3c 密集网格 min_z = 角点 min_z (tz=0.020)  0.00e+00
+  [PASS] V3d 上移 2cm ⇒ pen=0
+
+=== V4: 增广拉格朗日展开与常数项 ===
+  [PASS] V4a L_rho|_A = v2^T M_A v2 + 2t^T D_A v2 + t^T G_A t + kappa_A  err 0.00e+00 |A|=16
+  [PASS] V4b 错误常数项（全部约束）确实对不上 ⇒ 该项是实现级 bug 源  wrong-version err = 5.711e-01（应等于 Σ_{j∈A} μ_j²/2ρ = 5.711e-01）
+  [PASS] V4c 错误常数项误差 = Σ_{A} μ²/2ρ（逐项对账）
+
+=== V5: Schur 补 / G_A≻0 / t* 闭式 ===
+  [PASS] V5a G_A ≻ 0  lambda_min=1.384e+01
+  [PASS] V5b min_t L_rho = v2^T (M_A - D_A^T G_A^{-1} D_A) v2 + kappa  err 4.44e-15
+
+=== V6: 内层多起点 vs 200 起点全局参照 ===
+  [PASS] V6 内层 8 起点 vs 200 起点实例 0（Δf<=1e-9）  f8=0.0023336837 f200=0.0023336837 Δ=9.97e-18
+  [PASS] V6 内层 8 起点 vs 200 起点实例 1（Δf<=1e-9）  f8=0.0020720587 f200=0.0020720587 Δ=8.24e-18
+  [PASS] V6 内层 8 起点 vs 200 起点实例 2（Δf<=1e-9）  f8=0.0013213270 f200=0.0013213270 Δ=3.69e-18
+
+=== V7: 无噪无偏 ⇒ 精确恢复 GT；桌面放低 ⇒ ALM 退化为无约束 ==
+  [PASS] V7a 无噪无偏 GT 处 J=0  J_gt=-1.67e-16
+  [PASS] V7b 无约束解恢复 GT（J<=1e-12, rot<=1e-3 deg, trans<=1e-3 mm）  J=-1.59e-16 rot=0.00e+00 deg trans=8.77e-09 mm
+  [PASS] V7c 桌面放低 30cm ⇒ ALM = 无约束解（ΔJ<=1e-9, 约束不活跃）  ΔJ=4.51e-17 viol=0.00e+00 ||mu||=0.00e+00
+
+=== V8: 单约束平移问题闭式（ALM 解投影） ===
+  [PASS] V8 ALM 命中闭式投影 t_z=h  t_z=-0.0000000000 viol=0.00e+00
+
+=== V9: 回归 —— 复现 verify/sanity_constraints_alm.py 的 p=12 实例 ===
+  GT J=0.0236081788 (verify: 0.023608)  g_gt max=9.5426e-02 (verify: 9.54e-2)
+  无约束 J=0.0030334724 (verify: 0.0030334724) ; ALM J=0.0680069355 (verify: 0.06800693548)
+  Shor(ineq)=0.0680069355 (verify: 0.0680069355) ratio=1.48e-11 ; Shor(uncons)=0.0030334692 (verify: 0.0030334692)
+  [PASS] V9a 无约束值复现 verify（|Δ|<=1e-9）  J_u=0.0030334724
+  [PASS] V9b ALM 约束最优复现 verify（|Δ|<=1e-8）  J*=0.0680069355
+  [PASS] V9c 14×14 Shor 复现 verify（|Δ|<=1e-8 且 tight）  Shor=0.0680069355 ratio=1.48e-11
+  [PASS] V9d 不加不等式的 Shor 复现 verify 无约束值  Shor_un=0.0030334692
+
+=== V10: 14×14 Shor 在 8 个随机实例上的 sound / tight ===
+  seed=0 J_ALM=0.0049217860 Shor=0.0049217855 gap=4.83e-10 ratio=1.51e-10 [0.05s]
+  seed=1 J_ALM=0.0039420457 Shor=0.0039420491 gap=-3.41e-09 ratio=1.95e-10 [0.05s]
+  seed=2 J_ALM=0.0024492094 Shor=0.0024492105 gap=-1.10e-09 ratio=2.24e-10 [0.05s]
+  seed=3 J_ALM=0.0049115369 Shor=0.0049115381 gap=-1.18e-09 ratio=2.30e-11 [0.05s]
+  seed=4 J_ALM=0.0062213052 Shor=0.0062213053 gap=-1.12e-10 ratio=8.18e-11 [0.05s]
+  seed=5 J_ALM=0.0035739093 Shor=0.0035739076 gap=1.71e-09 ratio=1.02e-09 [0.05s]
+  seed=6 J_ALM=0.0046840653 Shor=0.0046840728 gap=-7.52e-09 ratio=3.98e-10 [0.05s]
+  seed=7 J_ALM=0.0035231421 Shor=0.0035231445 gap=-2.40e-09 ratio=2.72e-10 [0.06s]
+  [PASS] V10a sound：Shor <= J_ALM + 1e-7（8/8）  8/8, max|gap|=7.52e-09
+  [PASS] V10b tight：λ2/λ1 <= 1e-6（8/8）  8/8, max ratio=1.02e-09
+
+=== V11: d(μ) 弱对偶下界（含 δ<0 数值现象） ===
+  seed=0 J*_ALM=0.0049217860 d(mu)=0.0049217860 delta=-5.886e-13 (! δ<0 数值误差)
+  seed=1 J*_ALM=0.0039420457 d(mu)=0.0039420457 delta=-2.297e-14 (! δ<0 数值误差)
+  seed=2 J*_ALM=0.0024492094 d(mu)=0.0024492094 delta=-2.007e-13 (! δ<0 数值误差)
+  seed=3 J*_ALM=0.0049115369 d(mu)=0.0049115369 delta=4.665e-14 
+  [PASS] V11a d(μ) <= J*（4/4，容差 1e-8）  min δ=-5.89e-13
+
+=== V12: ALM 解的 KKT 残差 / μ>=0 / G_A≻0 / NaN / LICQ 秩 ===
+  [PASS] V12a μ >= 0
+  [PASS] V12b G_A ≻ 0（末端活跃集）  lambda_min=1.354e+01
+  [PASS] V12b2 200 组随机 (G0≻0,ρ,A) 的 G_A 均 ≻ 0  0 bad, min λ=1.000e-01
+  [PASS] V12c 无 NaN/Inf  J=0.00492179
+  [PASS] V12d 互补松弛 max|μ_j g_j| <= 1e-8  2.06e-12
+  [PASS] V12e KKT 驻点残差 ||∇L0||_6 <= 1e-4  res=1.24e-10 ([ 1.82e-11  1.02e-10 -6.55e-11 -1.39e-11  0.00e+00 -9.97e-12])
+  活跃集 |A|=3 ; 6 维切空间 rank(J_A)=2 ⇒ LICQ 失效
+  [PASS] V12f 本实例活跃集秩亏（LICQ 失效，与四脚桌同结构）  |A|=3 rank=2
+
+=== V13: 投影可行性 / 软惩罚 Pareto 方向 ===
+  [PASS] V13a 投影返回可行点（viol<=1e-6）  viol=1.89e-15 method=slsqp
+  软惩罚 λ=[1,10,100,1000] 穿透(mm) = [10.539  0.683  2.058  0.   ]
+  [PASS] V13b 穿透随 λ 总体下降（末项 <= 首项 + 0.5mm）  pen(λ=1)=10.54 pen(λ=1e3)=0.00
+
+=== V14: 活跃集 Jacobian 秩（四脚桌 LICQ 失效的真实实例对应） ===
+  p= 8 seed=0 |A|= 3 rank=2 LICQ fail
+  p= 8 seed=1 |A|= 5 rank=3 LICQ fail
+  p= 8 seed=2 |A|= 1 rank=1 LICQ ok
+  p= 8 seed=3 |A|= 2 rank=2 LICQ ok
+  p=16 seed=0 |A|= 3 rank=2 LICQ fail
+  p=16 seed=1 |A|= 9 rank=3 LICQ fail
+  p=16 seed=2 |A|= 1 rank=1 LICQ ok
+  p=16 seed=3 |A|= 2 rank=2 LICQ ok
+  p=32 seed=0 |A|= 3 rank=2 LICQ fail
+  p=32 seed=1 |A|=17 rank=3 LICQ fail
+  p=32 seed=2 |A|= 1 rank=1 LICQ ok
+  p=32 seed=3 |A|= 2 rank=2 LICQ ok
+  p=64 seed=0 |A|= 6 rank=2 LICQ fail
+  p=64 seed=1 |A|=33 rank=3 LICQ fail
+  p=64 seed=2 |A|= 1 rank=1 LICQ ok
+  p=64 seed=3 |A|= 2 rank=2 LICQ ok
+  [PASS] V14 至少一半实例 LICQ 失效（rank<|A|）  8/16
+
+=== 汇总 ===
+  40/40 项检查通过
+  已写出 results/validation.json
