@@ -183,7 +183,7 @@ $\kappa\asymp1/\varepsilon^2$；$\varepsilon$ 与 $\rho$、活跃集阈值 $\del
 | R4 | P2 增广拉格朗日活跃集配方与常数项：只有**非活跃**约束贡献 $-\mu_j^2/(2\rho)$ | P2 `sanity_constraints_alm.py` C2：正确 $3.6\times10^{-15}$，错误常数 $5.6\times10^{-1}$ |
 | R5 | P2 FB 极限：$\varepsilon>0$ 恒可逆；极限 = $H$-加权最小范数解；相容时=真导数；四脚桌（桌面位姿为参数）自动相容 | P2 `sanity_fb_saddle.py` F4/F5/F6 |
 | R6 | P2 证书：14×14 Shor + Veronese 在 $p=12$ 实例 tight 到 $2.3\times10^{-11}$；$d(\mu^*)$ 的负 gap 不可用 | P2 `sanity_constraints_alm.py` C5 |
-| R7 | P3 源文档 $H_{\rm rob}$ 缺 $\mathbb S^3$ 约束乘子项 $-\lambda_{\rm rob}\operatorname{diag}(I_3,0)$；补上后对 FD 误差从 29.7% 降到 $1.5\times10^{-7}$ | P3 `riemann_hessian_check.py` |
+| R7 | P3 源文档 $H_{\rm rob}$ 缺 $\mathbb S^3$ 约束乘子项 $-\lambda_{\rm rob}\operatorname{diag}(I_3,0)$；补上后对 FD 误差从 25.9% 降到 $9.9\times10^{-8}$ | P3 `riemann_hessian_check.py` |
 | R8 | P3 一维 sign-flip 严格成立；$O(\|r\|^{-4})$ 斜率实测 $-3.998$；$\lambda_i=4u_i^\top W_ir_i\neq4e_i$ | P3 `ift_1d_signflip.py` + `proofs.md` Prop 3.4 |
 | R9 | QPEP "27 根"无出处；官方实现返回至多 40 个候选复根，且 27 为奇数与 $\pm q$ 成对不相容 | P1 README/Q4；`kb/sdpr-qpeep/03.md` §2.3 |
 

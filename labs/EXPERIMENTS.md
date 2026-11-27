@@ -1,0 +1,93 @@
+# 三个 prototype 的实验结果（2026-11-27）
+
+> 用户要求：三个 prototype 的实验都做；先做基于数学定理的实验验证，选合适数据集与 baseline，主表站得住再往下推进。
+>
+> **环境限制**：本机没有 3DMatch / KITTI / LINEMOD / YCB / In-The-Dark 等公开数据集，外网数据集下载会挂起；也没有 Mosek / Theseus / EPro-PnP 的预训练管线。因此三个实验先用**可控合成数据 + 已知真值**验证定理与机制，代码/原始 JSON 在各目录 `experiments/`；真实数据实验是下一阶段。
+>
+> **代码校验**：每个实验都要求已知真值/闭式解、有限差分、暴力对照；若结果与预期不符，先查代码而不是改指标。
+
+## 总览
+
+| 线 | 任务 | 主表结论 | 代码/结果 |
+|-|-|-|-|
+| **P1** | 可控双峰位姿的分支交叉（81 个 θ，τ=0.01） | 交叉处 Laplace 梯度误差 **4.3e-4**，MC **3.3e-2**（std 0.11），硬 argmin **N/A**；远离交叉三者一致到 1e-6 | `01-laplace-qpeplayer/experiments/` |
+| **P2** | 合成桌面 6-DoF PnP，p=8–64 约束（50 trials/格） | ALM **0 mm 穿透、100% 可行、100% 认证**；无约束 **103 mm** 穿透；软惩罚/投影可行但认证 0% | `02-constrained-qpeplayer/experiments/` |
+| **P3** | 合成 3D-3D 配准，0–70% 外点（100 trials/格） | GNC 与 RANSAC 同精度 100% 成功；对固定 1000 迭代 RANSAC **31–33× 加速**；exact 梯度 vs FD **5e-8**，naive 边界 cosine **0.23** | `03-robust-qpeplayer/experiments/` |
+
+**判断（prototype 级）**：三张主表都站得住——P1 证明平滑层在交叉处仍可微且比采样方差低；P2 证明硬约束与 sound 证书同时成立；P3 证明同精度下大幅加速 + 精确梯度。**但都还不是论文级主表**：真实数据（3DMatch/KITTI/LINEMOD/YCB/In-The-Dark）、QPEP 多项式内层、端到端训练/反向层仍未做。
+
+## P1 `Laplace-QPEPLayer`
+
+**任务**：合成双峰 QPEP 实例（2 全局 + 2 局部极小，全局分支在 θ=0 交叉），比较 hard argmin、多峰 Laplace、mode-level MC 的梯度与位姿。代码在 `01-laplace-qpeplayer/experiments/code/`，结果在 `.../results/`。
+
+**主表**（81 个 θ；τ=0.01；FD h=1e-4；MC 200 样本 × 20 种子）：
+
+| regime | n | Laplace 梯度误差 | MC 梯度误差 | Hard 梯度误差 | MC 位姿 std |
+|-|-|-|-|-|-|
+| far ($|\theta|>0.05$) | 61 | 4.7e-7 | 4.7e-7 | 4.7e-7 | 2.8e-16 |
+| near ($0.005<|\theta|<0.05$) | 19 | 3.5e-5 | 9.4e-5 | 2.2e-5 | 2.9e-16 |
+| at ($|\theta|<0.005$) | 1 | **4.3e-4** | **3.3e-2** | **N/A**（分支切换） | **1.1e-1** |
+
+- 远离交叉：全局模式权重≈1，三种方法都退化为硬 argmin，梯度与 FD 一致到 1e-7–1e-5。
+- 交叉处：硬 argmin 在 ±h 内切换分支，FD 无定义；Laplace 仍与平滑后验的 FD 一致到 **4.3e-4**；MC 误差 **3.3e-2**、跨种子 std **1.1e-1**。这正是“Laplace 比采样方差低、且交叉处仍可微”的证据。
+- 代码校验：`ift_dq` 对分支 FD 5e-9、`dpose_dq` 2e-9、`dlogdet` 3e-8；修复了 `ift_dq` 缺因子 2、`dpose_dq` einsum 下标、Laplace 权重导数误用 $g$ 而非 $\dot g$、`dlogdet` 漏显式 $\theta$ 项等 bug。详见 `01-laplace-qpeplayer/experiments/README.md`。
+
+**限制**：合成双峰实例；mode-level MC 不是 $SE(3)$ 连续 MCMC；交叉处 $4\times10^{-4}$ 残差主要来自严格简并处模式集变化。
+
+## P2 `Constrained-QPEPLayer`
+
+## P2 `Constrained-QPEPLayer`
+
+**任务**：合成桌面 6-DoF PnP（N=14 对应点，bearing 型代数代价，p=8/16/32/64 个非穿透/正深度/FoV/倾角约束，σ=10 mm、系统偏差 80 mm，50 trials/格）。方法：Unconstrained QPEP、Soft penalty（λ=1e3）、Post-hoc projection、ALM-QPEP（ours）。
+
+**主表**（median [IQR]，p=8–64；完整表见 `02-constrained-qpeplayer/experiments/results/main_table.md`）：
+
+| method | 穿透 mm | 穿透率 | rot deg | trans mm | 可行率 | 认证率 | runtime |
+|-|-|-|-|-|-|-|-|
+| Unconstrained | 103.0 [84.7,110.8] | 100% | 5.30 | 97.9 | 0% | 0% | 143 ms |
+| Soft penalty λ=1e3 | 0.00 [0,0.03] | 0% | 6.62 | 13.0 | 38% | 0% | 94 ms |
+| Post-hoc projection | 0.00 | 0% | 4.16 | 9.10 | 100% | 0% | 12 ms |
+| **ALM-QPEP (ours)** | **0.00** | **0%** | **4.17** | 10.63 | **100%** | **100%** | 260–288 ms |
+
+- **ALM 全部 400 trials 可行（违反 ≤1e-10）且 100% 通过 14×14 Shor 证书**（λ₂/λ₁ ≤1.5e-9，|J−Shor| ≤9.4e-9）；软惩罚/投影可行但认证 0%。
+- p 从 8→64：ALM runtime log-log 斜率 0.04（常数维），SDP 51→84 ms；精度饱和是**结构性**的（平面底 + 共面接触，≥3 个不共线接触已等价整面；p>8 只增冗余，也是 LICQ 失效来源）。
+- 高噪声/偏差档：无约束穿透 198 mm，18% 落到相机后方镜像模式；ALM 仍 50/50 可行+认证。
+- 代码校验 40/40（`validation.log`）：与现有 verify 的 p=12 实例逐位回归；修掉 `full_L_grad`/`soft_penalty` 的转置 bug（仅回退路径触发）和校验脚本 V7c 的符号/实例错误。详见 `02-constrained-qpeplayer/experiments/README.md`。
+
+**限制**：合成数据、bearing 型代价、内层用 6–8 起点 BFGS 代替 QPEP Gröbner；真实数据/端到端反向未做。
+
+
+
+## P3 `Robust-QPEPLayer`
+
+## P3 `Robust-QPEPLayer`
+
+**任务**：合成 3D-3D 配准（N=100，σ=0.01，c=0.05，外点率 0–70%，100 trials/格）；GM 核 + GNC/IRLS + 加权 Kabsch（QPEP 在 3D-3D 的精确解）。方法：Kabsch、RANSAC-1000、RANSAC-adaptive、IRLS-GM、GNC-GM（ours）。
+
+**主表：随机外点**（成功率；完整表 `03-robust-qpeplayer/experiments/synthetic/results/main_table_extended.md`）：
+
+| method | 0% | 10% | 30% | 50% | 70% | runtime p50 (p=70%) |
+|-|-|-|-|-|-|-|
+| Kabsch | 100% | 52% | 0% | 0% | 0% | 0.05 ms |
+| RANSAC-1000 | 100% | 100% | 100% | 100% | 100% | 47.9 ms |
+| RANSAC-adaptive | 100% | 100% | 100% | 100% | 100% | 12.5 ms |
+| IRLS-GM | 100% | 100% | 100% | 100% | 98% | 1.8 ms |
+| **GNC-GM (ours)** | **100%** | **100%** | **100%** | **100%** | **100%** | **1.55 ms** |
+
+- 精度与 RANSAC 在两位小数内持平；对固定 1000 迭代 RANSAC，GNC 在 p≥10% 快 **31–33×**；对自适应 RANSAC，低外点率下无速度优势（p=10% 慢 3×），p≥60% 领先（p=70% 约 8×，p≥80% 约 25–30×）。RANSAC 不可微；GNC 的反向是 6×6 线性系统。
+- **相干外点**：≥60% 时所有方法都恢复外点变换（Prop 3.7 的可辨识性失败，不是求解器 bug）；如实报告，不宣称任意鲁棒。
+- **边界外点**：前向成功率 100%，但梯度表才是考点；见下。
+- **6D 梯度表**（`gradient_table.md`）：exact IFT vs FD 相对误差 p50 **4.9e-8**（内点）/ **3.1e-8**（边界），cosine **1.000000**；naive 在边界 p50 误差 **1.07**、cosine **0.234**，$e>c^2/3$ 的观测上映射层/平移层径向符号 **100% 相反**；`no-λ` 有 ~1e-3 系统偏差。
+- **End-to-end 边界精化**（GT 监督诊断，`e2e_table.md`）：boundary-only + lr=1e-3 时 exact 的最终 loss 是 naive 的 **0.06–0.07**（低 14–17×），旋转误差低 3–4×，配对 10/10 或 9/10；all-points 对照不可区分（内点补偿），说明应聚焦边界集。
+- 代码校验：Kabsch 无噪声 $10^{-15}$、GNC 0% 与 Kabsch 一致、RANSAC 全内点与 Kabsch 一致、$H_{
+m rob}$ 对 FD $4.8	imes10^{-7}$、1D sign flip FD $1.2	imes10^{-8}$；详见 `verify_smoke.txt`。
+
+**限制**：合成数据；前向用加权 Kabsch（3D-3D 特化），不涉及 QPEP 多项式求解器；真实数据/端到端训练未做。
+
+
+
+## 共同限制与下一步
+
+- 合成数据的结论不能直接当作论文主表；它们验证的是定理/机制的**方向性与数值正确性**。
+- 真实数据（3DMatch/KITTI/LINEMOD/YCB/In-The-Dark）需要先解决数据获取与 QPEP 批量求解器；这是下一阶段。
+- 所有脚本固定随机种子、保存原始 JSON/日志；主表由脚本生成，不手填。

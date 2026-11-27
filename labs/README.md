@@ -30,6 +30,8 @@
 **未完成**：真实数据实验、端到端训练、GPU 批量 QPEP 工程；源文档的预实验数字一律标"作者预实验（待独立复现）"，不当作本仓库结果。  
 **证据分级**见下文；**数学问题**见 [`MATH_QUESTIONS.md`](MATH_QUESTIONS.md)（P0 13 / P1 16，另有各线 P2）。
 
+**实验（2026-11-27）**：三张合成主表见 [`EXPERIMENTS.md`](EXPERIMENTS.md)：P1 交叉处 Laplace 梯度 4.3e-4 vs MC 3.3e-2；P2 ALM 0 mm 穿透 / 100% 认证；P3 GNC 同精度 + 对固定 RANSAC 31–33× 加速、exact 梯度 5e-8。代码/原始 JSON/图在各自 `experiments/`。
+
 ## 三条线怎么区分（避免自我撞车）
 
 | 维度 | P1 | P2 | P3 |
