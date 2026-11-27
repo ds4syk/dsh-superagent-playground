@@ -1,0 +1,25 @@
+crossing_b0.50 0.2 dJ 2.776e-17 errE 1.665e-16 relG 8.40e-02
+crossing_b0.50 0.1 dJ 2.776e-17 errE 2.220e-16 relG 3.71e-02
+crossing_b0.50 0.05 dJ 2.776e-17 errE 2.637e-16 relG 1.78e-02
+crossing_b0.50 0.02 dJ 2.776e-17 errE 6.939e-16 relG 6.94e-03
+crossing_b0.50 0.01 dJ 2.776e-17 errE 1.985e-15 relG 3.45e-03
+crossing_b0.50 0.005 dJ 2.776e-17 errE 3.914e-15 relG 1.72e-03
+crossing_b0.25 0.2 dJ 2.776e-17 errE 1.527e-16 relG 9.14e-02
+crossing_b0.25 0.1 dJ 2.776e-17 errE 2.498e-16 relG 4.01e-02
+crossing_b0.25 0.05 dJ 2.776e-17 errE 1.804e-16 relG 1.91e-02
+crossing_b0.25 0.02 dJ 2.776e-17 errE 5.967e-16 relG 7.44e-03
+crossing_b0.25 0.01 dJ 2.776e-17 errE 1.138e-15 relG 3.69e-03
+crossing_b0.25 0.005 dJ 2.776e-17 errE 2.616e-15 relG 1.84e-03
+separated_b0.50 0.2 dJ 4.092e-01 errE 3.173e-02 relG 6.07e-02
+separated_b0.50 0.1 dJ 4.092e-01 errE 1.659e-02 relG 1.48e-02
+separated_b0.50 0.05 dJ 4.092e-01 errE 8.136e-03 relG 2.92e-02
+separated_b0.50 0.02 dJ 4.092e-01 errE 3.181e-03 relG 1.49e-02
+separated_b0.50 0.01 dJ 4.092e-01 errE 1.579e-03 relG 7.38e-03
+separated_b0.50 0.005 dJ 4.092e-01 errE 7.867e-04 relG 3.67e-03
+separated_b0.25 0.2 dJ 2.012e-01 errE 2.220e-02 relG 8.42e-02
+separated_b0.25 0.1 dJ 2.012e-01 errE 1.503e-02 relG 3.46e-02
+separated_b0.25 0.05 dJ 2.012e-01 errE 8.781e-03 relG 1.27e-02
+separated_b0.25 0.02 dJ 2.012e-01 errE 3.530e-03 relG 1.56e-02
+separated_b0.25 0.01 dJ 2.012e-01 errE 1.750e-03 relG 8.51e-03
+separated_b0.25 0.005 dJ 2.012e-01 errE 8.716e-04 relG 4.23e-03
+wrote /tmp/p1-repro.20261127-223801.qSZPkq/labs/01-laplace-qpeplayer/experiments/theory/results

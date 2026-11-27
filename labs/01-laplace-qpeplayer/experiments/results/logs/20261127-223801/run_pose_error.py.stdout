@@ -1,0 +1,18 @@
+  000010/15 obj=10 K=2 dJ=9.58e-04 flip=69.3 w_other=0.483 hard_rot=1.47 hard_ADD-S=3.0mm lap_rot=33.90 lap_ADD-S=10.3mm
+  000010/18 obj=10 K=2 dJ=1.25e-03 flip=91.9 w_other=0.472 hard_rot=0.51 hard_ADD-S=4.3mm lap_rot=42.85 lap_ADD-S=12.2mm
+  000010/40 obj=10 K=2 dJ=9.71e-04 flip=69.1 w_other=0.482 hard_rot=2.20 hard_ADD-S=6.2mm lap_rot=33.07 lap_ADD-S=9.7mm
+  000010/60 obj=10 K=2 dJ=1.69e-03 flip=104.0 w_other=0.459 hard_rot=0.96 hard_ADD-S=3.0mm lap_rot=46.45 lap_ADD-S=13.9mm
+  000010/66 obj=10 K=2 dJ=7.00e-04 flip=88.4 w_other=0.488 hard_rot=2.29 hard_ADD-S=2.7mm lap_rot=43.67 lap_ADD-S=12.1mm
+  000010/72 obj=10 K=2 dJ=1.25e-04 flip=3.8 w_other=0.504 hard_rot=44.46 hard_ADD-S=12.5mm lap_rot=23.02 lap_ADD-S=8.4mm
+  000010/80 obj=10 K=2 dJ=5.11e-04 flip=54.7 w_other=0.501 hard_rot=1.08 hard_ADD-S=3.8mm lap_rot=27.71 lap_ADD-S=8.8mm
+  000010/90 obj=10 K=2 dJ=4.13e-04 flip=54.8 w_other=0.497 hard_rot=3.49 hard_ADD-S=3.1mm lap_rot=27.91 lap_ADD-S=8.5mm
+  skip 000011/11: 1 modes
+  000011/20 obj=11 K=2 dJ=2.07e-03 flip=69.1 w_other=0.608 hard_rot=8.14 hard_ADD-S=13.8mm lap_rot=44.24 lap_ADD-S=22.9mm
+  000011/24 obj=11 K=2 dJ=1.65e-03 flip=131.1 w_other=0.457 hard_rot=1.37 hard_ADD-S=2.8mm lap_rot=54.99 lap_ADD-S=20.2mm
+  000011/26 obj=11 K=2 dJ=1.90e-03 flip=126.9 w_other=0.450 hard_rot=2.06 hard_ADD-S=3.7mm lap_rot=51.65 lap_ADD-S=17.6mm
+  000011/32 obj=11 K=2 dJ=2.10e-03 flip=123.9 w_other=0.451 hard_rot=1.78 hard_ADD-S=3.1mm lap_rot=51.60 lap_ADD-S=19.0mm
+  000011/33 obj=11 K=2 dJ=1.49e-03 flip=149.6 w_other=0.460 hard_rot=1.62 hard_ADD-S=3.8mm lap_rot=59.09 lap_ADD-S=23.4mm
+  000011/40 obj=11 K=2 dJ=2.56e-03 flip=106.0 w_other=0.457 hard_rot=2.77 hard_ADD-S=2.2mm lap_rot=46.19 lap_ADD-S=16.8mm
+  000011/49 obj=11 K=2 dJ=2.10e-03 flip=83.7 w_other=0.528 hard_rot=4.95 hard_ADD-S=22.4mm lap_rot=46.75 lap_ADD-S=28.1mm
+wrote /tmp/p1-repro.20261127-223801.qSZPkq/labs/01-laplace-qpeplayer/experiments/real/linemod/results/pose_error.png
+wrote /tmp/p1-repro.20261127-223801.qSZPkq/labs/01-laplace-qpeplayer/experiments/real/linemod/results/pose_error.md and .json  (6.2s)

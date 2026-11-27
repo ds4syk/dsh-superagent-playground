@@ -1,0 +1,5 @@
+[random_symmetric_seed1] projective=40 affine=80 real(proj)=26 real_on_sphere(proj)=26 minima=5 charts=[44, 41, 40, 41]/64 t=4.51s
+[random_symmetric_seed2] projective=40 affine=80 real(proj)=12 real_on_sphere(proj)=12 minima=2 charts=[40, 39, 41, 46]/64 t=5.67s
+[random_symmetric_seed3] projective=40 affine=80 real(proj)=12 real_on_sphere(proj)=12 minima=2 charts=[40, 42, 40, 32]/64 t=6.17s
+[instance_M_theta0] projective=40 affine=80 real(proj)=20 real_on_sphere(proj)=20 minima=4 charts=[39, 46, 45, 42]/64 t=7.29s
+wrote /tmp/p1-repro.20261127-223801.qSZPkq/labs/01-laplace-qpeplayer/experiments/results/rootcount_fast.json
