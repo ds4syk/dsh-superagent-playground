@@ -1,4 +1,4 @@
-# Robust-QPEPLayer 合成实验（2026-11-27）
+# Robust-QPEPLayer 实验（2026-11-27）
 
 > **一句话结论**：在合成 3D-3D 上，GNC-GM 与 RANSAC 在 0–70% 随机外点下成功率同为 100%、精度在两位小数内持平；对 v0 的固定 1000 次迭代 RANSAC 基线，GNC 在 p≥10% 时快 **31–33×**（p50：1.48–1.63 ms vs 48–52 ms），且可微。换成自适应 RANSAC 后，低外点率下 GNC 不再有速度优势（p=10% 时慢 3×），p≥60% 时重新领先（p=70% 约 8×）。相干多数外点在 60–70% 让**所有方法**返回外点位姿（Prop 3.7 的可辨识性失败，不是求解器 bug）；边界外点主要毒害梯度而不是前向成功率。6D 梯度表：精确 IFT vs FD 的相对误差中位数 **4.9e-8**（内点）/ **3.1e-8**（边界），cosine **1.000000**；naive 在边界 bin 相对误差 **1.07**、cosine **0.234**，在 e>c²/3 的观测上映射层与位姿平移层的径向符号均 **100% 相反**。
 
@@ -12,9 +12,15 @@
 | 6D 梯度表（exact IFT vs Naive IRLS-StopGrad vs FD；含 `-λ` 消融） | **完成**，`synthetic/results/gradient_table.*` |
 | End-to-end 边界坐标精化（exact vs naive 梯度） | **完成**（GT 监督的 test-time 诊断，不是学习层），`synthetic/results/e2e_table.*` |
 | 已知真值/闭式/FD 校验 | **完成**，`synthetic/results/verify_smoke.txt` |
-| 真实数据（3DMatch/KITTI/In-The-Dark）、QPEP 多项式求解器、GPU 工程 | **未做**（超出本轮范围） |
+| 真实数据：ModelNet40/10、3DMatch 4 场景（含 FPFH）、KITTI raw 2 drives | **完成**（子集），见 §12 |
+| KITTI raw 立体前端回退 | **完成（负结果）**：旋转 0.052°，平移 0.70 m，0% @0.1 m；见 §16 |
+| UTIAS In-The-Dark | **完成（2 个白天 run 子集）**：repeat spatial × teach temporal × 相机系共轭；run_000002/12 各 15 对，GNC 0.078°/0.020 m、0.092°/0.010 m，100% @0.1 m；见 §16 与 `real/inthedark/` |
+| 3DMatch 8 场景 / low–mid–high overlap 扩展 | **完成**：8 场景 pooled random 0–70% GNC/RANSAC 100%，70% 27.7×；low/mid/high 重叠 bins 均 100%@p=0.7；`real/threedmatch_full/` |
+| KITTI odometry 00/05/07 | **完成（每序列 33 帧子集）**：随机 0–70% GNC/RANSAC 100%，pooled 26.3×，相干 50% GNC 53%/RANSAC 0%；`real/kitti_odom/` |
+| QPEP 40 根多项式求解器 | **未实现**（当前主表用标量权重 4×4 特化）；范围见 `qpep_gpu/qpep_scope.md` |
+| GPU / CUDA-graph probe | **见 §13 与 `qpep_gpu/results/qpep_gpu.md`**（执行状态以该文件为准） |
 
-本目录只做**合成实验与验证**；不修改 `theory/`、`paper/`、`verify/`。所有数字由本目录脚本生成，原始 per-trial 记录在 `synthetic/results/main_table_extended_raw.jsonl`。
+本目录包含合成、真实数据、系统与消融实验；不修改 `theory/`、`paper/`、`verify/`。所有数字由本目录脚本生成；原始 per-trial 记录按实验放在各自 `results/*_raw.jsonl`。
 
 ---
 
@@ -275,14 +281,14 @@ $p_{\rm clean}=\binom{n_{in}}{3}/\binom{N}{3}=0.000742$ 给出 52.4%，与实测
 
 ## 8. 限制
 
-1. **合成数据**：无真实 3DMatch/KITTI/In-The-Dark；外点是人工注入；没有前端特征/匹配误差。
-2. **前向是加权 Kabsch**，不是 QPEP 多项式求解器；因此不能验证 QPEP 的漏根/数值完备性，也不能声称“QPEP 全局内层”。
+1. **合成协议**：外点是人工注入（random/coherent/boundary），不是真实前端误差；真实数据子集见 §12（4 个 3DMatch 场景、2 条 KITTI raw drive、KITTI stereo 回退），不是完整 benchmark，In-The-Dark 因下载带宽阻塞。
+2. **前向是加权 Kabsch**，不是 QPEP 多项式求解器；因此不能验证 QPEP 的漏根/数值完备性，也不能声称“QPEP 全局内层”。标量权重下它与 4×4 Horn 等价，范围见 `qpep_gpu/qpep_scope.md`。
 3. **$W_i=I$**：未测试各向异性权重、尺度可辨识性、学习 $W_i$。
-4. **RANSAC 是简单 3 点 + 重拟合**：没有 LO-RANSAC、没有局部优化、没有 PROSAC；强 RANSAC 会更强，但也不可微。固定/自适应两种预算都已报告。
+4. **RANSAC 主基线是 3 点 + 重拟合**：主表报告固定/自适应两种预算；LO-RANSAC/自适应/固定三种预算的对比见 §14 与 `ablations/ransac_lo/`（LO 精度持平但比自适应慢 1.03–1.52×）。
 5. **runtime 是共享节点 wall-clock**：p95 有系统噪声；结论“30×”对固定预算在多次运行中稳定在 30–33×，但绝对 ms 会随负载漂移。
 6. **coherent 只有一种构造**（30–60° / 0.6–1.5 m）；p=50% 的“掷硬币”依赖几何，未做相图。
 7. **e2e 是 GT 监督的 test-time 诊断**：不是学习层，不能证明“训练一个前端会更好”；boundary 集由注入协议已知，真实系统需要先识别边界点。
-8. **未做**：6D 位姿层的符号翻转定理（只有数值 100%）、GNC μ-同伦分岔反例、$H_{\rm rob}$ 近奇异时的梯度行为、批量/GPU 计时。
+8. **未做**：6D 位姿层的符号翻转定理（只有数值 100%）、GNC μ-同伦分岔反例、$H_{\rm rob}$ 近奇异时的梯度行为。批量计时已完成（§13）；GPU 计时只跑到 CPU 校验，GPU 被其他用户占满（作业 3171 pending），见 `qpep_gpu/results/qpep_gpu.md`。
 9. **v0 与扩展表的随机流不同**：v0 `main_table.*` 用单个顺序 RNG（RANSAC 采样会推进数据 RNG），扩展表用 per-cell `SeedSequence`（RANSAC 采样不扰动数据 RNG）。两者都是 100 trials 的独立样本；Kabsch 在 10% 外点的成功率 42%（v0）vs 52%（扩展）属于二项抽样差异（n=100, sd≈5%），不影响鲁棒方法的结论。v0 的 10-trial 复现在 `synthetic/results/verify_repro/`。
 
 ---
@@ -329,7 +335,7 @@ experiments/
 * **不能**说“GNC 比 RANSAC 精度更高”：随机外点下两者持平；边界档 GNC 略优但 Kabsch 也不失败；相干档所有方法一起崩。
 * **不能**无条件说“30× 加速”：只对固定 1000 次迭代 RANSAC 成立；对自适应 RANSAC，p=10% 时 GNC 慢 3×，p=70% 才 8×。
 * **不能**说“边界外点导致前向失败”：前向 100% 成功；边界档是梯度毒害，不是前向鲁棒性胜利。
-* **不能**说“e2e 训练赢了”：这是 GT 监督的 test-time 诊断，不是学习层；真实端到端（In-The-Dark）未做。
+* **不能**说“e2e 训练赢了”：这是 GT 监督的 test-time 诊断，不是学习层；真实端到端（In-The-Dark）**因下载带宽阻塞**（14 KB/s 单流，最小 run 590 MB，ETA 11.7–17.4 h，见 `real/inthedark/README.md`），不是方法失败；KITTI stereo 回退旋转成立、平移 0.70 m / 0% @0.1 m，不能替代。
 
 **总体**：主表可以作为“同精度 + 对固定预算大幅加速 + 可微 + 明确失败边界”的合成证据；不足以单独支撑“精度胜出”或“任意鲁棒”。论文里应把 30× 的基线、边界档的定位、相干档的失败写清楚，梯度表单独作为核心贡献证据。
 
@@ -369,7 +375,11 @@ $\Phi=\sum_i\rho(r_i^\top W_i r_i)$ 的内层 $\min_{R,t}\sum_i u_i r_i^\top W_i
 | ModelNet10（第二物体数据集） | `real/modelnet10/` | GNC 0–70% 全 100%；鲁棒方法相对 ModelNet40 成功偏差 ≤2 pp、中位旋转偏差 ≤0.038°；31.7–32.5× vs RANSAC-1000 | OFF 网格自采样 2048 点；仅 test split |
 | 3DMatch（室内片段，4 场景） | `real/threedmatch/` | 随机 0–70% GNC/RANSAC 100%；GNC 2.2–2.5 ms vs RANSAC 61–71 ms（27–30×）；相干 60–70% 全 0%；边界全 100%，70% GNC 0.25° vs RANSAC 0.74° | GT-NN oracle 基础匹配；2 主 + 2 unseen 场景；仅高重叠帧对 |
 | 3DMatch FPFH 前端 | `real/threedmatch/run_descriptor.py` | 自然内点 80.0%/67.8%；GNC 100%/100%，RANSAC-1000 100%/97%，Kabsch 100%/83% | 手工 FPFH，非 FCGF/Predator |
-| KITTI raw drive 0001（室外 LiDAR） | `real/kitti/` | 随机 0–70% GNC/RANSAC 100%；GNC 2.7–2.8 ms vs 61–64 ms（~22×）；相干 60–70% 全 0%；边界全 100%，70% GNC 0.07° vs RANSAC 0.14° | OXTS 位姿；单 drive；无真实描述子 |
+| KITTI raw 0001 + 0002（室外 LiDAR） | `real/kitti/`, `real/kitti2/` | 两 drive 随机 0–70% GNC/RANSAC 100%；GNC 2.7–2.8 ms vs 61–64 ms（~22×）；相干 60–70% 全 0%；边界全 100%，70% GNC 0.07–0.09° vs RANSAC 0.14–0.16° | OXTS 位姿；**两条 raw drive**；无真实描述子 |
+| KITTI raw 立体前端（回退） | `real/kitti_stereo/` | 自然内点 17.8%；GNC 旋转 0.052°、平移 0.70 m（floor 0.239 m）；所有方法 0% @0.1/0.25 m；GNC 19.3× vs RANSAC-1000 | **不是 In-The-Dark、不是 SDPR 前端**；见 §16 |
+| UTIAS In-The-Dark（真实，白天子集） | `real/inthedark/` | run_000002/12 各 15 对；自然内点 79.4%/88.5%；GNC 0.078°/0.020 m、0.092°/0.010 m；100% @0.1 m；GT 重投影 0.65/0.52 px | **两个 run 都是白天**；手写 SIFT+SGBM，不是 SDPR VGG/UNet；无训练；每天 15 对 |
+| 3DMatch 8 场景 / overlap bins | `real/threedmatch_full/` | 8/8 方向；8 场景 pooled random 0–70% GNC/RANSAC 100%，70% GNC rot 0.25°、27.7×；low/mid/high bins 24/21/20 对，p=0.7 均 100%，ΔGNC-RANSAC=0，speedup 27.8–30.4×；clean rot 0.52/0.24/0.18° | 仍是 GT-NN oracle 基础匹配；low bin base inlier 0.95，未覆盖更低重叠 |
+| KITTI odometry 00/05/07 | `real/kitti_odom/` | 18/18 方向；random 0–70% GNC/RANSAC 100%；pooled 26.3×；相干 50% GNC 53%/IRLS 38%/RANSAC 0%；边界 70% GNC 0.067° vs RANSAC 0.143°；|t| 0.09–9.62 m，171 格 GNC 从不低于 RANSAC | 每序列只 33 个选中帧，不是完整 00–10 |
 
 3DMatch 的 `gt.log` 实测方向是 **id2→id1**，runner 取逆；换发布版必须重跑 `verify_gt_direction.py`。KITTI 的阈值 `c=0.25 m` 来自 ~0.10 m 点距（见 `real/kitti/results/c_sensitivity.md`），不能直接套 3DMatch 的 0.05 m。
 
@@ -377,6 +387,8 @@ $\Phi=\sum_i\rho(r_i^\top W_i r_i)$ 的内层 $\min_{R,t}\sum_i u_i r_i^\top W_i
 
 - `inner/`：Horn/Davenport 4×4 与加权 Kabsch 数值等价（max 旋转差 1.07e-14）；p50 仅 N=500 有 1.27× 收益，N=100 中性、N=20 慢 7%。**不是** 40 根 QPEP；标量权重 3D-3D 的 QPEP 退化为该 4×4 特征问题。
 - `systems/`：numpy 批量 GNC 在 B=32,N=100 时 56.2→8.5 ms（6.60×），B=1 反而慢；GPU float64 eager 在 B≤128 被 ~40 ms launch 地板限制，只在 B=128 有 5–10×。生产建议 B≥8 用批量，B=1 用循环。
+- `qpep_gpu/`：eager-dynamic / static-shape / CUDA-graph 的 4×4 eigen GNC 对比（B={1,8,32,128,512}×N={100,500}，float64/float32）；结果与**执行状态**见 `qpep_gpu/results/qpep_gpu.{json,md,png}`，数学范围与非声明见 `qpep_gpu/qpep_scope.md`。该文件不覆盖 40 根 QPEP。
+- 2026-11-27 修复：`gpu_solver.eigh4_jacobi` 的 Givens 旋转符号错误（原实现 static-jacobi 与 numpy 参考 maxdR≈1.4、n_mu 仅 50% 匹配）；修正后 CPU 校验 maxdR≈1e-16、n_mu 100% 匹配。
 
 ## 14. 消融与调度
 
@@ -386,18 +398,30 @@ $\Phi=\sum_i\rho(r_i^\top W_i r_i)$ 的内层 $\min_{R,t}\sum_i u_i r_i^\top W_i
 
 ## 15. 仍未关闭的缺口
 
-1. SDPRLayers / Theseus / BPnP / Pyatov / POLI 的同数据对比未做（缺环境/权重），论文已标 not measured。
-2. UTIAS In-The-Dark 端到端训练未做；当前 e2e 只是 GT 监督的 test-time 诊断。
+1. 外部基线：Theseus-GM 与 SDPRLayers+SCS 已在**合成 3D-3D** 上实测（`results/baselines.*`）；SDPR 只跑前向（无 Mosek），Theseus 用 dense Cholesky；BPnP/Pyatov/POLI 任务不同或代码/权重不可得，已标 out-of-scope，未做假表。
+2. UTIAS In-The-Dark：已用 range 提取的 teach temporal + repeat spatial + 相机系共轭得到真实 GT，run_000002/12 各 15 对跑通（GNC 0.078°/0.020 m，100% @0.1 m）；但两个 run 都是**白天**、手写前端、无训练，夜间/眩光/端到端训练仍未做。
 3. 学习描述子（FCGF/Predator）未接；3DMatch 真实前端只有手工 FPFH。
-4. 3DMatch 全 50 场景 / 低重叠长基线、KITTI sequences 00–10 / 多 drive 未做。
-5. 完整 40 根 QPEP 多项式求解器、根完备性/失败率、GPU 批处理未做。
+4. 3DMatch 8 场景 / low–mid–high overlap 已完成（8 场景 pooled + 24/21/20 对 overlap bins）；KITTI odom 00/05/07 已跑但每序列只 33 个选中帧，不是完整 00–10；全 50 场景 / 低于 0.95 base-inlier 的长基线 / 更多 drive 仍未做。
+5. 完整 40 根 QPEP 多项式求解器、根完备性/失败率未实现；GPU 批处理只覆盖 4×4 eigen 内层（`qpep_gpu/`），GPU 节点被占满，只有 CPU 校验，执行状态见其结果文件；范围见 `qpep_gpu/qpep_scope.md`。
 
-### 12.1 真实立体前端回退（2026-11-27，`real/kitti_stereo/`）
+## 16. 真实立体前端回退（2026-11-27，`real/kitti_stereo/`）
 
-UTIAS In-The-Dark 官方 FTP 实测 **14 KB/s** 单流 / ~34 KB/s 8 路并发，最小 run 590 MB，ETA 11.7–17.4 h；只拿到 1.6 MB 无效 partial zip。因此用 KITTI raw drive 0001 的校正立体图像做回退实验（SIFT + sub-pixel + StereoSGBM，30 对，b=0.5327 m），**不是** In-The-Dark，也**不是** SDPR 的 VGG/UNet 前端：
+UTIAS In-The-Dark 已解阻：FTP 支持 range 请求，只需取 teach run 的 `transforms_temporal.txt`（315 KB）与 repeat run 的 `transforms_spatial.txt`，按 repeat spatial × teach temporal × 相机系共轭得到逐对 GT；重投影误差 0.52–0.65 px（逆 18–28 px、恒等 9.5–14.7 px、不共轭 21–31 px）。run_000002/12 各 15 对、手写 SIFT+SGBM 前端：自然内点 79.4%/88.5%，GNC 0.078°/0.020 m、0.092°/0.010 m，100% @0.1 m。**两个 run 都是白天**，不是夜间鲁棒性证据，也不是 SDPR VGG/UNet/训练。KITTI raw stereo 仍是独立负结果（旋转 0.052°、平移 0.70 m、0% @0.1 m）：
 
 - 自然内点率 17.8% @ c=0.5 m，中位 890 对/帧对。
 - 旋转：GNC/IRLS 中位 **0.052°**（GT-inlier floor 0.071°）——鲁棒层能解旋转。
 - 平移：GNC 中位 **0.70 m** vs 帧间运动 1.92 m，GT-inlier floor 0.239 m；**所有方法 0% @0.1 m，0% @0.25 m**。立体 vs LiDAR 深度比 1.000–1.061（3–60 m），排除尺度 bug；误差是前向平移系统偏差（0.63–0.73），瓶颈在前端/遮挡/动态，不在优化器。
 - 运行时：GNC 4.21 ms vs RANSAC-1000 81.3 ms（19.3×）。
 - 结论：这是“旋转可解、平移被前端限制”的负结果；不能替代 In-The-Dark 端到端训练。
+
+## 17. Phase-3 轮次与一致性记录（2026-11-27）
+
+- `results/phase3_rounds.json`：本轮 4–6 个实测轮次（假设 / 改动 / 命令 / before→after / keep-revert / artifact），与 `rounds_2026-11-27.md` 的 42 轮互不覆盖。
+- `phase3_consistency.md`：本轮论文 / README / repro audit 的一致性修复清单与仍未关闭的矛盾。
+- `qpep_gpu/qpep_scope.md`：标量权重 3D-3D 的 QPEP 退化为 4×4 Horn/Kabsch、40 根多项式求解器的作用与未实现范围、精确非声明。
+
+
+## 17. 外部基线与 QPEP/GPU 范围（2026-11-27）
+
+- `results/baselines.*`、`experiments/baselines/`：Theseus-GM 0.2.3（dense Cholesky）随机初始化 p=0/0.3/0.5/0.7 成功 100/80/55/25%，GNC 100%；SDPRLayers+SCS 前向 0/208 异常、8.5–13.4 ms，但 p≥0.3 全失败，且 W=I 时与 Kabsch 数值等价（max 1.5e-5° / 1.3e-9 m），不是独立鲁棒基线；BPnP/Pyatov/POLI out-of-scope。
+- `qpep_gpu/`：4×4 eigen 内层 scope 文档 + CPU 校验网格；GPU 节点 3 张卡被 cyr 的作业占满，CUDA-graph 未捕获、无 GPU 数字；不是 40 根 QPEP 实现。

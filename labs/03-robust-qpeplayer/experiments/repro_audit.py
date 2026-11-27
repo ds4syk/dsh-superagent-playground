@@ -53,6 +53,28 @@ EXPECTED_JSON = {
     "ablations/breakdown/results/breakdown.json": ["config", "rows"],
     "ablations/noise/results/noise.json": ["config", "rows"],
     "ablations/ransac_lo/results/ransac_lo.json": ["config", "rows"],
+    # phase-3 additions (2026-11-27)
+    "real/kitti_stereo/results/kitti_stereo_main.json": ["settings", "pairs", "records", "summary"],
+    "real/kitti_odom/results/verify_kitti_odom.json": ["summary", "pairs"],
+    "real/inthedark/results/inthedark_dense.json": ["dataset", "protocol", "pairs"],
+    "real/inthedark/results/inthedark_sparse.json": ["dataset", "protocol", "pairs"],
+    "real/inthedark/results/inthedark_run12_dense.json": ["dataset", "protocol", "pairs"],
+    "real/inthedark/results/verify_run_000002.json": ["checks", "pairs"],
+    "real/inthedark/results/verify_run_000012.json": ["checks", "pairs"],
+    "../results/baselines.json": ["protocol", "methods", "cells"],
+    "real/kitti_odom/results/raw_drive_motion.json": ["2011_09_26_drive_0001_sync", "2011_09_26_drive_0002_sync"],
+    "real/threedmatch_full/results/manifest.json": ["data_root", "url_template", "scenes"],
+    "real/threedmatch_full/results/verify_gt_direction_full.json": ["tau", "n_sample", "scenes"],
+    "real/threedmatch_full/results/pairs_redkitchen.json": ["scene", "selected", "n_all"],
+    "real/threedmatch_full/results/pairs_sun3d-home_at.json": ["scene", "selected", "n_all"],
+    "real/threedmatch_full/results/pairs_sun3d-home_md.json": ["scene", "selected", "n_all"],
+    "real/threedmatch_full/results/pairs_sun3d-hotel_uc.json": ["scene", "selected", "n_all"],
+    "qpep_gpu/results/qpep_gpu.json": ["meta", "rows", "errors"],
+    "real/kitti_odom/results/kitti_odom.json": ["config", "per_sequence", "pooled"],
+    "real/threedmatch_full/results/full_scenes.json": ["config", "per_scene", "pooled"],
+    "real/threedmatch_full/results/overlap_bins.json": ["config", "tables", "advantage"],
+    "real/threedmatch_full/results/overlap_dependence.json": ["config", "cells", "interaction"],
+    "results/phase3_rounds.json": ["meta", "rounds"],
 }
 EXPECTED_JSONL = {
     "synthetic/results/main_table_extended_raw.jsonl": 14500,
@@ -66,6 +88,8 @@ EXPECTED_JSONL = {
     "ablations/anisotropic/results/anisotropic_raw.jsonl": 300,
     "ablations/ransac_lo/results/ransac_lo_raw.jsonl": 4800,
     "real/kitti2/results/kitti2_raw.jsonl": 2400,
+    "real/threedmatch_full/results/full_scenes_raw.jsonl": 19200,
+    "real/threedmatch_full/results/overlap_bins_raw.jsonl": 13800,
 }
 MAX_BINARY_BYTES = 20 * 1024 * 1024
 

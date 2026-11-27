@@ -25,6 +25,7 @@ MODELNET = HERE / "real/modelnet/results/main_table.json"
 MODELNET10 = HERE / "real/modelnet10/results/main_table.json"
 THREEDMATCH = HERE / "real/threedmatch/results/threedmatch.json"
 THREEDMATCH_EXTRA = HERE / "real/threedmatch_extra/results/extra_scenes.json"
+THREEDMATCH_FULL = HERE / "real/threedmatch_full/results/full_scenes.json"
 KITTI = HERE / "real/kitti/results/kitti.json"
 KITTI2 = HERE / "real/kitti2/results/kitti2.json"
 GRAD = HERE / "synthetic/results/gradient_table.json"
@@ -44,7 +45,7 @@ def main():
     grad = json.loads(GRAD.read_text())
     mn = json.loads(MODELNET.read_text())
     mn10 = json.loads(MODELNET10.read_text())
-    tm = json.loads(THREEDMATCH.read_text())["rows"] + json.loads(THREEDMATCH_EXTRA.read_text())["rows"]
+    tm = json.loads(THREEDMATCH_FULL.read_text())["pooled"]
     kit = json.loads(KITTI.read_text())["rows"] + json.loads(KITTI2.read_text())["rows"]
 
     fig, ax = plt.subplots(2, 2, figsize=(13, 8.2))
@@ -72,7 +73,7 @@ def main():
     mn10_gnc = [100 * row(mn10, method="GNC-GM (ours)", p=p)["success"] for p in P]
     for name, ys, c in [("ModelNet40", mn_gnc, "tab:green"),
                         ("ModelNet10", mn10_gnc, "tab:olive"),
-                        ("3DMatch (4 scenes)", tm_gnc, "tab:purple"),
+                        ("3DMatch (8 scenes)", tm_gnc, "tab:purple"),
                         ("KITTI (2 drives)", kt_gnc, "tab:brown")]:
         ax[0, 1].plot([100 * p for p in P], ys, "o-", color=c, label=name, lw=1.8)
     ax[0, 1].set_title("Real data GNC-GM: random-outlier success")
@@ -98,7 +99,7 @@ def main():
     ax[1, 0].legend(fontsize=8)
 
     for name, rows, pc, color in [("synthetic", syn, "outlier_type", "tab:red"),
-                                  ("3DMatch (4 scenes)", tm, "outlier_type", "tab:purple"),
+                                  ("3DMatch (8 scenes)", tm, "outlier_type", "tab:purple"),
                                   ("KITTI (2 drives)", kit, "outlier_type", "tab:brown")]:
         g = [row(rows, **{pc: "random"}, method="GNC-GM", p=p)["time_ms_p50"] for p in P]
         f = [row(rows, **{pc: "random"}, method="RANSAC-1000", p=p)["time_ms_p50"] for p in P]
