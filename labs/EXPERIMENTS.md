@@ -14,6 +14,8 @@
 | **P2** | 合成桌面 PnP + BOP LINEMOD 真实网格/桌面 | 合成：ALM **0 mm、100% 可行、100% 认证**；LINEMOD：ALM **0 mm、100% 可行、50% 认证** vs 无约束 4.76 mm/39% | `02-constrained-qpeplayer/experiments/` |
 | **P3** | 合成 + ModelNet40 真实几何 3D-3D，0–70% 外点 | GNC 与 RANSAC 同精度 100%；对固定 1000 迭代 RANSAC **约 30× 加速**；exact 梯度 vs FD **5e-8**，naive 边界 cosine **0.23** | `03-robust-qpeplayer/experiments/` |
 
+![真实数据实验](../docs/visuals/2026-11-27-real-data.png)
+
 **判断（prototype 级）**：三张主表都站得住——P1 证明平滑层在交叉处仍可微且比采样方差低；P2 证明硬约束与 sound 证书同时成立；P3 证明同精度下大幅加速 + 精确梯度。**但都还不是论文级主表**：真实数据（3DMatch/KITTI/LINEMOD/YCB/In-The-Dark）、QPEP 多项式内层、端到端训练/反向层仍未做。
 
 ## P1 `Laplace-QPEPLayer`
