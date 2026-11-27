@@ -1,0 +1,56 @@
+[cell 0.02/0.10 seed 0] J=1.722042e-02 feas=True audit={'g': 1e-10, 'rlt': 1e-10, 'bounds': -4e-10, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.02/0.10 seed 1] J=1.368733e-02 feas=True audit={'g': 1e-10, 'rlt': 1e-10, 'bounds': -0.0, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.02/0.10 seed 2] J=8.020232e-03 feas=True audit={'g': 0.0, 'rlt': 0.0, 'bounds': -4.7e-09, 'bound_rlt': 0.0, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.02/0.10 seed 3] J=1.654168e-02 feas=True audit={'g': 1e-10, 'rlt': 1e-10, 'bounds': -2e-10, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.05/0.20 seed 0] J=1.525260e-01 feas=True audit={'g': 1e-10, 'rlt': 1e-10, 'bounds': -4.4e-09, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.05/0.20 seed 1] J=1.175678e-01 feas=True audit={'g': 1e-10, 'rlt': 0.0, 'bounds': -0.0, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.05/0.20 seed 2] J=6.845512e-02 feas=True audit={'g': 1e-10, 'rlt': 0.0, 'bounds': -2e-10, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.05/0.20 seed 3] J=1.236940e-01 feas=True audit={'g': 1e-10, 'rlt': 1e-10, 'bounds': -0.0, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.10/0.30 seed 0] J=9.057880e-01 feas=True audit={'g': 0.0, 'rlt': 0.0, 'bounds': -0.0, 'bound_rlt': 0.0, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.10/0.30 seed 1] J=6.849957e-01 feas=True audit={'g': 1e-10, 'rlt': 1e-10, 'bounds': -0.0, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.10/0.30 seed 2] J=4.364319e-01 feas=True audit={'g': 1e-10, 'rlt': 1e-10, 'bounds': -0.0, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.10/0.30 seed 3] J=5.768852e-01 feas=True audit={'g': 1e-10, 'rlt': 1e-10, 'bounds': -0.0, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.20/0.40 seed 0] J=3.239175e+00 feas=True audit={'g': 1e-10, 'rlt': 0.0, 'bounds': -0.0, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.20/0.40 seed 1] J=3.112788e+00 feas=True audit={'g': 0.0, 'rlt': 0.0, 'bounds': -0.0, 'bound_rlt': 0.0, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.20/0.40 seed 2] J=3.030878e+00 feas=True audit={'g': 1e-10, 'rlt': 1e-10, 'bounds': -0.0, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+[cell 0.20/0.40 seed 3] J=2.250101e+00 feas=True audit={'g': 1e-10, 'rlt': 1e-10, 'bounds': -0.0, 'bound_rlt': 1e-10, 'box_rlt': -0.0}
+/home/syk/miniconda3/envs/sdpr/lib/python3.11/site-packages/cvxpy/problems/problem.py:1407: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+  warnings.warn(
+elapsed 107.7354633808136 rows 160
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/.superagent-work/wt-p2-rlt/labs/02-constrained-qpeplayer/experiments/theory/run_round_rlt.py", line 271, in <module>
+    main()
+  File "/mnt/storage1/syk/.superagent-work/wt-p2-rlt/labs/02-constrained-qpeplayer/experiments/theory/run_round_rlt.py", line 252, in main
+    "{:.1e} | {:+.1e} | {} | {} | {:.2f} | {} | {} |".format(
+                                                      ^^^^^^^
+TypeError: unsupported format string passed to NoneType.__format__

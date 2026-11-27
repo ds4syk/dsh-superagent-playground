@@ -1,0 +1,157 @@
+{
+  "linemod": {
+    "n_trials": 18,
+    "rows_total": 72,
+    "methods": [
+      "ALM-QPEP",
+      "Projection",
+      "Soft penalty",
+      "Unconstrained"
+    ],
+    "base_one_sided": {
+      "k": 9,
+      "n": 18,
+      "rate": 0.5,
+      "ci95": [
+        0.2903070395897999,
+        0.7096929604102001
+      ]
+    },
+    "base_gap": {
+      "k_two_sided": 7,
+      "n": 18,
+      "two_sided_rate": 0.3888888888888889,
+      "two_sided_ci95": [
+        0.2030499192693116,
+        0.6138133141934383
+      ],
+      "min": -1.0871432985898923e-05,
+      "median": 2.4810589716472054e-06,
+      "max": 0.00016899138921604498,
+      "n_negative": 4
+    },
+    "rlt_one_sided": {
+      "k": 9,
+      "n": 18,
+      "rate": 0.5,
+      "ci95": [
+        0.2903070395897999,
+        0.7096929604102001
+      ]
+    },
+    "rlt_gap": {
+      "k_two_sided": 5,
+      "n": 18,
+      "two_sided_rate": 0.2777777777777778,
+      "two_sided_ci95": [
+        0.12499569146355476,
+        0.5087307754619452
+      ],
+      "min": -0.00036767508412057057,
+      "median": 1.5859368514337574e-06,
+      "max": 0.14877428346968577,
+      "n_negative": 5
+    }
+  },
+  "lmo": {
+    "n_trials": 18,
+    "rows_total": 72,
+    "methods": [
+      "ALM-QPEP",
+      "Projection",
+      "Soft penalty",
+      "Unconstrained"
+    ],
+    "base_one_sided": {
+      "k": 4,
+      "n": 18,
+      "rate": 0.2222222222222222,
+      "ci95": [
+        0.09000781913382,
+        0.4521502645230549
+      ]
+    },
+    "base_gap": {
+      "k_two_sided": 1,
+      "n": 18,
+      "two_sided_rate": 0.05555555555555555,
+      "two_sided_ci95": [
+        0.009874935830924522,
+        0.2575779980200754
+      ],
+      "min": -0.00019946756586428842,
+      "median": 2.573537363886789e-05,
+      "max": 0.0014949290824241798,
+      "n_negative": 4
+    },
+    "rlt_one_sided": {
+      "k": 7,
+      "n": 18,
+      "rate": 0.3888888888888889,
+      "ci95": [
+        0.2030499192693116,
+        0.6138133141934383
+      ]
+    },
+    "rlt_gap": {
+      "k_two_sided": 0,
+      "n": 18,
+      "two_sided_rate": 0.0,
+      "two_sided_ci95": [
+        0.0,
+        0.1758845505823749
+      ],
+      "min": -0.0004276019923795597,
+      "median": 1.5181030572955357e-05,
+      "max": 0.06189640190215229,
+      "n_negative": 7
+    }
+  },
+  "ycbv": {
+    "n_trials": 12,
+    "rows_total": 48,
+    "methods": [
+      "ALM-QPEP",
+      "Projection",
+      "Soft penalty",
+      "Unconstrained"
+    ],
+    "base_one_sided": {
+      "k": 10,
+      "n": 12,
+      "rate": 0.8333333333333334,
+      "ci95": [
+        0.5519636426153274,
+        0.9530358523851776
+      ]
+    },
+    "base_gap": {
+      "k_two_sided": 9,
+      "n": 12,
+      "two_sided_rate": 0.75,
+      "two_sided_ci95": [
+        0.4676896608793401,
+        0.9110599603710388
+      ],
+      "min": -6.951462684871341e-06,
+      "median": 6.791291690794697e-12,
+      "max": 1.2412438568892e-05,
+      "n_negative": 6
+    },
+    "rlt_one_sided": {
+      "k": 0,
+      "n": 0,
+      "rate": null
+    },
+    "rlt_gap": {
+      "k_two_sided": 0,
+      "n": 0,
+      "two_sided_rate": null,
+      "two_sided_ci95": null,
+      "min": null,
+      "median": null,
+      "max": null,
+      "n_negative": 0
+    }
+  }
+}

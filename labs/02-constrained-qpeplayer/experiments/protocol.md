@@ -1,6 +1,9 @@
 # 实验协议（Constrained-QPEPLayer）
 
-> 状态：**全部为设计，结果 TODO**。唯一已跑过的是 `verify/` 里的合成 sanity check（见 `paper/draft.md` §5.1，明确标注不是论文结果）。
+> 状态（2026-11-27 更新）：**协议本身不变；其中一部分已跑，其余仍为设计**。逐轮改动与测量见 `rounds_2026-11-27.md`。
+> - **已跑**：合成主表（Unconstrained / Soft / Projection / ALM × p=8/16/32/64 × 50 trials，`results/main_table.*`）、噪声+外参偏差 4 档、软惩罚 Pareto、14×14 Shor + 零维 RLT 紧性消融（`theory/results/rlt.*`）、BOP LM/LM-O/YCB 真实表（GT 投影生成的层内对应，**不是学习前端**，`real/*/results/`）、`validate_code.py` 40/40、表/图从 raw JSON 确定性重建（byte-identical）。
+> - **未跑 / 进行中**：精确 40 根内层枚举（P2 补充证明给出 40 个射影根；工程实现与验证见 rounds 日志）、高阶 RLT / 严格对偶可行证书、SCP(dQP) baseline、端到端训练、T2/T3 任务、QPEP Gröbner 模板复用（G1）。
+> - 证据分级仍按下表；真实数据表是 layer-level 实验，论文中不得表述为「检测器」或「端到端」结果。
 > 本文件写清：数据集、任务、指标、baseline、消融、算力、复现风险。原则是**先定指标与公平性，再跑数**；任何"先跑再看"的指标都要注明。
 
 ---

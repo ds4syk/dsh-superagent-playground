@@ -1,0 +1,46 @@
+====================================================================================================
+Constrained-QPEPLayer 性能分解 | p=[8, 16, 32, 64] trials/p=20 noise=0.010 bias_z=0.080
+threads: OMP=1 OPENBLAS=1 MKL=1
+
+--- p=8 ---
+  [p= 8]  5/20  alm=260ms sdp=37ms rlt=61ms
+  [p= 8] 10/20  alm=215ms sdp=63ms rlt=60ms
+  [p= 8] 15/20  alm=442ms sdp=55ms rlt=87ms
+  [p= 8] 20/20  alm=491ms sdp=57ms rlt=87ms
+  [p= 8] 插桩一致性: match=True (J 0.004921785990 vs 0.004921785990, iters 16/16)
+  [saved] perf_breakdown.json  (10.6s)
+
+--- p=16 ---
+  [p=16]  5/20  alm=191ms sdp=41ms rlt=128ms
+  [p=16] 10/20  alm=169ms sdp=41ms rlt=151ms
+  [p=16] 15/20  alm=512ms sdp=64ms rlt=224ms
+  [p=16] 20/20  alm=394ms sdp=40ms rlt=129ms
+  [p=16] 插桩一致性: match=True (J 0.004921785989 vs 0.004921785989, iters 16/16)
+  [saved] perf_breakdown.json  (23.4s)
+
+--- p=32 ---
+  [p=32]  5/20  alm=213ms sdp=51ms rlt=464ms
+  [p=32] 10/20  alm=252ms sdp=48ms rlt=383ms
+  [p=32] 15/20  alm=333ms sdp=50ms rlt=424ms
+  [p=32] 20/20  alm=344ms sdp=47ms rlt=399ms
+  [p=32] 插桩一致性: match=True (J 0.004921785990 vs 0.004921785990, iters 16/16)
+  [saved] perf_breakdown.json  (40.2s)
+
+--- p=64 ---
+  [p=64]  5/20  alm=226ms sdp=59ms rlt=1669ms
+  [p=64] 10/20  alm=289ms sdp=61ms rlt=1578ms
+  [p=64] 15/20  alm=190ms sdp=60ms rlt=1516ms
+  [p=64] 20/20  alm=282ms sdp=58ms rlt=1550ms
+  [p=64] 插桩一致性: match=True (J 0.004921785991 vs 0.004921785991, iters 14/14)
+  [saved] perf_breakdown.json  (79.9s)
+
+=== 证书缓存 / 热启动测试 ===
+  p= 8 dpp=True cold=36.9ms first=8.0ms nowarm=1.5ms warm=1.4ms |dv_warm|=1.8e-10 tight_max=6.5e-10
+  p=16 dpp=True cold=39.9ms first=7.3ms nowarm=2.2ms warm=1.4ms |dv_warm|=1.2e-09 tight_max=2.2e-10
+  p=32 dpp=True cold=46.2ms first=9.7ms nowarm=2.3ms warm=1.6ms |dv_warm|=4.5e-10 tight_max=5.5e-10
+  p=64 dpp=True cold=60.8ms first=15.0ms nowarm=2.6ms warm=1.8ms |dv_warm|=5.3e-10 tight_max=9.2e-10
+
+交叉检查 raw_main.json：max|ΔJ(ALM)| = {'p8': '0.0e+00', 'p16': '0.0e+00', 'p32': '0.0e+00', 'p64': '0.0e+00'}
+  [saved] perf_breakdown.md
+
+完成：82.2s
