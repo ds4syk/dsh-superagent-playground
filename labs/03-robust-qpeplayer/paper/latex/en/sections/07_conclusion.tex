@@ -1,0 +1,20 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented Robust-QPEPLayer, a RANSAC-free differentiable pose layer that combines BR duality,
+GNC, and a constant-size QPEP inner solver, and differentiates the robust fixed point exactly. The
+theory isolates two terms that the natural implementation drops: the redescending curvature
+correction, which is the Schur complement of the BR weight block, and the constraint-multiplier term
+of the unit-quaternion constraint. The one-dimensional sign-flip proposition gives a rigorous
+setting in which the frozen-weight gradient has the wrong sign, and the per-observation
+$O(\|\mathbf{r}\|^{-4})$ bound quantifies when the gradient through a gross outlier becomes
+negligible. The method is not a global robust solver and does not replace RANSAC in adversarial
+regimes; it is a principled, constant-dimension, exactly differentiable robust layer whose failure
+modes are stated. Measured on synthetic data, ModelNet40/10, all eight official 3DMatch test scenes,
+two KITTI raw drives, all 11 KITTI odometry sequences 00--10, and two daylight plus two night-prefix
+In-The-Dark runs, it matches fixed-budget RANSAC success through $70\%$ random outliers at
+$22$--$32\times$ lower runtime; that speedup does not hold against adaptive RANSAC at low outlier
+fractions, and the exact gradient is $3$--$5\times10^{-8}$ relative to finite differences. Theseus-GM
+and SDPRLayers+SCS are measured on synthetic data, but the full real-data external-baseline suite and
+full-night/trained In-The-Dark pipeline remain future work; the KITTI stereo fallback is a
+rotation-positive / translation-negative result, not a substitute.

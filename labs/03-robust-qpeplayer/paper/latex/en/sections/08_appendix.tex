@@ -1,0 +1,487 @@
+\section*{Appendix: Detailed Results (not counted toward the six-page limit)}
+\label{app:start}
+
+This appendix is \emph{not} counted toward the six-page main-text limit. It collects the evidence
+status table, the proof and algorithm detail, the kernel-dual table, the per-dataset and per-scene
+numbers behind Table~\ref{tab:real}, the systems/baseline/ablation detail, and the falsifiers.
+Every entry is an independent reproduction from \texttt{experiments/} unless explicitly marked
+otherwise.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{p3_data_coverage.png}
+\caption{Data coverage beyond the original plan. Left: 3DMatch true low-overlap band
+($0.20$--$0.50$ geometric overlap, 32 low pairs) versus the high-overlap control (14 pairs), 10
+trials/cell; oracle base inlier $0.953$ (low) vs $0.984$ (high), clean rotation $0.47^\circ$ vs
+$0.19^\circ$; GNC-GM and RANSAC-1000 stay at $100\%$, IRLS reaches $92\%$ at $p=0.7$, and Kabsch
+collapses to $1\%$. Right: GNC-GM success on the eight added KITTI odometry sequences (10
+trials/cell); seq~08 is the one real bad-basin failure ($80\%$ at $p=0$ and $p=0.3$). Source:
+\texttt{experiments/real/p3\_data\_coverage.png}.}
+\label{fig:coverage}
+\end{figure}
+
+\subsection*{A. Proofs, derivation notes, and the backward algorithm}
+\label{app:proofs}
+\label{app:backward}
+
+The complete proofs of Lemmas~\ref{lem:brdual}--\ref{lem:weights},
+Theorems~\ref{thm:gnc}--\ref{thm:rhs}, Propositions~\ref{prop:signflip}--\ref{prop:bound}, the
+Schur-complement identity, the Riemannian Hessian formula, and the existence construction are
+maintained in the project theory notes (\texttt{theory/proofs.md} and
+\texttt{theory/derivations.md}); numerical checks are in \texttt{verify/}. The main text states the
+results and the proof sketches that fit the page budget. In particular:
+
+\begin{itemize}
+\item \emph{Lemma~\ref{lem:brdual}}: $w\mapsto we+\psi_\mu(w)$ is strictly convex on $(0,1]$ with
+  stationary point $w^*$; substituting $w^*$ recovers $\rho_\mu(e)$, and the box constraint is a
+  Cartesian product, so the multi-observation minimum is separable.
+\item \emph{Lemma~\ref{lem:schur}}: differentiating the joint objective in $(z,w)$ gives $H_J$;
+  eliminating $\delta w$ with $\psi''(w_i^*)=-1/\rho''(e_i^*)>0$ gives
+  $H_{\mathrm{rob}}=H_{\mathrm{IRLS}}+\Delta H_{\mathrm{redesc}}$.
+\item \emph{Lemma~\ref{lem:hessian}}: for $f\in C^2(\mathcal{M})$ the Euclidean Hessian restricted
+  to the tangent space differs from the Riemannian Hessian by the second fundamental form, which for
+  the unit sphere contributes $-(\mathbf{q}^\top G_q)\diag(I_4,0_3)$ \cite{absil2008}. For 3D--3D,
+  $g_{i,q}^E=2J_i^\top W_i\mathbf{r}_i$ and $J_i\mathbf{q}=2\mathbf{u}_i$, hence
+  $\lambda_i=\mathbf{q}^\top g_{i,q}^E=4\mathbf{u}_i^\top W_i\mathbf{r}_i$. The $W_i(\theta)$
+  extension adds $2\mathbf{r}_i^\top(\partial W_i/\partial\theta)\mathbf{r}_i$ to
+  $\partial e_i/\partial\theta$ and leaves the Hessian at fixed $W_i$ unchanged.
+\item \emph{Proposition~\ref{prop:existence}}: the sign of
+  $\Phi(t)=\sum_i2\rho'(e_i)(t-y_i)$ is evaluated at $t=0$ and $t=Kc^4/d^3$ for $d=y_2-y_1$, with
+  $H_{\mathrm{rob}}\to\lambda_\parallel(0)=2>0$ as $d\to\infty$.
+\item \emph{Proposition~\ref{prop:bound}}: the constants follow from
+  $\|\partial\Phi/\partial\mathbf{y}_i\|_F\le Cc^4/(c^2+e_i)^2$,
+  $\lambda_{\min}(H_{\mathrm{rob}})\ge\mu_0$, $\|\mathbf{r}_i\|^2=e_i$ for $W_i=I$, and
+  $\|\rho'(e_i)g_i\|\le2\overline wc^4/\|\mathbf{r}_i\|^3$.
+\end{itemize}
+
+\begin{algorithm}[t]
+\caption{Exact backward pass (implicit differentiation of the robust fixed point)}
+\label{alg:backward}
+\footnotesize
+\begin{algorithmic}[1]
+\Require upstream gradient; cached $z^*,w^*,e^*$
+\For{$i=1$ to $N$}
+  \State compute $\mathbf{u}_i,\mathbf{r}_i,J_i,g_i^E\in\mathbb{R}^7,H_i^E\in\mathbb{R}^{7\times7}$
+\EndFor
+\State $G\gets\sum_i\rho'_i g_i^E$;\quad
+       $H_E\gets\sum_i\big(\rho'_iH_i^E+\rho''_ig_i^Eg_i^{E,\top}\big)$
+\State $B_q\gets$ orthonormal basis of $\mathbf{q}^{*\perp}$;\quad $B\gets\diag(B_q,I_3)$
+\State $H_{\mathrm{rob}}\gets B^\top H_EB-\lambda_{\mathrm{rob}}\diag(I_3,0_3)$,\quad
+       $\lambda_{\mathrm{rob}}=\mathbf{q}^{*\top}G_q$
+\State $\mathrm{RHS}\gets\sum_i\rho'_i\,\mathrm{d}g_i/\mathrm{d}\theta
+       +\sum_i\rho''_ig_i(\mathrm{d}e_i/\mathrm{d}\theta)^\top$
+\State $\mathrm{d}z\gets\mathrm{solve}(H_{\mathrm{rob}},-\mathrm{RHS})$
+\State chain $\mathrm{d}z$ back to $(\mathbf{q},\mathbf{t})$ and to the upstream loss
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{gradient_sign.png}
+\caption{Numerical sign structure behind Proposition~\ref{prop:signflip}. Left: mapping-level radial
+response, exact versus frozen-weight (naive); for $e>c^2/3$ the signs are opposite. Right: pose-level
+response after $H_{\mathrm{rob}}^{-1}$; the inverse Hessian mixes directions, so the 6D sign is a
+numerical observation, not a theorem. Source:
+\texttt{synthetic/results/gradient\_sign.png}.}
+\label{fig:sign}
+\end{figure}
+
+\subsection*{B. Evidence status of every claim}
+\label{app:status}
+
+Table~\ref{tab:status} makes the boundary between theory, measurement, and blocked engineering
+explicit, so that no measured row is read as a theoretical guarantee and no future row as a result.
+
+\begin{table*}[t]
+\caption{Evidence status of the paper's claims (v0.4 consistency pass). Artifacts are under
+\texttt{labs/03-robust-qpeplayer/}.}
+\label{tab:status}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{5.0cm}
+  >{\raggedright\arraybackslash}p{3.0cm}
+  >{\raggedright\arraybackslash}p{5.6cm}X@{}}
+\toprule
+item & status & evidence & section \\
+\midrule
+BR dual, GNC fixed-point stationarity, Schur-complement curvature correction, exact Riemannian
+Hessian, 1D sign flip, existence, $O(\|\mathbf{r}_i\|^{-4})$ bound & new theory (proofs +
+numerical checks) & \texttt{theory/proofs.md}, \texttt{verify/},
+\texttt{synthetic/results/verify\_smoke.txt} & \S\ref{sec:method} \\
+Exact IFT backward vs central FD (600 observations, 6D) & measured &
+\texttt{synthetic/results/gradient\_table.json} & \S\ref{sec:experiments} \\
+GNC-GM vs fixed/adaptive RANSAC on random, coherent, boundary outliers & measured (synthetic,
+ModelNet40/10, all 8 official 3DMatch test scenes, 2 KITTI raw drives, all 11 odometry sequences) &
+\texttt{synthetic/results/main\_table\_extended.json}, \texttt{real/*/results/*.json} &
+\S\ref{sec:experiments} \\
+End-to-end boundary refinement, NumPy and torch & measured toy diagnostic (GT-supervised, 5--10
+seeds; not a learned system) & \texttt{synthetic/results/e2e\_table.json},
+\texttt{e2e\_torch/results/*.json} & \S\ref{sec:experiments} \\
+Theseus-GM and SDPRLayers+SCS & measured on synthetic 3D--3D only (SDPR is forward-only and reduces
+to Kabsch at $W_i=I$) & \texttt{baselines/results/baselines.json} & \S\ref{sec:experiments} \\
+UTIAS In-The-Dark & measured protocol on two daylight + two night-prefix runs (composed official GT,
+hand-written SIFT+SGBM); full-night/trained front-ends untested & \texttt{real/inthedark/results/} &
+\S\ref{sec:experiments} \\
+KITTI stereo fallback & measured negative result (rotation solved, translation front-end-limited) &
+\texttt{real/kitti\_stereo/results/} & \S\ref{sec:experiments} \\
+6D sign-flip statement & not a theorem; numerical observation only & \texttt{gradient\_table.json} &
+\S\ref{sec:signflip} \\
+General 40-root QPEP polynomial solver & not implemented (all tables use the scalar-weight $4\times4$
+specialization) & \texttt{qpep\_gpu/qpep\_scope.md} & \S\ref{sec:experiments} \\
+GPU timing / CUDA-graph capture of the $4\times4$ inner & blocked by Slurm GPU occupancy; CPU
+validation only & \texttt{qpep\_gpu/results/qpep\_gpu.json}, \texttt{logs/slurm\_gpu\_*} &
+\S\ref{app:systems} \\
+Learned descriptors (FCGF/Predator), real-data external baselines, end-to-end trained In-The-Dark,
+full 54-scene 3DMatch training corpus & future work & --- & \S\ref{sec:notmeasured} \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection*{C. Kernel duals}
+\label{app:kernel}
+
+Table~\ref{tab:kernel} lists the BR duals used by the layer, with $a=\mu c^2$. The forward and
+backward passes are structurally identical across kernels: only $\rho_\mu'$ and $\psi_\mu''$ change.
+TLS has a linear $\psi$ and a non-unique weight at $e=a$; it requires the GNC-TLS schedule rather
+than plain bandwidth annealing.
+
+\begin{table}[t]
+\caption{Black--Rangarajan duals for the four kernels ($a=\mu c^2$). Source:
+\texttt{theory/derivations.md}, reproduced by \texttt{verify/}.}
+\label{tab:kernel}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llll}
+\toprule
+kernel & $\rho_\mu(e)$ & $w^*=\rho_\mu'(e)$ & $\psi_\mu(w)$ \\
+\midrule
+Geman--McClure & $ae/(a+e)$ & $(a/(a+e))^2$ & $a(\sqrt{w}-1)^2$ \\
+Cauchy & $a\log(1+e/a)$ & $a/(a+e)$ & $a(w-1-\log w)$ \\
+Welsch & $a(1-e^{-e/a})$ & $e^{-e/a}$ & $a(1-w+w\log w)$ \\
+TLS & $\min(e,a)$ & $1$ if $e<a$, $0$ if $e>a$ & $a(1-w)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{D. Per-dataset results}
+\label{app:datasets}
+
+\noindent\textbf{ModelNet40/10.} Table~\ref{tab:modelnet} gives the aggregate numbers. ModelNet10
+uses 908 test objects in 10 classes, with OFF meshes resampled to 2048 points; robust-method success
+differs from ModelNet40 by at most $2$~pp and median rotation by at most $0.038^\circ$.
+
+\begin{table}[t]
+\caption{ModelNet object-cloud results under uniform random outliers, 50 trials/cell, $N=100$,
+$c=0.05$~m. Source: \texttt{real/modelnet/results/main\_table.json},
+\texttt{real/modelnet10/results/main\_table.json}.}
+\label{tab:modelnet}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccccc}
+\toprule
+dataset & GNC & RANSAC-1000 & IRLS & Kabsch & GNC ms & RANSAC ms \\
+\midrule
+ModelNet40 & $100\%$ $\le70\%$ & $100\%$ & $98$--$100\%$ & fails $\ge50\%$ & $1.7$--$1.9$ & $53.5$--$61.5$ \\
+ModelNet10 & $100\%$ $\le70\%$ & $100\%$ & $98$--$100\%$ & fails $\ge50\%$ & $1.7$--$1.9$ & $53.5$--$61.5$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{3DMatch.} Table~\ref{tab:3dmatch} gives the pooled eight-scene row, the
+low/mid/high overlap study, the stricter $0.20$--$0.50$ band, and the two FPFH-front-end audits.
+Pooled over all eight official test scenes (20 trials/cell), GNC p50 at $p=0.7$ is $2.26$~ms vs
+$62.6$~ms for fixed-1000 RANSAC ($27.7\times$), and the boundary median rotation at $p=0.7$ is
+$0.27^\circ$ vs $0.52^\circ$. Per-scene GNC p50 is $2.26$--$2.36$~ms vs $62.1$--$73.4$~ms
+($27.4$--$31.1\times$), IRLS is $99\%$ at $70\%$, and coherent outliers collapse at $60$--$70\%$ for
+every method ($0\%$). The overlap study selects 24/21/20 pairs for the high/mid/low bins; clean
+rotation is $0.18^\circ$/$0.24^\circ$/$0.52^\circ$, yet GNC and RANSAC both stay at $100\%$ at
+$p=0.7$ in every bin, with a zero success delta and a $27.7$--$30.4\times$ speedup for $p\ge30\%$.
+The low bin still has a median base inlier fraction of $0.95$. The stricter $0.20$--$0.50$
+geometric-overlap band (4 low + 2 matched high pairs per scene, 10 trials/cell) has oracle base
+inlier $0.953$ (low) / $0.984$ (high) and clean rotation $0.47^\circ$ / $0.19^\circ$; GNC and
+RANSAC-1000 are $100\%$ at $p=0.7$, IRLS $92\%$, Kabsch $1\%$. Low overlap reduces the \emph{number}
+of usable correspondences, not the oracle inlier fraction. The FPFH front-end (mutual NN plus
+pairwise-distance consistency, no GT in matching) reaches natural inlier rates of $80.0\%$ and
+$67.8\%$ on the two audited scenes.
+
+\begin{table*}[t]
+\caption{3DMatch detail. Oracle correspondences use GT-mapped nearest neighbours on real overlapping
+fragments; FPFH rows use a hand-crafted front-end with no GT in matching (not FCGF/Predator).
+``bnd'' = boundary outliers. Source: \texttt{real/threedmatch\_full/results/full\_scenes.json},
+\texttt{overlap\_bins.json}, \texttt{overlap\_dependence.json};
+\texttt{real/threedmatch/results/descriptor.json}.}
+\label{tab:3dmatch}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccccc}
+\toprule
+setting & pairs/trials & clean rot & GNC & RANSAC-1000 & Kabsch & speedup \\
+\midrule
+pooled 8 test scenes, random & 8 pairs/scene, 20 trials/cell & --- & $100\%$ $\le70\%$ & $100\%$ & --- & $27.7\times$ @$70\%$ \\
+pooled 8 test scenes, bnd.\ @$70\%$ & 8 pairs/scene, 20 trials/cell & --- & $0.27^\circ$ & $0.52^\circ$ & --- & --- \\
+overlap high & 24 pairs & $0.18^\circ$ & $100\%$ @$0.7$ & $100\%$ & --- & $27.7$--$30.4\times$ \\
+overlap mid & 21 pairs & $0.24^\circ$ & $100\%$ @$0.7$ & $100\%$ & --- & $27.7$--$30.4\times$ \\
+overlap low & 20 pairs & $0.52^\circ$ & $100\%$ @$0.7$ & $100\%$ & --- & $27.7$--$30.4\times$ \\
+strict $0.20$--$0.50$ band & 4 low + 2 high pairs/scene, 10 trials/cell & $0.47^\circ$ / $0.19^\circ$ & $100\%$ @$0.7$ & $100\%$ & $1\%$ & --- \\
+FPFH audit 1 & natural inliers $80.0\%$ & --- & $100\%$ & $100\%$ & $100\%$ & --- \\
+FPFH audit 2 & natural inliers $67.8\%$ & --- & $100\%$ & $97\%$ & $83\%$ & --- \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\noindent\textbf{KITTI.} Table~\ref{tab:kitti} collects the raw-drive and odometry rows. For the raw
+drives, ego motion comes from OXTS (Mercator + roll/pitch/yaw) mapped to Velodyne with
+\texttt{calib\_imu\_to\_velo}; direction is verified (drive 0001 correct NN $0.100$--$0.123$~m vs
+inverse $0.143$--$0.183$~m; drive 0002 $0.108$--$0.140$~m vs $0.136$--$0.269$~m). Drive 0002
+reproduces the drive-0001 random and boundary tables exactly, keeps the coherent transition (at
+$50\%$ GNC $40\%$ vs $35\%$, IRLS $30\%$ vs $45\%$; both chance-level), and gives the
+$\sim21$--$23\times$ speedup. A threshold sweep keeps GNC at $100\%$ for
+$c\in\{0.15,0.25,0.35\}$, with $c=0.25$ the defensible match to the $\sim0.10$~m point spacing. For
+odometry, only the 32--33 touched frames per sequence were range-fetched from the 84.8~GB official
+archive, so all 11 sequences 00--10 are represented. On the eight added sequences (10 trials/cell)
+success is $100\%$ for GNC and RANSAC-1000 at $p=0.7$ except seq~08 ($80\%$ at $p=0$ and $p=0.3$, a
+real bad-basin failure; RANSAC $100\%$); pooled over 11 sequences success is $99/99/100/100\%$ at
+$p=0/0.3/0.5/0.7$, and the fixed-RANSAC/GNC runtime ratio is $22.4\times$ at $p\ge0.3$. The 00/05/07
+subset gives the failure-mode detail: all 18 direction checks pass (fwd NN $0.053$--$0.114$~m vs
+inverse $0.104$--$0.430$~m), random success is $100\%$ through $70\%$, pooled GNC $2.8$~ms vs
+$73.7$~ms ($26.3\times$), coherent collapse at $p=0.6$ (at $p=0.5$ GNC $53\%$, IRLS $38\%$, RANSAC
+$0\%$), boundary $0.067^\circ$ vs $0.143^\circ$, and across $|\mathbf{t}|=0.09$--$9.62$~m and gaps
+$1/2/4/8$ (171 paired cells) GNC is never below RANSAC. The exact-pose clean floor
+($0.042$--$0.057^\circ$) is not lower than the OXTS raw drives ($0.030$--$0.039^\circ$), so LiDAR
+sampling/voxelization dominates it. The 33 frames per sequence are a subset, not the full streams.
+
+\begin{table*}[t]
+\caption{KITTI raw drives and odometry, $N=300$, $c=0.25$~m, 20 trials/cell (added sequences 10
+trials/cell). Random-outlier success is $100\%$ for GNC and fixed-1000 RANSAC through $70\%$ except
+seq~08. Source: \texttt{real/kitti/results/kitti.json},
+\texttt{real/kitti2/results/kitti2.json}, \texttt{real/kitti\_odom/results/kitti\_odom.json}.}
+\label{tab:kitti}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccccc}
+\toprule
+sequence & frames/pairs & GNC p50 & RANSAC p50 & speedup & coh.\ @$50\%$ & bnd.\ rot \\
+\midrule
+raw 0001 & 108 frames, 10 pairs & $2.7$--$2.8$~ms & $61$--$64$~ms & $\sim22\times$ & $0\%$ all & $0.07$--$0.09^\circ$ \\
+raw 0002 & 77 frames, 10 pairs & $2.7$--$2.8$~ms & $61$--$64$~ms & $\sim21$--$23\times$ & $40/35/30/45\%$ & $0.07$--$0.09^\circ$ \\
+odom 00--10 & 33 frames each, pooled & $2.8$~ms & $73.7$~ms & $22.4\times$ & seq~08 $80\%$ @$p\le0.3$ & --- \\
+odom 00/05/07 & 33 frames each & $2.8$~ms & $73.7$~ms & $26.3\times$ & $53/38/0\%$ & $0.067/0.143^\circ$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\noindent\textbf{In-The-Dark.} Table~\ref{tab:inthedark} gives the daylight runs and the night
+windows. The composed official GT was validated by stereo reprojection on disjoint pairs: forward
+medians $0.65$~px (run\_000002) and $0.52$~px (run\_000012), versus $18.1/27.9$~px inverse,
+$9.5/14.7$~px identity, and $21.5/31.3$~px unconjugated. All checks pass (512$\times$384 images,
+left/right row alignment $0.56$--$0.58$~px). The archive is 905~MB but only the 315{,}463-byte
+transform file was range-fetched (CRC verified). The night zips (2.6--2.76~GB) were not downloaded;
+only the touched windows were fetched. The motion-matched daylight control (run\_000002 start 757,
+$|\mathbf{t}|=0.21$~m, rot $0.54^\circ$) gives $85.9\%$ inliers and $0.121^\circ/0.007$~m; median
+depth is $4.5$~m at night vs $6.7$--$7.2$~m by day, so the night inlier rate is a geometry effect,
+not evidence that SIFT is more robust in the dark.
+
+\begin{table*}[t]
+\caption{UTIAS In-The-Dark: two daytime runs (15 consecutive pairs each) and two night-prefix
+windows (10 pairs each); hand-written SIFT+StereoSGBM front-end, no training. GT reprojection
+columns are median px (fwd / inverse / identity / unconjugated vehicle frame). Source:
+\texttt{real/inthedark/results/inthedark\_dense.json},
+\texttt{inthedark\_run12\_dense.json}, \texttt{inthedark\_night.json},
+\texttt{verify\_run\_000002.json}, \texttt{verify\_run\_000012.json}.}
+\label{tab:inthedark}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llcccccc}
+\toprule
+run & pairs & inliers & rot & trans & succ.\ @$0.1$~m & Kabsch & GT reproj \\
+\midrule
+day run\_000002 & 15 & $79.4\%$ & $0.078^\circ$ & $0.020$~m & $100\%$ & $47\%$ & $0.65/18.1/9.5/21.5$ \\
+day run\_000012 & 15 & $88.5\%$ & $0.092^\circ$ & $0.010$~m & $100\%$ & $40\%$ & $0.52/27.9/14.7/31.3$ \\
+night run\_000017 & 10 & $96.0\%$ & $0.135^\circ$ & $0.011$~m & $100\%$ & --- & --- \\
+night run\_000018 & 10 & $97.1\%$ & $0.150^\circ$ & $0.011$~m & $100\%$ & --- & --- \\
+night sparse & 10 & $84.3\%$ & $0.197^\circ$ & $0.015$~m & --- & --- & --- \\
+day control & 10 & $85.9\%$ & $0.121^\circ$ & $0.007$~m & --- & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\noindent\textbf{KITTI stereo fallback (negative translation).} Thirty frame pairs of drive 0001
+with SIFT + sub-pixel + StereoSGBM on rectified \texttt{image\_02/03} ($b=0.5327$~m) give a natural
+inlier rate of $17.8\%$ at $c=0.5$~m with 890 correspondences/pair. GNC/IRLS recover rotation to
+$0.052^\circ$ against a GT-inlier floor of $0.071^\circ$, but translation is $0.70$~m median versus
+$1.92$~m motion and a $0.239$~m floor; no method reaches $0.1$~m or $0.25$~m success. GNC is
+$19.3\times$ faster than fixed-1000 RANSAC (4.21 vs 81.3~ms). The stereo-vs-LiDAR depth ratio is
+$1.000$--$1.061$ over 3--60~m, ruling out a disparity-scale bug; the residual is a coherent
+forward-translation under-estimate ($0.63$--$0.73$) from front-end, occlusion, and dynamic bias.
+
+\subsection*{E. Systems, batching, and the inner solver}
+\label{app:systems}
+
+A vectorized numpy GNC over $(B,N,3)$ reproduces the loop to rotation $\le1.1\times10^{-14}$ and
+translation $\le1.2\times10^{-15}$ with identical $\mu$-schedules. At $B=32,N=100$ the batch p50 is
+$8.5$~ms vs $56.2$~ms for the loop ($6.60\times$); at $B=8$ the speedup is $2.95\times$ ($N=100$)
+and $3.27\times$ ($N=500$); $B=1$ is slower ($0.54\times$), so the loop remains the right choice for
+single instances. On an RTX 5090 in float64 eager torch, GPU is launch-bound at
+$42.4$--$45.7$~ms: it loses at $B\le8$ ($0.04$--$0.57\times$), is roughly tied at $B=32,N=100$
+($1.33\times$), and wins at $B=32,N=500$ ($2.23\times$) and at $B=128$ ($4.96\times$ at $N=100$,
+$8.24\times$ at $N=500$). A follow-up probe extends this to a static-shape $4\times4$ eigen solver
+and CUDA-graph capture at $B\in\{1,8,32,128,512\}$, $N\in\{100,500\}$, in float64 and float32. Its
+CPU validation found and fixed a Givens-sign bug in the hand-written Jacobi eigensolver (before:
+static-jacobi disagreed with NumPy by max $\|\Delta R\|_F\approx1.80$ and matched only $50\%$ of the
+$\mu$-schedules; after: $\sim10^{-16}$ and $100\%$ match).
+
+The \textbf{GPU leg is not measured}. On 2026-11-28T00:26:08 we submitted job 3184
+(\texttt{probe.py}, \texttt{--gres=gpu:1}, 20~min) to the \texttt{gpu} partition; at 00:31:16
+\texttt{scontrol show job 3184} reported \texttt{JobState=PENDING} \texttt{Reason=Resources}
+\texttt{StartTime=2026-11-28T21:23:07} (about 21~h away) while jobs 3151/3180/3181 held the three
+RTX 5090s. The job was cancelled at 00:31:21 and \texttt{scontrol} then reported
+\texttt{JobState=CANCELLED} \texttt{Reason=Resources}; the \texttt{squeue}/\texttt{scontrol} output
+is in \texttt{experiments/qpep\_gpu/results/logs/slurm\_gpu\_3184\_state.txt}. No CUDA-graph error
+is claimed because no graph was captured, and no 40-root QPEP solver is involved.
+
+A $4\times4$ Davenport/Horn inner solver \cite{horn1987} is numerically equivalent to weighted
+Kabsch (max $\|R_d-R_k\|_F=1.07\times10^{-14}$, max cost excess $9.4\times10^{-16}$) but its
+runtime is better only at large $N$: p50 ratio $0.94\times$ ($N=20$), $1.02\times$ ($N=100$),
+$1.28\times$ ($N=500$), geometric mean $1.07\times$. It is a large-$N$ option, not a default
+$N=100$ win.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{batch_gnc.png}
+\caption{Batched GNC-GM over $(B,N,3)$: throughput and loop-versus-batched speedup for
+$B=\{1,8,32,128\}$ and $N=\{100,500\}$. GPU points are the RTX 5090 float64 eager-torch batch
+benchmark; they are not the blocked static-shape $4\times4$/CUDA-graph probe. Source:
+\texttt{systems/results/batch\_gnc.json}.}
+\label{fig:batch}
+\end{figure}
+
+\subsection*{F. External baselines (synthetic only)}
+\label{app:baselines}
+
+Theseus 0.2.3 (dense Cholesky; \texttt{scikit-sparse} unavailable without SuiteSparse headers)
+solves the same per-point GM objective; its Jacobian matches finite differences at
+$1.09\times10^{-10}$ relative error and its GM cost agrees exactly. With GT initialization Theseus-GM
+succeeds $100\%$ at all $p$ (a local-basin check, not global recovery); with random initialization it
+succeeds $100/80/55/25\%$ at $p=0/0.3/0.5/0.7$, p50 $358$--$670$~ms. On the same 20 instances GNC-GM
+is $100\%$ at every $p$ at $1.7$~ms, RANSAC-adaptive is $100\%$ at $0.2$--$14.1$~ms, and Kabsch
+fails for $p\ge0.3$. The 20-trial Wilson intervals for Theseus random-init at $p=0.3$
+([0.58,0.92]) overlap GNC's 20/20 ([0.84,1.00]), so that gap is not significant; $p=0.5/0.7$ are
+separated (Table~\ref{tab:baselines}).
+
+\begin{table}[t]
+\caption{Synthetic external baselines, 20 instances per $p$; success (\%) at $p=0/0.3/0.5/0.7$ and
+p50 time. Source: \texttt{baselines/results/baselines.json},
+\texttt{theseus.json}, \texttt{sdpr\_forward.json}.}
+\label{tab:baselines}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccc}
+\toprule
+method & $p=0$ & $0.3$ & $0.5$ & $0.7$ / time \\
+\midrule
+Theseus-GM, GT init & 100 & 100 & 100 & 100 \\
+Theseus-GM, rand.\ init & 100 & 80 & 55 & 25 / 358--670~ms \\
+GNC-GM & 100 & 100 & 100 & 100 / 1.7~ms \\
+RANSAC-adaptive & 100 & 100 & 100 & 100 / 0.2--14.1~ms \\
+Kabsch & 100 & fail & fail & fail \\
+SDPRLayers+SCS & 100 & fail & fail & fail / 8.5--13.4~ms \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+SDPRLayers+SCS (fresh \texttt{utiasASRL/sdprlayer} at cb3aed2, SCS, 208 forwards) is numerically
+available: $0/208$ SCS exceptions, $8.5$--$13.4$~ms. It succeeds at $p=0$ but fails at $p\ge0.3$, as
+expected without a robust kernel. With $W_i=I$ and unit weights its objective equals Kabsch: 80
+paired trials give max $|\Delta R|=1.5\times10^{-5}$~deg and max $|\Delta t|=1.3\times10^{-9}$~m.
+This row is a forward-correctness/availability check, \textbf{not} an independent robust baseline; a
+distinct SDPR requires non-identity $W_i$ (e.g.\ POLI) or RANSAC. BPnP is 3D--2D PnP only, Pyatov
+\emph{et al.} is two-view 2D--2D, and POLI is a per-point geometry estimator with no official
+pose-solver code/weights found; none is a 3D--3D baseline, so no table is fabricated.
+
+\subsection*{G. Ablations}
+\label{app:ablations}
+
+\noindent\textbf{Kernel.} With the same weighted-Kabsch inner and schedule, GM, Cauchy, and Welsch
+are all $100\%$ on random and boundary outliers through $70\%$ (Table~\ref{tab:kernelabl}). GM has
+the lowest boundary median rotation at $50$--$70\%$ ($0.199/0.229/0.340^\circ$ vs Cauchy
+$0.241/0.264/0.370^\circ$ and Welsch $0.220/0.268/0.392^\circ$). There is no evidence to switch the
+default.
+
+\begin{table}[t]
+\caption{Kernel ablation: boundary median rotation (deg) at $p=0.5/0.6/0.7$; all kernels are
+$100\%$ on random and boundary outliers through $70\%$. Source:
+\texttt{ablations/kernels/results/kernel\_ablation.json}.}
+\label{tab:kernelabl}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccc}
+\toprule
+kernel & $p=0.5$ & $p=0.6$ & $p=0.7$ \\
+\midrule
+GM (default) & $0.199$ & $0.229$ & $0.340$ \\
+Cauchy & $0.241$ & $0.264$ & $0.370$ \\
+Welsch & $0.220$ & $0.268$ & $0.392$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{GNC schedule.} Sweeping $\gamma\in\{1.2,1.4,1.7,2.0\}$, the $\mu_0$ multiplier
+$\{0.5,1,4\}$ and polish steps $\{0,5,10\}$ gives $100\%$ success and identical median rotation at
+$p=0.3/0.5/0.7$; $\gamma=2.0$ is $1.04$--$1.79\times$ faster than the default, $\gamma=1.2$ is
+$1.47$--$2.49\times$ slower. The default is conservative, not uniquely optimal.
+
+\noindent\textbf{RANSAC strength.} A stronger LO-RANSAC (MSAC score, up to five local refit/re-score
+rounds, 0.999 adaptive stop, cap 1000) ties GNC on accuracy (median rotation difference
+$\le0.006^\circ$) but is $1.03$--$1.52\times$ slower than plain adaptive RANSAC at every $p$, because
+the final consensus refit is already the same estimator. The fixed-1000 baseline is therefore a
+strawman for runtime.
+
+\noindent\textbf{Anisotropic $W_i$.} With a correct 6-DoF Gauss--Newton inner solve on
+Cholesky-whitened residuals, $W_i=I$ matches Kabsch to $5.3\times10^{-13}$. Scalar weighted Kabsch
+is \textbf{not} exact for anisotropic $W_i$: its objective ratio at converged GM weights is
+$1.002$--$1.007$ (diagonal) and $1.035$--$1.088$ (full SPD), with a single-trial maximum of $3.80$.
+Under the isotropic synthetic noise, however, anisotropic $W_i$ is a misspecified model: full-$W$
+GNC has a paired median rotation change of $+0.055$ to $+0.124^\circ$, is better on only
+$8$--$32\%$ of trials, and has $92\%$ success at $p=0.7$ (identity: $100\%$). The exact inner solve
+is $4.9$--$23\times$ slower than scalar Kabsch. We therefore report this as a correctness/negative
+result: use the nonlinear inner when $W_i$ is genuinely anisotropic, but do not claim an accuracy
+gain from anisotropy on this data.
+
+\subsection*{H. Falsifiers}
+\label{app:falsifiers}
+
+The measured claims are stated so that they can fail:
+
+\begin{itemize}
+\item \textbf{Exact backward.} If the exact IFT Jacobian stopped agreeing with central finite
+  differences on the polished branch (relative Frobenius error above $10^{-6}$, or cosine below
+  $0.999$), the ``exact fixed-point derivative'' claim would be false. Current values are
+  $4.9\times10^{-8}$/$3.1\times10^{-8}$ (inlier/boundary) and $1.000000$ cosine.
+\item \textbf{Curvature correction.} If the naive frozen-weight Jacobian were not the dominant error
+  source on boundary observations (e.g.\ if the no-$\lambda$ variant were worse), the Schur-complement
+  story would not explain the measurement. Current: naive $1.07$ vs no-$\lambda$
+  $9.8\times10^{-4}$ on boundary.
+\item \textbf{Sign flip.} In 1D the proposition is a proof; numerically, if the exact and naive radial
+  responses did not have opposite signs for $e>c^2/3$, the numerical premise of the 6D diagnostic
+  would fail. Current: $122/122$ boundary and $64/64$ gross observations flip.
+\item \textbf{Forward robustness.} If GNC-GM had lower success than fixed-budget RANSAC at any
+  $p\in[0,0.7]$ on random outliers, the ``matches fixed-budget RANSAC'' claim would be false.
+  Current: parity on synthetic, ModelNet40/10, 3DMatch, KITTI raw, and odometry.
+\item \textbf{Budget claim.} If adaptive RANSAC were slower than GNC at low $p$, the stated ``slower
+  at low $p$'' caveat would be false. Current: GNC is $3.9\times$ slower at $p=0.1$ and
+  $8.3\times$ faster at $p=0.7$.
+\item \textbf{Identifiability failure.} If any method recovered the ground-truth pose at $60$--$70\%$
+  coherent outliers, the model-breakdown discussion would be wrong. Current: all methods return the
+  outlier transform.
+\item \textbf{Real-data scope.} If the In-The-Dark GT did not beat the inverse/identity/conjugated
+  alternatives on held-out reprojection, the ``protocol validation'' claim would fail. Current:
+  $0.52$--$0.65$~px vs $9.5$--$31.3$~px.
+\end{itemize}

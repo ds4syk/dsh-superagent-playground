@@ -1,0 +1,213 @@
+note: "version 2" Tectonic command-line interface activated
+note: Running TeX ...
+warning: algorithm.sty:11: 
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+warning: sections/02_related_work:7: Underfull \hbox (badness 1715) in paragraph at lines 6--7
+warning: sections/02_related_work:7: Underfull \hbox (badness 4660) in paragraph at lines 6--7
+warning: sections/03_formulation:17: Overfull \hbox (4.86087pt too wide) detected at line 17
+warning: sections/03_formulation:31: Underfull \hbox (badness 10000) in paragraph at lines 30--31
+warning: sections/03_formulation:31: Underfull \hbox (badness 10000) in paragraph at lines 31--31
+warning: sections/03_formulation:32: Underfull \hbox (badness 6348) in paragraph at lines 31--32
+warning: sections/03_formulation:32: Underfull \hbox (badness 5374) in paragraph at lines 32--32
+warning: sections/03_formulation:33: Underfull \hbox (badness 10000) in paragraph at lines 32--33
+warning: sections/03_formulation:33: Overfull \hbox (9.17557pt too wide) in paragraph at lines 32--33
+warning: sections/03_formulation:34: Underfull \hbox (badness 10000) in paragraph at lines 33--34
+warning: sections/04_method:22: Overfull \hbox (38.09201pt too wide) detected at line 22
+warning: sections/04_method:35: Overfull \hbox (79.27582pt too wide) detected at line 35
+warning: sections/04_method:43: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/04_method:50: Overfull \hbox (66.31215pt too wide) detected at line 50
+warning: sections/04_method:59: Overfull \hbox (27.44809pt too wide) detected at line 59
+warning: sections/04_method:59: Underfull \vbox (badness 1867) has occurred while \output is active
+warning: sections/04_method:62: Underfull \hbox (badness 2951) in paragraph at lines 61--62
+warning: sections/04_method:70: Overfull \hbox (61.5492pt too wide) detected at line 70
+warning: sections/04_method:79: Underfull \hbox (badness 1715) in paragraph at lines 78--79
+warning: sections/04_method:86: Overfull \hbox (94.92918pt too wide) detected at line 86
+warning: sections/04_method:99: Underfull \hbox (badness 10000) in paragraph at lines 98--99
+warning: sections/05_experiments:14: Underfull \vbox (badness 1320) has occurred while \output is active
+warning: sections/07_conclusion:1: Underfull \hbox (badness 2762) in paragraph at lines 11--1
+warning: sections/08_appendix:21: Overfull \hbox (18.76811pt too wide) in paragraph at lines 11--21
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 38--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 1728) in paragraph at lines 38--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 1412) in paragraph at lines 38--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 39--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 39--39
+warning: sections/08_appendix:40: Underfull \hbox (badness 10000) in paragraph at lines 39--40
+warning: sections/08_appendix:74: Underfull \hbox (badness 10000) in paragraph at lines 74--74
+warning: sections/08_appendix:76: Underfull \hbox (badness 3078) in paragraph at lines 75--76
+warning: sections/08_appendix:90: Underfull \hbox (badness 5787) in paragraph at lines 89--90
+warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
+warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
+warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
+warning: sections/08_appendix:102: Underfull \hbox (badness 10000) in paragraph at lines 101--102
+warning: sections/08_appendix:122: Underfull \hbox (badness 3108) in paragraph at lines 122--122
+warning: sections/08_appendix:122: Underfull \hbox (badness 3108) in paragraph at lines 122--122
+warning: sections/08_appendix:122: Underfull \hbox (badness 3108) in paragraph at lines 122--122
+warning: sections/08_appendix:123: Underfull \hbox (badness 3108) in paragraph at lines 122--123
+warning: sections/08_appendix:123: Underfull \hbox (badness 3108) in paragraph at lines 123--123
+warning: sections/08_appendix:156: Overfull \vbox (7.33365pt too high) has occurred while \output is active
+warning: sections/08_appendix:156: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:156: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:156: Overfull \vbox (1.915pt too high) has occurred while \output is active
+warning: sections/08_appendix:156: Overfull \vbox (1.0591pt too high) has occurred while \output is active
+warning: sections/08_appendix:288: Underfull \hbox (badness 10000) in paragraph at lines 288--288
+warning: sections/08_appendix:288: Underfull \hbox (badness 3417) in paragraph at lines 288--288
+warning: sections/08_appendix:358: Overfull \vbox (3.51535pt too high) has occurred while \output is active
+warning: sections/08_appendix:360: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:360: Overfull \vbox (1.61382pt too high) has occurred while \output is active
+warning: sections/08_appendix:398: Underfull \hbox (badness 1365) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 2181) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 10000) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 1418) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 2521) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Overfull \hbox (21.5173pt too wide) in paragraph at lines 397--398
+warning: main.tex:37: Underfull \vbox (badness 1005) has occurred while \output is active
+warning: main.tex:38: Overfull \vbox (1.29999pt too high) has occurred while \output is active
+note: Running BibTeX on main.aux ...
+note: Rerunning TeX because bibtex was run ...
+warning: algorithm.sty:11: 
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+warning: sections/02_related_work:7: Underfull \hbox (badness 1715) in paragraph at lines 6--7
+warning: sections/02_related_work:7: Underfull \hbox (badness 4660) in paragraph at lines 6--7
+warning: sections/03_formulation:17: Overfull \hbox (4.86087pt too wide) detected at line 17
+warning: sections/03_formulation:31: Underfull \hbox (badness 10000) in paragraph at lines 30--31
+warning: sections/03_formulation:31: Underfull \hbox (badness 10000) in paragraph at lines 31--31
+warning: sections/03_formulation:32: Underfull \hbox (badness 6348) in paragraph at lines 31--32
+warning: sections/03_formulation:32: Underfull \hbox (badness 5374) in paragraph at lines 32--32
+warning: sections/03_formulation:33: Underfull \hbox (badness 10000) in paragraph at lines 32--33
+warning: sections/03_formulation:33: Overfull \hbox (9.17557pt too wide) in paragraph at lines 32--33
+warning: sections/03_formulation:34: Underfull \hbox (badness 10000) in paragraph at lines 33--34
+warning: sections/04_method:22: Overfull \hbox (38.09201pt too wide) detected at line 22
+warning: sections/04_method:35: Overfull \hbox (79.27582pt too wide) detected at line 35
+warning: sections/04_method:43: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/04_method:50: Overfull \hbox (66.31215pt too wide) detected at line 50
+warning: sections/04_method:59: Overfull \hbox (27.44809pt too wide) detected at line 59
+warning: sections/04_method:59: Underfull \vbox (badness 1867) has occurred while \output is active
+warning: sections/04_method:62: Underfull \hbox (badness 2951) in paragraph at lines 61--62
+warning: sections/04_method:70: Overfull \hbox (61.5492pt too wide) detected at line 70
+warning: sections/04_method:79: Underfull \hbox (badness 1715) in paragraph at lines 78--79
+warning: sections/04_method:86: Overfull \hbox (94.92918pt too wide) detected at line 86
+warning: sections/04_method:99: Underfull \hbox (badness 10000) in paragraph at lines 98--99
+warning: sections/05_experiments:14: Underfull \vbox (badness 1320) has occurred while \output is active
+warning: sections/07_conclusion:1: Underfull \hbox (badness 2762) in paragraph at lines 11--1
+warning: main.bbl:74: Underfull \hbox (badness 1490) in paragraph at lines 70--74
+warning: main.bbl:101: Underfull \vbox (badness 4096) has occurred while \output is active
+warning: main.tex:34: Overfull \vbox (1.81998pt too high) has occurred while \output is active
+warning: sections/08_appendix:21: Overfull \hbox (18.76811pt too wide) in paragraph at lines 11--21
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 38--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 1728) in paragraph at lines 38--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 1412) in paragraph at lines 38--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 39--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 39--39
+warning: sections/08_appendix:40: Underfull \hbox (badness 10000) in paragraph at lines 39--40
+warning: sections/08_appendix:52: Overfull \vbox (1.99913pt too high) has occurred while \output is active
+warning: sections/08_appendix:74: Underfull \hbox (badness 10000) in paragraph at lines 74--74
+warning: sections/08_appendix:76: Underfull \hbox (badness 3078) in paragraph at lines 75--76
+warning: sections/08_appendix:90: Underfull \hbox (badness 3138) in paragraph at lines 89--90
+warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
+warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
+warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
+warning: sections/08_appendix:102: Underfull \hbox (badness 10000) in paragraph at lines 101--102
+warning: sections/08_appendix:122: Underfull \hbox (badness 3108) in paragraph at lines 122--122
+warning: sections/08_appendix:122: Underfull \hbox (badness 3108) in paragraph at lines 122--122
+warning: sections/08_appendix:122: Underfull \hbox (badness 3108) in paragraph at lines 122--122
+warning: sections/08_appendix:123: Underfull \hbox (badness 3108) in paragraph at lines 122--123
+warning: sections/08_appendix:123: Underfull \hbox (badness 3108) in paragraph at lines 123--123
+warning: sections/08_appendix:225: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:267: Overfull \vbox (1.069pt too high) has occurred while \output is active
+warning: sections/08_appendix:267: Overfull \vbox (1.57509pt too high) has occurred while \output is active
+warning: sections/08_appendix:288: Underfull \hbox (badness 10000) in paragraph at lines 288--288
+warning: sections/08_appendix:288: Underfull \hbox (badness 3417) in paragraph at lines 288--288
+warning: sections/08_appendix:289: Overfull \vbox (64.105pt too high) has occurred while \output is active
+warning: sections/08_appendix:289: Overfull \vbox (94.65244pt too high) has occurred while \output is active
+warning: sections/08_appendix:289: Overfull \vbox (85.05263pt too high) has occurred while \output is active
+warning: sections/08_appendix:324: Overfull \vbox (1.73936pt too high) has occurred while \output is active
+warning: sections/08_appendix:360: Overfull \vbox (5.02664pt too high) has occurred while \output is active
+warning: sections/08_appendix:395: Overfull \vbox (1.51195pt too high) has occurred while \output is active
+warning: sections/08_appendix:395: Overfull \vbox (5.52011pt too high) has occurred while \output is active
+warning: sections/08_appendix:395: Overfull \vbox (0.7202pt too high) has occurred while \output is active
+warning: sections/08_appendix:398: Underfull \hbox (badness 1365) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 2181) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 10000) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 1418) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 2521) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Overfull \hbox (21.5173pt too wide) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: main.tex:37: Overfull \vbox (1.81pt too high) has occurred while \output is active
+warning: main.tex:37: Overfull \vbox (3.73022pt too high) has occurred while \output is active
+warning: main.tex:38: Overfull \vbox (2.49998pt too high) has occurred while \output is active
+note: Rerunning TeX because "main.aux" changed ...
+warning: algorithm.sty:11: 
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+warning: sections/02_related_work:7: Underfull \hbox (badness 1655) in paragraph at lines 6--7
+warning: sections/02_related_work:7: Underfull \hbox (badness 4660) in paragraph at lines 6--7
+warning: sections/03_formulation:17: Overfull \hbox (4.86087pt too wide) detected at line 17
+warning: sections/03_formulation:31: Underfull \hbox (badness 10000) in paragraph at lines 30--31
+warning: sections/03_formulation:31: Underfull \hbox (badness 10000) in paragraph at lines 31--31
+warning: sections/03_formulation:32: Underfull \hbox (badness 6348) in paragraph at lines 31--32
+warning: sections/03_formulation:32: Underfull \hbox (badness 5374) in paragraph at lines 32--32
+warning: sections/03_formulation:33: Underfull \hbox (badness 10000) in paragraph at lines 32--33
+warning: sections/03_formulation:33: Overfull \hbox (9.17557pt too wide) in paragraph at lines 32--33
+warning: sections/03_formulation:34: Underfull \hbox (badness 10000) in paragraph at lines 33--34
+warning: sections/04_method:22: Overfull \hbox (38.09201pt too wide) detected at line 22
+warning: sections/04_method:35: Overfull \hbox (79.27582pt too wide) detected at line 35
+warning: sections/04_method:43: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/04_method:50: Overfull \hbox (66.31215pt too wide) detected at line 50
+warning: sections/04_method:59: Overfull \hbox (27.44809pt too wide) detected at line 59
+warning: sections/04_method:59: Underfull \vbox (badness 1867) has occurred while \output is active
+warning: sections/04_method:62: Underfull \hbox (badness 2951) in paragraph at lines 61--62
+warning: sections/04_method:70: Overfull \hbox (61.5492pt too wide) detected at line 70
+warning: sections/04_method:79: Underfull \hbox (badness 1715) in paragraph at lines 78--79
+warning: sections/04_method:86: Overfull \hbox (94.92918pt too wide) detected at line 86
+warning: sections/04_method:99: Underfull \hbox (badness 10000) in paragraph at lines 98--99
+warning: sections/05_experiments:14: Underfull \vbox (badness 1320) has occurred while \output is active
+warning: sections/07_conclusion:1: Underfull \hbox (badness 2762) in paragraph at lines 11--1
+warning: main.bbl:74: Underfull \hbox (badness 1490) in paragraph at lines 70--74
+warning: main.bbl:101: Underfull \vbox (badness 4096) has occurred while \output is active
+warning: main.tex:34: Overfull \vbox (1.81998pt too high) has occurred while \output is active
+warning: sections/08_appendix:21: Overfull \hbox (18.76811pt too wide) in paragraph at lines 11--21
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 38--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 1728) in paragraph at lines 38--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 1412) in paragraph at lines 38--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 39--39
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 39--39
+warning: sections/08_appendix:40: Underfull \hbox (badness 10000) in paragraph at lines 39--40
+warning: sections/08_appendix:52: Overfull \vbox (1.99913pt too high) has occurred while \output is active
+warning: sections/08_appendix:74: Underfull \hbox (badness 10000) in paragraph at lines 74--74
+warning: sections/08_appendix:76: Underfull \hbox (badness 3078) in paragraph at lines 75--76
+warning: sections/08_appendix:90: Underfull \hbox (badness 3138) in paragraph at lines 89--90
+warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
+warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
+warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
+warning: sections/08_appendix:102: Underfull \hbox (badness 10000) in paragraph at lines 101--102
+warning: sections/08_appendix:122: Underfull \hbox (badness 3108) in paragraph at lines 122--122
+warning: sections/08_appendix:122: Underfull \hbox (badness 3108) in paragraph at lines 122--122
+warning: sections/08_appendix:122: Underfull \hbox (badness 3108) in paragraph at lines 122--122
+warning: sections/08_appendix:123: Underfull \hbox (badness 3108) in paragraph at lines 122--123
+warning: sections/08_appendix:123: Underfull \hbox (badness 3108) in paragraph at lines 123--123
+warning: sections/08_appendix:225: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:267: Overfull \vbox (1.069pt too high) has occurred while \output is active
+warning: sections/08_appendix:267: Overfull \vbox (1.57509pt too high) has occurred while \output is active
+warning: sections/08_appendix:288: Underfull \hbox (badness 10000) in paragraph at lines 288--288
+warning: sections/08_appendix:288: Underfull \hbox (badness 3417) in paragraph at lines 288--288
+warning: sections/08_appendix:289: Overfull \vbox (64.105pt too high) has occurred while \output is active
+warning: sections/08_appendix:289: Overfull \vbox (94.65244pt too high) has occurred while \output is active
+warning: sections/08_appendix:289: Overfull \vbox (85.05263pt too high) has occurred while \output is active
+warning: sections/08_appendix:324: Overfull \vbox (1.73936pt too high) has occurred while \output is active
+warning: sections/08_appendix:360: Overfull \vbox (5.02664pt too high) has occurred while \output is active
+warning: sections/08_appendix:395: Overfull \vbox (1.51195pt too high) has occurred while \output is active
+warning: sections/08_appendix:395: Overfull \vbox (5.52011pt too high) has occurred while \output is active
+warning: sections/08_appendix:395: Overfull \vbox (0.7202pt too high) has occurred while \output is active
+warning: sections/08_appendix:398: Underfull \hbox (badness 1365) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 2181) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 10000) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 1418) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \hbox (badness 2521) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Overfull \hbox (21.5173pt too wide) in paragraph at lines 397--398
+warning: sections/08_appendix:398: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: main.tex:37: Overfull \vbox (1.81pt too high) has occurred while \output is active
+warning: main.tex:37: Overfull \vbox (3.73022pt too high) has occurred while \output is active
+warning: main.tex:38: Overfull \vbox (2.49998pt too high) has occurred while \output is active
+warning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details.
+note: Running xdvipdfmx ...
+note: Writing `main.pdf` (552.6806640625 KiB)
+note: Skipped writing 3 intermediate files (use --keep-intermediates to keep them)

@@ -1,0 +1,41 @@
+\section{Related Work}
+\label{sec:related}
+
+\noindent\textbf{Certifiable and global pose layers.} SDPRLayers \cite{holmes2025sdpr} lifts a
+homogeneous QCQP to a Shor SDP, certifies rank-one optimality, and differentiates the original KKT
+system with an implicit-selection argument. Its guarantees are conditional on tightness; its
+real-data pipeline uses RANSAC and clean samples, and its SDP grows with the number of variables.
+QPEP \cite{wu2022qpep} eliminates translation, solves a quartic system by Gr\"obner basis, and
+returns the algebraically global pose with a covariance, but has no gradient layer. We use the
+scalar-weight $4\times4$ specialization of QPEP as a \emph{subroutine} and add a robust outer loop
+and an exact backward; we do not claim certifiable global optimality of the robust cost.
+
+\noindent\textbf{Local differentiable optimization.} Theseus \cite{pineda2022theseus} provides
+differentiable nonlinear least squares on Lie groups with implicit differentiation and direct loss
+minimization. It supports robust kernels as soft costs, but its fixed point is a local stationary
+point of the penalized objective, it does not expose the redescending curvature correction, and the
+kernel is applied as a scalar weight rather than through a BR dual. BPnP \cite{chen2020bpn}
+backpropagates through a PnP solver via the implicit function theorem and has no outlier mechanism.
+EPro-PnP \cite{chen2022epropnp} models pose ambiguity with a Boltzmann distribution; it is
+complementary but high-variance and not a redescending $M$-estimator. Pyatov \emph{et al.}
+\cite{pyatov2024robust} treat robust two-view geometry as an implicit layer with learnable
+matching-confidence weights, in a 2D--2D scope; ours is metric 3D--3D pose on
+$\mathbb{S}^3\times\mathbb{R}^3$ with an explicit second-order theory. POLI \cite{poli2026} learns
+per-point Gaussian geometry and can supply anisotropic $W_i$; it is a front-end representation, not
+a robust pose layer, and our $W_i$ can be POLI's ellipsoids.
+
+\noindent\textbf{Robust estimation and implicit layers.} The BR duality \cite{black1996br} unifies
+outlier processes and robust statistics and gives the dual form we use. GNC was popularized for
+spatial perception by Yang \emph{et al.} \cite{yang2020gnc} and TEASER \cite{yang2020teaser}, which
+combines GNC-TLS with a certified rotation subproblem; our inner problem is a full 6-DoF QPEP and
+our contribution is the \emph{differentiable} fixed point. The GM, Cauchy, Welsch, and TLS kernels
+are classical \cite{geman1985}, and their BR duals are in Appendix~\ref{app:kernel}. RANSAC
+\cite{fischler1981ransac} is the non-differentiable alternative, always compared with a named
+budget. Jacobian-free backpropagation \cite{fung2022jfb} replaces the inverse-Jacobian solve by a
+cheap approximation; freezing robust weights is a similar ``phantom gradient'', but our 1D
+proposition shows it can have the wrong sign. The Riemannian Hessian formula is the standard one
+for embedded manifolds \cite{absil2008}. The closest differentiable robust layer is Pyatov
+\emph{et al.}, the closest robust global solver is TEASER/GNC, and the closest pose layer is
+SDPRLayers; our differentiators are exact robust fixed-point differentiation with the curvature
+correction, the Riemannian constraint term, the 1D sign-flip theorem, the
+$O(\|\mathbf{r}\|^{-4})$ bound, and the constant-dimension QPEP inner solver.

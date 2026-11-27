@@ -1,0 +1,33 @@
+\section{Related Work}\label{sec:related}
+We position against four groups; Table~\ref{tab:positioning} summarises.
+
+\textbf{Certifiable differentiable layers.} SDPRLayers \cite{holmes2025sdpr} is the closest work and our explicit target. It lifts a homogeneous QCQP to a Shor SDP, reads off a global solution when the relaxation is tight, and differentiates the \emph{original} KKT system with an implicit-selection argument that tolerates redundant equality constraints. Three differences matter. (i) \emph{Constraint class}: their theory is for quadratic \emph{equalities}; inequalities require slacks that inflate the PSD block and break strict complementarity, whereas ours are native. (ii) \emph{Where the SDP lives}: they solve an SDP in the forward pass for every sample and step; we solve a fixed-dimension polynomial system forward and use an SDP only for the posteriori certificate, asynchronously. (iii) \emph{What ``global'' rests on}: theirs rests on the forward relaxation; ours on a separate $14\times14$ relaxation, so a failure of tightness costs us the certificate but not the forward solve. Conversely, we inherit QPEP's enumeration-completeness assumption.
+
+\textbf{Algebraically global quaternion solvers.} QPEP \cite{wu2022qpep} unifies PnP, PnL, hand--eye calibration, point-to-plane registration, conic pose, range-based relative pose, Stewart-platform kinematics and multi-GNSS attitude as ``quadratic pose estimation problems'', eliminates $\mathbf t$, and enumerates all KKT roots with a Gr\"obner basis (up to 40 candidates), taking the best. Our work can be read as \emph{adding inequalities and gradients to QPEP}: we keep its elimination and enumeration, and add affine constraints, an ALM loop, FB differentiation and a semidefinite posteriori certificate. In QPEP's sense, ``globally optimal'' means the best stationary point given a complete enumeration; this is not a convex certificate, and we never use QPEP's output alone as one.
+
+\textbf{Differentiable convex-optimisation layers.} OptNet \cite{amos2017optnet} differentiates QPs via the KKT system of an interior-point solve; CVXPYLayers \cite{agrawal2019cvxpylayers} does so for cone programs; dQP \cite{magoon2025dqp} decouples solver and derivative and shows the active set determines both. These methods assume convexity, an identified active set and LICQ/strict complementarity. Our setting violates all three: the feasible set lives on $\mathbb{S}^3$, LICQ fails at four contacts and three out-of-plane degrees of freedom, and strict complementarity fails at grazing contact. We borrow dQP's \emph{spirit}---reduce the derivative to a small system fixed by the active set---and add a rank-robust regularisation plus a limit theory.
+
+\textbf{Local pose layers and non-smooth differentiation.} BPnP \cite{chen2020bpn} back-propagates through a PnP solve by implicit differentiation; EPro-PnP \cite{chen2022epropnp} integrates a pose posterior by Monte Carlo; Theseus \cite{pineda2022theseus} provides differentiable nonlinear least squares on manifolds with implicit or unrolled derivatives. All are local and support penalties but not hard constraints. The Fischer--Burmeister function \cite{fischer1992} and smoothed variants \cite{kanzow1996} turn complementarity into a semi-smooth equation \cite{facchinei2003}; the non-convex ALM is classical \cite{bertsekas1982,rockafellar1998}, with exact-penalty variants in \cite{fletcher1987}; and we use the nonsmooth implicit differentiation of \cite{bolte2021nonsmooth} to state what our limit is rather than to claim differentiability.
+
+\begin{table*}[t]
+\centering
+\caption{Positioning. $\checkmark$ = supported/native, $\times$ = not supported, $\sim$ = partial/with caveats. Qualitative summary of the cited papers; no new measurements.}
+\label{tab:positioning}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{4.1cm}*{5}{>{\centering\arraybackslash}p{2.45cm}}@{}}
+\toprule
+ & SDPRLayers \cite{holmes2025sdpr} & dQP \cite{magoon2025dqp} & Theseus \cite{pineda2022theseus} & QPEP \cite{wu2022qpep} & \textbf{Ours} \\
+\midrule
+Non-convex forward & $\checkmark$ (lifted) & $\times$ (convex QP) & $\checkmark$ (local) & $\checkmark$ (global) & $\checkmark$ \\
+Hard inequalities & $\times$ (slacks) & $\checkmark$ (linear) & $\times$ (penalties) & $\times$ & $\checkmark$ (affine) \\
+Forward cost vs.\ $p$ & $O((10+p)^6)$ & $O(\mathrm{QP}(p))$ & $O(p)$ per iter. & $O(\mathrm{const})$ & $O(p)$ assembly $+\,O(1)$ solve \\
+Global forward guarantee & if tight & yes (convex) & $\times$ & enumeration & enumeration \\
+Posteriori certificate & forward & n/a & $\times$ & $\times$ & $\checkmark$ ($14\times14$ SDP) \\
+Robust to LICQ failure & $\checkmark$ (equalities) & $\times$ & $\times$ & n/a & $\checkmark$ (FB) \\
+Weak-active / strict compl. & $\times$ (needs strict compl.) & $\times$ & n/a & n/a & $\sim$ (selected gen.\ deriv.) \\
+Backward system size & $(n+m)$ reduced & $n+|A|$ & $n$ & n/a & $6+|\mathcal A|$ \\
+GPU-batchable & $\times$ (CPU SDP) & $\checkmark$ & $\checkmark$ & $\sim$ & $\sim$ (fixed-size solve) \\
+\bottomrule
+\end{tabular}
+\end{table*}

@@ -1,0 +1,111 @@
+note: "version 2" Tectonic command-line interface activated
+note: Running TeX ...
+warning: algorithm.sty:11: 
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+warning: sections/03_formulation:11: Overfull \hbox (16.41687pt too wide) detected at line 11
+warning: sections/03_formulation:23: Overfull \hbox (16.97752pt too wide) detected at line 23
+warning: sections/04_method:15: Overfull \hbox (22.67796pt too wide) detected at line 15
+warning: sections/04_method:35: Underfull \hbox (badness 5696) in paragraph at lines 30--35
+warning: sections/04_method:35: Underfull \hbox (badness 5133) in paragraph at lines 30--35
+warning: sections/04_method:88: Underfull \hbox (badness 1484) in paragraph at lines 85--88
+warning: sections/04_method:93: Overfull \hbox (66.24191pt too wide) detected at line 93
+warning: sections/04_method:114: Overfull \hbox (47.55864pt too wide) detected at line 114
+warning: sections/04_method:171: Overfull \hbox (124.92204pt too wide) detected at line 171
+warning: sections/04_method:226: Overfull \hbox (8.58038pt too wide) detected at line 226
+warning: sections/05_experiments:46: Overfull \hbox (28.48807pt too wide) in paragraph at lines 35--46
+warning: sections/05_experiments:160: Overfull \hbox (57.70479pt too wide) in paragraph at lines 144--160
+warning: sections/06_discussion:32: Underfull \hbox (badness 10000) in paragraph at lines 22--32
+warning: main.tex:38: Overfull \vbox (2.05998pt too high) has occurred while \output is active
+warning: sections/08_appendix:55: Underfull \hbox (badness 10000) in paragraph at lines 51--55
+warning: sections/08_appendix:85: Underfull \hbox (badness 1721) in paragraph at lines 85--85
+warning: sections/08_appendix:166: Overfull \hbox (29.75203pt too wide) in paragraph at lines 156--166
+warning: sections/08_appendix:191: Overfull \hbox (95.3353pt too wide) in paragraph at lines 183--191
+warning: sections/08_appendix:209: Overfull \vbox (1.1036pt too high) has occurred while \output is active
+warning: sections/08_appendix:209: Overfull \vbox (6.73093pt too high) has occurred while \output is active
+warning: sections/08_appendix:209: Underfull \vbox (badness 6428) has occurred while \output is active
+warning: sections/08_appendix:234: Overfull \hbox (40.3846pt too wide) in paragraph at lines 220--234
+warning: sections/08_appendix:312: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:347: Underfull \hbox (badness 4673) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Underfull \hbox (badness 7433) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Underfull \hbox (badness 7759) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Underfull \hbox (badness 1803) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Overfull \hbox (4.79pt too wide) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Overfull \vbox (3.96196pt too high) has occurred while \output is active
+warning: sections/08_appendix:407: Underfull \hbox (badness 10000) in paragraph at lines 399--407
+warning: sections/08_appendix:416: Overfull \vbox (11.30232pt too high) has occurred while \output is active
+warning: sections/08_appendix:416: Overfull \vbox (4.10246pt too high) has occurred while \output is active
+note: Running BibTeX on main.aux ...
+note: Rerunning TeX because bibtex was run ...
+warning: algorithm.sty:11: 
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+warning: sections/03_formulation:11: Overfull \hbox (16.41687pt too wide) detected at line 11
+warning: sections/03_formulation:23: Overfull \hbox (16.97752pt too wide) detected at line 23
+warning: sections/04_method:15: Overfull \hbox (22.67796pt too wide) detected at line 15
+warning: sections/04_method:35: Underfull \hbox (badness 5696) in paragraph at lines 30--35
+warning: sections/04_method:35: Underfull \hbox (badness 5133) in paragraph at lines 30--35
+warning: sections/04_method:88: Underfull \hbox (badness 1484) in paragraph at lines 85--88
+warning: sections/04_method:93: Overfull \hbox (66.24191pt too wide) detected at line 93
+warning: sections/04_method:114: Overfull \hbox (47.55864pt too wide) detected at line 114
+warning: sections/04_method:171: Overfull \hbox (124.92204pt too wide) detected at line 171
+warning: sections/04_method:226: Overfull \hbox (8.58038pt too wide) detected at line 226
+warning: sections/05_experiments:46: Overfull \hbox (28.48807pt too wide) in paragraph at lines 35--46
+warning: sections/05_experiments:160: Overfull \hbox (57.70479pt too wide) in paragraph at lines 144--160
+warning: sections/06_discussion:32: Underfull \hbox (badness 10000) in paragraph at lines 22--32
+warning: main.bbl:77: Underfull \hbox (badness 1490) in paragraph at lines 73--77
+warning: main.bbl:77: Overfull \vbox (1.06491pt too high) has occurred while \output is active
+warning: main.tex:38: Overfull \vbox (1.63998pt too high) has occurred while \output is active
+warning: sections/08_appendix:55: Underfull \hbox (badness 10000) in paragraph at lines 51--55
+warning: sections/08_appendix:166: Overfull \hbox (29.75203pt too wide) in paragraph at lines 156--166
+warning: sections/08_appendix:191: Overfull \hbox (95.3353pt too wide) in paragraph at lines 183--191
+warning: sections/08_appendix:209: Overfull \vbox (1.6036pt too high) has occurred while \output is active
+warning: sections/08_appendix:209: Underfull \vbox (badness 6428) has occurred while \output is active
+warning: sections/08_appendix:234: Overfull \hbox (40.3846pt too wide) in paragraph at lines 220--234
+warning: sections/08_appendix:312: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:347: Underfull \hbox (badness 4673) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Underfull \hbox (badness 7433) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Underfull \hbox (badness 7759) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Underfull \hbox (badness 1803) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Overfull \hbox (4.79pt too wide) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Overfull \vbox (3.96196pt too high) has occurred while \output is active
+warning: sections/08_appendix:407: Underfull \hbox (badness 10000) in paragraph at lines 399--407
+warning: sections/08_appendix:416: Overfull \vbox (11.30232pt too high) has occurred while \output is active
+warning: sections/08_appendix:416: Overfull \vbox (4.10246pt too high) has occurred while \output is active
+note: Rerunning TeX because "main.aux" changed ...
+warning: algorithm.sty:11: 
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+warning: sections/03_formulation:11: Overfull \hbox (16.41687pt too wide) detected at line 11
+warning: sections/03_formulation:23: Overfull \hbox (16.97752pt too wide) detected at line 23
+warning: sections/04_method:15: Overfull \hbox (22.67796pt too wide) detected at line 15
+warning: sections/04_method:35: Underfull \hbox (badness 5696) in paragraph at lines 30--35
+warning: sections/04_method:35: Underfull \hbox (badness 5133) in paragraph at lines 30--35
+warning: sections/04_method:88: Underfull \hbox (badness 1484) in paragraph at lines 85--88
+warning: sections/04_method:93: Overfull \hbox (66.24191pt too wide) detected at line 93
+warning: sections/04_method:114: Overfull \hbox (47.55864pt too wide) detected at line 114
+warning: sections/04_method:171: Overfull \hbox (124.92204pt too wide) detected at line 171
+warning: sections/04_method:226: Overfull \hbox (8.58038pt too wide) detected at line 226
+warning: sections/05_experiments:46: Overfull \hbox (28.48807pt too wide) in paragraph at lines 35--46
+warning: sections/05_experiments:160: Overfull \hbox (57.70479pt too wide) in paragraph at lines 144--160
+warning: sections/06_discussion:32: Underfull \hbox (badness 10000) in paragraph at lines 22--32
+warning: main.bbl:77: Underfull \hbox (badness 1490) in paragraph at lines 73--77
+warning: main.bbl:77: Overfull \vbox (1.06491pt too high) has occurred while \output is active
+warning: main.tex:38: Overfull \vbox (1.63998pt too high) has occurred while \output is active
+warning: sections/08_appendix:55: Underfull \hbox (badness 10000) in paragraph at lines 51--55
+warning: sections/08_appendix:166: Overfull \hbox (29.75203pt too wide) in paragraph at lines 156--166
+warning: sections/08_appendix:191: Overfull \hbox (95.3353pt too wide) in paragraph at lines 183--191
+warning: sections/08_appendix:209: Overfull \vbox (1.6036pt too high) has occurred while \output is active
+warning: sections/08_appendix:209: Underfull \vbox (badness 6428) has occurred while \output is active
+warning: sections/08_appendix:234: Overfull \hbox (40.3846pt too wide) in paragraph at lines 220--234
+warning: sections/08_appendix:312: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:347: Underfull \hbox (badness 4673) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Underfull \hbox (badness 7433) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Underfull \hbox (badness 7759) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Underfull \hbox (badness 1803) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Overfull \hbox (4.79pt too wide) in paragraph at lines 339--347
+warning: sections/08_appendix:347: Overfull \vbox (3.96196pt too high) has occurred while \output is active
+warning: sections/08_appendix:407: Underfull \hbox (badness 10000) in paragraph at lines 399--407
+warning: sections/08_appendix:416: Overfull \vbox (11.30232pt too high) has occurred while \output is active
+warning: sections/08_appendix:416: Overfull \vbox (4.10246pt too high) has occurred while \output is active
+warning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details.
+note: Running xdvipdfmx ...
+note: Writing `main.pdf` (781.7255859375 KiB)
+note: Skipped writing 3 intermediate files (use --keep-intermediates to keep them)
