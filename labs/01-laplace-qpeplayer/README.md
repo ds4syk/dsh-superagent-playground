@@ -13,7 +13,7 @@
 | 交付 | 状态 |
 |-|-|
 | `paper/draft.md` 英文论文草稿 | 结构完整（Title/Abstract/Intro/RW/Formulation/Method/Experiments/Discussion/Conclusion/References），实验结果为 TODO，未编造数字 |
-| `theory/proofs.md` 定理 0.1/0.2/0.3、1.1、1.2、1.3 | 已证明 / 有明确 GAP / 数值验证，逐条标注 |
+| `theory/proofs.md` 定理 0.1/0.2/0.3、1.1、1.2、1.3 | 已证明 / 有明确 GAP / 数值验证；2026-11-27 补充证明结案 Q1/Q9、Q2/Q13、Q3、Q6、Q7、Q5 期望值（唯一 P0 缺口：Q5 梯度余项引理） |
 | `theory/derivations.md` | U 构造、21 约束与 20 维理想、$E(q)$、$\lambda^*=4J$、$H_{\mathbb S^3}$、对跖不变性、Laplace 常数与误差阶、KL 梯度 |
 | `verify/` 两个最小数值脚本 | 已运行并保存 JSON；定理 0 的“21 约束 = Veronese 二次理想”为符号+秩证明；Choi–Lam 构造实例有对偶证书 |
 | `experiments/protocol.md` | 数据集、baseline、指标、消融、算力、复现风险 |
@@ -44,9 +44,9 @@
 
 ## 下一步 3 条
 
-1. **P0 数学**：证明或证伪“Choi–Lam 型 $Q$ 可由真实 PnP/矩阵加权配对的 Gram 矩阵实现”，并确定可实现的 $M$ 锥内该间隙是否在正测度集上成立（见 `math_questions.md` Q1/Q2/Q9）。这决定定理 0.3 能否从“构造的旋转子问题反例”升级为“SDPRLayers 实际失效”。
+1. **P0 数学**：2026-11-27 补充证明已给出真实矩阵加权 3D-3D 的 Carathéodory 构造（N≤72，显式 68 点实例）与正测度开性；Q2/Q3/Q6/Q7 也已结案。**唯一剩余 P0 是 Q5 的梯度余项引理**（期望值部分已证，梯度仍是草图），1D 数值斜率 1.07 / relG 3.4e-3 支持。
 2. **P0 实现**：把 LibQPEP 的 40 候选根枚举做成 GPU 批量（或 CPU 批量 + 代数校验），并测量 $K$ 个实极小、$\det H_k$、$w_k$ 的数值稳定性；先在 UTIAS In-The-Dark 的矩阵加权双目子问题上打通前向。
-3. **P1 实验**：按 `experiments/protocol.md` 先做 toy/仿真（已知真值的分支交叉），再做 LINEMOD 对称物体（eggbox/glue）与 In-The-Dark；所有数字标“待复现”，先跑通 baseline（SDPR-IS、EPro-PnP、BPnP、Theseus）再对比。
+3. **P1 实验**：合成分支交叉主表 + 1D 精确后验（定理 P1-5 交叉/分离/Fold）+ 6D 消融（τ、logdet、top-K）已完成；LINEMOD 对称物体为负结果（未产生双峰），In-The-Dark 未做。SDPR-IS/EPro-PnP/BPnP/Theseus 对比仍未接。
 
 ## 与另外两条线的边界
 
