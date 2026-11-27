@@ -4,9 +4,9 @@
  "rows": [
   {
    "tag": "canonical-r2-seed0",
-   "f_reduced": -2.1142630324955727,
+   "f_reduced": -2.114263032495573,
    "f_committed": -2.1142630324955722,
-   "dq": 1.6883057536160649e-16,
+   "dq": 1.2412670766236366e-16,
    "n_finite_reduced": 16,
    "n_finite_committed": 16,
    "n_unique_reduced": 12,
@@ -17,14 +17,14 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 0.899242618586868,
-   "t_committed": 0.7049514898099005
+   "t_reduced": 0.7664152607321739,
+   "t_committed": 0.631197193171829
   },
   {
    "tag": "canonical-r2-seed1",
-   "f_reduced": -3.0444793029550956,
-   "f_committed": -3.0444793029550956,
-   "dq": 3.040470972244059e-16,
+   "f_reduced": -3.0444793029550947,
+   "f_committed": -3.044479302955095,
+   "dq": 2.5438405243138006e-16,
    "n_finite_reduced": 16,
    "n_finite_committed": 16,
    "n_unique_reduced": 4,
@@ -35,8 +35,8 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 0.7284494289197028,
-   "t_committed": 0.8232544879429042
+   "t_reduced": 0.7241969387978315,
+   "t_committed": 0.5084746219217777
   },
   {
    "tag": "canonical-r2-seed2",
@@ -53,8 +53,8 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 1.1227126088924706,
-   "t_committed": 0.7951082289218903
+   "t_reduced": 0.9387709381990135,
+   "t_committed": 0.6401483160443604
   },
   {
    "tag": "canonical-r2-seed3",
@@ -71,14 +71,14 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 1.0395731697790325,
-   "t_committed": 0.7399287419393659
+   "t_reduced": 0.7437343709170818,
+   "t_committed": 0.5296622570604086
   },
   {
    "tag": "canonical-r2-seed4",
-   "f_reduced": -1.54346061312868,
-   "f_committed": -1.5434606131286803,
-   "dq": 1.7554167342883506e-16,
+   "f_reduced": -1.5434606131286803,
+   "f_committed": -1.5434606131286805,
+   "dq": 1.594436429147036e-16,
    "n_finite_reduced": 16,
    "n_finite_committed": 16,
    "n_unique_reduced": 8,
@@ -89,8 +89,8 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 0.9817113918252289,
-   "t_committed": 0.6198196359910071
+   "t_reduced": 0.9110092590562999,
+   "t_committed": 0.5557371736504138
   },
   {
    "tag": "canonical-r2-seed5",
@@ -107,14 +107,14 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 0.7519247550517321,
-   "t_committed": 0.6248152018524706
+   "t_reduced": 0.7378486981615424,
+   "t_committed": 0.6397528150118887
   },
   {
    "tag": "canonical-r2-seed6",
-   "f_reduced": -2.595916323943825,
-   "f_committed": -2.595916323943824,
-   "dq": 2.5523436361293173e-16,
+   "f_reduced": -2.5959163239438245,
+   "f_committed": -2.595916323943825,
+   "dq": 2.5447867175859907e-16,
    "n_finite_reduced": 16,
    "n_finite_committed": 16,
    "n_unique_reduced": 8,
@@ -125,14 +125,14 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 1.0443570888601243,
-   "t_committed": 0.641313704662025
+   "t_reduced": 1.0570770017802715,
+   "t_committed": 0.6317619574256241
   },
   {
    "tag": "canonical-r2-seed7",
    "f_reduced": -1.8985174071201385,
-   "f_committed": -1.898517407120138,
-   "dq": 5.688200336284365e-16,
+   "f_committed": -1.8985174071201385,
+   "dq": 2.7230185981536845e-16,
    "n_finite_reduced": 16,
    "n_finite_committed": 16,
    "n_unique_reduced": 10,
@@ -143,13 +143,31 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 0.8084805887192488,
-   "t_committed": 0.5820497311651707
+   "t_reduced": 0.7995543009601533,
+   "t_committed": 0.579430160112679
   },
   {
    "tag": "canonical-r2-seed8",
-   "f_reduced": -1.7696479624548758,
+   "f_reduced": -1.7696479624548755,
    "f_committed": -1.7696479624548758,
+   "dq": 1.3092278833360675e-16,
+   "n_finite_reduced": 16,
+   "n_finite_committed": 16,
+   "n_unique_reduced": 12,
+   "n_unique_committed": 12,
+   "fallback_reduced": false,
+   "fallback_committed": false,
+   "exact_committed": true,
+   "rank_Sigma": 2,
+   "predicted_NC": 16,
+   "n_lost": 0,
+   "t_reduced": 0.8125569657422602,
+   "t_committed": 0.5538862473331392
+  },
+  {
+   "tag": "canonical-r2-seed9",
+   "f_reduced": -1.8001314840294749,
+   "f_committed": -1.8001314840294749,
    "dq": 0.0,
    "n_finite_reduced": 16,
    "n_finite_committed": 16,
@@ -161,32 +179,14 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 0.8783159400336444,
-   "t_committed": 0.6005689208395779
-  },
-  {
-   "tag": "canonical-r2-seed9",
-   "f_reduced": -1.8001314840294749,
-   "f_committed": -1.8001314840294749,
-   "dq": 5.551115123125783e-17,
-   "n_finite_reduced": 16,
-   "n_finite_committed": 16,
-   "n_unique_reduced": 12,
-   "n_unique_committed": 12,
-   "fallback_reduced": false,
-   "fallback_committed": false,
-   "exact_committed": true,
-   "rank_Sigma": 2,
-   "predicted_NC": 16,
-   "n_lost": 0,
-   "t_reduced": 0.8408330739475787,
-   "t_committed": 0.6700580869801342
+   "t_reduced": 0.8223360758274794,
+   "t_committed": 0.649407593999058
   },
   {
    "tag": "alm-horn-k2-seed0",
    "f_reduced": 0.012827933983932035,
    "f_committed": 0.012827933983931044,
-   "dq": 7.448051582780873e-11,
+   "dq": 7.448051363960127e-11,
    "n_finite_reduced": 16,
    "n_finite_committed": 12,
    "n_unique_reduced": 4,
@@ -196,9 +196,9 @@
    "exact_committed": false,
    "rank_Sigma": 2,
    "predicted_NC": 16,
-   "n_lost": 0,
-   "t_reduced": 1.2601145110093057,
-   "t_committed": 0.9984819162636995
+   "n_lost": 1,
+   "t_reduced": 1.0638372357934713,
+   "t_committed": 0.8881285581737757
   },
   {
    "tag": "alm-horn-k2-seed1",
@@ -215,14 +215,14 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 1.1313190939836204,
-   "t_committed": 1.0953427660278976
+   "t_reduced": 1.1135059301741421,
+   "t_committed": 1.2381207318976521
   },
   {
    "tag": "alm-horn-k2-seed2",
-   "f_reduced": 0.011526708467032954,
+   "f_reduced": 0.011526708467032942,
    "f_committed": 0.011526708467032838,
-   "dq": 1.3566200242034103e-12,
+   "dq": 1.3566228711196925e-12,
    "n_finite_reduced": 16,
    "n_finite_committed": 14,
    "n_unique_reduced": 4,
@@ -233,8 +233,8 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 1.0479727992787957,
-   "t_committed": 1.0092362500727177
+   "t_reduced": 1.3658564346842468,
+   "t_committed": 1.2799142063595355
   },
   {
    "tag": "alm-horn-k2-seed3",
@@ -251,8 +251,8 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 1.202823012135923,
-   "t_committed": 1.2448866311460733
+   "t_reduced": 1.1139083709567785,
+   "t_committed": 1.25717752892524
   },
   {
    "tag": "alm-horn-k2-seed4",
@@ -269,8 +269,8 @@
    "rank_Sigma": 2,
    "predicted_NC": 16,
    "n_lost": 0,
-   "t_reduced": 1.3746630367822945,
-   "t_committed": 1.389282057993114
+   "t_reduced": 1.3650593562051654,
+   "t_committed": 1.4638706441037357
   }
  ],
  "max_abs_delta_f": 1.3287981825982342e-15,

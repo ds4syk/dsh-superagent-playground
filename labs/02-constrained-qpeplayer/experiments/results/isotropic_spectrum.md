@@ -4,7 +4,7 @@
 
 设置：`n_gamma=2`，`norm_cap=1e+05`，单线程 BLAS（OMP=`1`），每格为 `复射影根/仿射根`。
 
-两种 census：**committed** = 已提交的 `quartic_roots.critical_points`（`finite` 要求 `||q||<1e3`，且跟踪中判为 diverged 的路径不做 endgame polish）；**corrected** = `isotropic_roots.count_roots(norm_cap=1e5)`（对所有路径做 endgame polish，含跟踪期 diverged 的路径）。
+两种 census：**committed** = 已提交的 `quartic_roots.critical_points`（`finite` 要求 `||(q,lam)||<1e3`）；**corrected** = `isotropic_roots.count_roots(norm_cap=1e5)`（cap 作用在 `||q||` 上而不是 `||(q,lam)||`，并对全部路径做 endgame polish）。
 
 ## (a) 标准形 `make_canonical_instance(rank_Sigma, seed)`
 
@@ -41,7 +41,7 @@
 | 1 | 0 | 12/24 | 12/24 | 0 | 1 | 12 | 1.2e-15 |
 | 1 | 1 | 12/24 | 12/24 | 0 | 1 | 12 | 1.6e-15 |
 | 1 | 2 | 12/24 | 12/24 | 0 | 1 | 12 | 7.5e-15 |
-| 2 | 0 | 12/24 | 16/32 | 2 | 2 | 16 | 1.6e-15 |
+| 2 | 0 | 12/24 | 16/32 | 1 | 2 | 16 | 1.6e-15 |
 | 2 | 1 | 16/32 | 16/32 | 0 | 2 | 16 | 1.4e-15 |
 | 2 | 2 | 14/28 | 16/32 | 0 | 2 | 16 | 7.4e-15 |
 | 3 | 0 | 14/28 | 16/32 | 0 | 2 | 16 | 9.2e-16 |
@@ -91,9 +91,9 @@
 
 2. **ALM 组装确实落在 P2-1b 标准形族里**：对 isotropic Horn + 同法向平面，`alm_reduced` 的矩阵 Mred 的四次多项式到 15 维族 $F_n$ 的相对残差为 1e-15 量级（k=0..4、mu=0 与 mu>0 都是），PSD 规范下 rank(Sigma_A)=0/1/2/2/2，**与定理的 4/12/16/16/16 预测一致**。之前“12 而非 16”的开放点不是「ALM 组装 -> Sigma_A 映射不对」，而是 **census 策略**：
 
-   * 已提交的 `quartic_roots._run_homotopy` 只对 status∈{1,2,4} 做 endgame polish，跟踪期被判 diverged（status 3）的路径**永不回捞**；
-   * k=2 seed 0 的 4 个额外复根位于 `||q||≈29–34`（其余行 ≤13），其路径在跟踪中越过 `div_tol=1e4` 被判 diverged，于是被丢掉，committed 读数 12/14；
-   * 对全部路径做 polish 的 corrected census 在 ALM k=2,3,4 的每一行都读到 16/32（逐行见 (b)）；被回捞的根在 KKT 相对残差 ~1e-16 下是真正解。
+   * 已提交的 `quartic_roots._run_homotopy` 的 finite 判定是 `||(q,lam)|| < 1e3`，**把 Lagrange 乘子也算进了范数**；
+   * k=2 seed 0 的 4 个额外复根 `||q||≈29–34`（其余行 ≤13），但四次型的乘子 `lam=4f/(q^Tq)` 在这里高达 `4.3e3–7.9e3`，于是 combined norm 过不了 1e3，被丢掉，committed 读数 12/14；
+   * corrected census 把 cap 放在 `||q||` 上（并对全部路径 polish），ALM k=2,3,4 的每一行都读到 16/32（逐行见 (b)）；这些根在 KKT 相对残差 ~1e-10 以内，是真正解。
 
 3. **两法向**：1+1 布局（k=2）→ corrected 32/64（定理 32）；2+2 布局（k=4）→ corrected 40/80，即每条法向两条约束时该额外结构把谱系推回通用 40 根，说明定理的“双法向 32”对应**每条法向一条活跃约束**。
 
@@ -101,8 +101,8 @@
 
 ## 限制与注意事项
 
-* 数值读数依赖 census 策略（是否回捞 diverged 路径、norm cap）。本表同时给 committed 与 corrected 两列；**没有**把 committed 的 12 直接改写成 16 而不加说明。
-* corrected census 的 4 个额外复根位于复二次曲面 $q^Tq=1$ 的大分量区（`||q||~30`），条件数差；多线程 BLAS 下个别次运行会把它推到 `||q||~8e3` 甚至丢失，故本表用单线程 BLAS（`OMP_NUM_THREADS=1`）复现。
+* 数值读数依赖 census 的 finite 判据（`||(q,lam)||` 还是 `||q||`）。本表同时给 committed 与 corrected 两列；**没有**把 committed 的 12 直接改写成 16 而不加说明。
+* corrected census 的 4 个额外复根 `||q||≈29–34`（合法有限点，但乘子 4.3e3–7.9e3，条件数差）；多线程 BLAS 下个别次运行不稳定，故本表用单线程 BLAS（`OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1`）复现。
 * 16x16 饱和作用矩阵（17 元 Groebner 阶梯）**未在本轮实现为可发货的数值模板**；`isotropic_roots.solve_isotropic_plane` 仍是「全枚举 + endgame polish + 64 起点交叉验证」的 reduced homotopy 求解器。详见 `round_roots.md`。
 
 Source: `results/isotropic_spectrum.json`（本脚本 `code/iso_spectrum.py`）。

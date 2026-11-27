@@ -335,12 +335,12 @@ def main():
           "与定理的类型 I 一致——canonical-family 残差因此是一个可用的**结构判别器**。",
           "",
           "## 限制与注意事项", "",
-          "* 数值读数依赖 census 策略（是否回捞 diverged 路径、norm cap）。"
+          "* 数值读数依赖 census 的 finite 判据（`||(q,lam)||` 还是 `||q||`）。"
           "本表同时给 committed 与 corrected 两列；**没有**把 committed 的 12 "
           "直接改写成 16 而不加说明。",
-          "* corrected census 的 4 个额外复根位于复二次曲面 $q^Tq=1$ 的大分量区"
-          "（`||q||~30`），条件数差；多线程 BLAS 下个别次运行会把它推到 `||q||~8e3` "
-          "甚至丢失，故本表用单线程 BLAS（`OMP_NUM_THREADS=1`）复现。",
+          "* corrected census 的 4 个额外复根 `||q||≈29–34`（合法有限点，但乘子 "
+          "4.3e3–7.9e3，条件数差）；多线程 BLAS 下个别次运行不稳定，故本表用单线程 "
+          "BLAS（`OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1`）复现。",
           "* 16x16 饱和作用矩阵（17 元 Groebner 阶梯）**未在本轮实现为可发货的数值模板**；"
           "`isotropic_roots.solve_isotropic_plane` 仍是「全枚举 + endgame polish + "
           "64 起点交叉验证」的 reduced homotopy 求解器。详见 `round_roots.md`。",

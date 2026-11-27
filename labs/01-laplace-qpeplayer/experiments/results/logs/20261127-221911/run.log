@@ -17,3 +17,31 @@ flags     : with_linemod=0 with_sdp=1 with_sdp_upstream=0 with_scorer=1 compare=
 [run_6point_check.py   ] rc=0  wall=1.250s  
 [run_six_point_cert.py ] rc=0  wall=1.256s  
 [make_q2_summary.py    ] rc=0  wall=1.036s  
+[run_scorer_fold.py    ] rc=0  wall=17.464s  
+COMPARE results/main_table.json: OK (non-timing fields match committed)
+COMPARE results/raw_grid.json: OK (non-timing fields match committed)
+COMPARE results/ablation.json: OK (non-timing fields match committed)
+COMPARE theory/results/uniform_unequal.json: OK (non-timing fields match committed)
+COMPARE theory/results/uniform.json: OK (non-timing fields match committed)
+COMPARE theory/results/deltaJ_sweep.json: OK (non-timing fields match committed)
+COMPARE theory/results/fold.json: OK (non-timing fields match committed)
+COMPARE theory/results/q6_verify.json: OK (non-timing fields match committed)
+COMPARE sdp/results/six_point.json: OK (non-timing fields match committed)
+COMPARE theory/results/scorer_fold.json: OK (non-timing fields match committed)
+
+## summary (20261127-221911)
+| script | rc | wall (s) | note |
+|-|-|-|-|
+| code/run_main.py | 0 | 14.434 | ok |
+| code/run_ablation.py | 0 | 3.962 | ok |
+| theory/run_unequal.py | 0 | 1.163 | ok |
+| theory/run_uniform.py | 0 | 7.770 | ok |
+| theory/run_fold.py | 0 | 2.698 | ok |
+| theory/verify_q6.py | 0 | 0.405 | ok |
+| sdp/run_6point_check.py | 0 | 1.250 | ok |
+| sdp/run_six_point_cert.py | 0 | 1.256 | ok |
+| sdp/make_q2_summary.py | 0 | 1.036 | ok |
+| theory/run_scorer_fold.py | 0 | 17.464 | ok |
+
+total wall: 51.580s | env: env.txt | fresh outputs: outputs/ | hashes: outputs.sha256
+RESULT: PASS (log: /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/01-laplace-qpeplayer/experiments/results/logs/20261127-221911/run.log)
