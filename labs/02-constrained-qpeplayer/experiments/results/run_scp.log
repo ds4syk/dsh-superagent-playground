@@ -46,3 +46,35 @@ threads: OMP=1 OPENBLAS=1 MKL=1 | cvxpy=1.5.4
   [p32] 10/50 (13.3s)  scp_cert_so_far=90% scp_viol_max=0.0e+00
   [p32] 20/50 (22.7s)  scp_cert_so_far=95% scp_viol_max=0.0e+00
   [p32] 30/50 (32.0s)  scp_cert_so_far=97% scp_viol_max=0.0e+00
+  [p32] 40/50 (42.3s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
+  [p32] 50/50 (55.0s)  scp_cert_so_far=98% scp_viol_max=0.0e+00
+  ---- p32 summary (n=50) ----
+   unc          pen= 103.02 mm rot= 5.30 deg trans= 97.90 mm feas=  0% cert=  0% time= 129.0 ms
+   soft         pen=   0.00 mm rot= 6.97 deg trans= 12.33 mm feas= 42% cert=  0% time= 113.0 ms
+   proj         pen=   0.00 mm rot= 4.16 deg trans=  9.10 mm feas=100% cert=  0% time=  14.0 ms
+   alm          pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert=100% time= 220.5 ms
+   scp          pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 140.2 ms
+   scp_restart  pen=   0.00 mm rot= 4.17 deg trans= 10.63 mm feas=100% cert= 98% time= 138.4 ms
+   scp_restart3 pen=   0.00 mm rot= 4.17 deg trans= 10.85 mm feas=100% cert= 98% time= 138.4 ms
+   fail[scp] n=1 (infes=0 nonconv=1 subopt=0) mirror_init=1 output_mirror=0
+   fail[scp_restart] n=1 (infes=0 nonconv=1 subopt=0) mirror_init=1 output_mirror=0
+   fail[scp_restart3] n=1 (infes=0 nonconv=1 subopt=0) mirror_init=1 output_mirror=0
+  [saved] scp_baseline.json (158.1s)
+
+--- stress n020_b120 (p=16 noise=0.020 bias=0.120, n=20) ---
+  [n020_b120] 10/20 (20.0s)  scp_cert_so_far=70% scp_viol_max=0.0e+00
+  [n020_b120] 20/20 (29.4s)  scp_cert_so_far=85% scp_viol_max=0.0e+00
+  ---- n020_b120 summary (n=20) ----
+   unc          pen= 189.13 mm rot=11.98 deg trans=178.38 mm feas=  0% cert=  0% time= 116.9 ms
+   soft         pen=   0.02 mm rot=11.21 deg trans= 16.38 mm feas= 30% cert=  0% time= 100.6 ms
+   proj         pen=   0.00 mm rot= 9.08 deg trans= 11.43 mm feas=100% cert=  0% time=  14.3 ms
+   alm          pen=   0.00 mm rot= 5.25 deg trans= 12.65 mm feas=100% cert=100% time= 218.1 ms
+   scp          pen=   0.00 mm rot= 5.43 deg trans= 13.07 mm feas=100% cert= 85% time= 142.6 ms
+   scp_restart  pen=   0.00 mm rot= 5.43 deg trans= 12.65 mm feas=100% cert= 85% time= 141.6 ms
+   scp_restart3 pen=   0.00 mm rot= 5.43 deg trans= 12.65 mm feas=100% cert= 85% time= 141.9 ms
+   fail[scp] n=3 (infes=0 nonconv=3 subopt=0) mirror_init=3 output_mirror=0
+   fail[scp_restart] n=3 (infes=0 nonconv=3 subopt=0) mirror_init=3 output_mirror=0
+   fail[scp_restart3] n=3 (infes=0 nonconv=3 subopt=0) mirror_init=3 output_mirror=0
+  [saved] scp_baseline.json (187.6s)
+
+--- stress n030_b180 (p=16 noise=0.030 bias=0.180, n=20) ---
