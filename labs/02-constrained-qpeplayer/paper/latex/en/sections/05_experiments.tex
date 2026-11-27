@@ -64,3 +64,142 @@ YCB-V & 84 & 33.3\% & 9.5\% & 11 (13.1\%) & \textbf{20 (23.8\%)} \\
 
 \subsection{Baselines and implementation verification}\label{sec:baselines}
 A local SCP baseline (linearisation plus a second-order cone program) is 100\% feasible, matches ALM's pose error, and passes the same certificate test in 98\% of trials against ALM's 100\% (85\% versus 100\% on the pressure cell), while being faster here (130--142~ms versus 218--239~ms); the differentiators are mirror robustness and the $p$-independent complexity argument rather than per-instance accuracy. The exact 162-path QPEP enumerator reaches the same objective to $1.8\times10^{-12}$ at 37--64$\times$ the multistart cost (median $47\times$), with 89/114 enumerations (78.1\%) finding the generic 40 roots, and a sound bound-RLT family with repair certifies all 16 synthetic noise instances (9/16 before) with maximum gap $2.28\times10^{-8}$. App.~\ref{app:sanity} verifies the algebra of Secs.~\ref{sec:dim}--\ref{sec:fb} numerically.
+
+\subsection{Neighbouring layer families}\label{sec:neigh}
+We compare with re-implementations of the two closest families and with the official Theseus library (forward only). The SDPRLayers-style baseline \cite{holmes2025sdpr} is our construction of its forward relaxation: the same $14\times14$ Shor lift as \S\ref{sec:tight}, with the full Veronese ideal, solved once without the inequality rows (\emph{unc}), once with the hard rows (\emph{hard}) and once with $p$ slacks in a $(14+p)\times(14+p)$ PSD block (\emph{slack}); the pose is read from the leading eigenvector. On the synthetic cells the hard and slack forms reach 0.00~mm, $4.17^\circ$, 10.63~mm and 92--98\% feasibility at 30--59~ms and 63--2405~ms, while the unconstrained form reproduces the unconstrained QPEP solve (103.02~mm, 0\% feasible). On the real BOP trials at $n=90/72/84$ the hard form is \emph{not} feasible: it penetrates by 9.19/12.70/11.28~mm and is feasible in 14/12/10\% of trials; the slack form reduces the median penetration to 2.40/1.96/0.28~mm but is feasible in 42/32/46\% and soundly certified in only 12/3/2\%, against ALM's 100\% feasibility at 0.00~mm and 24.4/15.3/13.1\% (Table~\ref{tab:rigorous}). The forward cost on the real trials is 198/132/238~ms (\emph{unc}), 675/669/667~ms (\emph{hard}) and 3169/3150/3185~ms (\emph{slack}). The SDPR-style relaxation is competitive where it happens to be tight (the synthetic desktop) and is not a drop-in replacement for ALM on real object/table geometry.
+
+\begin{table*}[t]
+\centering
+\caption{SDPRLayers-style re-implementation (our construction; no official code). Same instances as Tables~\ref{tab:synthetic} and~\ref{tab:rigorous}; $n=50$ per synthetic cell and $n=90/72/84$ real. \emph{cert} is the sound P2-Cert Schur bound on the same instance, not the SCS value. Additional rows (all $p$, all variants) are in the repository result file.}
+\label{tab:sdpr}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+Cell & Variant & pen (mm) & feasible (\%) & cert.\ (\%) & time (ms) \\
+\midrule
+synthetic $p{=}8$ & hard / slack & 0.00 / 0.00 & 96 / 98 & 96 / 98 & 30 / 63 \\
+synthetic $p{=}64$ & hard / slack & 0.00 / 0.00 & 92 / 92 & 92 / 92 & 52 / 2259 \\
+LINEMOD & hard / slack & 9.19 / 2.40 & 14 / 42 & 13 / 12 & 675 / 3169 \\
+LM-O & hard / slack & 12.70 / 1.96 & 12 / 32 & 7 / 3 & 669 / 3150 \\
+YCB-Video & hard / slack & 11.28 / 0.28 & 10 / 46 & 6 / 2 & 667 / 3185 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The dQP/CVXPYLayers-style baseline \cite{magoon2025dqp,agrawal2019cvxpylayers} replaces the SCP second-order cone by a pure QP with a box trust region, differentiated through its KKT system. At $n=50$ per cell it is competitive rather than weak: at $p=8/16/32$ it is 100/98/98\% feasible and certified, with 0.000~mm penetration, $4.17^\circ$ and 10.63/10.85/10.85~mm translation, and it is the fastest of the three (127.6/108.6/102.9~ms against SCP's 154.2/128.0/132.3~ms and ALM's 233.4/225.8/199.9~ms), because a QP iteration costs 3.9/3.2/3.3~ms against 5.3/4.5/4.6~ms for the SOCP. On a 30-instance real subset it returns the same pose as ALM, 100\% feasible at 0.00~mm, in 101--111~ms. The implicit derivative agrees with central differences to a maximum relative error of $3.1\times10^{-9}$/$3.0\times10^{-10}$/$8.0\times10^{-9}$/$4.2\times10^{-7}$ (gradient, constraint value, Jacobian, Hessian) on well-conditioned QPs and to $1.9\times10^{-5}$ against an independent CVXPYLayers construction; on 2 of 8 planar multi-contact seeds the active Jacobian is rank deficient and the derivative is not unique (relative error 1.0), the degeneracy that the FB reduction of \S\ref{sec:fb} is designed for.
+
+The Theseus baseline uses the official library \cite{pineda2022theseus} (forward only) with a Levenberg--Marquardt solver and a dense Cholesky factorisation, through an isolated CHOLMOD overlay that leaves the environment untouched. The layer is $\min J+\lambda\sum_j h(g_j)$ with $h$ quadratic or Huber ($\delta=10^{-3}$), warm-started from the same 48-start unconstrained solution, at $p=8/16/32$ and $n=30$ seeds per cell. No finite $\lambda$ reaches hard feasibility: the best quadratic cell is 93\% feasible ($p=32$, $\lambda=10^5$) with 0.00~mm, $4.13^\circ$ and 11.29~mm at 77~ms, and the certificate rate is 7--13\% against ALM's 100\%; Huber reaches 93--97\% feasibility only at 58--85~mm translation and certifies 0\%. The per-solve cost is 60--93~ms, lower than ALM's 260--288~ms, because Theseus takes 2--9 LM iterations; that is a speed advantage of the soft formulation, not a feasibility one (Table~\ref{tab:theseus}).
+
+\begin{table}[t]
+\centering
+\caption{Theseus $\lambda$-Pareto (official library, forward only; $n=30$ per cell; $\lambda=10^5$ quadratic and $\lambda=10^2$ Huber, which are the best cells of each family).}
+\label{tab:theseus}
+\scriptsize
+\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+$p$ & penalty & $\lambda$ & pen & rot & trans & feas. & cert. \\
+\midrule
+8 & quad. & $10^5$ & 0.00 & 4.70 & 11.35 & 80\% & 7\% \\
+16 & quad. & $10^5$ & 0.00 & 4.50 & 11.35 & 83\% & 10\% \\
+32 & quad. & $10^5$ & 0.00 & 4.13 & 11.29 & 93\% & 13\% \\
+8 & Huber & $10^2$ & 0.00 & 4.58 & 57.64 & 97\% & 0\% \\
+16 & Huber & $10^2$ & 0.00 & 4.65 & 68.72 & 97\% & 0\% \\
+32 & Huber & $10^2$ & 0.00 & 4.97 & 76.97 & 93\% & 0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{End-to-end CPU toy}\label{sec:e2e}
+The network-scale T1 protocol is not run (no GPU). We close the observation--pose loop on CPU with a 2-layer MLP that refines 14 keypoints from a synthetic desk scene, trained with the FB-reduced backward of \S\ref{sec:fb} for 3 seeds $\times$ 2000 steps ($\approx144$~s per seed), and apply the four pose heads to the same refiner. Table~\ref{tab:e2e} shows the constrained heads cut ADD by $8.2\times$ and drive penetration to zero; projection is the cheapest feasible head but is feasible on 95.3\% of scenes, while ALM is feasible on all 64. The FB backward agrees with central differences to $4.6\times10^{-10}$ (median relative $L_2$) for the unconstrained head and, for ALM, $5.7\times10^{-6}$ at $\varepsilon=10^{-6}$ ($1.8\times10^{-3}$ max, cosine $0.9999987$), $7.4\times10^{-4}$ at $\varepsilon=10^{-4}$ and $0.49$ at $\varepsilon=10^{-2}$, i.e.\ it converges as $\varepsilon\to0$ as the theory predicts; projection and soft penalty agree to $3.9\times10^{-8}$ and $4.0\times10^{-7}$, and a kink test gives a median symmetry error of $5.7\times10^{-6}$. This is a toy, not a benchmark: it shows the loop closes and the admissibility/accuracy trade-off, and makes no accuracy claim against learned layers.
+
+\begin{table}[t]
+\centering
+\caption{CPU toy, trained refiner, four pose heads, 64 validation scenes (medians; rates over 64).}
+\label{tab:e2e}
+\scriptsize
+\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Head & ADD & rot & trans & pen & feas. & ms \\
+ & (mm) & (deg) & (mm) & (mm) & (\%) & /pose \\
+\midrule
+Unconstrained & 101.06 & 5.29 & 101.03 & 104.35 & 0 & 1.16 \\
+ALM-QPEP & \textbf{12.34} & 3.78 & 11.06 & \textbf{0.000} & \textbf{100} & 10.19 \\
+Projection & 13.19 & 4.96 & 11.98 & 0.000 & 95.3 & 1.75 \\
+Soft penalty & 12.34 & 3.78 & 11.06 & 0.012 & 0 & 5.76 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Localisation layers: KITTI and UTIAS}\label{sec:local}
+The same layer is a pose head for a ground vehicle, with a positive-depth condition and a roll/pitch tilt cone. \textbf{KITTI.} The shipped KITTI-odometry subset (sequences 00/05/07) has Velodyne scans and calibration but no images; each scan pair yields $\approx$80 points, projected with the ground-truth relative motion, with 1~px noise, an optional 6~px downward bias and optional wrong matches. The constraints are positive depth on all 80 landmarks and a $10^\circ$ roll/pitch cone on the relative rotation, $a^\top(\mathbf R a)\ge\cos10^\circ$. On clean and 6-px-biased data the constraints are inactive and free (0.05/0.49$^\circ$, 10.93/17.73~mm for every method, 0\% violations; ALM is 6$\times$ cheaper because the active set is empty). With 15\% wrong matches the unconstrained rotation RMSE is 22.99$^\circ$ with 1.6\% tilt and 3.2\% depth violations; ALM is 5.06$^\circ$ and 0.0\%/0.0\%, and the translation RMSE drops from 3511.6 to 2616.1~mm, while the translation median stays at 2.33~m for both (the constraint repairs the rotated tail, not the bias). With 50\% wrong matches the unconstrained rotation RMSE is 110.38$^\circ$ with 41.3\% tilt and 93.7\% depth violations; ALM is 16.96$^\circ$ and 0.0\%/0.0\%, translation RMSE 6161.8~mm (still metres). The layer makes the failure \emph{admissible}, not solved; RANSAC or a robust loss is the right tool for the 50\% cell and is deliberately not used here. On the two well-conditioned cells the sound Schur bound certifies 63/63 and 63/63 ALM poses (gaps $4.9\times10^{-9}$--$6.2\times10^{-8}$); the outlier cells remain one-sided (Table~\ref{tab:kitti}). \textbf{UTIAS In-The-Dark.} Only `run\_000000` has temporal ground truth; 38 frame pairs $\times$ 3 settings with real ORB stereo-triangulated landmarks (depth $+$ FoV constraints). On clean and 3-px data the constraints are again inactive; with a 20-px bias and 5\% wrong matches ALM cuts the rotation RMSE from 57.57$^\circ$ to 10.87$^\circ$ and the translation RMSE from 1375.3 to 603.0~mm, with depth violations 10.5\%$\to$0.0\% (Table~\ref{tab:utias}).
+
+\begin{table*}[t]
+\centering
+\caption{KITTI odometry layer, per setting ($n=63$ per cell $=$ 3 sequences $\times$ 21 distinct frame pairs; RMSE in deg/mm; rates with Wilson 95\% CI). \emph{rig.} is the sound Schur bound (clean and 6-px cells only).}
+\label{tab:kitti}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llccccccc@{}}
+\toprule
+Setting & Method & rot RMSE & trans RMSE & tilt $>10^\circ$ & depth $\le0$ & feas. & cert.\ (1-sided / rig.) & ms \\
+\midrule
+clean & Unconstr. & 0.06 & 14.4 & 0.0\% & 0.0\% & 100\% & 100\% / -- & 103 \\
+ & ALM depth+tilt & 0.06 & 14.4 & 0.0\% & 0.0\% & 100\% & 100\% / 100\% & 16 \\
+bias 6~px & Unconstr. & 0.49 & 29.8 & 0.0\% & 0.0\% & 100\% & 100\% / -- & 107 \\
+ & ALM depth+tilt & 0.49 & 29.8 & 0.0\% & 0.0\% & 100\% & 100\% / 100\% & 16 \\
+15\% wrong & Unconstr. & 22.99 & 3511.6 & 1.6\% & 3.2\% & 96.8\% & 96.8\% / -- & 105 \\
+ & ALM depth+tilt & \textbf{5.06} & 2616.1 & 0.0\% & 0.0\% & 100\% & 98.4\% / -- & 17 \\
+50\% wrong & Unconstr. & 110.38 & 13230.0 & 41.3\% & 93.7\% & 6.3\% & 6.3\% / -- & 104 \\
+ & ALM depth+tilt & \textbf{16.96} & 6161.8 & 0.0\% & 0.0\% & 100\% & 14.3\% / -- & 457 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table}[t]
+\centering
+\caption{UTIAS In-The-Dark, `run\_000000`, $n=38$ per cell (median rotation/translation RMSE; rates over 38).}
+\label{tab:utias}
+\scriptsize
+\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Setting & Method & rot RMSE & trans RMSE & depth $\le0$ \\
+\midrule
+clean & Unconstr. / ALM & 0.16 / 0.16 & 11.4 / 11.4 & 0.0\% / 0.0\% \\
+bias 3~px & Unconstr. / ALM & 0.45 / 0.45 & 13.7 / 13.7 & 0.0\% / 0.0\% \\
+20~px + 5\% & Unconstr. / ALM & 57.57 / \textbf{10.87} & 1375.3 / \textbf{603.0} & 10.5\% / \textbf{0.0\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{ADD / ADD-S on the BOP trials}\label{sec:add}
+Tables~\ref{tab:synthetic}--\ref{tab:rigorous} report penetration and pose error; a pose benchmark additionally reports ADD and ADD-S on the same real trials (the pose dump replays the stored records row for row, $\max|\Delta|=0$). Table~\ref{tab:add} gives the result. The constraints do not improve ADD and we do not claim they do: projection is the best method on all three datasets (28.1/18.1/8.9~mm), ALM is 35.4/25.4/25.2~mm and unconstrained 31.5/22.1/17.3~mm. On LM and LM-O ALM is worse than the unconstrained solve because the downward pixel bias is the error, and pulling the pose up to the table moves it away from the biased observations; the place where ALM's admissibility pays is the penetration and certification columns, not ADD. The absolute numbers are large because the protocol is a stress test (10/20/30~px bias, 30 GT-projected vertices), not a leaderboard: ADD(-S)$<$2~cm is 28/90, 31/72 and 54/84 for unconstrained and 17/90, 26/72, 34/84 for ALM.
+
+\begin{table*}[t]
+\centering
+\caption{BOP ADD/ADD-S on the four methods, same trials as Table~\ref{tab:rigorous} (mm, medians; rates with Wilson 95\% CI; ADD-S used for the symmetric LINEMOD/LM-O objects 8 and 9).}
+\label{tab:add}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+Dataset & Method & ADD & ADD-S & ADD(-S) & $<$2~cm & pen (mm) & feas. \\
+\midrule
+LINEMOD ($n{=}90$) & Unconstr. & 35.9 & 15.1 & 31.5 & 31.1\% & 11.3 & 13.3\% \\
+ & Soft pen. & 40.3 & 17.6 & 37.1 & 16.7\% & 0.0 & 88.9\% \\
+ & Projection & \textbf{31.1} & \textbf{12.8} & \textbf{28.1} & \textbf{32.2\%} & 0.0 & 100\% \\
+ & ALM & 38.0 & 16.3 & 35.4 & 18.9\% & 0.0 & 100\% \\
+LM-O ($n{=}72$) & Unconstr. & 35.0 & 15.4 & 22.1 & 43.1\% & 14.9 & 6.9\% \\
+ & Soft pen. & 39.6 & 16.3 & 30.1 & 34.7\% & 0.0 & 91.7\% \\
+ & Projection & \textbf{31.1} & \textbf{11.2} & \textbf{18.1} & \textbf{54.2\%} & 0.0 & 100\% \\
+ & ALM & 38.2 & 15.9 & 25.4 & 36.1\% & 0.0 & 100\% \\
+YCB-V ($n{=}84$) & Unconstr. & 17.3 & 8.8 & 17.3 & 64.3\% & 14.1 & 6.0\% \\
+ & Soft pen. & 29.4 & 11.7 & 29.4 & 32.1\% & 0.0 & 90.5\% \\
+ & Projection & \textbf{8.9} & \textbf{4.0} & \textbf{8.9} & \textbf{96.4\%} & 0.0 & 100\% \\
+ & ALM & 25.2 & 10.1 & 25.2 & 40.5\% & 0.0 & 100\% \\
+\bottomrule
+\end{tabular}
+\end{table*}

@@ -64,3 +64,142 @@ YCB-V & 84 & 33.3\% & 9.5\% & 11 (13.1\%) & \textbf{20 (23.8\%)} \\
 
 \subsection{基线与实现验证}\label{sec:baselines}
 局部 SCP 基线（线性化加二阶锥规划）100\% 可行，位姿误差与 ALM 一致，并在 98\% 的试验中通过同一证书检验，而 ALM 为 100\%（压力格上 85\% 对 100\%），同时更快（130--142~ms 对 218--239~ms）；因此差异点是镜像鲁棒性与 $p$ 无关的复杂度论证，而非逐实例精度。精确的 162 路径 QPEP 枚举器达到相同目标（$1.8\times10^{-12}$），代价是多起点方法的 37--64$\times$（中位 $47\times$），其中 89/114 次枚举（78.1\%）找到一般 40 根；带修复的可靠 bound-RLT 族认证全部 16 个合成噪声实例（此前为 9/16），最大间隙 $2.28\times10^{-8}$。附录~\ref{app:sanity} 对第~\ref{sec:dim}--\ref{sec:fb} 节的代数进行了数值验证。
+
+\subsection{相邻层族}\label{sec:neigh}
+我们与最接近的两个层族的两份重实现以及官方 Theseus 库（仅前向）比较。SDPRLayers 风格基线~\cite{holmes2025sdpr} 是其前向松弛的自建实现：与 \S\ref{sec:tight} 相同的 $14\times14$ Shor 提升与完整 Veronese 理想，分别在不含不等式行（\emph{unc}）、含硬约束行（\emph{hard}）与含 $p$ 个松弛变量的 $(14+p)\times(14+p)$ PSD 块（\emph{slack}）三种形式下求解，位姿由主特征向量读出。在合成格上，hard 与 slack 达到 0.00~mm、$4.17^\circ$、10.63~mm 与 92--98\% 可行性，耗时 30--59~ms 与 63--2405~ms；unc 精确复现无约束 QPEP 解（103.02~mm、0\% 可行）。在 $n=90/72/84$ 的真实 BOP 试验上，hard 形式\emph{不可行}：穿透 9.19/12.70/11.28~mm，仅 14/12/10\% 的试验可行；slack 把中位穿透降到 2.40/1.96/0.28~mm，但可行率 42/32/46\%，sound 认证仅 12/3/2\%，而 ALM 为 100\% 可行、0.00~mm 与 24.4/15.3/13.1\%（表~\ref{tab:rigorous}）。真实试验的前向耗时为 198/132/238~ms（unc）、675/669/667~ms（hard）与 3169/3150/3185~ms（slack）。SDPR 风格松弛只在恰好紧的合成桌面上有竞争力，在真实物体/桌面几何上不能直接替代 ALM。
+
+\begin{table*}[t]
+\centering
+\caption{SDPRLayers 风格重实现（自建；无官方代码）。实例与表~\ref{tab:synthetic}、表~\ref{tab:rigorous} 相同；合成每格 $n=50$，真实 $n=90/72/84$。\emph{cert} 为同一实例上的 sound P2-Cert Schur 界，而非 SCS 值。其余 $p$ 与变体见仓库结果文件。}
+\label{tab:sdpr}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+格 & 变体 & 穿透 (mm) & 可行 (\%) & 认证 (\%) & 时间 (ms) \\
+\midrule
+合成 $p{=}8$ & hard / slack & 0.00 / 0.00 & 96 / 98 & 96 / 98 & 30 / 63 \\
+合成 $p{=}64$ & hard / slack & 0.00 / 0.00 & 92 / 92 & 92 / 92 & 52 / 2259 \\
+LINEMOD & hard / slack & 9.19 / 2.40 & 14 / 42 & 13 / 12 & 675 / 3169 \\
+LM-O & hard / slack & 12.70 / 1.96 & 12 / 32 & 7 / 3 & 669 / 3150 \\
+YCB-Video & hard / slack & 11.28 / 0.28 & 10 / 46 & 6 / 2 & 667 / 3185 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+dQP/CVXPYLayers 风格基线~\cite{magoon2025dqp,agrawal2019cvxpylayers} 用带盒式信任域的纯 QP 替代 SCP 的二阶锥子问题，并通过其 KKT 系统求导。每格 $n=50$ 时它并不弱：$p=8/16/32$ 下 100/98/98\% 可行且被认证，穿透 0.000~mm、旋转 $4.17^\circ$、平移 10.63/10.85/10.85~mm；它是三者中最快的（127.6/108.6/102.9~ms，对比 SCP 的 154.2/128.0/132.3~ms 与 ALM 的 233.4/225.8/199.9~ms），因为一次 QP 迭代只要 3.9/3.2/3.3~ms，而 SOCP 为 5.3/4.5/4.6~ms。在 30 个真实实例的子集上它返回与 ALM 相同的位姿，100\% 可行、0.00~mm，耗时 101--111~ms。隐式导数与中心差分的最大相对误差在良态 QP 上为 $3.1\times10^{-9}$/$3.0\times10^{-10}$/$8.0\times10^{-9}$/$4.2\times10^{-7}$（梯度、约束值、Jacobian、Hessian），与独立 CVXPYLayers 实现相差 $1.9\times10^{-5}$；在 8 个平面多点接触种子中有 2 个活跃 Jacobian 秩亏、导数不唯一（相对误差 1.0），这正是 \S\ref{sec:fb} 的 FB 约化要处理的退化。
+
+Theseus 基线使用官方库~\cite{pineda2022theseus}（仅前向），Levenberg--Marquardt 求解器与稠密 Cholesky 分解，通过隔离的 CHOLMOD 覆盖层运行而不改动环境。层为 $\min J+\lambda\sum_j h(g_j)$，$h$ 取二次或 Huber（$\delta=10^{-3}$），从与主表相同的 48 起点无约束解热启动，$p=8/16/32$、每格 $n=30$ 个种子。任何有限 $\lambda$ 都到不了硬可行：最好的二次惩罚格为 93\% 可行（$p=32$、$\lambda=10^5$），0.00~mm、$4.13^\circ$、11.29~mm、77~ms，认证率 7--13\%（ALM 为 100\%）；Huber 达到 93--97\% 可行，但平移误差 58--85~mm 且认证率为 0\%。单次求解 60--93~ms，低于 ALM 的 260--288~ms，因为 Theseus 只需 2--9 次 LM 迭代；这是软形式的\emph{速度}优势，不是可行性优势（表~\ref{tab:theseus}）。
+
+\begin{table}[t]
+\centering
+\caption{Theseus $\lambda$-Pareto（官方库，仅前向；每格 $n=30$；取二次 $\lambda=10^5$ 与 Huber $\lambda=10^2$，即两族各自最好的单元）。}
+\label{tab:theseus}
+\scriptsize
+\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+$p$ & 惩罚 & $\lambda$ & 穿透 & 旋转 & 平移 & 可行 & 认证 \\
+\midrule
+8 & 二次 & $10^5$ & 0.00 & 4.70 & 11.35 & 80\% & 7\% \\
+16 & 二次 & $10^5$ & 0.00 & 4.50 & 11.35 & 83\% & 10\% \\
+32 & 二次 & $10^5$ & 0.00 & 4.13 & 11.29 & 93\% & 13\% \\
+8 & Huber & $10^2$ & 0.00 & 4.58 & 57.64 & 97\% & 0\% \\
+16 & Huber & $10^2$ & 0.00 & 4.65 & 68.72 & 97\% & 0\% \\
+32 & Huber & $10^2$ & 0.00 & 4.97 & 76.97 & 93\% & 0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{CPU 端到端玩具}\label{sec:e2e}
+网络级 T1 协议未运行（无 GPU）。我们在 CPU 上闭合观测--位姿回路：一个 2 层 MLP 从合成桌面场景精化 14 个关键点，用 \S\ref{sec:fb} 的 FB 约化反向传播训练 3 个种子 $\times$ 2000 步（每种子约 144~s），再把四个位姿头接到同一个精化器上。表~\ref{tab:e2e} 显示约束头把 ADD 降低 $8.2\times$ 并把穿透压到 0；投影是最便宜的可行头，但在 95.3\% 的场景上可行，而 ALM 在全部 64 个场景上可行。FB 反向与中心差分的相对 $L_2$ 中位误差为：无约束头 $4.6\times10^{-10}$；ALM 在 $\varepsilon=10^{-6}$ 时 $5.7\times10^{-6}$（最大 $1.8\times10^{-3}$，余弦 $0.9999987$），$\varepsilon=10^{-4}$ 时 $7.4\times10^{-4}$，$\varepsilon=10^{-2}$ 时 $0.49$，即随 $\varepsilon\to0$ 收敛，与理论一致；投影与软惩罚分别为 $3.9\times10^{-8}$ 与 $4.0\times10^{-7}$，kink 测试的对称性误差中位为 $5.7\times10^{-6}$。这是玩具而非基准：它说明回路闭合与可容许性/精度权衡，不对学习层作精度声明。
+
+\begin{table}[t]
+\centering
+\caption{CPU 玩具，训练后的精化器、四个位姿头、64 个验证场景（中位数；比率为 64 场景上的比例）。}
+\label{tab:e2e}
+\scriptsize
+\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+头 & ADD & 旋转 & 平移 & 穿透 & 可行 & ms \\
+ & (mm) & (deg) & (mm) & (mm) & (\%) & /位姿 \\
+\midrule
+无约束 & 101.06 & 5.29 & 101.03 & 104.35 & 0 & 1.16 \\
+ALM-QPEP & \textbf{12.34} & 3.78 & 11.06 & \textbf{0.000} & \textbf{100} & 10.19 \\
+投影 & 13.19 & 4.96 & 11.98 & 0.000 & 95.3 & 1.75 \\
+软惩罚 & 12.34 & 3.78 & 11.06 & 0.012 & 0 & 5.76 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{定位层：KITTI 与 UTIAS}\label{sec:local}
+同一层也可作为地面车辆的位姿头，约束为正深度与横滚/俯仰倾角锥。\textbf{KITTI。}随仓库提供的 KITTI odometry 子集（序列 00/05/07）只有 Velodyne 扫描与标定、没有图像；每对扫描给出约 80 个点，用真值相对运动投影，加 1~px 噪声、可选 6~px 向下偏置与可选错配。约束为全部 80 个路标的正深度与相对旋转的 $10^\circ$ 横滚/俯仰锥，$a^\top(\mathbf R a)\ge\cos10^\circ$。在干净与 6~px 偏置数据上约束不激活且免费（所有方法 0.05/0.49$^\circ$、10.93/17.73~mm、0\% 违反；ALM 因活跃集为空而便宜 6 倍）。15\% 错配时无约束旋转 RMSE 为 22.99$^\circ$、1.6\% 倾角与 3.2\% 深度违反；ALM 为 5.06$^\circ$ 与 0.0\%/0.0\%，平移 RMSE 从 3511.6 降到 2616.1~mm，但两者的平移中位数都停在 2.33~m（约束修复的是旋转尾部而非偏置）。50\% 错配时无约束旋转 RMSE 为 110.38$^\circ$、41.3\% 倾角与 93.7\% 深度违反；ALM 为 16.96$^\circ$ 与 0.0\%/0.0\%，平移 RMSE 6161.8~mm（仍是米级）。该层让失败变得\emph{可容许}，而非解决它；50\% 格应使用 RANSAC 或鲁棒损失，这里刻意不用。两个良态格上 sound Schur 界分别认证 63/63 与 63/63 个 ALM 位姿（间隙 $4.9\times10^{-9}$--$6.2\times10^{-8}$）；离群格仍只报一侧（表~\ref{tab:kitti}）。\textbf{UTIAS In-The-Dark。}只有 `run\_000000` 带时间真值；38 个帧对 $\times$ 3 种设置，使用真实 ORB 双目三角化路标（正深度与 FoV 约束）。干净与 3~px 数据上约束同样不激活；20~px 偏置加 5\% 错配时，ALM 把旋转 RMSE 从 57.57$^\circ$ 降到 10.87$^\circ$、平移 RMSE 从 1375.3 降到 603.0~mm，深度违反从 10.5\% 降到 0.0\%（表~\ref{tab:utias}）。
+
+\begin{table*}[t]
+\centering
+\caption{KITTI odometry 层，逐设置（每格 $n=63$ $=$ 3 序列 $\times$ 21 个不同帧对；RMSE 单位 deg/mm；比率为 Wilson 95\% CI）。\emph{rig.} 为 sound Schur 界（仅干净与 6~px 格）。}
+\label{tab:kitti}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llccccccc@{}}
+\toprule
+设置 & 方法 & 旋转 RMSE & 平移 RMSE & 倾角 $>10^\circ$ & 深度 $\le0$ & 可行 & 认证（一侧 / rig.） & ms \\
+\midrule
+干净 & 无约束 & 0.06 & 14.4 & 0.0\% & 0.0\% & 100\% & 100\% / -- & 103 \\
+ & ALM 深度+倾角 & 0.06 & 14.4 & 0.0\% & 0.0\% & 100\% & 100\% / 100\% & 16 \\
+6~px 偏置 & 无约束 & 0.49 & 29.8 & 0.0\% & 0.0\% & 100\% & 100\% / -- & 107 \\
+ & ALM 深度+倾角 & 0.49 & 29.8 & 0.0\% & 0.0\% & 100\% & 100\% / 100\% & 16 \\
+15\% 错配 & 无约束 & 22.99 & 3511.6 & 1.6\% & 3.2\% & 96.8\% & 96.8\% / -- & 105 \\
+ & ALM 深度+倾角 & \textbf{5.06} & 2616.1 & 0.0\% & 0.0\% & 100\% & 98.4\% / -- & 17 \\
+50\% 错配 & 无约束 & 110.38 & 13230.0 & 41.3\% & 93.7\% & 6.3\% & 6.3\% / -- & 104 \\
+ & ALM 深度+倾角 & \textbf{16.96} & 6161.8 & 0.0\% & 0.0\% & 100\% & 14.3\% / -- & 457 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table}[t]
+\centering
+\caption{UTIAS In-The-Dark，`run\_000000`，每格 $n=38$（旋转/平移 RMSE 中位；比率为 38 上的比例）。}
+\label{tab:utias}
+\scriptsize
+\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+设置 & 方法 & 旋转 RMSE & 平移 RMSE & 深度 $\le0$ \\
+\midrule
+干净 & 无约束 / ALM & 0.16 / 0.16 & 11.4 / 11.4 & 0.0\% / 0.0\% \\
+3~px 偏置 & 无约束 / ALM & 0.45 / 0.45 & 13.7 / 13.7 & 0.0\% / 0.0\% \\
+20~px + 5\% & 无约束 / ALM & 57.57 / \textbf{10.87} & 1375.3 / \textbf{603.0} & 10.5\% / \textbf{0.0\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{BOP 试验上的 ADD / ADD-S}\label{sec:add}
+表~\ref{tab:synthetic}--\ref{tab:rigorous} 报告穿透与位姿误差；位姿基准还应报告同一批真实试验上的 ADD 与 ADD-S（位姿转储逐行复现存储记录，$\max|\Delta|=0$）。表~\ref{tab:add} 给出结果。约束不改善 ADD，我们也不如此声称：投影在三个数据集上都是最好的（28.1/18.1/8.9~mm），ALM 为 35.4/25.4/25.2~mm，无约束为 31.5/22.1/17.3~mm。在 LM 与 LM-O 上 ALM 比无约束更差，因为向下像素偏置才是误差来源，把位姿顶到桌面反而远离被偏置的观测；ALM 可容许性的回报在穿透与认证列，而不在 ADD。绝对数值大是因为该协议是压力测试（10/20/30~px 偏置、30 个真值投影顶点），不是排行榜：ADD(-S)$<$2~cm 对无约束为 28/90、31/72、54/84，对 ALM 为 17/90、26/72、34/84。
+
+\begin{table*}[t]
+\centering
+\caption{四种方法在真实 BOP 试验上的 ADD/ADD-S（与表~\ref{tab:rigorous} 同一批试验；单位 mm，中位数；比率为 Wilson 95\% CI；对称的 LINEMOD/LM-O 物体 8 与 9 使用 ADD-S）。}
+\label{tab:add}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+数据集 & 方法 & ADD & ADD-S & ADD(-S) & $<$2~cm & 穿透 (mm) & 可行 \\
+\midrule
+LINEMOD ($n{=}90$) & 无约束 & 35.9 & 15.1 & 31.5 & 31.1\% & 11.3 & 13.3\% \\
+ & 软惩罚 & 40.3 & 17.6 & 37.1 & 16.7\% & 0.0 & 88.9\% \\
+ & 投影 & \textbf{31.1} & \textbf{12.8} & \textbf{28.1} & \textbf{32.2\%} & 0.0 & 100\% \\
+ & ALM & 38.0 & 16.3 & 35.4 & 18.9\% & 0.0 & 100\% \\
+LM-O ($n{=}72$) & 无约束 & 35.0 & 15.4 & 22.1 & 43.1\% & 14.9 & 6.9\% \\
+ & 软惩罚 & 39.6 & 16.3 & 30.1 & 34.7\% & 0.0 & 91.7\% \\
+ & 投影 & \textbf{31.1} & \textbf{11.2} & \textbf{18.1} & \textbf{54.2\%} & 0.0 & 100\% \\
+ & ALM & 38.2 & 15.9 & 25.4 & 36.1\% & 0.0 & 100\% \\
+YCB-V ($n{=}84$) & 无约束 & 17.3 & 8.8 & 17.3 & 64.3\% & 14.1 & 6.0\% \\
+ & 软惩罚 & 29.4 & 11.7 & 29.4 & 32.1\% & 0.0 & 90.5\% \\
+ & 投影 & \textbf{8.9} & \textbf{4.0} & \textbf{8.9} & \textbf{96.4\%} & 0.0 & 100\% \\
+ & ALM & 25.2 & 10.1 & 25.2 & 40.5\% & 0.0 & 100\% \\
+\bottomrule
+\end{tabular}
+\end{table*}
