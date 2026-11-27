@@ -82,3 +82,62 @@ P1 的「双模 + Laplace」需要一个**不枚举模式**的局部优化参照
 ```
 
 一句话结论：GT 初始化能逐帧回到 P1 的 hard-argmin 模式（局部收敛），但冷启动/多启动大多进入 flip 或面朝后的伪极小（多启动 11/40 命中 GT），且无 z>0 约束时这些伪极小的代价可与物理模式近简并、在 2/15 帧更低 —— 局部优化替代不了模式枚举，这个基线是**诚实的负结果**而不是精度 claim。
+
+## 8. LMO 扩展（2026-11-28）
+
+同一套「真实平面片双模代价 + hard/Laplace/MC」在 **BOP LMO** 上的复测，用来检验 LINEMOD 结论是否只对无遮挡数据成立。脚本 `run_two_mode_lmo.py` 完全复用 `run_two_mode.py`/`run_pose_error.py` 的 helper（未改动那些文件），只把模块级 `ROOT` 指到 LMO；指标、阈值、RANSAC、900 点、`n_starts=384`、`tau=0.01`、MC 设置都与 LINEMOD 表一致。完整报告 [`results/lmo_two_mode.md`](results/lmo_two_mode.md)，数据 [`results/lmo_two_mode.json`](results/lmo_two_mode.json)，图 [`results/lmo_two_mode.png`](results/lmo_two_mode.png)。
+
+- **数据**：LMO 只有一条 test 序列 `000002`（1214 张图）；obj 10/11 的 GT 实例 1175/903 个，可见像素 ≥1200 的候选 1031/726 个。按数据可用性等距各抽 20 帧，**37/40 帧通过 K≥2 物理模式过滤**（eggbox 20/20，glue 17/20；失败 2 帧有效深度 <900、1 帧 K=1）。**K_phys=2 在 37/37 帧**，中位 ΔJ=1.37e-3，错误模 Laplace 权重中位 0.474。
+- **hard argmin 变差但主因不是模式排序**：旋转中位 2.95°（LINEMOD 2.06°）、平移中位 19.5 mm（6.2 mm）、ADD-S 中位 10.2 mm（3.7 mm）。hard 在 34/37 帧选中的就是离 GT 最近的物理模式，但该最近模式本身在 15/37 帧 >5°；约化代价在 GT 处的值中位比最小值高 17%。2× starts 复算 37/37 帧 K 与 hard 完全不变（最大差 8.6e-13°），排除枚举漏解。机制是 LMO 可见平面片小（中位 61 mm）+ 深度-模型残差尾部重（p50 1.4–9.3 mm）；`n_plane≥350` 子集 hard 中位回到 2.29°/7.1 mm。
+- **Laplace/MC 仍偏向翻转模**：旋转中位 43.7°/43.5°（LINEMOD 44.2°），ADD-S 中位 19.0 mm（13.9 mm）；对 hard 的配对偏差 +31.2° [+22.9, +38.9]、+9.7 mm ADD-S。方向与 LINEMOD 一致，没有精度优势。
+- **ADD-S AUC(0–0.1 m)**：hard 0.862 [0.812, 0.903]，Laplace/MC 0.766；n=37 时曲线只有 ≤37 个台阶，只作描述性统计。
+- **口径与 caveat**：主 ADD-S 用 `models/`（sha256 与 LINEMOD 网格一致），`models_eval` 作为次要列；AUC 不是 BOP 排行榜口径；对应点仍由 GT 位姿构造，不是检测器 claim；最重遮挡（无法提供 900 个有效深度像素）不在样本内。
+
+```bash
+cd labs/01-laplace-qpeplayer/experiments/real/linemod
+/home/syk/miniconda3/envs/WM/bin/python run_two_mode_lmo.py            # 全量 ~36 s
+/home/syk/miniconda3/envs/WM/bin/python run_two_mode_lmo.py --quick    # smoke
+```
+
+一句话结论：LMO 上「双模结构 + Laplace 被翻转模拉偏」的方向不变，但 **hard argmin 的精度在遮挡/小平面片/深度残差下明显退化**；这是该构造在真实遮挡数据上的一个诚实限制，而不是新的精度 claim。
+
+## 9. 检测器噪声鲁棒性（模拟前端，2026-11-28 补）
+
+GPU 被占，训练好的检测器前端不可行；`run_detector_noise.py` 用**显式模拟的检测器噪声**替代前端，回答「层的相对退化 + hard/Laplace/MC 在噪声下的排序」。完整报告与图见 [`results/detector_noise.md`](results/detector_noise.md)。
+
+**做法**：固定 `run_two_mode.py` Part A 的同一 15 帧（8 eggbox + 7 glue，与 `two_mode.json`/`pose_error.json` 逐帧核对相等）和**干净数据的 RANSAC 平面内点子集**；噪声下**不重跑 RANSAC**，所有条件共用同一批 3-D 点与同一批索引。扰动只作用于 2-D bearing：高斯像素噪声 σ∈{0,0.5,1,2,5} px（`U=normalize(K^{-1}[u+du,v+dv,1])`）；或把 f∈{0.05,0.1,0.2} 的 bearing 替换为图像内随机像素（粗差；另加 f=0.005/0.01 仅用于定位 breakdown）。每条件 10 个噪声种子。层与主实验相同：physical modes → hard / Laplace 投影弦均值 / mode-level MC（400 样本 × 10 seeds）；指标为 K_phys、ΔJ、w_other、旋转误差、ADD-S（1000 顶点 vs 完整 GT mesh）、>10° 失败率、GT-like 仍是 hard argmin 的帧比例，按帧 bootstrap 给 95% CI。
+
+**高斯噪声（中位数；σ 行的 CI 见报告）**：
+
+| σ (px) | K_phys | hard rot | Laplace rot | MC rot | hard ADD-S | Laplace ADD-S | hard fail | GT-like |
+|-|-|-|-|-|-|-|-|-|
+| 0 | 2 | 2.06 | 44.24 | 44.29 | 3.7 mm | 14.2 mm | 7% | 93% |
+| 0.5 | 2 | 2.03 | 43.64 | 43.50 | 2.9 mm | 14.4 mm | 7% | 93% |
+| 1 | 2 | 1.98 | 43.66 | 43.11 | 2.7 mm | 12.8 mm | 5% | 93% |
+| 2 | 2 | 2.74 | 42.51 | 42.34 | 14.1 mm | 21.2 mm | 23% | 93% |
+| 5 | 2 | 20.49 | 41.83 | 42.19 | 164.2 mm | 168.4 mm | 66% | 100% |
+
+**粗差（f=0.005/0.01 为诊断行，不属于要求的网格）**：
+
+| f | K_phys≥1 | fallback | hard rot | hard ADD-S | hard fail |
+|-|-|-|-|-|-|
+| 0 | 100% | 0% | 2.06° | 3.7 mm | 7% |
+| 0.005 | 93% | 7% | 70.7° | 405 mm | 87% |
+| 0.01 | 80% | 20% | 77.4° | 598 mm | 98% |
+| 0.05 | 5% | 95% | 151.7° | 889 mm | 100% |
+| 0.1 | 0% | 100% | 150.4° | 887 mm | 100% |
+| 0.2 | 0% | 100% | 145.5° | 872 mm | 100% |
+
+**结论**：
+
+1. **1 px 以内无可测退化**（hard 2.0°、ADD-S 2.7–2.9 mm，甚至略低于 clean 3.7 mm——噪声平均掉了一部分 clean 的最近顶点偏差）；**2 px 起开始坏**（2.7°、14 mm、23% 失败）；**5 px 时 hard 20.5°、164 mm、66% 失败**。退化是超线性的：最优解沿双模之间的平坦谷滑动（平移误差 ~220 mm），而不是切换到 flip——GT-like 仍为 100%，但那个「GT-like」本身已偏 ~20°，所以这不是模式切换而是谷内滑动。
+2. **Laplace/MC 对像素噪声几乎不敏感**（44.2°→41.8°），因为它本来就被近简并偏置（w_other≈0.48，flip 中位 88°）；hard 在旋转上始终更好（clean 2.1 vs 44.2；5 px 20.5 vs 41.8），但优势随噪声缩小。这是「偏差换平滑」的代价，不是精度优势。
+3. **粗差是 breakdown，不是渐变**：f=0.005（558 个内点里的 2–3 个随机方向）时 hard 已 71°、405 mm、87% 失败；f=0.05 时 95% 的 draw 找不到 physical mode（K_phys=0），回退 all-minima 后 hard 152°、889 mm、100% 失败。机制是 L2 bearing 代价没有鲁棒核：一个残差 0.05–0.2 m 的粗差贡献 2.5e-3–4e-2 m²，而全部 558 个内点只有 ~1e-3 m²。**这是层的 breakdown，不是检测器的失败——真实前端必须有 outlier rejection / robust kernel，这也正是模拟噪声不能替代训练前端的原因。**
+
+**诚实边界**：(i) 模拟噪声，不是训练好的检测器，没有 appearance/descriptor/训练；(ii) 对应点经 GT 位姿关联，clean 的绝对误差偏乐观，只能用相对退化与 hard/Laplace 排序下结论；(iii) 层只在主平面片上评估，平面片的深度-倾角病态使 5 px 的绝对退化在这一点上偏悲观；两种偏差方向相反，报告里都写明；(iv) 15 帧的 CI 很宽，不做 eggbox/glue 分组结论；(v) 粗差条件在 all-minima fallback 上评估并逐 draw 标记（`phys_ok=False`），那些数字只是 breakdown 指示，不是层在「轻微污染」数据上的精度。
+
+运行 461 s（10 条件 × 15 帧 × 10 seeds，登录节点 CPU），未削减种子；确定性种子写死在脚本里：
+
+```bash
+/home/syk/miniconda3/envs/WM/bin/python run_detector_noise.py
+```

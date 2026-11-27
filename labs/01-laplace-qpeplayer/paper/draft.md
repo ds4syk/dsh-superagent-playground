@@ -37,7 +37,7 @@ This paper builds `Laplace-QPEPLayer` on those ingredients. The optimization var
 
 **EPro-PnP [2].** Chen et al. define a Boltzmann distribution on $SE(3)$ and train with a KL loss, using adaptive multiple importance sampling. Our posterior is also Boltzmann, but the support is $\mathbb{S}^3/\{\pm1\}$ rather than $SE(3)$, translation is marginalized exactly, and the rotation integral is approximated analytically over an exhaustive list of modes rather than sampled. The trade is bias for variance: EPro-PnP is asymptotically exact but high-variance; we are deterministic but have an $O(\tau)$ Laplace bias away from bifurcations and a non-uniform error near them. A fair comparison must separate these two error sources (Section 5).
 
-**QPEP [3].** Wu et al. unify a large class of pose problems as quadratic problems in a unit quaternion, eliminate translation, solve the resulting polynomial system with a Gröbner basis, and analyze solvability, observability, and covariance. Their solver returns at most 40 candidate complex roots in the released implementation (the generic 40-root count is confirmed independently by a total-degree homotopy in Section 5.3.5); the global solution is obtained by comparing objectives, not by a convex certificate. QPEP provides no derivative with respect to the data. Our contribution is precisely the missing differentiable layer: the closed-form Euler multiplier, the $3\times3$ implicit differentiation, the antipodal invariance, and the Laplace posterior over the enumerated roots. We rely on QPEP for the forward enumeration and treat completeness of the enumeration as an explicit assumption.
+**QPEP [3].** Wu et al. unify a large class of pose problems as quadratic problems in a unit quaternion, eliminate translation, solve the resulting polynomial system with a Gröbner basis, and analyze solvability, observability, and covariance. Their solver returns at most 40 candidate complex roots in the released implementation (the generic 40-root count is confirmed independently by a total-degree homotopy in Section 5.3.5); the global solution is obtained by comparing objectives, not by a convex certificate. QPEP provides no derivative with respect to the data. Our contribution is precisely the missing differentiable layer: the closed-form Euler multiplier, the $3\times3$ implicit differentiation, the antipodal invariance, and the Laplace posterior over the enumerated roots. We rely on QPEP for the forward enumeration and treat completeness of the enumeration as an explicit assumption. A scaled variant, sQPEP [18], extends the same quaternion/quadratic formulation to scaled quadratic pose problems; our layer is agnostic to that scaling and operates on any weighted Gram matrix $M$.
 
 **BPnP [4].** Chen et al. backpropagate through a PnP solver by implicit differentiation of its optimality conditions. The solver is local and initialized from a network prediction; the gradient is the gradient of the local solution, not of the global one. At a branch crossing the local solution may be the wrong one, and the derivative of the global argmin does not exist as a classical function. Our layer differs by enumerating all roots and by smoothing the selection.
 
@@ -207,15 +207,15 @@ Table 5.1 lists the experiment groups that have been executed and the ones that 
 | E16 | Classical forward baselines | same 15 real correspondences, bitwise | cv2 5.0.0 EPnP/ITERATIVE/SQPNP/IPPE + local GN/LM (identity/GT/flip inits); 2000-resample frame bootstrap | run | `real/linemod/results/classical_baselines.md` |
 | E17 | Theseus LM baseline | same 15 frames and bearing cost | Theseus 0.2.3 LM float64 CPU; GT, identity, 20 random inits per frame (300 trials); 8-init multistart on 5 frames (40 trials) | run | `real/linemod/results/theseus_baseline.md` |
 | E18 | Fast root count (P1-Q3) | 3 random symmetric $M$ + the E1 instance $M(0)$ | total-degree homotopy on the projective stationarity system, all 4 affine charts; residual $\le7.1\times10^{-15}$; 5.3–8.0 s per instance | run | `roots/results/rootcount_fast.md` |
-| N1 | LINEMOD / LINEMOD-Occlusion accuracy | full benchmark with SDPR-IS, SDPR-SDP, EPro-PnP, BPnP (Theseus only as the local reference of E17) | — | **not run** | TODO |
+| N1 | LINEMOD / LMO tables | hard/Laplace/MC + forward/local references (classical, Theseus, SDPR forward, EPro-style/BPnP-style) | 15 LINEMOD frames; 37 LMO frames; 5 SDPR-solved real frames; detector-noise sweep | **partially run** (Tables 5.20–5.23); no official differentiable-layer training | `real/linemod/results/{lmo_two_mode,detector_noise}.md`, `experiments/results/{sdpr_p1,epro_bpnp_style}.md` |
 | N2 | UTIAS In-The-Dark | full SDPRLayers pipeline | — | **not run** | TODO |
-| N3 | End-to-end training and GPU batching | — | — | **not run** | TODO |
+| N3 | End-to-end training and GPU batching | synthetic 6D layer fit | smoke only (4 seeds, 40 steps); full 20-seed/120-step run not finished; GPU blocked | **smoke only**, `unverified` full | `experiments/results/_smoke_e2e.md` |
 
 *Evidence level: E1–E18 are `independent reproduction (this repo)`; N1–N3 are `unverified` (design only). E16–E17 are forward/local references on the same real correspondences, not differentiable-layer comparisons.*
 
 The E1 instance is constructed, not fitted (`experiments/code/instance.py`): $M(\theta)=M_{\rm sym}+\theta M_{\rm break}$ with a $P$-invariant double well, $M_{\rm break}$ chosen so that $d(J_B-J_A)/d\theta|_{\theta=0}=2.0$, and a fixed translation block with $G\succ0$; the instance seed is 20261127. Mode enumeration is a batched damped Newton on $\mathbb{S}^3$ with 128 random starts, followed by an $SO(3)$-distance deduplication (threshold $10^{-5}$ rad) and a stationarity filter ($\|\nabla J\|\le10^{-8}$, $\lambda_{\min}(H_{\mathbb S^3})>10^{-8}$). It is not the released LibQPEP solver, so the completeness assumption (A2) is not independently certified in these runs. The generic $40$-root complex count for that algebraic system is now confirmed by an independent total-degree homotopy (E18, Section 5.3.5); that certifies the root count of the system, not the multi-start enumerator used here.
 
-Not run, and not estimated: every **learned or differentiable-layer** baseline comparison (SDPR-IS, SDPR-SDP, EPro-PnP, BPnP), the LINEMOD/LINEMOD-Occlusion accuracy matrix, the UTIAS In-The-Dark pipeline, end-to-end training, and GPU batched root enumeration. Theseus (E17) and the cv2 classical solvers (E16) are run only as forward/local references on the controlled real cost; they are not differentiable-layer comparisons and no gradient claim is attached to them. No detector-level ADD(-S), ADD-S AUC, detector-based rotation error, translation error, success rate, training curve, end-to-end training throughput, or peak-memory number exists in the repository; these are marked TODO rather than filled with guesses. The LINEMOD entries E8–E9 and E15–E17 are controlled ambiguity, correctness, bias and forward-reference measurements on real geometry, not a detector accuracy benchmark: no learned front-end, and the ADD-S in E15 is a proxy on the constructed two-mode cost, not an AUC.
+Not run, and not estimated: every **learned or differentiable-layer** baseline comparison (official SDPR-IS/SDPR-SDP training, official EPro-PnP, BPnP), the full LINEMOD/LINEMOD-Occlusion detector accuracy matrix, the UTIAS In-The-Dark pipeline, the full end-to-end training run, and GPU batched root enumeration. Forward/local references are measured instead: SDPR-style 10x10/13x13 forward solves, EPro-PnP-style continuous sampling (inconclusive at the crossing), a BPnP-style single-branch IFT gradient, cv2 classical solvers, and Theseus LM, on the same data (Section 5.7); the LMO and detector-noise tables are controlled estimator experiments, not detector benchmarks. Theseus (E17) and the cv2 classical solvers (E16) are run only as forward/local references on the controlled real cost; they are not differentiable-layer comparisons and no gradient claim is attached to them. No detector-level ADD(-S), ADD-S AUC, detector-based rotation error, translation error, success rate, training curve, end-to-end training throughput, or peak-memory number exists in the repository; these are marked TODO rather than filled with guesses. The LINEMOD entries E8–E9 and E15–E17 are controlled ambiguity, correctness, bias and forward-reference measurements on real geometry, not a detector accuracy benchmark: no learned front-end, and the ADD-S in E15 is a proxy on the constructed two-mode cost, not an AUC.
 
 ### 5.2 Metrics
 
@@ -621,6 +621,52 @@ Table 5.18 maps each claim the paper makes to its strongest evidence and the fil
 
 ---
 
+#### 5.7 Submission-grade additions (2026-11-28, CPU only)
+
+These results were added in the final push; all are `independent reproduction (this repo)` on CPU. No learned or differentiable-layer baseline could be run (GPU blocked; official EPro-PnP/BPnP/SDPRLayers training code unavailable), so the comparisons below are forward or local references and are labelled as such.
+
+**LMO extension (Table 5.20).** The same two-mode construction, unchanged, on BOP LINEMOD-Occlusion (single test sequence `000002`; obj 10/11 meshes are byte-identical to LINEMOD). 37/40 attempted frames pass the `K>=2` physical filter (eggbox 20/20, glue 17/20); the three failures are near-empty LMO depth maps (reported, not fabricated). The two-mode structure survives (K=2 in 37/37, median `Delta J = 1.37e-3`, flip angle median 100.5°, wrong-mode Laplace weight 0.474). The hard argmin degrades relative to LINEMOD (rotation 2.95° vs 2.06°, ADD-S 10.2 mm vs 3.7 mm): the closest-to-GT mode is selected in 34/37 frames, but that mode is displaced by the small occluded planar patch (median in-plane extent 61 mm) plus a heavy-tail depth-model residual, not by an enumeration miss (2x starts change neither K nor the hard pose in 37/37). Laplace/MC remain biased toward the flip (43.7°/43.5°, ADD-S 19.0 mm), the same direction as LINEMOD. ADD-S AUC over 0–0.1 m is descriptive at n=37. Stratifying at `n_plane>=350` recovers LINEMOD-like rotation (2.29°, AUC 0.929) but not ADD-S (7.1 mm), consistent with the depth-residual explanation.
+
+**Simulated detector noise (Table 5.21).** A trained front-end is not available (GPU blocked), so detector noise is injected on the 15 real frames' fixed clean RANSAC subset (never re-fit). Up to 1 px Gaussian noise there is no measurable degradation; between 2 and 5 px the GT-side minimum slides along the flat two-mode valley (hard rotation 2.06°→20.49°, ADD-S 3.7→164.2 mm, >10° failure 7%→66%), while the already-biased Laplace mean changes little (0.9x). Gross outliers are a breakdown test for the un-robustified L2 cost: one 0.05–0.2 m-residual bearing outweighs the whole inlier set, `K>=1` physical modes survive in only 5% of draws at f=0.05 and 0% at f>=0.1. This is not a detector benchmark: correspondences are GT-associated, so absolute errors are optimistic and only the relative degradation and the hard/Laplace ordering are claimed.
+
+**SDPRLayers-style forward baseline (Table 5.22).** On the synthetic instance the 10x10 Veronese SDP is tight at theta = 0, 0.01, 0.1 (value gap <= 3e-10); at theta=0 the optimum is a rank-2 mixture of the two degenerate global modes, while at 0.01/0.1 it is rank 1 and returns the hard-argmin pose. On the 5 real frames solved (of 15 attempted; SDP cost per frame is high) the 10x10 SDP is tight rank-1 and returns the hard-argmin pose. The upstream 24-constraint 13x13 is looser, as proved: its value is below the 10x10 value by ~1e-6 and it is non-tight (rank 2 in 1/5). This is a forward comparison only; no differentiable claim.
+
+**EPro-PnP-style and BPnP-style references (Table 5.23).** Neither official repository is installed. An EPro-PnP-style continuous self-normalized importance sampler over the Boltzmann posterior (mixture-t proposal + Metropolis variant) is usable away from the crossing (ESS 1598/4000 at theta=0.1, pose 4.06° vs Laplace 3.99°, gradient rel. error 0.43), marginal at theta=0.01, and **inconclusive at theta=0** (ESS 1399/4000 and a weight that breaks the exact P-symmetry); we do not report a bias number there. A BPnP-style single-branch IFT gradient is locally accurate (relative error 8.4e-5–1.7e-3; 0.4–0.65 ms versus 2.0 ms for a branch-following FD) but only tracks one branch: continued to theta=-0.1 it is no longer the argmin (gap 1.19). The Laplace analytic gradient is the most self-consistent (4.3e-4) and is a different estimand from the continuous posterior mean.
+
+**End-to-end toy (smoke only).** A gradient-descent fit through the layer (`code/run_e2e_fit.py`) is implemented, but only the smoke configuration (4 seeds, 40 steps) was run before the time cap, so it is reported as `unverified` smoke: the two-branch average pose is not representable at finite tau (Laplace floor 1.1e-2, 0% success), Laplace gradient variance is ~0, mode-level MC relative std is 5.1e-2, and the hard map differs across the tie by 1.87 in relative terms. A full 20-seed/120-step run is left as future work.
+
+| instance | n | K=2 | hard rot | Laplace rot | MC rot | hard ADD-S | Laplace ADD-S | AUC hard | AUC Laplace |
+|-|-|-|-|-|-|-|-|-|-|
+| LINEMOD (E15) | 15 | 15/15 | 2.06 [1.47,3.49] | 44.24 [33.90,46.87] | 43.80 | 3.7 [3.0,4.3] | 13.9 [10.3,20.2] | not measured | not measured |
+| LMO | 37 | 37/37 | 2.95 [2.19,8.10] | 43.73 [39.96,47.30] | 43.47 | 10.2 [6.6,13.7] | 19.0 [17.1,23.5] | 0.862 (mean; median 0.898) | 0.766 |
+
+| sigma (px) | K_phys | hard rot | Laplace rot | hard ADD-S | Laplace ADD-S | hard fail >10 deg |
+|-|-|-|-|-|-|-|
+| 0 | 2 | 2.06 | 44.24 | 3.7 mm | 14.2 mm | 7% |
+| 1 | 2 | 1.98 | 43.66 | 2.7 mm | 12.8 mm | 5% |
+| 2 | 2 | 2.74 | 42.51 | 14.1 mm | 21.2 mm | 23% |
+| 5 | 2 | 20.49 | 41.83 | 164.2 mm | 168.4 mm | 66% |
+| outliers f=0.05 | K>=1 in 5% | 151.7 | — | 888.6 mm | — | 100% |
+
+| setting | n | SDP value vs QPEP | rank(X*) | pose | note |
+|-|-|-|-|-|-|
+| synthetic theta=0 | 1 | gap 3.3e-10 | 2 | mixture of the two global modes | exact degeneracy |
+| synthetic theta=0.01, 0.1 | 2 | gap <= 1.3e-12 | 1 | equals hard argmin | tight |
+| real planar frames | 5 solved | gap <= 1e-6 | 1 | equals hard argmin | tight |
+| upstream 13x13 | 5 | ~1e-6 below the 10x10 value | 2 in 1/5 | — | looser (as proved) |
+
+| theta | method | pose (rot deg) | grad rel vs FD | ESS | seed std | runtime |
+|-|-|-|-|-|-|-|
+| +0.0 | Laplace analytic | 55.19 | 4.34e-4 | n/a | 0 | 6.9 ms |
+| +0.0 | EPro-style IS | 175.10 | 3.41e-2 | 1399/4000 | 5.7e0 | 21.8 ms |
+| +0.0 | BPnP-style IFT | 169.30 | 5.88e-4 | n/a | 0 | 0.4 ms |
+| +0.1 | Laplace analytic | 3.99 | 8.46e-7 | n/a | 0 | 3.6 ms |
+| +0.1 | EPro-style IS | 4.06 | 4.30e-1 | 1598/4000 | 1.1e-1 | 10.0 ms |
+| +0.1 | BPnP-style IFT | 3.99 | 8.46e-5 | n/a | 0 | 0.7 ms |
+
+*Evidence: `real/linemod/results/lmo_two_mode.md`, `real/linemod/results/detector_noise.md`, `experiments/results/sdpr_p1.json` (script `experiments/baselines/run_sdpr_p1.py`), `experiments/results/epro_bpnp_style.md` (script `experiments/baselines/run_epro_bpnp_style.py`), `experiments/results/_smoke_e2e.md` (script `code/run_e2e_fit.py`). All CPU. The LMO/detector rows are controlled estimator experiments on real cost functions with GT-associated correspondences, not detector benchmarks.*
+
+
 ## 6. Discussion and Limitations
 
 1. **Scope and status of the SDP equivalence.** The $10\times10$ Veronese result is for the rotation subproblem after exact translation elimination, and its relation to the released $13\times13$ implementation now has a proved three-part structure (Section 5.3.4). (i) With the full 20-dimensional ideal, the $13\times13$ relaxation is *exactly* the $10\times10$ one — equal value and equal rank, by the rank-preserving block Schur bijection — so the $10\times10$ theory does cover the $13\times13$ relaxation once the ideal is complete. (ii) The released 24-constraint implementation spans only 17 dimensions, missing exactly $r_1\cdot r_2=r_1\cdot r_3=r_2\cdot r_3=0$, and is therefore strictly looser in general: $f^\star_{13,\mathrm{up}}\le f^\star_{13,\mathrm{full}}=f^\star_{10,\mathrm{full}}\le f^\star_{\mathrm{QPEP}}$, with $8/8$ strict gaps after symmetry-breaking perturbations of the Choi–Lam instance ($2.5\times10^{-3}$–$1.4\times10^{-2}$, rank $\{4,5\}$ versus 6). (iii) A 6-point physical 3D–3D instance with positive matrix weights and a unique ground-truth rotation separates the two by $1.8207$ with ranks 1 versus 4, even though the full-20D SDP is exactly tight and rank one there. Q2/Q13 is therefore closed, not reopened: full-20D equivalence is proven, the upstream constraint deficit is proven and demonstrated. The supplement's older claim that the released 24-constraint relaxation has the same value as the $10\times10$ one is the statement that was wrong; the $10\times10$ theory is unaffected. Constructed-instance realizability (Q1) is a separate and still open question (item 2).
@@ -697,10 +743,13 @@ We have presented `Laplace-QPEPLayer`, a differentiable pose layer that combines
 
 [17] J. Nocedal and S. J. Wright, *Numerical Optimization*, 2nd ed., Springer, 2006.
 
+[18] B. Xue, Y. Zhu, T. Liu, J. Wu, J. Jiao, Y. Jiang, C. Zhang, X. Jiang, and Z. He, "sQPEP: Global Optimal Solutions to Scaled Quadratic Pose Estimation Problems," *IEEE Transactions on Instrumentation and Measurement*, vol. 74, pp. 1-11, 2025. DOI: 10.1109/TIM.2025.3540135.
+
 <!--
-Reference notes / TODO before submission:
-- sQPEP (Xue et al., 2025) and the adjacent dQP/POLI/Pyatov entries from an earlier internal list are not included
-  because their bibliographic details were not independently verified. Add only after checking the DOI.
-- The 13x13/24-constraint fact follows the released SDPRLayers code and the repository KB
-  (kb/sdpr-forward-net/01.md §3.1); cite the code commit in the camera-ready.
+Reference notes (2026-11-28):
+- sQPEP (Xue et al., 2025) is now included as [18]; its metadata was verified against Crossref (DOI 10.1109/TIM.2025.3540135).
+- The dQP/POLI/Pyatov entries from an earlier internal list remain omitted because their bibliographic details could not be
+  verified against Crossref; they are not cited rather than guessed.
+- The 13x13/24-constraint fact follows the released SDPRLayers code (commit 62d8ac6) and the repository KB
+  (kb/sdpr-forward-net/01.md §3.1); the commit is cited in the text.
 -->
