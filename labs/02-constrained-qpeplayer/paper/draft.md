@@ -1,6 +1,6 @@
 # Constrained-QPEPLayer: Certifiable Inequality-Constrained 6-DoF Pose Layers via Additive Quaternion Reduction and Fischer–Burmeister Implicit Differentiation
 
-> **Status**: draft v0.1 (2026-11-27). Sections 1–4 and 6–7 are written; Section 5 gives the full experimental design with results marked **TODO**. The only numerical results reported are the synthetic *prototype sanity checks* in `verify/`, explicitly labelled as such (no paper-level claim is made from them). Reference entries marked **[verify]** still need a final bibliographic check before submission.
+> **Status**: draft v0.2 (2026-11-27). Sections 1–4 and 6–7 are written. Section 5 now reports measured layer-level results — synthetic desktop at $p=8$–$64$, noise/extrinsic bias, certificate tightness and the zero-dimensional RLT ablation, and BOP LINEMOD/LINEMOD-Occlusion/YCB-Video — each with a source line. Items not yet run (YCB-Video RLT, exact 40-root inner enumerator, SCP and learned-layer baselines, higher-order RLT, end-to-end training) are marked **pending** in §5.6. Reference entries marked **[verify]** still need a final bibliographic check before submission.
 
 ---
 
@@ -281,9 +281,9 @@ $$
 \mathbf H_{\rm tan}:=\nabla^2_{\mathbf z}J_\theta(\mathbf z^\star)\;(\succeq0),
 \tag{9a}
 $$
-i.e. we drop the constraint-curvature term $\sum_{j\in\mathcal A}\mu_j\nabla^2_{\mathbf z}g_j$. With (9a), $\mathbf H_{\rm eff}\succ0$ holds whenever $\nabla^2J_\theta\succ0$, so Theorem 2.3 and Proposition 2.1 apply as stated, with no indefinite-Hessian caveat. The price is explicit and stated in the theorem: (9) then computes the derivative of the Gauss–Newton *surrogate* solution map, which agrees with the true derivative to first order in the residual but not exactly; the discrepancy is $O(\sum_j\mu_j\|\nabla^2g_j\|)$ and is measured in the ablation (§5.3 (i)).
+i.e. we drop the constraint-curvature term $\sum_{j\in\mathcal A}\mu_j\nabla^2_{\mathbf z}g_j$. With (9a), $\mathbf H_{\rm eff}\succ0$ holds whenever $\nabla^2J_\theta\succ0$, so Theorem 2.3 and Proposition 2.1 apply as stated, with no indefinite-Hessian caveat. The price is explicit and stated in the theorem: (9) then computes the derivative of the Gauss–Newton *surrogate* solution map, which agrees with the true derivative to first order in the residual but not exactly; the discrepancy is $O(\sum_j\mu_j\|\nabla^2g_j\|)$ and is left to the pending ablation (§5.6).
 
-**Remark 4.1 (exact-Hessian variant).** If one instead uses the full Lagrangian Hessian $\mathbf H_{\rm tan}=\nabla^2J+\sum_{j\in\mathcal A}\mu_j\nabla^2g_j$, (9) is the exact differentiated KKT system, but $\mathbf H_{\rm eff}\succ0$ is no longer automatic; Theorem 2.3 must be replaced by the weaker statement "$\mathbf S$ is nonsingular iff $\mathbf H_{\rm eff}$ is nonsingular on $\ker\mathbf J_{\mathcal A}$", and a Levenberg damping is needed in practice when it is not. Because $g_j$ is quadratic in $\mathbf q$, $\nabla^2_{\mathbf q}g_j$ is *not* small — it scales with $\|\tilde{\mathbf a}_j\|$ and is multiplied by the contact multiplier — so this is a genuine trade-off rather than a technicality. We report both variants in §5.3 (i) and recommend (9a) as the default.
+**Remark 4.1 (exact-Hessian variant).** If one instead uses the full Lagrangian Hessian $\mathbf H_{\rm tan}=\nabla^2J+\sum_{j\in\mathcal A}\mu_j\nabla^2g_j$, (9) is the exact differentiated KKT system, but $\mathbf H_{\rm eff}\succ0$ is no longer automatic; Theorem 2.3 must be replaced by the weaker statement "$\mathbf S$ is nonsingular iff $\mathbf H_{\rm eff}$ is nonsingular on $\ker\mathbf J_{\mathcal A}$", and a Levenberg damping is needed in practice when it is not. Because $g_j$ is quadratic in $\mathbf q$, $\nabla^2_{\mathbf q}g_j$ is *not* small — it scales with $\|\tilde{\mathbf a}_j\|$ and is multiplied by the contact multiplier — so this is a genuine trade-off rather than a technicality. We leave both variants to the pending ablation (§5.6) and recommend (9a) as the default.
 
 ### 4.6 The five open mathematical questions this method creates
 
@@ -303,9 +303,59 @@ We list them here because they bound the paper's claims; they are expanded in `m
 
 ## 5 Experiments
 
-We separate what has been run from what has not. No number in §5.1 is a paper-level result.
+We report a layer-level study, not an end-to-end perception system. §5.1 fixes the protocol, the metrics and the evidence grades; §5.2–§5.5 give the measurements; §5.6 lists what is deliberately not in this draft. Three evidence grades are used: *independently reproduced* (produced by code in this repository and traceable to a result file), *prototype sanity check* (an algebra check in `verify/`, not an experiment), and *pending* (not run in this worktree). No number in §5 is a *paper-claimed* number, and the real-data numbers are layer-level (§5.1.4).
 
-### 5.1 Prototype sanity checks (completed; synthetic; **not** paper results)
+### 5.1 Setup, protocol, and evidence grading
+
+#### 5.1.1 Synthetic desktop instance
+
+The synthetic instance is a controlled layer test, not a benchmark: $N=14$ 3D–2D correspondences with a bearing-type algebraic cost, per-point noise $\sigma$, a systematic extrinsic bias, and a ground-truth pose that is exactly in contact with the table. The bias always contains a fixed 5 mm lateral component (`bias_xy=0.005` m) in addition to the vertical bias of the cell; this is why even the noise-free cell has a non-zero translation error (§5.3). The constraint count $p\in\{8,16,32,64\}$ is the number of *scalar* inequality rows assembled from four families: planar non-penetration, positive depth, field of view (recorded as pairs, each pair contributing two rows) and a tilt cone. Table 5.1 gives the composition. Each cell has 50 trials; the seed is the trial index, so the same scenes are reused across $p$ and across noise levels.
+
+**Table 5.1. Constraint composition (scalar rows) of the synthetic instance.**
+
+| $p$ | non-penetration | positive depth | FoV (rows) | tilt cone | total |
+|---|---|---|---|---|---|
+| 8 | 5 | 2 | 0 | 1 | 8 |
+| 16 | 9 | 4 | 2 | 1 | 16 |
+| 32 | 17 | 8 | 6 | 1 | 32 |
+| 64 | 33 | 12 | 18 | 1 | 64 |
+
+*Source: `results/raw_main.json` (`config.split`, and `recs[].actypes`, which agree on every record in a cell). The configuration file records FoV as 1/3/9 pairs; each pair is two scalar rows.*
+
+#### 5.1.2 Methods and the inner solver
+
+Four methods are compared on the same instances:
+
+1. **Unconstrained QPEP**: the same bearing cost with only $\|\mathbf q\|=1$, solved numerically from 48 random starts; no constraints.
+2. **Soft penalty**: the quadratic penalty $\lambda\sum_j[g_j]_+^2$ with $\lambda=10^3$ and 14 random starts; the weight is swept in §5.3.
+3. **Post-hoc projection**: the unconstrained solution is projected onto the feasible set with SLSQP.
+4. **ALM-QPEP (ours)**: the augmented Lagrangian of §4.1 with a frozen active set, the $p$-independent assembly of Theorem 2.1, and the consistency check of Lemma 2.1.
+
+All four use the same numerical inner solve — a multi-start BFGS on the unit quaternion sphere — and *not* QPEP's polynomial root enumeration. This is the main caveat on the word "global" in this section: the certificate of §5.4 is global, the forward solve is numerical. A start-count baseline on 48 inner instances ($p\in\{8,16,32,64\}$, 6 seeds, $\sigma=0.01$, bias $0.08$; source: `results/inner_baseline.json`) quantifies the stand-in: 4 starts under-solve 8/24 unconstrained matrices with a maximum objective gap of $1.17\times10^{-3}$; 8 starts reach the reference on all 48 instances at a median 26 ms; 256 starts cost 678 ms ($25\times$) with no objective gain. For the ALM active-set matrix, even 4 starts reach the reference on all 24 instances. The 48-start setting of method 1 is therefore above the threshold found here; it still does not certify the inner minimum, and the exact 40-root enumerator is pending (§5.6).
+
+#### 5.1.3 Metrics and evidence grades
+
+**Table 5.2. Metrics and pass criteria (from `experiments/protocol.md` §3).**
+
+| metric | definition | reported as |
+|---|---|---|
+| penetration | $d_{\rm pen}=\max_{v\in\mathcal V}[\mathbf n^\top(\mathbf R\mathbf v+\mathbf t)+d]_-$ (mm) | median [IQR]; penetration rate = fraction with $d_{\rm pen}>1$ mm |
+| rotation / translation error | geodesic angle to GT / Euclidean translation error | median [IQR], deg / mm |
+| feasible | $\max_j[g_j]_+\le10^{-6}$ | rate |
+| certified | feasible **and** $J-\mathrm{Shor}\le10^{-6}$ **and** $\lambda_2/\lambda_1\le10^{-6}$ | rate |
+| runtime | wall-clock per instance (forward solve); certificate timed separately | median, ms |
+
+Medians [IQR] are reported instead of means because a small number of trials fall into mirrored or bad local minima and inflate the mean; the means and standard deviations are in the JSON. Runtime is machine-specific and is used only for scaling comparisons, not as a hardware claim. The evidence grades are: *independently reproduced* for §5.2–§5.5 (each table carries a source line); *prototype sanity check* for §5.1.5; *pending* for everything in §5.6.
+
+#### 5.1.4 Real-data protocol and planned protocols
+
+The real experiments use BOP LINEMOD, LINEMOD-Occlusion and YCB-Video test frames with the official object meshes and ground-truth poses. For each frame the support plane is fitted by RANSAC to the background depth (5 mm inlier threshold), with the normal pointing into the object, and its offset is calibrated so that the ground-truth lowest vertex is in contact. The observations are 30 random model vertices projected with the ground-truth pose and camera matrix, perturbed by 1 px of noise and a downward pixel bias of 10/20/30 px; bearings are obtained with $\mathbf K^{-1}$. The constraints are the 16 lowest model vertices along the table normal (non-penetration), so $p=16$, with the same four methods.
+
+There are 18 (LINEMOD), 18 (LINEMOD-Occlusion) and 12 (YCB-Video) trials: six (frame, image, object) configurations $\times$ three pixel biases for the first two, four configurations $\times$ three biases for YCB-Video. These are not independent video frames. **The correspondences are ground-truth-projected, not produced by a detector or a matcher: this is a layer experiment, not an end-to-end perception result.** The plane offset is calibrated to the ground truth, so the ground truth is feasible by construction.
+
+**Protocols planned but not run.** The remaining protocols of `experiments/protocol.md` are stated here for completeness and are **not** measured in this draft. (i) *T1-network*: a keypoint-regression backbone in the SDPRLayers/BPnP style replaces its pose head with each layer under comparison; the same backbone, training schedule and pose-only supervision (no penetration term in the loss) are used for all layers, and the metrics are ADD(-S), ADD(-S) below 2 cm, penetration depth/ratio and forward/backward latency on YCB-Video and LINEMOD. (ii) *T2*: KITTI odometry with a roll/pitch tilt cone ($\alpha=10^\circ$) and positive depth, TUM RGB-D with positive depth, and UTIAS In-The-Dark with the SDPRLayers stereo setup; metrics are translation/rotation RMSE, violation rate, certificate rate and latency. (iii) *T3*: hand–eye calibration and point-to-plane registration with a joint-limit (tilt-cone) prior, to show equality constraints in the lifted form. None of these runs is included in §5.2–§5.5.
+
+#### 5.1.5 Prototype sanity checks (completed; **not** paper results)
 
 > **Evidence grade: prototype sanity check.** Everything in this subsection is a numerical check of the algebra on a synthetic $p=12$ instance, produced by the two scripts in `verify/`. It is *not* an experiment on a benchmark, it does not use the final polynomial solver, and it must not be cited as a result of the paper. It exists to (i) catch algebra errors in Theorems 2.1–2.3 and (ii) demonstrate that the certificate construction of Lemma 2.2 works at all.
 
@@ -325,39 +375,199 @@ Two scripts in `verify/` validate the algebra and the numerics of §4 on a synth
 | F6 | four-leg Jacobian | rank $3<4$; limit matrix rank $6/7$ |
 | F7 | analytic kink: $\min\tfrac12(z-a)^2$ s.t. $z\ge0$ at $a=0$ | true map $\max(a,0)$ non-differentiable; Clarke derivative $[0,1]$; **FB gives exactly $1/2$**, independent of $\varepsilon$ (17/17 checks pass) |
 
+*Source: `verify/` scripts and their outputs; retained verbatim from the previous draft and not re-measured in this round. No number in this subsection is used for a paper claim.*
+
 Two honest observations. (i) The constrained pose error on this instance is *not* better than the unconstrained one ($2.24^\circ/9.96$ cm versus $1.38^\circ/9.44$ cm): the constraint removes 18.94 cm of penetration but the residual pose error is dominated by the injected bearing bias, which the table constraint cannot correct. This is a warning against assuming that physical constraints improve accuracy; the claim has to be measured per dataset. (ii) The certificate story inverts the earlier internal draft: the dual gap is unusable, the $14\times14$ relaxation is tight.
 
-### 5.2 Datasets and tasks (**TODO** results)
+### 5.2 Synthetic main table: hard feasibility from $p=8$ to $p=64$
 
-**T1 — Tabletop manipulation, $p$ from 8 to 64.** YCB-Video (BOP) and LINEMOD/LINEMOD-Occlusion. For each frame, the support plane is estimated once (RANSAC on the depth channel or from the table pose in simulation) and held fixed; the object's convex-hull vertices below the plane offset contribute non-penetration constraints, and all observed keypoints contribute positive-depth constraints. The layer replaces the pose head of a keypoint network (the SDPRLayers/BPnP style pipeline), trained end-to-end with the pose loss only. Metrics: ADD(-S), ADD(-S) under $<2$ cm, **penetration depth** (max over vertices of $[\mathbf n^\top(\mathbf R\mathbf v+\mathbf t)+d]_-$, in mm) and **penetration ratio** (fraction of frames with $>1$ mm), latency per forward/backward.
+Tables 5.3–5.5 give penetration, pose error and rates/runtime for the four methods at the four constraint counts. All 50 trials per cell use the same scenes.
 
-**T2 — Localisation with physical priors.** KITTI odometry (ground vehicle: roll/pitch tilt cone from the IMU-free assumption, $\alpha=10^\circ$), TUM RGB-D (hand-held: positive depth only), and UTIAS In-The-Dark (stereo, matching SDPRLayers' setup exactly, so that the comparison is apples-to-apples). Metrics: translation/rotation RMSE, constraint violation rate, and the fraction of samples whose certificate is tight.
+**Table 5.3. Maximum penetration depth (mm, median [IQR]) with the penetration rate ($d_{\rm pen}>1$ mm) in parentheses.**
 
-**T3 — Calibration-style equality+inequality mix.** Hand–eye calibration with a joint-limit (tilt-cone) prior, following QPEP's problem family, to show that the layer also accepts equality constraints in the lifted form (they are affine in $\mathbf v_2$ for orthogonality-type constraints and can be imposed as two inequalities if needed).
+| method | $p=8$ | $p=16$ | $p=32$ | $p=64$ |
+|---|---|---|---|---|
+| Unconstrained QPEP | 103.02 [84.69, 110.83] (100%) | 103.02 [84.69, 110.83] (100%) | 103.02 [84.69, 110.83] (100%) | 103.02 [84.69, 110.83] (100%) |
+| Soft penalty ($\lambda{=}10^3$) | 0.01 [0.00, 0.06] (0%) | 0.00 [0.00, 0.03] (0%) | 0.00 [0.00, 0.03] (0%) | 0.00 [0.00, 0.02] (0%) |
+| Post-hoc projection | 0.00 [0.00, 0.00] (0%) | 0.00 [0.00, 0.00] (0%) | 0.00 [0.00, 0.00] (0%) | 0.00 [0.00, 0.00] (0%) |
+| ALM-QPEP (ours) | 0.00 [0.00, 0.00] (0%) | 0.00 [0.00, 0.00] (0%) | 0.00 [0.00, 0.00] (0%) | 0.00 [0.00, 0.00] (0%) |
 
-### 5.3 Baselines
+*Source: `results/raw_main.json`, 50 trials per cell; aggregate reproduced by `results/main_table.md`/`main_table.json`.*
 
-1. **SDPRLayers** [Holmes et al. 2025] with the official PyTorch implementation: (a) unconstrained, (b) with $p$ slack variables, reporting the $(10+p)\times(10+p)$ solve time and the tightness failure rate. We report the *same* network and the *same* training schedule, changing only the layer.
-2. **Theseus** [Pineda et al. 2022] with soft penalties on the same constraints, swept over penalty weights, reporting the penetration-versus-accuracy Pareto curve. This is the fair way to show that a penalty cannot reach zero penetration at any accuracy.
-3. **dQP** [Magoon et al. 2025] on a locally linearised problem, i.e. sequential convex programming with dQP as the inner layer — the strongest convex-layer baseline that can be pushed to our setting.
-4. **QPEP** [Wu et al. 2022] unconstrained, plus a post-hoc projection onto the feasible set. This isolates the value of solving the constrained problem rather than repairing an unconstrained solution.
-5. **Ablations of ours**: (i) GN versus exact Hessian; (ii) FB with $\varepsilon$ fixed / scheduled / no regularisation (hard active set); (iii) certificate on/off (to measure its cost and its effect on reported metrics); (iv) inner solve by multi-start local optimisation instead of the polynomial solver (to quantify the value of enumeration).
+**Table 5.4. Pose error (rotation deg / translation mm, median [IQR]).**
 
-### 5.4 Measurements that decide the paper
+| method | $p=8$ | $p=16$ | $p=32$ | $p=64$ |
+|---|---|---|---|---|
+| Unconstrained QPEP | 5.30 [3.26, 6.70] / 97.90 [88.42, 107.73] | 5.30 [3.26, 6.70] / 97.90 [88.42, 107.73] | 5.30 [3.26, 6.70] / 97.90 [88.42, 107.73] | 5.30 [3.26, 6.70] / 97.90 [88.42, 107.73] |
+| Soft penalty ($\lambda{=}10^3$) | 4.86 [3.73, 7.78] / 10.93 [9.26, 16.06] | 6.62 [3.70, 9.95] / 13.00 [8.69, 16.87] | 6.97 [3.94, 9.61] / 12.33 [10.19, 16.11] | 6.01 [4.14, 9.11] / 12.40 [8.99, 15.76] |
+| Post-hoc projection | 4.16 [2.90, 5.34] / 9.10 [7.34, 10.94] | 4.16 [2.90, 5.34] / 9.10 [7.34, 10.94] | 4.16 [2.90, 5.34] / 9.10 [7.34, 10.94] | 4.16 [2.90, 5.34] / 9.10 [7.34, 10.94] |
+| ALM-QPEP (ours) | 4.17 [2.74, 5.10] / 10.63 [8.17, 12.69] | 4.17 [2.74, 5.10] / 10.63 [8.17, 12.69] | 4.17 [2.74, 5.10] / 10.63 [8.17, 12.69] | 4.17 [2.74, 5.10] / 10.63 [8.17, 12.69] |
 
-* **Certificate tightness rate** per dataset — the headline number for the "certifiable" claim. Report tight/loose/failed with the $\lambda_2/\lambda_1$ distribution.
-* **Penetration**: depth (mm) and ratio (%), with the SDPRLayers-slack and Theseus-penalty Pareto curves.
-* **Cost decomposition**: assembly, inner polynomial solve, certificate, backward solve, on CPU (single core, as SDPRLayers reports) and on GPU-batched where applicable.
-* **Gradient correctness**: finite-difference check on the pose output at strongly active, weakly active, and rank-deficient configurations, reported separately — the three cases where the theory differs.
-* **Failure taxonomy**: infeasible instances, non-tight certificates, active-set cycling, $\varepsilon$ conditioning blow-up ($\kappa>10^{10}$), NaN counts.
+*Source: `results/raw_main.json`, 50 trials per cell.*
 
-### 5.5 Compute budget and risks
+**Table 5.5. Feasibility, certification and runtime (median ms); the last row is the $14\times14$ certificate.**
 
-A single epoch of T1 with the SDPRLayers-style backbone on one A100 is roughly 2–4 h; we budget 60 GPU-hours for T1, 30 for T2, 10 for ablations, 10 for the certificate study, plus 20 CPU-hours for the polynomial-solver benchmarking and template generation. Main risks: (i) the polynomial solver's template must be regenerated for the ALM's monomial support (G1), which is a week of work and may change the constant; (ii) the $14\times14$ certificate may be loose on real data, which would weaken but not invalidate the paper (§6); (iii) YCB-Video's support-plane assumption is only approximately true for stacked objects, so we will report per-scene results rather than a single average.
+| method | $p=8$ | $p=16$ | $p=32$ | $p=64$ |
+|---|---|---|---|---|
+| Unconstrained QPEP | feas 0% / cert 0% / 143 ms | feas 0% / cert 0% / 144 ms | feas 0% / cert 0% / 144 ms | feas 0% / cert 0% / 142 ms |
+| Soft penalty ($\lambda{=}10^3$) | feas 42% / cert 0% / 96 ms | feas 38% / cert 0% / 94 ms | feas 42% / cert 0% / 98 ms | feas 50% / cert 0% / 97 ms |
+| Post-hoc projection | feas 100% / cert 0% / 12 ms | feas 100% / cert 0% / 12 ms | feas 100% / cert 0% / 12 ms | feas 100% / cert 0% / 12 ms |
+| ALM-QPEP (ours) | feas 100% / cert 100% / 260 ms | feas 100% / cert 100% / 277 ms | feas 100% / cert 100% / 280 ms | feas 100% / cert 100% / 288 ms |
+| **14×14 SDP** | tight 100% / 51 ms | tight 100% / 56 ms | tight 100% / 67 ms | tight 100% / 84 ms |
 
-### 5.6 Reproducibility
+*Source: `results/raw_main.json`, 50 trials per cell; runtime is the median wall-clock per instance, SDP time is the median certificate time.*
 
-Code, templates, and the two sanity-check scripts with their outputs are in `labs/02-constrained-qpeplayer/verify/`. The layer will be released as a `torch.autograd.Function` with a reference NumPy implementation of every theorem. All reported numbers will carry the evidence grade used in this repository: *paper-claimed*, *independently reproduced*, or *unverified*.
+Six observations.
+
+**(i) Hard feasibility is the separating property.** The unconstrained solution penetrates the table in 100% of trials at every $p$ (median 103.02 mm). ALM returns 0.00 mm in 100% of trials, and its maximum constraint violation over the 200 main trials is $1.0\times10^{-10}$, four orders below the $10^{-6}$ tolerance. The soft penalty reaches a sub-millimetre *median* (0.00–0.01 mm) but is feasible in only 38–50% of trials (maximum violation 0.81 mm): "near-zero median penetration" is not feasibility. Projection is 100% feasible and the cheapest method (12 ms), but its objective is above the constrained optimum (median $J-\mathrm{Shor}=2.9\times10^{-4}$ at $p=8$), so it is never certified.
+
+**(ii) The constrained solve is certified at every $p$.** ALM is 100% feasible and 100% certified for $p=8,16,32,64$; the certificate is what projection and the penalty cannot deliver (Table 5.5).
+
+**(iii) $p$ saturates because planar contact is redundant beyond three non-collinear points.** The non-penetration block grows from 5 to 33 rows, yet the per-seed ALM pose changes by at most $5.9\times10^{-7}$ deg and $5.6\times10^{-7}$ mm between $p=8$ and $p=64$ (projection: $1.7\times10^{-5}$ deg and $4.1\times10^{-5}$ mm); the medians of the unconstrained, projection and ALM rows in Tables 5.3–5.5 are identical at the printed precision. The ALM active set nevertheless grows with $p$ (median 2 at $p=8$ to 4.5 at $p=64$; maximum 33), i.e. the extra contacts are weakly active — exactly the LICQ-degenerate regime — and the certificate still holds. The soft penalty is the exception: redundant contacts each contribute a penalty term, so its medians move by up to $2.1^\circ$ and $2.1$ mm across $p$.
+
+**(iv) The cost is consistent with $O(p)$ assembly plus a $p$-independent inner dimension.** ALM runtime grows from 260 to 288 ms over an $8\times$ increase in $p$ (log–log slope 0.045 on medians, 0.031 on means), and the SDP certificate from 51 to 84 ms. Assembly was not instrumented separately: this is an end-to-end consistency check, not a measurement of the $O(p)$ term itself.
+
+**(v) Constraints buy admissibility, not accuracy.** ALM's pose error is 4.17°/10.63 mm at every $p$, projection's is 4.16°/9.10 mm: essentially the same rotation and 1.5 mm better translation for projection, while the (infeasible) unconstrained translation error is 97.90 mm. The soft penalty is worse at every $p$ (up to 6.97°/13.00 mm), and its medians hide catastrophic local minima: one seed in 50 reaches 156.5° at $p=16$, 171.6° at $p=32$ and 84.8° at $p=64$ (translation up to 633.6 mm). The penalty path is therefore not dependable even where its median looks good.
+
+**(vi) A caveat on the medians.** The unconstrained method's occasional cheirality-mirror solutions (2% of trials: the object is placed behind the camera) are excluded from the medians but present in the means; the same is true of the soft-penalty local minima in (v). All rates in Table 5.5 are computed over all 50 trials.
+
+![Figure 5.1](../experiments/results/fig_p2_overview.png)
+
+**Figure 5.1. P2 overview.** (a) Feasibility (bars) and certification (filled diamonds) versus $p$ for the four methods, 50 trials per cell. (b) Maximum penetration depth, median [IQR], versus $p$ on a symlog axis (projection and ALM coincide at 0.00). (c) Real-data ALM certification for the $14\times14$ Shor certificate and for the zero-dimensional RLT cuts, with 95% Wilson intervals; YCB-Video RLT was not run. *Sources: `results/raw_main.json` (a,b); `real/*/results/raw.json` and `results/real_cert_ci_baseline.json` (c).*
+
+### 5.3 Noise, extrinsic bias, and the price of a penalty
+
+Table 5.6 fixes $p=16$ and varies the per-point noise $\sigma$ and the vertical bias over four cells. Table 5.7 is a separate 50-trial sweep of the penalty weight $\lambda$ at $p=16$.
+
+**Table 5.6. Method × noise/extrinsic bias at $p=16$ (50 trials per cell; median [IQR]).**
+
+| cell ($\sigma$ / bias) | method | pen (mm) | rot (deg) | trans (mm) | feasible | certified |
+|---|---|---|---|---|---|---|
+| 0.000 / 0.000 | Unconstrained QPEP | 0.00 [0.00, 0.00] | 0.00 [0.00, 0.00] | 7.07 [7.07, 7.07] | 100% | 100% |
+| 0.000 / 0.000 | Soft penalty ($\lambda{=}10^3$) | 0.00 [0.00, 0.00] | 0.00 [0.00, 0.00] | 7.07 [7.07, 7.07] | 100% | 100% |
+| 0.000 / 0.000 | Post-hoc projection | 0.00 [0.00, 0.00] | 0.00 [0.00, 0.00] | 7.07 [7.07, 7.07] | 100% | 100% |
+| 0.000 / 0.000 | ALM-QPEP (ours) | 0.00 [0.00, 0.00] | 0.00 [0.00, 0.00] | 7.07 [7.07, 7.07] | 100% | 100% |
+| 0.005 / 0.040 | Unconstrained QPEP | 47.52 [38.74, 51.36] | 2.52 [1.58, 3.25] | 45.87 [40.56, 51.75] | 0% | 0% |
+| 0.005 / 0.040 | Soft penalty ($\lambda{=}10^3$) | 0.01 [0.00, 0.03] | 5.10 [3.45, 7.36] | 9.46 [8.10, 11.27] | 24% | 0% |
+| 0.005 / 0.040 | Post-hoc projection | 0.00 [0.00, 0.00] | 2.18 [1.75, 3.16] | 7.79 [7.12, 8.58] | 100% | 0% |
+| 0.005 / 0.040 | ALM-QPEP (ours) | 0.00 [0.00, 0.00] | 2.52 [1.89, 3.33] | 8.46 [7.10, 9.65] | 100% | 100% |
+| 0.010 / 0.080 | Unconstrained QPEP | 103.02 [84.69, 110.83] | 5.30 [3.26, 6.70] | 97.90 [88.42, 107.73] | 0% | 0% |
+| 0.010 / 0.080 | Soft penalty ($\lambda{=}10^3$) | 0.00 [0.00, 0.03] | 6.62 [3.70, 9.95] | 13.00 [8.69, 16.87] | 38% | 0% |
+| 0.010 / 0.080 | Post-hoc projection | 0.00 [0.00, 0.00] | 4.16 [2.90, 5.34] | 9.10 [7.34, 10.94] | 100% | 0% |
+| 0.010 / 0.080 | ALM-QPEP (ours) | 0.00 [0.00, 0.00] | 4.17 [2.74, 5.10] | 10.63 [8.17, 12.69] | 100% | 100% |
+| 0.020 / 0.120 | Unconstrained QPEP | 198.10 [177.14, 232.79] | 11.50 [7.92, 18.63] | 185.77 [170.38, 215.92] | 0% | 0% |
+| 0.020 / 0.120 | Soft penalty ($\lambda{=}10^3$) | 0.00 [0.00, 0.04] | 11.13 [6.89, 14.36] | 17.01 [10.99, 21.60] | 38% | 0% |
+| 0.020 / 0.120 | Post-hoc projection | 0.00 [0.00, 0.00] | 7.97 [5.45, 11.86] | 12.61 [8.90, 17.11] | 100% | 0% |
+| 0.020 / 0.120 | ALM-QPEP (ours) | 0.00 [0.00, 0.00] | 5.83 [4.49, 7.55] | 13.39 [10.23, 17.43] | 100% | 100% |
+
+*Source: `results/raw_main.json`, `agg_noise`, 50 trials per cell.*
+
+**Table 5.7. Soft-penalty Pareto at $p=16$ (separate 50-trial sweep; medians).**
+
+| $\lambda$ | pen (mm) | rot (deg) | trans (mm) | feasible |
+|---|---|---|---|---|
+| $10^0$ | 8.72 | 4.34 | 13.32 | 0% |
+| $10^1$ | 2.39 | 5.74 | 11.24 | 0% |
+| $10^2$ | 0.22 | 6.24 | 12.00 | 26% |
+| $10^3$ | 0.00 | 6.61 | 12.53 | 50% |
+| $10^4$ | 0.00 | 6.85 | 12.94 | 48% |
+
+*Source: `results/raw_main.json`, `pareto` (250 trials = 5 weights × 50 seeds); values agree with `results/main_table.md`.*
+
+Three observations.
+
+**(i) The noise-free cell isolates the injected bias.** With $\sigma=0$ and zero vertical bias, all four methods coincide exactly: 0.00 mm penetration, 0.00°, and 7.07 mm translation, all 100% feasible and certified. The 7.07 mm is the fixed 5 mm lateral bias ($\sqrt{5^2+5^2}=7.07$ mm), not a method difference; with no noise the constraints are inactive.
+
+**(ii) Noise and bias separate feasibility from accuracy.** Across the three non-zero cells the unconstrained penetration grows 47.52 → 198.10 mm and it is never feasible; ALM stays at 0.00 mm with 100% feasibility and certification in all four cells; the soft penalty is feasible in only 24–38% of the three non-zero cells and is never certified there; projection is 100% feasible there and never certified. Pose errors are comparable across the three constrained methods at low noise. At the highest cell ALM has the best rotation error (5.83° versus 11.50° unconstrained, 11.13° soft, 7.97° projection) but projection has the best translation (12.61 mm versus ALM 13.39 mm); the differences are within the spread. The robust effect is admissibility and certification, not accuracy — the same conclusion as §5.2.
+
+**(iii) A larger penalty lowers the median penetration but never reaches feasibility.** Table 5.7: median penetration falls monotonically from 8.72 mm at $\lambda=10^0$ to 0.00 mm at $\lambda=10^3$, at the cost of a rotation error rising from 4.34° to 6.85° (translation stays flat, 11.24–13.32 mm). Feasibility never exceeds 50% and is non-monotone (50% at $\lambda=10^3$, 48% at $10^4$): the penalty approaches hard feasibility but does not attain it. One seed in 50 falls into a bad local minimum for every $\lambda\ge10$; at $\lambda=10^4$ its rotation error is 132.9° and its translation 202.6 mm, and at $\lambda=10^3$ its translation error is 504.6 mm. These outliers are invisible in the medians and are the reason the penalty path cannot be certified.
+
+### 5.4 How tight is the certificate?
+
+**Table 5.8. Certificate margins over all 400 synthetic instances (8 cells × 50).**
+
+| cell | $n$ | $\max\lambda_2/\lambda_1$ | median $\lambda_2/\lambda_1$ | $\mathrm{Shor}-J_{\rm ALM}$ range | SDP time (mean, ms) |
+|---|---|---|---|---|---|
+| main $p=8$ | 50 | $1.42\times10^{-9}$ | $9.07\times10^{-11}$ | $[-4.56, 4.29]\times10^{-9}$ | 52.9 |
+| main $p=16$ | 50 | $1.03\times10^{-9}$ | $9.47\times10^{-11}$ | $[-3.28, 7.52]\times10^{-9}$ | 57.6 |
+| main $p=32$ | 50 | $8.43\times10^{-10}$ | $2.94\times10^{-11}$ | $[-5.66, 5.99]\times10^{-9}$ | 70.0 |
+| main $p=64$ | 50 | $1.51\times10^{-9}$ | $9.56\times10^{-11}$ | $[-3.93, 9.41]\times10^{-9}$ | 85.5 |
+| noise $0.000/0.000$ | 50 | $5.55\times10^{-10}$ | $1.93\times10^{-11}$ | $[-8.78, 3.57]\times10^{-9}$ | 62.5 |
+| noise $0.005/0.040$ | 50 | $8.56\times10^{-10}$ | $7.65\times10^{-11}$ | $[-6.31, 2.67]\times10^{-9}$ | 61.2 |
+| noise $0.010/0.080$ | 50 | $1.03\times10^{-9}$ | $9.47\times10^{-11}$ | $[-3.28, 7.52]\times10^{-9}$ | 56.7 |
+| noise $0.020/0.120$ | 50 | $1.08\times10^{-9}$ | $2.28\times10^{-11}$ | $[-4.25, 6.82]\times10^{-9}$ | 57.6 |
+
+*Source: `results/cert_margins.json` (summarised from `results/raw_main.json`).*
+
+The synthetic relaxation is tight with a wide margin: the largest $\lambda_2/\lambda_1$ over all 400 instances is $1.5\times10^{-9}$, about three orders of magnitude below the $10^{-6}$ threshold, so the 100% certification rates of Table 5.5 and of the noise-free cell of Table 5.6 are not marginal passes. $\mathrm{Shor}-J_{\rm ALM}$ lies within $\pm10^{-8}$ and changes sign; this is the SCS tolerance, not a theoretical gap, and a rigorous soundness claim still needs the dual-feasible repair of §4.6 (G3). The certificate cost grows from 52.9 to 85.5 ms (means; medians 51 → 84 ms) as $p$ goes from 8 to 64, consistent with a fixed $14\times14$ PSD block and $p$ linear constraints.
+
+**Table 5.9. Zero-dimensional RLT ablation at four noise levels (4 seeds per cell).**
+
+| $\sigma$ / bias | $n$ | base cert | +RLT cert | median abs gap, base | median abs gap, +RLT | base time (s) | RLT time (s) |
+|---|---|---|---|---|---|---|---|
+| 0.02 / 0.10 | 4 | 4/4 | 4/4 | $1.6\times10^{-10}$ | $8.1\times10^{-11}$ | 0.05 | 0.15 |
+| 0.05 / 0.20 | 4 | 4/4 | 4/4 | $1.7\times10^{-9}$ | $9.4\times10^{-10}$ | 0.05 | 0.14 |
+| 0.10 / 0.30 | 4 | 1/4 | 2/4 | $4.2\times10^{-4}$ | $2.9\times10^{-4}$ | 1.59 | 0.85 |
+| 0.20 / 0.40 | 4 | 0/4 | 0/4 | $8.6\times10^{-3}$ | $7.8\times10^{-3}$ | 1.62 | 2.40 |
+
+*Source: `experiments/theory/results/rlt.json` (16 instances; all 16 feasible).*
+
+The zero-dimensional RLT cuts $g_ig_j\ge0$ (136 rows at $p=16$) help only when the base gap is small enough for a modest tightening to cross the threshold, and nowhere else:
+
+* At $\sigma=0.02$ and $0.05$ the base certificate is already 4/4, so RLT changes nothing.
+* At $\sigma=0.10$ the base certifies 1/4; RLT certifies 2/4. The gain is one seed whose gap drops from $2.4\times10^{-4}$ to $7.6\times10^{-12}$; the already-certified seed stays certified, and the two remaining seeds stay uncertified with gaps of $3.1\times10^{-3}$ and $5.8\times10^{-4}$.
+* At $\sigma=0.20$ both methods certify 0/4. RLT reduces the per-seed gap by 10–17% (median $8.6\times10^{-3}\to7.8\times10^{-3}$), which is still about four orders of magnitude above the $10^{-6}$ tolerance.
+* The RLT certificate costs about $3\times$ the base SDP on the low-noise cells (0.05 → 0.15 s) and 0.1–2.6 s per instance on the high-noise cells, where both solves are inaccurate.
+
+The failures at $\sigma=0.10$ and $0.20$ are the reason this draft does not claim that zero-dimensional RLT closes the gap. Higher-order cuts are pending (§5.6).
+
+On the real data the picture is weaker and partly numerical. LM certifies 9/18 with base and 9/18 with RLT: three certificates are gained and three lost, for no net change. LM-O goes from 4/18 (22%) to 7/18 (39%), an apparent gain that is **not statistically significant at $n=18$**: the 95% Wilson intervals are [9, 45] and [20, 61] and overlap heavily. YCB-Video has no RLT run. Moreover, the per-instance RLT bounds on real data are not always sound: on 5/18 LM and 7/18 LM-O instances the RLT bound exceeds $J$ (negative gap), by up to $3.7\times10^{-4}$ and $4.3\times10^{-4}$; separately, two bounds collapse far below $J$ (gaps up to $1.49\times10^{-1}$ on LM and $6.2\times10^{-2}$ on LM-O). These are SCS failures, not certificate improvements. The real-data RLT counts must therefore be read as numerical evidence from an unverified bound, not as certification.
+
+### 5.5 Real data: BOP LINEMOD, LINEMOD-Occlusion, YCB-Video
+
+**Table 5.10. Real-data layer experiment ($p=16$, GT-projected correspondences; n=90/72/84).**
+
+| dataset | $n$ | method | pen (mm) | rot (deg) | trans (mm) | feasible | cert one-sided (upper bound) | cert two-sided (necessary) |
+|---|---|---|---|---|---|---|---|---|
+| LINEMOD | 90 | Unconstrained QPEP | 11.26 | 2.08 | 35.63 | 13.3% | 13.3% | 8.9% |
+| | | Soft penalty ($\lambda{=}10^3$) | 0.00 | 2.13 | 39.81 | 88.9% | 26.7% | 16.7% |
+| | | Post-hoc projection | 0.00 | 2.05 | 30.80 | 100% | 15.6% | 10.0% |
+| | | **ALM-QPEP (ours)** | **0.00** | **1.97** | **37.66** | **100%** | **33.3%** | **18.9%** |
+| LM-O | 72 | Unconstrained QPEP | 14.93 | 2.07 | 34.69 | 6.9% | 6.9% | 6.9% |
+| | | Soft penalty ($\lambda{=}10^3$) | 0.00 | 1.90 | 39.91 | 91.7% | 26.4% | 9.7% |
+| | | Post-hoc projection | 0.00 | 2.04 | 31.29 | 100% | 8.3% | 6.9% |
+| | | **ALM-QPEP (ours)** | **0.00** | **1.99** | **38.14** | **100%** | **30.6%** | **12.5%** |
+| YCB-Video | 84 | Unconstrained QPEP | 14.09 | 1.08 | 17.33 | 6.0% | 6.0% | 3.6% |
+| | | Soft penalty ($\lambda{=}10^3$) | 0.00 | 1.40 | 29.38 | 90.5% | 21.4% | 7.1% |
+| | | Post-hoc projection | 0.00 | 1.08 | 8.93 | 100% | 7.1% | 4.8% |
+| | | **ALM-QPEP (ours)** | **0.00** | **1.11** | **25.18** | **100%** | **33.3%** | **9.5%** |
+
+*Source: `real/linemod/results/raw.json`, `real/bop/results/lmo/raw.json`, `real/bop/results/ycbv/raw.json` (n=90/72/84); Wilson CIs in each `main_table.md`. The one-sided flag is $J-\mathrm{Shor}\le10^{-6}$ and accepts negative gaps; the two-sided flag is $|J-\mathrm{Shor}|\le10^{-6}$. Neither is a rigorous certificate: SCS is not dual-feasible. A sound dual-repair bound certifies 16/16 synthetic noise instances with max gap $2.28\times10^{-8}$; the real-data rigorous rerun is still pending.*
+
+Four observations.
+
+**(i) The unconstrained solve is infeasible on real object/table geometry.** It violates feasibility in 86.7% (LM), 93.1% (LM-O) and 94.0% (YCB-Video), with median penetration 11.26/14.93/14.09 mm. ALM is 100% feasible with 0.00 mm penetration on all three datasets; the soft penalty is feasible in 88.9%/91.7%/90.5%. Projection is also 100% feasible.
+
+**(ii) Constraints buy admissibility, not accuracy.** All four methods are within 1.1–2.1° rotation and 9–40 mm translation. ALM is not more accurate than projection (translation 37.66 vs 30.80 mm on LM, 38.14 vs 31.29 mm on LM-O, 25.18 vs 8.93 mm on YCB-Video). This is the same conclusion as the synthetic tables and the honest warning of §5.1.5.
+
+**(iii) Real certification is upper-bounded and dataset-dependent.** The one-sided ALM rates are 33.3% [24.5,43.6] (LM), 30.6% [21.1,42.0] (LM-O), 33.3% [24.2,43.9] (YCB-Video); the two-sided rates are 18.9%, 12.5%, 9.5%. The zero-dimensional RLT cuts do **not** give a reproducible real gain: LM 33.3→31.1 (McNemar $p=0.85$), LM-O 30.6→33.3 ($p=0.86$), YCB 33.3→23.8 ($p=0.15$, worse); on the two-sided test RLT is worse everywhere (18.9→14.4, 12.5→4.2, 9.5→6.0). We therefore report RLT on real data as a **negative result**, not as an improvement.
+
+**(iv) The stored real-data certificate flag is one-sided.** It tests `feasible and J − Shor <= 1e-6`, does not log $\lambda_2/\lambda_1$ or the SDP status, and accepts negative gaps. On the scaled runs 19–27% of base ALM rows have negative gaps, and the two-sided rates are 9.5–18.9%. The rates in Table 5.10 are therefore **upper bounds**; a rigorous real-data certificate needs the dual-feasible repair (`repair_dual`) and is the first-class open item for the revision. The earlier n=18/12 numbers (50%/22%/83%) are superseded by this table.
+
+### 5.6 What is not in this draft (pending)
+
+The following are deliberately excluded, and no claim in §1–§4 depends on them:
+
+* **YCB-Video RLT.** YCB-Video was rerun with RLT at n=84: one-sided 33.3→23.8, two-sided 9.5→6.0 (worse; McNemar $p=0.15$). RLT is a documented negative result on real data.
+* **Exact QPEP inner enumerator (40 roots).** A total-degree homotopy enumerator now validates the generic 40-projective/80-affine count; the P2 reduced matrix is degenerate (rank 9) with only 15–16 real geometric roots, and the exact global minimum matches a 256-start multistart (gaps $\le10^{-17}$) at 2–3 s vs 26 ms. The ALM end-to-end exact-inner table is still unfinished; the default remains multistart.
+* **Higher-order RLT and other tightening.** Zero-dimensional cuts plus a sound bound-RLT/dual-repair family certify 16/16 synthetic noise instances (max gap $2.28\times10^{-8}$); a real-data rigorous rerun is still pending. The LM-O plane-only instances (6) remain uncertified.
+* **Learned and convex-layer baselines.** SDPRLayers (unconstrained and with $p$ slacks), Theseus, and dQP with an SCP outer loop are not run in this draft; §5 contains no comparison against a learned perception pipeline.
+* **End-to-end training.** The T1-network, T2 and T3 protocols of §5.1.4 (ADD(-S), penetration on real frames, KITTI/TUM/UTIAS) are stated but not run.
+* **Backward pass and latency decomposition.** Only the forward solve is timed; the FB backward pass, the assembly/inner/certificate split and the ablations of §4.6 — Gauss–Newton versus exact Hessian, FB $\varepsilon$, certificate on/off, inner solver — are not measured.
+* **Verified dual bound.** The synthetic margins are SCS-level (§5.4); a rigorous certificate needs the dual-feasible repair of §4.6 (G3), and the real-data flag needs a two-sided test (§5.5).
+* **Real-data scale-up.** The real tables now use n=90/72/84; the Wilson intervals are in Table 5.10. RLT deltas are not significant at these sizes and are reported as negative.
+
+The production layer (`torch.autograd.Function` plus a reference NumPy implementation) is not part of this draft's artifacts; the experiments here run the research implementation under `experiments/code/`. All result files, the aggregation script and the figure script are under `experiments/results/`; the sanity-check scripts and outputs are under `verify/`.
 
 ---
 
