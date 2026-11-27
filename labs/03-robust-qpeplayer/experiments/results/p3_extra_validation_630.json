@@ -1,0 +1,18 @@
+{
+  "total_accepted": 700,
+  "prior_accepted": 70,
+  "new_accepted": 630,
+  "breakdown": {
+    "anisotropic": 550,
+    "theseus_real": 40,
+    "learned_refine": 40
+  },
+  "prior_source": "experiments/rounds_2026-11-27.md rows 73-142",
+  "new_source": [
+    "experiments/phase5/anisotropic_grid/results/ledger.jsonl",
+    "experiments/real/theseus/results/theseus_real.json",
+    "experiments/e2e_torch/results/phase5_p40/e2e_torch.json",
+    "experiments/e2e_torch/results/phase5_p70/e2e_torch.json"
+  ],
+  "budget_note": "Extra validation units, NOT accepted rounds under the corrected 140-round budget."
+}

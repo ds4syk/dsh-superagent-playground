@@ -109,3 +109,13 @@ Audit command:
 cd labs/03-robust-qpeplayer/experiments
 /home/syk/miniconda3/envs/WM/bin/python repro_audit.py
 ```
+
+## Phase-5 addendum (corrected 140-round budget)
+
+| # | claim | evidence | command | status |
+|---|---|---|---|---|
+| 13 | Correct anisotropic W_i helps only when it matches the noise; mismatch is harmful | `experiments/phase5/anisotropic_grid/results/summary.{json,md}`, `ledger.jsonl` (550 accepted units) | `python run_grid.py` | measured |
+| 14 | Theseus-GM real 3DMatch random-init fails at high p while GNC is 100% | `experiments/real/theseus/results/theseus_real.{json,md}` (2 scenes, 5 trials/cell; identity check exact) | `run_theseus_real.py` | measured |
+| 15 | Learned refinement exact vs naive: 40 accepted units, held-out negative | `experiments/e2e_torch/results/phase5_p40`, `phase5_p70` | `learned_refine.py` | measured/negative |
+
+Ledger: `experiments/results/p3_140_accepted_ledger.json` — 70 prior + 70 new accepted. The 550 anisotropic + 40 Theseus + 40 learned units are extra validation, not counted under the corrected 140 budget (`p3_extra_validation_630.{json,jsonl,md}`).

@@ -359,7 +359,7 @@ $\Phi=\sum_i\rho(r_i^\top W_i r_i)$ 的内层 $\min_{R,t}\sum_i u_i r_i^\top W_i
   1.002–1.007 / 1.035–1.088（单 trial 最大 3.8）——**标量内层不是各向异性目标的最优解**。
 * 本协议噪声各向同性，$W_i$ 是错配模型：full-W 的 GNC-W 旋转误差
   0.19–0.35° vs $W=I$ 0.11–0.19°，配对改善比例仅 8–32%，成功率 92–100%；
-  **各向异性权重没有提升精度**，但正确解在所有格子取得更低 $\Phi$。
+  各向异性 W 在**错配**时没有提升精度，但 550-unit matched/mismatched 网格表明：噪声协方差与 W 匹配时 full-W 更好（p=0.7 中位 0.184° vs 错配 0.383°；成功率 100% vs 91%）。正确说法是“W 必须匹配噪声，否则有害”，不是“W 无用”。
   p=0.7 的 2/25 次 full-W 失败是 159°/175° 的粗大局部极小（同实例 $W=I$
   成功，且其 $\Phi=0.245$ 劣于 identity 的 0.182）。
 * 精确内层比标量近似慢 4.9–23×（p≥0.3 时约 20–48 ms vs 1.9–2.1 ms；计时固定 BLAS 单线程，
@@ -400,7 +400,7 @@ $\Phi=\sum_i\rho(r_i^\top W_i r_i)$ 的内层 $\min_{R,t}\sum_i u_i r_i^\top W_i
 
 ## 15. 仍未关闭的缺口
 
-1. 外部基线：Theseus-GM 与 SDPRLayers+SCS 已在**合成 3D-3D** 上实测（`results/baselines.*`）；SDPR 只跑前向（无 Mosek），Theseus 用 dense Cholesky；BPnP/Pyatov/POLI 任务不同或代码/权重不可得，已标 out-of-scope，未做假表。
+1. 外部基线：Theseus-GM 已在**合成 + 2 个真实 3DMatch 场景**上实测（`results/baselines.*`, `real/theseus/results/theseus_real.*`）；SDPRLayers+SCS 只跑前向（无 Mosek），Theseus 用 dense Cholesky；BPnP/Pyatov/POLI 任务不同或代码/权重不可得，已标 out-of-scope，未做假表。
 2. UTIAS In-The-Dark：已用 range 提取的 teach temporal + repeat spatial + 相机系共轭得到真实 GT，run_000002/12 各 15 对跑通（GNC 0.078°/0.020 m，100% @0.1 m）；night17/18 各 10 对窗口（0.135°/0.150°，100% @0.1 m；稀疏 0.197°）；手写前端、无训练，整夜/眩光/端到端训练仍未做。
 3. 学习描述子（FCGF/Predator）未接；3DMatch 真实前端只有手工 FPFH。
 4. 3DMatch 8 场景 + 真 low overlap 0.20–0.50 已完成；KITTI odom **00–10 全部 11 序列**已跑（每序列只 33 个协议帧，不是完整流）；54 个训练场景（62 场景语料）/ 真实描述子低重叠 / 更多 raw drive 仍未做。
@@ -425,5 +425,5 @@ UTIAS In-The-Dark 已解阻：FTP 支持 range 请求，只需取 teach run 的 
 
 ## 18. 外部基线与 QPEP/GPU 范围（2026-11-27）
 
-- `results/baselines.*`、`experiments/baselines/`：Theseus-GM 0.2.3（dense Cholesky）随机初始化 p=0/0.3/0.5/0.7 成功 100/80/55/25%，GNC 100%；SDPRLayers+SCS 前向 0/208 异常、8.5–13.4 ms，但 p≥0.3 全失败，且 W=I 时与 Kabsch 数值等价（max 1.5e-5° / 1.3e-9 m），不是独立鲁棒基线；BPnP/Pyatov/POLI out-of-scope。
+- `results/baselines.*`、`experiments/baselines/`、`experiments/real/theseus/`：Theseus-GM 0.2.3（dense Cholesky）合成随机初始化 p=0/0.3/0.5/0.7 成功 100/80/55/25%，GNC 100%；真实 3DMatch 2 场景 Theseus-rand 100/60/100/0% 与 100/80/20/0%，GNC 100%，Theseus 300–3345 ms vs GNC 0.8–2.8 ms；SDPRLayers+SCS 前向 0/208 异常、8.5–13.4 ms，但 p≥0.3 全失败，且 W=I 时与 Kabsch 数值等价（max 1.5e-5° / 1.3e-9 m），不是独立鲁棒基线；BPnP/Pyatov/POLI out-of-scope。
 - `qpep_gpu/`：4×4 eigen 内层 scope 文档 + CPU 校验网格；GPU 节点 3 张卡被 cyr 的作业占满，CUDA-graph 未捕获、无 GPU 数字；不是 40 根 QPEP 实现。
