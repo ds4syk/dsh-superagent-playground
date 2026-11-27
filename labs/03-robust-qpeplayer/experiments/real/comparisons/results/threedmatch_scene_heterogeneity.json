@@ -1,0 +1,58 @@
+{
+  "7-scenes-redkitchen": {
+    "random70_gnc": 1.0,
+    "random70_ransac": 1.0,
+    "random70_gnc_rot": 0.23733549275207338,
+    "random70_ransac_rot": 0.29234782794139297,
+    "speedup70": 28.138926460496315,
+    "boundary70_gnc_rot": 0.2521537220628683,
+    "boundary70_ransac_rot": 0.7391733754742709,
+    "coherent50": {
+      "GNC-GM": 0.3,
+      "IRLS-GM": 0.4,
+      "RANSAC-1000": 1.0
+    }
+  },
+  "sun3d-home_at-home_at_scan1_2013_jan_1": {
+    "random70_gnc": 1.0,
+    "random70_ransac": 1.0,
+    "random70_gnc_rot": 0.21200729838769816,
+    "random70_ransac_rot": 0.23014841825273166,
+    "speedup70": 27.077006803256666,
+    "boundary70_gnc_rot": 0.2508574010706998,
+    "boundary70_ransac_rot": 0.602240449930221,
+    "coherent50": {
+      "GNC-GM": 0.65,
+      "IRLS-GM": 0.4,
+      "RANSAC-1000": 1.0
+    }
+  },
+  "sun3d-home_md-home_md_scan9_2012_sep_30": {
+    "random70_gnc": 1.0,
+    "random70_ransac": 1.0,
+    "random70_gnc_rot": 0.5179438307503347,
+    "random70_ransac_rot": 0.5738167294015055,
+    "speedup70": 29.588955282519745,
+    "boundary70_gnc_rot": 0.44021235261989144,
+    "boundary70_ransac_rot": 0.9188887570453717,
+    "coherent50": {
+      "GNC-GM": 0.5,
+      "IRLS-GM": 0.55,
+      "RANSAC-1000": 1.0
+    }
+  },
+  "sun3d-hotel_uc-scan3": {
+    "random70_gnc": 1.0,
+    "random70_ransac": 1.0,
+    "random70_gnc_rot": 0.28420064554201463,
+    "random70_ransac_rot": 0.2794809637577803,
+    "speedup70": 27.399870293425074,
+    "boundary70_gnc_rot": 0.3067228938403626,
+    "boundary70_ransac_rot": 0.5170354989122231,
+    "coherent50": {
+      "GNC-GM": 0.7,
+      "IRLS-GM": 0.25,
+      "RANSAC-1000": 1.0
+    }
+  }
+}

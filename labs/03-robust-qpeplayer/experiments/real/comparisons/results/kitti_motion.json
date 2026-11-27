@@ -1,0 +1,7 @@
+{
+  "motion_median_m": {
+    "drive_0001": 1.9409999707296015,
+    "drive_0002": 1.542229806858971
+  },
+  "note": "KITTI raw per-trial JSON does not store pair id; motion bins are per drive, not per trial."
+}

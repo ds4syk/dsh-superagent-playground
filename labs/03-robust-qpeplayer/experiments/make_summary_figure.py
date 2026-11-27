@@ -22,8 +22,11 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 SYN = HERE / "synthetic/results/main_table_extended.json"
 MODELNET = HERE / "real/modelnet/results/main_table.json"
+MODELNET10 = HERE / "real/modelnet10/results/main_table.json"
 THREEDMATCH = HERE / "real/threedmatch/results/threedmatch.json"
+THREEDMATCH_EXTRA = HERE / "real/threedmatch_extra/results/extra_scenes.json"
 KITTI = HERE / "real/kitti/results/kitti.json"
+KITTI2 = HERE / "real/kitti2/results/kitti2.json"
 GRAD = HERE / "synthetic/results/gradient_table.json"
 OUT = HERE / "p3_summary.png"
 
@@ -40,8 +43,9 @@ def main():
     syn = json.loads(SYN.read_text())["rows"]
     grad = json.loads(GRAD.read_text())
     mn = json.loads(MODELNET.read_text())
-    tm = json.loads(THREEDMATCH.read_text())["rows"]
-    kit = json.loads(KITTI.read_text())["rows"]
+    mn10 = json.loads(MODELNET10.read_text())
+    tm = json.loads(THREEDMATCH.read_text())["rows"] + json.loads(THREEDMATCH_EXTRA.read_text())["rows"]
+    kit = json.loads(KITTI.read_text())["rows"] + json.loads(KITTI2.read_text())["rows"]
 
     fig, ax = plt.subplots(2, 2, figsize=(13, 8.2))
     colors = {"random": "tab:red", "coherent": "tab:orange", "boundary": "tab:blue"}
@@ -65,9 +69,11 @@ def main():
                 and r["method"] == "GNC-GM" and abs(r["p"] - p) < 1e-9]
         tm_gnc.append(100 * np.mean(vals))
     kt_gnc = [100 * row(kit, outlier_type="random", method="GNC-GM", p=p)["success"] for p in P]
+    mn10_gnc = [100 * row(mn10, method="GNC-GM (ours)", p=p)["success"] for p in P]
     for name, ys, c in [("ModelNet40", mn_gnc, "tab:green"),
-                        ("3DMatch (2 scenes)", tm_gnc, "tab:purple"),
-                        ("KITTI drive 0001", kt_gnc, "tab:brown")]:
+                        ("ModelNet10", mn10_gnc, "tab:olive"),
+                        ("3DMatch (4 scenes)", tm_gnc, "tab:purple"),
+                        ("KITTI (2 drives)", kt_gnc, "tab:brown")]:
         ax[0, 1].plot([100 * p for p in P], ys, "o-", color=c, label=name, lw=1.8)
     ax[0, 1].set_title("Real data GNC-GM: random-outlier success")
     ax[0, 1].set_xlabel("outlier fraction (%)")
@@ -92,8 +98,8 @@ def main():
     ax[1, 0].legend(fontsize=8)
 
     for name, rows, pc, color in [("synthetic", syn, "outlier_type", "tab:red"),
-                                  ("3DMatch", tm, "outlier_type", "tab:purple"),
-                                  ("KITTI", kit, "outlier_type", "tab:brown")]:
+                                  ("3DMatch (4 scenes)", tm, "outlier_type", "tab:purple"),
+                                  ("KITTI (2 drives)", kit, "outlier_type", "tab:brown")]:
         g = [row(rows, **{pc: "random"}, method="GNC-GM", p=p)["time_ms_p50"] for p in P]
         f = [row(rows, **{pc: "random"}, method="RANSAC-1000", p=p)["time_ms_p50"] for p in P]
         ax[1, 1].semilogy([100 * p for p in P], np.array(f) / np.array(g), "o-",
@@ -106,7 +112,10 @@ def main():
     ax[1, 1].legend(fontsize=8)
 
     fig.suptitle("Robust-QPEPLayer (P3): measured 3D-3D evidence, 2026-11-27", fontsize=13)
-    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    fig.text(0.5, 0.01, "Real stereo fallback (KITTI raw, 30 pairs): rot 0.052°, trans 0.70 m, 0% @0.1 m; "
+             "GNC 19.3× faster than RANSAC-1000 — translation is front-end bound.",
+             ha="center", fontsize=8, color="0.3")
+    fig.tight_layout(rect=(0, 0.035, 1, 0.96))
     fig.savefig(OUT, dpi=170)
     print("wrote", OUT)
 

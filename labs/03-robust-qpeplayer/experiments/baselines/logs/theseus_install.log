@@ -1,0 +1,127 @@
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+torch 2.11.0+cu128 requires setuptools<82, but you have setuptools 84.2.1 which is incompatible.
+Collecting theseus-ai
+  Downloading theseus_ai-0.2.3-cp310-cp310-manylinux_2_17_x86_64.whl.metadata (13 kB)
+Requirement already satisfied: numpy>=1.19.2 in /home/syk/miniconda3/envs/WM/lib/python3.10/site-packages (from theseus-ai) (2.2.6)
+Requirement already satisfied: scipy>=1.5.3 in /home/syk/miniconda3/envs/WM/lib/python3.10/site-packages (from theseus-ai) (1.15.3)
+Collecting scikit-sparse>=0.4.11 (from theseus-ai)
+  Downloading scikit_sparse-0.5.1.tar.gz (107 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting pytest>=6.2.1 (from theseus-ai)
+  Using cached pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+Collecting pybind11>=2.7.1 (from theseus-ai)
+  Using cached pybind11-3.1.0-py3-none-any.whl.metadata (10 kB)
+Collecting semantic-version==2.10.0 (from theseus-ai)
+  Using cached semantic_version-2.10.0-py2.py3-none-any.whl.metadata (9.7 kB)
+Collecting torchlie (from theseus-ai)
+  Using cached torchlie-0.1.0-py3-none-any.whl.metadata (8.5 kB)
+Collecting torchkin (from theseus-ai)
+  Using cached torchkin-0.1.1-py3-none-any.whl.metadata (6.1 kB)
+Requirement already satisfied: exceptiongroup>=1 in /home/syk/miniconda3/envs/WM/lib/python3.10/site-packages (from pytest>=6.2.1->theseus-ai) (1.3.1)
+Collecting iniconfig>=2 (from pytest>=6.2.1->theseus-ai)
+  Using cached iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+Requirement already satisfied: packaging>=24 in /home/syk/miniconda3/envs/WM/lib/python3.10/site-packages (from pytest>=6.2.1->theseus-ai) (26.3)
+Collecting pluggy<2,>=1.6 (from pytest>=6.2.1->theseus-ai)
+  Using cached pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+Collecting pygments>=2.15 (from pytest>=6.2.1->theseus-ai)
+  Using cached pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting tomli>=2 (from pytest>=6.2.1->theseus-ai)
+  Using cached tomli-2.5.0-py3-none-any.whl.metadata (10 kB)
+Requirement already satisfied: typing-extensions>=4.6.0 in /home/syk/miniconda3/envs/WM/lib/python3.10/site-packages (from exceptiongroup>=1->pytest>=6.2.1->theseus-ai) (4.16.0)
+Collecting urdf-parser-py>=0.0.4 (from torchkin->theseus-ai)
+  Using cached urdf_parser_py-0.0.4.tar.gz (12 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: pyyaml in /home/syk/miniconda3/envs/WM/lib/python3.10/site-packages (from urdf-parser-py>=0.0.4->torchkin->theseus-ai) (6.0.3)
+Collecting lxml (from urdf-parser-py>=0.0.4->torchkin->theseus-ai)
+  Using cached lxml-6.1.3-cp310-cp310-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (3.3 kB)
+Downloading theseus_ai-0.2.3-cp310-cp310-manylinux_2_17_x86_64.whl (7.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.3/7.3 MB 16.1 MB/s  0:00:00
+Using cached semantic_version-2.10.0-py2.py3-none-any.whl (15 kB)
+Using cached pybind11-3.1.0-py3-none-any.whl (319 kB)
+Using cached pytest-9.2.0-py3-none-any.whl (411 kB)
+Using cached pluggy-1.7.0-py3-none-any.whl (27 kB)
+Using cached iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+Using cached tomli-2.5.0-py3-none-any.whl (14 kB)
+Using cached torchkin-0.1.1-py3-none-any.whl (10 kB)
+Using cached lxml-6.1.3-cp310-cp310-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (5.3 MB)
+Using cached torchlie-0.1.0-py3-none-any.whl (28 kB)
+Building wheels for collected packages: scikit-sparse, urdf-parser-py
+  Building wheel for scikit-sparse (pyproject.toml): started
+  Building wheel for scikit-sparse (pyproject.toml): finished with status 'error'
+  error: subprocess-exited-with-error
+  
+  × Building wheel for scikit-sparse (pyproject.toml) did not run successfully.
+  │ exit code: 1
+  ╰─> [47 lines of output]
+      running bdist_wheel
+      running build
+      running build_py
+      creating build/lib.linux-x86_64-cpython-310/sksparse
+      copying src/sksparse/__init__.py -> build/lib.linux-x86_64-cpython-310/sksparse
+      copying src/sksparse/utils.py -> build/lib.linux-x86_64-cpython-310/sksparse
+      running egg_info
+      writing src/scikit_sparse.egg-info/PKG-INFO
+      writing dependency_links to src/scikit_sparse.egg-info/dependency_links.txt
+      writing requirements to src/scikit_sparse.egg-info/requires.txt
+      writing top-level names to src/scikit_sparse.egg-info/top_level.txt
+      reading manifest file 'src/scikit_sparse.egg-info/SOURCES.txt'
+      reading manifest template 'MANIFEST.in'
+      warning: no files found matching '*.c' under directory 'src/sksparse'
+      warning: no files found matching '*.cpp' under directory 'src/sksparse'
+      no previously-included directories found matching 'tests'
+      warning: manifest_maker: MANIFEST.in, line 5: 'prune' expects a single <dir_pattern>
+      
+      no previously-included directories found matching '*.egg-info'
+      adding license file 'LICENSE.txt'
+      writing manifest file 'src/scikit_sparse.egg-info/SOURCES.txt'
+      copying src/sksparse/amd.pxd -> build/lib.linux-x86_64-cpython-310/sksparse
+      copying src/sksparse/btf.pxd -> build/lib.linux-x86_64-cpython-310/sksparse
+      copying src/sksparse/camd.pxd -> build/lib.linux-x86_64-cpython-310/sksparse
+      copying src/sksparse/ccolamd.pxd -> build/lib.linux-x86_64-cpython-310/sksparse
+      copying src/sksparse/cholmod.pxd -> build/lib.linux-x86_64-cpython-310/sksparse
+      copying src/sksparse/colamd.pxd -> build/lib.linux-x86_64-cpython-310/sksparse
+      copying src/sksparse/klu.pxd -> build/lib.linux-x86_64-cpython-310/sksparse
+      copying src/sksparse/spqr.pxd -> build/lib.linux-x86_64-cpython-310/sksparse
+      copying src/sksparse/umfpack.pxd -> build/lib.linux-x86_64-cpython-310/sksparse
+      running build_ext
+      Compiling src/sksparse/cholmod.pyx because it changed.
+      [1/1] Cythonizing src/sksparse/cholmod.pyx
+      building 'sksparse.cholmod' extension
+      gcc -pthread -B /home/syk/miniconda3/envs/WM/compiler_compat -Wno-unused-result -Wsign-compare -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/syk/miniconda3/envs/WM/include -fPIC -O2 -isystem /home/syk/miniconda3/envs/WM/include -fPIC -I/tmp/pip-build-env-6uzfk5m9/overlay/lib/python3.10/site-packages/numpy/_core/include -I/mnt/storage1/syk/venvs/theseus/include -I/usr/include/suitesparse -I/mnt/storage1/syk/venvs/theseus/include -I/home/syk/miniconda3/envs/WM/include/python3.10 -c src/sksparse/cholmod.c -o build/temp.linux-x86_64-cpython-310/src/sksparse/cholmod.o
+      In file included from /tmp/pip-build-env-6uzfk5m9/overlay/lib/python3.10/site-packages/numpy/_core/include/numpy/ndarraytypes.h:1913,
+                       from /tmp/pip-build-env-6uzfk5m9/overlay/lib/python3.10/site-packages/numpy/_core/include/numpy/ndarrayobject.h:12,
+                       from /tmp/pip-build-env-6uzfk5m9/overlay/lib/python3.10/site-packages/numpy/_core/include/numpy/arrayobject.h:5,
+                       from src/sksparse/cholmod.c:1305:
+      /tmp/pip-build-env-6uzfk5m9/overlay/lib/python3.10/site-packages/numpy/_core/include/numpy/npy_1_7_deprecated_api.h:17:2: warning: #warning "Using deprecated NumPy API, disable it with " "#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION" [-Wcpp]
+         17 | #warning "Using deprecated NumPy API, disable it with " \
+            |  ^~~~~~~
+      src/sksparse/cholmod.c:1310:10: fatal error: cholmod.h: 没有那个文件或目录
+       1310 | #include "cholmod.h"
+            |          ^~~~~~~~~~~
+      compilation terminated.
+      error: Command '['gcc', '-pthread', '-B', '/home/syk/miniconda3/envs/WM/compiler_compat', '-Wno-unused-result', '-Wsign-compare', '-DNDEBUG', '-fwrapv', '-O2', '-Wall', '-fPIC', '-O2', '-isystem', '/home/syk/miniconda3/envs/WM/include', '-fPIC', '-O2', '-isystem', '/home/syk/miniconda3/envs/WM/include', '-fPIC', '-I/tmp/pip-build-env-6uzfk5m9/overlay/lib/python3.10/site-packages/numpy/_core/include', '-I/mnt/storage1/syk/venvs/theseus/include', '-I/usr/include/suitesparse', '-I/mnt/storage1/syk/venvs/theseus/include', '-I/home/syk/miniconda3/envs/WM/include/python3.10', '-c', 'src/sksparse/cholmod.c', '-o', 'build/temp.linux-x86_64-cpython-310/src/sksparse/cholmod.o']' returned non-zero exit status 1.
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  ERROR: Failed building wheel for scikit-sparse
+  Building wheel for urdf-parser-py (pyproject.toml): started
+  Building wheel for urdf-parser-py (pyproject.toml): finished with status 'done'
+  Created wheel for urdf-parser-py: filename=urdf_parser_py-0.0.4-py3-none-any.whl size=14588 sha256=6bcffd24046fdb20182d94c02dedbafb822bb5583cd7c8ad6817240af807e9df
+  Stored in directory: /home/syk/.cache/pip/wheels/09/0d/9f/f0e2fb2ae580623b840d041d4aab0a9df02f5047f283f4ecd1
+Successfully built urdf-parser-py
+Failed to build scikit-sparse
+error: failed-wheel-build-for-install
+
+× Failed to build installable wheels for some pyproject.toml based projects
+╰─> scikit-sparse

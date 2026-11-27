@@ -391,3 +391,13 @@ $\Phi=\sum_i\rho(r_i^\top W_i r_i)$ 的内层 $\min_{R,t}\sum_i u_i r_i^\top W_i
 3. 学习描述子（FCGF/Predator）未接；3DMatch 真实前端只有手工 FPFH。
 4. 3DMatch 全 50 场景 / 低重叠长基线、KITTI sequences 00–10 / 多 drive 未做。
 5. 完整 40 根 QPEP 多项式求解器、根完备性/失败率、GPU 批处理未做。
+
+### 12.1 真实立体前端回退（2026-11-27，`real/kitti_stereo/`）
+
+UTIAS In-The-Dark 官方 FTP 实测 **14 KB/s** 单流 / ~34 KB/s 8 路并发，最小 run 590 MB，ETA 11.7–17.4 h；只拿到 1.6 MB 无效 partial zip。因此用 KITTI raw drive 0001 的校正立体图像做回退实验（SIFT + sub-pixel + StereoSGBM，30 对，b=0.5327 m），**不是** In-The-Dark，也**不是** SDPR 的 VGG/UNet 前端：
+
+- 自然内点率 17.8% @ c=0.5 m，中位 890 对/帧对。
+- 旋转：GNC/IRLS 中位 **0.052°**（GT-inlier floor 0.071°）——鲁棒层能解旋转。
+- 平移：GNC 中位 **0.70 m** vs 帧间运动 1.92 m，GT-inlier floor 0.239 m；**所有方法 0% @0.1 m，0% @0.25 m**。立体 vs LiDAR 深度比 1.000–1.061（3–60 m），排除尺度 bug；误差是前向平移系统偏差（0.63–0.73），瓶颈在前端/遮挡/动态，不在优化器。
+- 运行时：GNC 4.21 ms vs RANSAC-1000 81.3 ms（19.3×）。
+- 结论：这是“旋转可解、平移被前端限制”的负结果；不能替代 In-The-Dark 端到端训练。

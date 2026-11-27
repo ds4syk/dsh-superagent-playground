@@ -1,0 +1,172 @@
+{
+  "drive_0001": {
+    "random_p0.0": {
+      "gnc_success": 1.0,
+      "ransac_success": 1.0,
+      "gnc_rot": 0.03005277759779791,
+      "ransac_rot": 0.03950810449454261,
+      "gnc_ms": 0.939464895054698,
+      "ransac_ms": 61.20410142466426,
+      "adaptive_ms": 0.6169844418764114,
+      "speedup_vs_1000": 65.14783228925313
+    },
+    "random_p0.3": {
+      "gnc_success": 1.0,
+      "ransac_success": 1.0,
+      "gnc_rot": 0.036443120023783505,
+      "ransac_rot": 0.043066410250172715,
+      "gnc_ms": 2.77840462513268,
+      "ransac_ms": 62.55852687172592,
+      "adaptive_ms": 1.9072035793215036,
+      "speedup_vs_1000": 22.51598860217795
+    },
+    "random_p0.5": {
+      "gnc_success": 1.0,
+      "ransac_success": 1.0,
+      "gnc_rot": 0.036469350360152857,
+      "ransac_rot": 0.04824908179194583,
+      "gnc_ms": 2.7912724763154984,
+      "ransac_ms": 61.60380155779421,
+      "adaptive_ms": 5.6398415472358465,
+      "speedup_vs_1000": 22.070149754463138
+    },
+    "random_p0.7": {
+      "gnc_success": 1.0,
+      "ransac_success": 1.0,
+      "gnc_rot": 0.060201260834662707,
+      "ransac_rot": 0.05858372280853233,
+      "gnc_ms": 2.7536831330507994,
+      "ransac_ms": 61.05765397660434,
+      "adaptive_ms": 25.752225425094366,
+      "speedup_vs_1000": 22.173086381568783
+    },
+    "coherent_p0.4": {
+      "RANSAC-1000": 1.0,
+      "IRLS-GM": 1.0,
+      "GNC-GM": 1.0
+    },
+    "coherent_p0.5": {
+      "RANSAC-1000": 0.0,
+      "IRLS-GM": 0.45,
+      "GNC-GM": 0.35
+    },
+    "coherent_p0.6": {
+      "RANSAC-1000": 0.0,
+      "IRLS-GM": 0.0,
+      "GNC-GM": 0.0
+    },
+    "boundary_p0.5": {
+      "RANSAC-1000": {
+        "success": 1.0,
+        "rot": 0.0781995560738997
+      },
+      "IRLS-GM": {
+        "success": 1.0,
+        "rot": 0.04307221350553501
+      },
+      "GNC-GM": {
+        "success": 1.0,
+        "rot": 0.043070535720983086
+      }
+    },
+    "boundary_p0.7": {
+      "RANSAC-1000": {
+        "success": 1.0,
+        "rot": 0.13798736197889827
+      },
+      "IRLS-GM": {
+        "success": 1.0,
+        "rot": 0.06996273119447191
+      },
+      "GNC-GM": {
+        "success": 1.0,
+        "rot": 0.06990431115597767
+      }
+    }
+  },
+  "drive_0002": {
+    "random_p0.0": {
+      "gnc_success": 1.0,
+      "ransac_success": 1.0,
+      "gnc_rot": 0.039155998302094375,
+      "ransac_rot": 0.04610764317280187,
+      "gnc_ms": 0.9521809406578541,
+      "ransac_ms": 61.94978696294129,
+      "adaptive_ms": 0.6740780081599951,
+      "speedup_vs_1000": 65.0609399093209
+    },
+    "random_p0.3": {
+      "gnc_success": 1.0,
+      "ransac_success": 1.0,
+      "gnc_rot": 0.044841762475537374,
+      "ransac_rot": 0.053444674333640765,
+      "gnc_ms": 4.139119992032647,
+      "ransac_ms": 85.96628252416849,
+      "adaptive_ms": 3.0682850629091263,
+      "speedup_vs_1000": 20.76921729489461
+    },
+    "random_p0.5": {
+      "gnc_success": 1.0,
+      "ransac_success": 1.0,
+      "gnc_rot": 0.046541903401777204,
+      "ransac_rot": 0.04109064136216063,
+      "gnc_ms": 5.014780908823013,
+      "ransac_ms": 118.13297006301582,
+      "adaptive_ms": 10.772662004455924,
+      "speedup_vs_1000": 23.55695537070672
+    },
+    "random_p0.7": {
+      "gnc_success": 1.0,
+      "ransac_success": 1.0,
+      "gnc_rot": 0.053698903140612014,
+      "ransac_rot": 0.0661418513525141,
+      "gnc_ms": 4.966011270880699,
+      "ransac_ms": 115.51789287477732,
+      "adaptive_ms": 48.21908683516085,
+      "speedup_vs_1000": 23.26170573799176
+    },
+    "coherent_p0.4": {
+      "RANSAC-1000": 1.0,
+      "IRLS-GM": 1.0,
+      "GNC-GM": 1.0
+    },
+    "coherent_p0.5": {
+      "RANSAC-1000": 0.0,
+      "IRLS-GM": 0.3,
+      "GNC-GM": 0.4
+    },
+    "coherent_p0.6": {
+      "RANSAC-1000": 0.0,
+      "IRLS-GM": 0.05,
+      "GNC-GM": 0.0
+    },
+    "boundary_p0.5": {
+      "RANSAC-1000": {
+        "success": 1.0,
+        "rot": 0.0825791051066147
+      },
+      "IRLS-GM": {
+        "success": 1.0,
+        "rot": 0.05058741765869883
+      },
+      "GNC-GM": {
+        "success": 1.0,
+        "rot": 0.05058931106840301
+      }
+    },
+    "boundary_p0.7": {
+      "RANSAC-1000": {
+        "success": 1.0,
+        "rot": 0.1602835726825843
+      },
+      "IRLS-GM": {
+        "success": 1.0,
+        "rot": 0.0923109108771502
+      },
+      "GNC-GM": {
+        "success": 1.0,
+        "rot": 0.09230180259754092
+      }
+    }
+  }
+}

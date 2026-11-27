@@ -162,7 +162,8 @@ def main():
                     dt = time.perf_counter() - t0
                     re, te = cm.pose_errors(R, t, base["Rgt"], base["tgt"])
                     rec = dict(p=p, outlier_type=otype, trial=trial, method=name,
-                               pair=f"{b['i']}-{b['j']}", base_inlier=base_in,
+                               pair=f"{b['i']}-{b['j']}", motion_m=float(np.linalg.norm(base["tgt"])),
+                               base_inlier=base_in,
                                success=cm.success(re, te), rot=re, trans=te,
                                time_ms=1000.0 * dt,
                                ransac_iters=info.get("n_iters"),
