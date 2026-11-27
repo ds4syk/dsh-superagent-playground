@@ -1,0 +1,15 @@
+srun: job 3148 queued and waiting for resources
+srun: job 3148 has been allocated resources
+deterministic (non-timing): True
+checks: 10 / 10 passed
+PASS random: all four robust methods 100% success for p=0.1..0.7
+PASS random: Kabsch collapses once p>=0.1 (success <=15%)
+PASS random: GNC approx. 20x faster than fixed 1000-iteration RANSAC
+PASS random: robust methods keep sub-0.1 deg median rotation error
+PASS coherent: majority-outlier regime (p>=0.6) loses the GT pose (<=10% success)
+PASS coherent at p=0.5: GNC/IRLS retain a minority of successes, RANSAC does not
+PASS boundary: 100% success for all methods, all p
+PASS boundary: GNC median rotation error below RANSAC's at p>=0.4
+PASS cross-drive: random/boundary success agrees with drive 0001 to <=10 points in all cells
+PASS cross-drive: coherent p=0.5 GNC success within 10 points of drive 0001
+wrote /mnt/storage1/syk/.superagent-work/wt-p3-kitti2/labs/03-robust-qpeplayer/experiments/real/kitti2/results/kitti2_compare.{json,md,png}
