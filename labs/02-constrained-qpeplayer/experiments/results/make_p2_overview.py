@@ -147,20 +147,25 @@ ax.text(0.98, 0.04, "median at p=64:  unc 103.02 · soft 0.00\n"
 
 # ------------------------------------------------------------------- panel (c)
 ax = axes[2]
+# rigorous JSON uses dataset keys lm/lmo/ycbv while REAL uses linemod/lmo/ycbv
+RIG_KEY = {"linemod": "lm", "lmo": "lmo", "ycbv": "ycbv"}
 rig = {}
 if RIGOROUS.exists():
     rj = json.load(open(RIGOROUS))
     for key in REAL:
-        rc = rig_counts(key, rj)
-        if rc is not None:
-            rig[key] = rc
+        node = rj.get("datasets", {}).get(RIG_KEY[key], {})
+        cfg = node.get("configs", {}) if isinstance(node, dict) else {}
+        if isinstance(cfg, dict) and "base" in cfg and "brlt" in cfg:
+            rig[key] = {c: (int(cfg[c]["cert_schur"]), int(cfg[c]["n"]))
+                        for c in ("base", "brlt") if c in cfg}
 
 keys = list(REAL)
 x = np.arange(len(keys))
-w = 0.26
-slots = [(-w, "one-sided Shor\n(upper bound)", "#9e9e9e"),
-         (0.0, "two-sided |J−Shor|\n(necessary only)", "#2b6cb0"),
-         (+w, "rigorous P2-Cert\n(Schur repair, sound)", "#2e7d32")]
+w = 0.20
+slots = [(-1.5 * w, "one-sided Shor\n(upper bound)", "#9e9e9e"),
+         (-0.5 * w, "two-sided |J−Shor|\n(necessary only)", "#2b6cb0"),
+         (0.5 * w, "rigorous P2-Cert\n(base cuts)", "#66bb6a"),
+         (1.5 * w, "rigorous P2-Cert\n(+bound-RLT)", "#1b5e20")]
 
 ax.axhline(0, color="black", lw=0.6)
 for i, key in enumerate(keys):
@@ -169,29 +174,21 @@ for i, key in enumerate(keys):
     nn = len(alm)
     one = sum(bool(r.get("cert")) for r in alm)
     two = sum(bool(r.get("cert_two_sided")) for r in alm)
-    for off, k in ((-w, one), (0.0, two)):
-        v = 100.0 * k / nn
-        lo, hi = wilson(k, nn)
-        ax.bar(i + off, v, w * 0.92, color=slots[0][2] if off < 0 else slots[1][2],
-               alpha=0.85)
-        ax.errorbar(i + off, v, yerr=[[v - 100 * lo], [100 * hi - v]], fmt="none",
-                    ecolor="black", elinewidth=1.0, capsize=3, zorder=6)
-        ax.text(i + off, 100 * hi + 1.5, f"{v:.0f}%\n({k}/{nn})",
-                ha="center", va="bottom", fontsize=6.8)
+    entries = [(-1.5 * w, one, nn), (-0.5 * w, two, nn)]
     if key in rig:
-        k, nn = rig[key]
-        v = 100.0 * k / nn
-        lo, hi = wilson(k, nn)
-        ax.bar(i + w, v, w * 0.92, color=slots[2][2], alpha=0.85)
-        ax.errorbar(i + w, v, yerr=[[v - 100 * lo], [100 * hi - v]], fmt="none",
-                    ecolor="black", elinewidth=1.0, capsize=3, zorder=6)
-        ax.text(i + w, 100 * hi + 1.5, f"{v:.0f}%\n({k}/{nn})",
-                ha="center", va="bottom", fontsize=6.8)
-    else:
-        ax.bar(i + w, 0, w * 0.92, color="none", edgecolor=slots[2][2],
-               hatch="////", linewidth=0.8)
-        ax.text(i + w, 20, "pending\n(rigorous)", ha="center", va="center",
-                fontsize=6.6, color=slots[2][2])
+        entries += [(0.5 * w, rig[key]["base"][0], rig[key]["base"][1]),
+                    (1.5 * w, rig[key]["brlt"][0], rig[key]["brlt"][1])]
+    for (off, k, n), (_, _, color) in zip(entries, slots):
+        v = 100.0 * k / n
+        lo, hi = wilson(k, n)
+        ax.bar(i + off, v, w * 0.92, color=color, alpha=0.88)
+        ax.errorbar(i + off, v, yerr=[[v - 100 * lo], [100 * hi - v]], fmt="none",
+                    ecolor="black", elinewidth=0.9, capsize=2, zorder=6)
+        ax.text(i + off, min(100 * hi + 1.5, 104), f"{v:.0f}%\n({k}/{n})",
+                ha="center", va="bottom", fontsize=5.6, rotation=0)
+    if key not in rig:
+        ax.text(i + w, 50, "rigorous\npending", ha="center", va="center",
+                fontsize=6.0, color="#1b5e20")
 
 ax.set_xticks(x)
 ax.set_xticklabels([f"{REAL[k][0]}\n(n={len([r for r in json.load(open(REAL[k][1])) if r['method'] == 'ALM-QPEP'])})"
