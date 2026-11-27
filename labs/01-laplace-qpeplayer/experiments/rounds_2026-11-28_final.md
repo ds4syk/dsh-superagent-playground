@@ -30,3 +30,22 @@
 | P3 | EPro-PnP-style 连续采样 + BPnP-style IFT 梯度 | `wt-final-p1-epro` (`final/p1-epro`) | running |
 | P4 | 检测器噪声鲁棒性（σ/外点扫，代理 front-end） | `wt-final-p1-detect` (`final/p1-detect`) | running |
 | P5 | 端到端 toy 训练 + 梯度方差 + 吞吐 | `wt-final-p1-e2e` (`final/p1-e2e`) | running |
+
+## 第二轮（112 轮预算，2026-11-28 05:53 起）— accepted ledger
+
+| Round | 任务 → 交付 | 结果/指标 | 产物 |
+|-|-|-|-|
+| 16 | 论文 40 根更新（11/11） | abstract/§5.3.5/§6 改为 11/11，脚本 80 s | `paper/draft.md` |
+| 17 | 结构化噪声全量（15 帧 × 6 seeds × 16 条件 = 1440 draws，284 s） | 边界偏置粗差最坏：K=2 无 fallback 但 100% >10°、GT-like 60%（"confidently wrong"）；相关不放大（2.24 px 反而更好）；异方差只在尾部（均值 +2.8/+10.9°，失败 38% vs 26%）；iid 结论存活 | `real/linemod/run_structured_noise.py`、`results/structured_noise.*` |
+| 18 | 论文插入 Table 5.21b（12 行）+ 删除 pending 句 + 全文 6 处未测表述 | 0 mismatch 对 JSON；caption 无重复 | `paper/draft.md` |
+| 19 | LINEMOD ADD-S AUC（15 帧，BOP 归一化） | hard **0.940 [0.909,0.964]**、Laplace 0.845 [0.814,0.875]、MC 0.845 [0.816,0.875]；recall@5/10/20/50 = 0.733/0.800/0.933/1.000（hard）；AUC = 1 − mean ADD-S/0.1 精确（1.1e-16） | `run_auc15.py`、`results/auc15.*` |
+| 20 | 论文填 LINEMOD AUC 3 格 + 说明重标定 + claim map | 3 格逐位一致；§5.2/N1/E15 同步 | `paper/draft.md` |
+| 21 | 四头 e2e（hard/Laplace/MC/branch-identified BPnP IFT），20×120，287 s | literal "enumerate+ift_dq" 就是 hard（0.0），不算新基线；bpn 固定分支、tie 处有定义（FD 5.9e-6）；star 25%、63 [26,66]；mix bpn 2.056 vs hard 2.064 | `code/run_e2e_four_heads.py`、`results/e2e_four_heads.*` |
+| 22 | 论文 Table 5.26b + 等价性说明 + 编号修正（5.19→6.1 后回退为 5.19） | 28 captions 0 dup、顺序 5.1–5.26b；Scorer 表移入 §5 | `paper/draft.md` |
+| 23 | 官方 BPnP 梯度重审（cube 代数解 FD + P1 同基重跑） | released backward = 自身 depth-weighted 代数系统 IFT（1.6e-7）；非 geometric/algebraic-LS 的 IFT（17.1%/16.8%）；P1 adaptation 表**撤回**（basis/solve/FD 三缺陷）；同基重跑 released vs 我们 IFT 1.5%/9.4%/30%（cos 0.99988/0.99562/0.96609），我们 IFT vs FD 5e-6/2e-5/3e-4 | `recheck_official_bpnp_gradient.py`、`results/official_bpnp_recheck.json`、`official_bpnp.{md,json}` |
+| 24 | 论文 BPnP 段重写（撤回 match）+ Table 5.24 加 recheck 行 | 摘要/结论/claim map 清掉 "identical/match"；1.8e-15 限定 generating pose | `paper/draft.md` |
+| 25 | LaTeX EN/ZH 同步 v5 + 重编译（tectonic） | EN 21 页、ZH 23 页，exit 0，无 undefined refs/overfull；sQPEP bib 加入；cb3aed2/f1f4f6a 写入 | `paper/latex/{en,zh}` |
+| 26 | 最终 draft 合并：5.21b、AUC 格、BPnP recheck、5.26b、Scorer 表移回 §5（5.19） | 28 表、0 dup、sequential；20/20 paper patterns | `paper/draft.md` |
+| 27 | 最终 LaTeX 同步（5.19/5.21b/5.26b、AUC、BPnP recheck）+ 重编译 | EN 25 页 / ZH 27 页，tectonic exit 0，无 undefined refs；PDF 文本含 0.940、1.5%/9.4%/30%、结构化噪声 | `paper/latex/{en,zh}/main.pdf` |
+| 28 | README 合并（LMO 177 / detector / structured / AUC，§8–§11） | 去重、顺序正确 | `real/linemod/README.md` |
+| 29 | 最终一页图重生成（LMO 177 + official SDPR；修正 0 eggbox/0 glue 与 BPnP cost-identity 错误文案） | 124 个绘制值 0 mismatch；26 项结构检查 0 fail；caption 修正 | `results/final_summary.{png,pdf,json}`、`make_final_summary.py` |

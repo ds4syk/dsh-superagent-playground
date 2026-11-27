@@ -1,19 +1,23 @@
 {
   "figure": "/mnt/storage1/syk/.superagent-work/wt-final-p1-fig2/labs/01-laplace-qpeplayer/experiments/real/linemod/results/final_summary.png",
   "script": "/mnt/storage1/syk/.superagent-work/wt-final-p1-fig2/labs/01-laplace-qpeplayer/experiments/real/linemod/make_final_summary.py",
-  "generated_utc": "2026-11-27T17:17:05+00:00",
+  "generated_utc": "2026-11-27T22:16:54+00:00",
   "python": "3.10.22",
   "matplotlib": "3.10.9",
   "numpy": "2.2.6",
   "dpi": 300,
   "figsize_in": [
     11.0,
-    11.0
+    11.7
+  ],
+  "png_px": [
+    3300,
+    3510
   ],
   "evidence_tag": "independent reproduction (this repo) - E15, E16, E17, E18; N1 controlled estimator (partially run)",
-  "caption": "Figure 1 | Real-data evidence for the two-mode QPEP/Laplace layer. (a) ADD-S on the controlled two-mode cost\n(median [95% bootstrap CI over frames]): LINEMOD eggbox/glue n=15, LMO sequence 000002 n=177 (0 eggbox + 0 glue). The hard\nargmin is less accurate under occlusion (LINEMOD 3.74 mm vs LMO 9.42 mm) while the posterior mean is 13.94 vs 18.70 mm\n(MC 18.38 mm); both datasets show the same hard\u2192Laplace bias. The earlier 37-frame LMO subset gives 10.17/19.02 mm, consistent.\n(b) Simulated i.i.d. Gaussian detector noise on the 15 LINEMOD frames (clean RANSAC subset fixed, never re-fit; per-frame mean over\n10 seeds, median and 95% CI over the 15 frames). Up to 1 px there is no measurable change; between 2 and 5 px the hard argmin slides along\nthe flat valley (2.06\u00b0\u219220.49\u00b0, frames >10\u00b0: 7%\u219266%) while the already-biased Laplace mean changes by 0.95\u00d7. (c) Same-data\nforward/local references on the bitwise-identical 15-frame correspondences: the five solver/initialisation rows land at the hard argmin (2.04\u20132.21\u00b0);\ncold-start local optimisers (grey) do not recover it from identity. Official SDPR/BPnP checks are text-only because they report no degree\nmetric: SDPR's tight rows (\u03b8=0.01, 0.1) return the hard argmin (0.0\u00b0), \u03b8=0 is non-tight; BPnP's released algebraic cost equals the P1\nbearing cost (max |\u0394| 1.3e-15). (d) Total-degree homotopy: 40/40 complex projective roots on 11/11 instances (max chart residual\n7.1e-15; 80 affine roots per projective root); the real/complex split and the number of real minima are instance properties, not constants.\nEvidence tag: independent reproduction (this repo) \u2014 E15 (pose/ADD-S), E16 (classical), E17 (Theseus), E18 (root count); N1 (LMO,\ndetector-noise) are controlled estimator experiments with GT-associated correspondences, not detector benchmarks. Official SDPR (cb3aed2)\nand BPnP (f1f4f6a) forward/cost checks used the released code on CPU; no training, no GPU.",
+  "caption": "Figure 1 | Real-data evidence for the two-mode QPEP/Laplace layer. (a) ADD-S on the controlled two-mode cost\n(median [95% bootstrap CI over frames]): LINEMOD eggbox/glue n=15, LMO sequence 000002 n=177 (96 eggbox + 81 glue). The hard\nargmin is less accurate under occlusion (LINEMOD 3.74 mm vs LMO 9.42 mm) while the posterior mean is 13.94 vs 18.70 mm\n(MC 18.38 mm); both datasets show the same hard\u2192Laplace bias. The earlier 37-frame LMO subset gives 10.17/19.02 mm, consistent.\n(b) Simulated i.i.d. Gaussian detector noise on the 15 LINEMOD frames (clean RANSAC subset fixed, never re-fit; per-frame mean over\n10 seeds, median and 95% CI over the 15 frames). Up to 1 px there is no measurable change; between 2 and 5 px the hard argmin slides along\nthe flat valley (2.06\u00b0\u219220.49\u00b0, frames >10\u00b0: 7%\u219266%) while the already-biased Laplace mean changes by 0.95\u00d7. (c) Same-data\nforward/local references on the bitwise-identical 15-frame correspondences: the five solver/initialisation rows land at the hard argmin (2.04\u20132.21\u00b0);\ncold-start local optimisers (grey) do not recover it from identity. Official checks are text-only: SDPR's tight rows\n(\u03b8=0.01, 0.1) return the hard argmin (0.0\u00b0), \u03b8=0 is non-tight; the official BPnP recheck is in Table 5.24, where the earlier\nP1 same-basis adaptation is withdrawn. (d) Total-degree homotopy: 40/40 complex projective roots on 11/11 instances (max chart residual\n7.1e-15; 80 affine roots per projective root); the real/complex split and the number of real minima are instance properties, not constants.\nEvidence tag: independent reproduction (this repo) \u2014 E15 (pose/ADD-S), E16 (classical), E17 (Theseus), E18 (root count); N1 (LMO,\ndetector-noise) are controlled estimator experiments with GT-associated correspondences, not detector benchmarks. Official SDPR (cb3aed2)\nand BPnP (f1f4f6a) used the released code on CPU; no training, no GPU.",
   "checks": {
-    "n_values": 122,
+    "n_values": 124,
     "n_mismatches": 0,
     "n_structural": 26,
     "structural_failures": 0,
@@ -392,6 +396,23 @@
       },
       {
         "panel": "c-note",
+        "item": "official SDPR instance 0 theta",
+        "value": 0.0,
+        "lo": null,
+        "hi": null,
+        "unit": "theta",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          0,
+          "theta"
+        ],
+        "source_value": 0.0,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
         "item": "official SDPR theta=0 tight",
         "value": 0.0,
         "lo": null,
@@ -423,6 +444,23 @@
           "rank"
         ],
         "source_value": 2,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
+        "item": "official SDPR instance 1 theta",
+        "value": 0.01,
+        "lo": null,
+        "hi": null,
+        "unit": "theta",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          1,
+          "theta"
+        ],
+        "source_value": 0.01,
         "scale": 1.0,
         "match": true
       },
@@ -483,6 +521,23 @@
       },
       {
         "panel": "c-note",
+        "item": "official SDPR instance 2 theta",
+        "value": 0.1,
+        "lo": null,
+        "hi": null,
+        "unit": "theta",
+        "source_file": "results/official_sdpr.json",
+        "source_path": [
+          "p1_sdp10",
+          2,
+          "theta"
+        ],
+        "source_value": 0.1,
+        "scale": 1.0,
+        "match": true
+      },
+      {
+        "panel": "c-note",
         "item": "official SDPR theta=0.1 tight",
         "value": 1.0,
         "lo": null,
@@ -533,22 +588,6 @@
           "rot_deg"
         ],
         "source_value": 0.0,
-        "scale": 1.0,
-        "match": true
-      },
-      {
-        "panel": "c-note",
-        "item": "official BPnP cost identity max |delta|",
-        "value": 1.3322676295501878e-15,
-        "lo": null,
-        "hi": null,
-        "unit": "residual",
-        "source_file": "results/official_bpnp.json",
-        "source_path": [
-          "cost_equivalence",
-          "max_abs"
-        ],
-        "source_value": 1.3322676295501878e-15,
         "scale": 1.0,
         "match": true
       },
@@ -2249,7 +2288,6 @@
     "real/linemod/results/lmo_two_mode.json": "a357da24c58e596376f5770f89e8e1b05bc8e9b5e62f65eeafd2aa2e28b38bdd",
     "real/linemod/results/pose_error.json": "5b62808819dbf8f41bd463b05da342d88e4973b9aaa1b05d9ac5672d757af9d8",
     "real/linemod/results/theseus_baseline.json": "de5cf637b5f631073cca8b22f84a4e855b5c11d5d88cddd2b330bad32d7c4ff1",
-    "results/official_bpnp.json": "e25d88f74bd148e5f23b0146bbf51fd5e9ea00ec3f7c49c6b0b8ef9b795ce2c9",
     "results/official_sdpr.json": "b56dab9468117793d7da8ac8d9ae7960985c31ebe00bf3027ab25ae24fd0103f",
     "results/rootcount_many.json": "ee1cadacb1eac7b9fcc2e1301e5a5971c8102b3395ac1e544c1134513e1654f3"
   },
@@ -2258,7 +2296,14 @@
     "panel_a": "ADD-S in mm = metres x 1000; median and percentile bootstrap CI over frames; LMO full n=177 (96 eggbox + 81 glue); the 37-frame subset values are caption-only consistency checks.",
     "panel_b": "per-frame mean over 10 noise seeds; median and 95% percentile bootstrap CI over the 15 frames.",
     "panel_c": "classical/Theseus rotation medians (deg); Theseus GT/identity rows have no CI in the JSON; cold-start rows are context, not deployable baselines.",
-    "panel_c_official": "Official SDPR/BPnP are text annotations, not bars: neither provides a rotation-error metric on the real frames. SDPR: on the synthetic 10x10 QPEP instances, tight rows (theta=0.01, 0.1) return the hard argmin (official_xs_vs_hard.rot_deg = 0.0); theta=0 is non-tight (rank 2, xs=None). BPnP: cost_equivalence.max_abs = 1.33e-15 (released algebraic residual equals the P1 bearing residual); the JSON's same-data gradient comparison is not used in the figure because its arms are not mutually consistent (see report).",
+    "panel_c_official": "Official SDPR/BPnP are text annotations, not bars: SDPR reports no real-frame degree metric, and the BPnP P1 adaptation is withdrawn. SDPR: on the synthetic 10x10 QPEP instances, tight rows (theta=0.01, 0.1) return the hard argmin (official_xs_vs_hard.rot_deg = 0.0); theta=0 is non-tight (rank 2, xs=None). BPnP: the earlier P1 same-basis adaptation is withdrawn after a recheck (paper Table 5.24); this figure asserts no P1 gradient/cost match. The released backward was executed on all three adapter cases (t_bpnp_backward_ms > 0).",
+    "panel_a_counts": {
+      "eggbox": 96,
+      "glue": 81,
+      "n_used": 177,
+      "n_attempted": 200,
+      "n_failures": 23
+    },
     "panel_d": "n_projective/n_real/n_complex are projective roots; each projective root is an 80-affine-root class; n_minima = real local minima.",
     "official_provenance": {
       "sdpr_commit": "cb3aed2",

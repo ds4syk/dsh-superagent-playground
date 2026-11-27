@@ -1,4 +1,3 @@
-note: "version 2" Tectonic command-line interface activated
 note: Running TeX ...
 warning: algorithm.sty:11: 
 Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
@@ -6,24 +5,61 @@ warning: sections/04_method:9: Underfull \hbox (badness 2521) in paragraph at li
 warning: sections/04_method:35: Underfull \hbox (badness 2726) in paragraph at lines 35--35
 warning: sections/04_method:105: Underfull \hbox (badness 10000) in paragraph at lines 104--105
 warning: sections/04_method:136: Underfull \hbox (badness 10000) in paragraph at lines 135--136
-warning: sections/04_method:177: Underfull \hbox (badness 3118) in paragraph at lines 176--177
+warning: sections/04_method:177: Underfull \hbox (badness 3199) in paragraph at lines 176--177
 warning: sections/04_method:177: Underfull \hbox (badness 1824) in paragraph at lines 176--177
-warning: sections/04_method:223: Underfull \hbox (badness 7397) in paragraph at lines 222--223
-warning: sections/05_experiments:14: Underfull \hbox (badness 1796) in paragraph at lines 13--14
-warning: sections/05_experiments:202: Underfull \hbox (badness 10000) in paragraph at lines 200--202
-warning: sections/05_experiments:204: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/05_experiments:220: Underfull \hbox (badness 1552) in paragraph at lines 220--220
-warning: sections/05_experiments:228: Underfull \hbox (badness 10000) in paragraph at lines 228--228
-warning: sections/05_experiments:229: Underfull \hbox (badness 10000) in paragraph at lines 229--229
-warning: sections/05_experiments:242: Underfull \vbox (badness 1210) has occurred while \output is active
-warning: sections/05_experiments:320: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/05_experiments:472: Underfull \vbox (badness 3386) has occurred while \output is active
-warning: sections/05_experiments:493: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/06_discussion:77: Underfull \hbox (badness 4954) in paragraph at lines 76--77
-warning: sections/06_discussion:77: Underfull \hbox (badness 2293) in paragraph at lines 76--77
-warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 82--1
-warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 82--1
-warning: sections/07_conclusion:1: Underfull \hbox (badness 2951) in paragraph at lines 82--1
+warning: sections/04_method:223: Underfull \hbox (badness 7522) in paragraph at lines 222--223
+warning: sections/05_experiments:16: Underfull \hbox (badness 1796) in paragraph at lines 15--16
+warning: sections/05_experiments:91: Underfull \vbox (badness 5847) has occurred while \output is active
+warning: sections/05_experiments:150: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:204: Underfull \hbox (badness 10000) in paragraph at lines 202--204
+warning: sections/05_experiments:222: Underfull \hbox (badness 1552) in paragraph at lines 222--222
+warning: sections/05_experiments:230: Underfull \hbox (badness 10000) in paragraph at lines 230--230
+warning: sections/05_experiments:231: Underfull \hbox (badness 10000) in paragraph at lines 231--231
+warning: sections/05_experiments:530: Underfull \hbox (badness 10000) in paragraph at lines 530--530
+warning: sections/05_experiments:531: Underfull \hbox (badness 1838) in paragraph at lines 531--531
+warning: sections/05_experiments:531: Underfull \hbox (badness 10000) in paragraph at lines 531--531
+warning: sections/05_experiments:533: Underfull \hbox (badness 1590) in paragraph at lines 533--533
+warning: sections/05_experiments:538: Underfull \hbox (badness 1852) in paragraph at lines 538--538
+warning: sections/05_experiments:539: Underfull \hbox (badness 1924) in paragraph at lines 539--539
+warning: sections/05_experiments:591: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:591: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:591: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:593: Underfull \hbox (badness 10000) in paragraph at lines 592--593
+warning: sections/05_experiments:622: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:667: Underfull \vbox (badness 3780) has occurred while \output is active
+warning: sections/05_experiments:691: Underfull \hbox (badness 1590) in paragraph at lines 690--691
+warning: sections/05_experiments:691: Underfull \vbox (badness 3354) has occurred while \output is active
+warning: sections/05_experiments:693: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:712: Underfull \hbox (badness 5374) in paragraph at lines 711--712
+warning: sections/05_experiments:716: Underfull \vbox (badness 1748) has occurred while \output is active
+warning: sections/05_experiments:720: Underfull \vbox (badness 5908) has occurred while \output is active
+warning: sections/05_experiments:743: Underfull \hbox (badness 3635) in paragraph at lines 743--743
+warning: sections/05_experiments:745: Underfull \hbox (badness 10000) in paragraph at lines 745--745
+warning: sections/05_experiments:751: Underfull \hbox (badness 10000) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 6157) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 10000) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 1810) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 2050) in paragraph at lines 750--751
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 1424) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \vbox (badness 1960) has occurred while \output is active
+warning: sections/06_discussion:60: Underfull \hbox (badness 4954) in paragraph at lines 59--60
+warning: sections/06_discussion:60: Underfull \hbox (badness 2293) in paragraph at lines 59--60
+warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 63--1
+warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 63--1
+warning: sections/07_conclusion:1: Underfull \hbox (badness 2951) in paragraph at lines 63--1
+warning: sections/07_conclusion:1: Underfull \hbox (badness 1776) in paragraph at lines 63--1
+warning: sections/07_conclusion:1: Underfull \hbox (badness 2837) in paragraph at lines 63--1
 note: Running BibTeX on main.aux ...
 note: Rerunning TeX because bibtex was run ...
 warning: algorithm.sty:11: 
@@ -35,19 +71,58 @@ warning: sections/04_method:136: Underfull \hbox (badness 10000) in paragraph at
 warning: sections/04_method:177: Underfull \hbox (badness 3199) in paragraph at lines 176--177
 warning: sections/04_method:177: Underfull \hbox (badness 1824) in paragraph at lines 176--177
 warning: sections/04_method:223: Underfull \hbox (badness 7522) in paragraph at lines 222--223
-warning: sections/05_experiments:14: Underfull \hbox (badness 1796) in paragraph at lines 13--14
-warning: sections/05_experiments:64: Underfull \vbox (badness 1990) has occurred while \output is active
-warning: sections/05_experiments:202: Underfull \hbox (badness 10000) in paragraph at lines 200--202
-warning: sections/05_experiments:220: Underfull \hbox (badness 1552) in paragraph at lines 220--220
-warning: sections/05_experiments:228: Underfull \hbox (badness 10000) in paragraph at lines 228--228
-warning: sections/05_experiments:229: Underfull \hbox (badness 10000) in paragraph at lines 229--229
-warning: sections/05_experiments:419: Underfull \hbox (badness 1762) in paragraph at lines 418--419
-warning: sections/05_experiments:494: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/06_discussion:77: Underfull \hbox (badness 4954) in paragraph at lines 76--77
-warning: sections/06_discussion:77: Underfull \hbox (badness 2293) in paragraph at lines 76--77
-warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 82--1
-warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 82--1
-warning: sections/07_conclusion:1: Underfull \hbox (badness 2951) in paragraph at lines 82--1
+warning: sections/05_experiments:16: Underfull \hbox (badness 1796) in paragraph at lines 15--16
+warning: sections/05_experiments:91: Underfull \vbox (badness 5847) has occurred while \output is active
+warning: sections/05_experiments:150: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:204: Underfull \hbox (badness 10000) in paragraph at lines 202--204
+warning: sections/05_experiments:222: Underfull \hbox (badness 1552) in paragraph at lines 222--222
+warning: sections/05_experiments:230: Underfull \hbox (badness 10000) in paragraph at lines 230--230
+warning: sections/05_experiments:231: Underfull \hbox (badness 10000) in paragraph at lines 231--231
+warning: sections/05_experiments:421: Underfull \hbox (badness 1762) in paragraph at lines 420--421
+warning: sections/05_experiments:530: Underfull \hbox (badness 10000) in paragraph at lines 530--530
+warning: sections/05_experiments:531: Underfull \hbox (badness 1838) in paragraph at lines 531--531
+warning: sections/05_experiments:531: Underfull \hbox (badness 10000) in paragraph at lines 531--531
+warning: sections/05_experiments:533: Underfull \hbox (badness 1590) in paragraph at lines 533--533
+warning: sections/05_experiments:538: Underfull \hbox (badness 1852) in paragraph at lines 538--538
+warning: sections/05_experiments:539: Underfull \hbox (badness 1924) in paragraph at lines 539--539
+warning: sections/05_experiments:591: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:591: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:591: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:593: Underfull \hbox (badness 10000) in paragraph at lines 592--593
+warning: sections/05_experiments:622: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:668: Underfull \vbox (badness 3780) has occurred while \output is active
+warning: sections/05_experiments:691: Underfull \vbox (badness 3354) has occurred while \output is active
+warning: sections/05_experiments:693: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:716: Underfull \vbox (badness 1748) has occurred while \output is active
+warning: sections/05_experiments:720: Underfull \vbox (badness 5908) has occurred while \output is active
+warning: sections/05_experiments:743: Underfull \hbox (badness 3635) in paragraph at lines 743--743
+warning: sections/05_experiments:745: Underfull \hbox (badness 10000) in paragraph at lines 745--745
+warning: sections/05_experiments:751: Underfull \hbox (badness 10000) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 6157) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 10000) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 1810) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 2050) in paragraph at lines 750--751
+warning: sections/05_experiments:753: Underfull \hbox (badness 10000) in paragraph at lines 752--753
+warning: sections/05_experiments:753: Underfull \hbox (badness 4859) in paragraph at lines 752--753
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 1424) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \vbox (badness 1960) has occurred while \output is active
+warning: sections/06_discussion:60: Underfull \hbox (badness 4954) in paragraph at lines 59--60
+warning: sections/06_discussion:60: Underfull \hbox (badness 2293) in paragraph at lines 59--60
+warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 63--1
+warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 63--1
+warning: sections/07_conclusion:1: Underfull \hbox (badness 2951) in paragraph at lines 63--1
+warning: sections/07_conclusion:1: Underfull \hbox (badness 1776) in paragraph at lines 63--1
 warning: main.bbl:36: Underfull \hbox (badness 1490) in paragraph at lines 31--36
 note: Rerunning TeX because "main.out" changed ...
 warning: algorithm.sty:11: 
@@ -59,51 +134,60 @@ warning: sections/04_method:136: Underfull \hbox (badness 10000) in paragraph at
 warning: sections/04_method:177: Underfull \hbox (badness 3199) in paragraph at lines 176--177
 warning: sections/04_method:177: Underfull \hbox (badness 1824) in paragraph at lines 176--177
 warning: sections/04_method:223: Underfull \hbox (badness 7522) in paragraph at lines 222--223
-warning: sections/05_experiments:14: Underfull \hbox (badness 1796) in paragraph at lines 13--14
-warning: sections/05_experiments:202: Underfull \hbox (badness 10000) in paragraph at lines 200--202
-warning: sections/05_experiments:204: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/05_experiments:220: Underfull \hbox (badness 1552) in paragraph at lines 220--220
-warning: sections/05_experiments:228: Underfull \hbox (badness 10000) in paragraph at lines 228--228
-warning: sections/05_experiments:229: Underfull \hbox (badness 10000) in paragraph at lines 229--229
-warning: sections/05_experiments:242: Underfull \vbox (badness 1210) has occurred while \output is active
-warning: sections/05_experiments:320: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/05_experiments:419: Underfull \hbox (badness 1762) in paragraph at lines 418--419
-warning: sections/05_experiments:472: Underfull \vbox (badness 3386) has occurred while \output is active
-warning: sections/05_experiments:493: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/06_discussion:77: Underfull \hbox (badness 4954) in paragraph at lines 76--77
-warning: sections/06_discussion:77: Underfull \hbox (badness 2293) in paragraph at lines 76--77
-warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 82--1
-warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 82--1
-warning: sections/07_conclusion:1: Underfull \hbox (badness 2951) in paragraph at lines 82--1
-warning: main.bbl:36: Underfull \hbox (badness 1490) in paragraph at lines 31--36
-note: Rerunning TeX because "main.aux" changed ...
-warning: algorithm.sty:11: 
-Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
-warning: sections/04_method:9: Underfull \hbox (badness 2521) in paragraph at lines 8--9
-warning: sections/04_method:35: Underfull \hbox (badness 2726) in paragraph at lines 35--35
-warning: sections/04_method:105: Underfull \hbox (badness 10000) in paragraph at lines 104--105
-warning: sections/04_method:136: Underfull \hbox (badness 10000) in paragraph at lines 135--136
-warning: sections/04_method:177: Underfull \hbox (badness 3199) in paragraph at lines 176--177
-warning: sections/04_method:177: Underfull \hbox (badness 1824) in paragraph at lines 176--177
-warning: sections/04_method:223: Underfull \hbox (badness 7522) in paragraph at lines 222--223
-warning: sections/05_experiments:14: Underfull \hbox (badness 1796) in paragraph at lines 13--14
-warning: sections/05_experiments:202: Underfull \hbox (badness 10000) in paragraph at lines 200--202
-warning: sections/05_experiments:204: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/05_experiments:220: Underfull \hbox (badness 1552) in paragraph at lines 220--220
-warning: sections/05_experiments:228: Underfull \hbox (badness 10000) in paragraph at lines 228--228
-warning: sections/05_experiments:229: Underfull \hbox (badness 10000) in paragraph at lines 229--229
-warning: sections/05_experiments:242: Underfull \vbox (badness 1210) has occurred while \output is active
-warning: sections/05_experiments:320: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/05_experiments:419: Underfull \hbox (badness 1762) in paragraph at lines 418--419
-warning: sections/05_experiments:472: Underfull \vbox (badness 3386) has occurred while \output is active
-warning: sections/05_experiments:493: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/06_discussion:77: Underfull \hbox (badness 4954) in paragraph at lines 76--77
-warning: sections/06_discussion:77: Underfull \hbox (badness 2293) in paragraph at lines 76--77
-warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 82--1
-warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 82--1
-warning: sections/07_conclusion:1: Underfull \hbox (badness 2951) in paragraph at lines 82--1
+warning: sections/05_experiments:16: Underfull \hbox (badness 1796) in paragraph at lines 15--16
+warning: sections/05_experiments:91: Underfull \vbox (badness 5847) has occurred while \output is active
+warning: sections/05_experiments:150: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:204: Underfull \hbox (badness 10000) in paragraph at lines 202--204
+warning: sections/05_experiments:222: Underfull \hbox (badness 1552) in paragraph at lines 222--222
+warning: sections/05_experiments:230: Underfull \hbox (badness 10000) in paragraph at lines 230--230
+warning: sections/05_experiments:231: Underfull \hbox (badness 10000) in paragraph at lines 231--231
+warning: sections/05_experiments:421: Underfull \hbox (badness 1762) in paragraph at lines 420--421
+warning: sections/05_experiments:530: Underfull \hbox (badness 10000) in paragraph at lines 530--530
+warning: sections/05_experiments:531: Underfull \hbox (badness 1838) in paragraph at lines 531--531
+warning: sections/05_experiments:531: Underfull \hbox (badness 10000) in paragraph at lines 531--531
+warning: sections/05_experiments:533: Underfull \hbox (badness 1590) in paragraph at lines 533--533
+warning: sections/05_experiments:538: Underfull \hbox (badness 1852) in paragraph at lines 538--538
+warning: sections/05_experiments:539: Underfull \hbox (badness 1924) in paragraph at lines 539--539
+warning: sections/05_experiments:591: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:591: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:591: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:593: Underfull \hbox (badness 10000) in paragraph at lines 592--593
+warning: sections/05_experiments:622: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:668: Underfull \vbox (badness 3780) has occurred while \output is active
+warning: sections/05_experiments:691: Underfull \vbox (badness 3354) has occurred while \output is active
+warning: sections/05_experiments:693: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/05_experiments:716: Underfull \vbox (badness 1748) has occurred while \output is active
+warning: sections/05_experiments:720: Underfull \vbox (badness 5908) has occurred while \output is active
+warning: sections/05_experiments:743: Underfull \hbox (badness 3635) in paragraph at lines 743--743
+warning: sections/05_experiments:745: Underfull \hbox (badness 10000) in paragraph at lines 745--745
+warning: sections/05_experiments:751: Underfull \hbox (badness 10000) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 6157) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 10000) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 1810) in paragraph at lines 750--751
+warning: sections/05_experiments:751: Underfull \hbox (badness 2050) in paragraph at lines 750--751
+warning: sections/05_experiments:753: Underfull \hbox (badness 10000) in paragraph at lines 752--753
+warning: sections/05_experiments:753: Underfull \hbox (badness 4859) in paragraph at lines 752--753
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 10000) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \hbox (badness 1424) in paragraph at lines 819--1
+warning: sections/06_discussion:1: Underfull \vbox (badness 1960) has occurred while \output is active
+warning: sections/06_discussion:60: Underfull \hbox (badness 4954) in paragraph at lines 59--60
+warning: sections/06_discussion:60: Underfull \hbox (badness 2293) in paragraph at lines 59--60
+warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 63--1
+warning: sections/07_conclusion:1: Underfull \hbox (badness 10000) in paragraph at lines 63--1
+warning: sections/07_conclusion:1: Underfull \hbox (badness 2951) in paragraph at lines 63--1
+warning: sections/07_conclusion:1: Underfull \hbox (badness 1776) in paragraph at lines 63--1
 warning: main.bbl:36: Underfull \hbox (badness 1490) in paragraph at lines 31--36
 warning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details.
 note: Running xdvipdfmx ...
-note: Writing `main.pdf` (776.0166015625 KiB)
+note: Writing `main.pdf` (855.3125 KiB)
 note: Skipped writing 3 intermediate files (use --keep-intermediates to keep them)

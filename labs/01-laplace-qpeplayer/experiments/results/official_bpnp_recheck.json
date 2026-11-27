@@ -1,0 +1,441 @@
+{
+ "generated": "2026-11-28",
+ "supersedes": "the adaptation/gradient table of results/official_bpnp.md (\u00a73) and the corresponding rows of this JSON; the 'four arms agree' headline is withdrawn",
+ "script": "/mnt/storage1/syk/.superagent-work/wt-p1x-bpnp/labs/01-laplace-qpeplayer/experiments/baselines/recheck_official_bpnp_gradient.py",
+ "command": "/home/syk/miniconda3/envs/sdpr/bin/python labs/01-laplace-qpeplayer/experiments/baselines/recheck_official_bpnp_gradient.py",
+ "runtime_s": 10.875266551971436,
+ "provenance": {
+  "bpnp_repo": "/mnt/storage1/syk/third_party/BPnP",
+  "bpnp_commit": "f1f4f6a79ce2bd58a6340a59e64c0900bb6b0772",
+  "bpnp_py_sha256": "683cb879253d43e437cceb7e83662297ce149310c4d4b7a57a9c0f178f91b98b",
+  "baseline_script_sha256": "a1559ab6f44f19e1fafa127e83c05209a346c4b30ea0ba06894c33bcf36807fe",
+  "delivered_payload_sha256": "49bc1bf628f425d9e2595d665c74732d4ffa7a412dbed0ad5e9104a550afc485",
+  "delivered_json_file_sha256": "f358517cc8a024d21701e165b49e8519935b03be9998c11d2f2ba7943e069c1b",
+  "delivered_md_sha256": "dd1486bd3a9b69ef2cbafeb349e6aa09422753a33bdf45f22b9b4a92ad4a6430",
+  "python": "3.11.17 (/home/syk/miniconda3/envs/sdpr/bin/python)",
+  "torch": "2.5.1+cpu",
+  "kornia": "0.9.0",
+  "numpy": "1.26.3",
+  "platform": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35"
+ },
+ "A_basis": {
+  "dR_dw_max_err_vs_skewR": 0.9951255721284014,
+  "dR_dw_max_err_vs_Jl": 1.9845251553185506e-09,
+  "note_dR": "dR/dw_a = [J_l(w) e_a]_x R(w); the naive [e_a]_x R (the *tangent* derivative) is wrong by O(|w|), which is why the baseline's hand-derived p1_cost_derivs is a tangent-basis Jacobian.",
+  "baseline_J_is_tangent_rel_residual": 1.3975081613295985e-09,
+  "baseline_M_vs_blkdiag_Jl_inv": 2.9341563623219713e-09,
+  "per_case_basis": [
+   {
+    "case": "synthetic-planar",
+    "norm_w": 2.712573739621895,
+    "max_abs_Jl_minus_I": 0.8060302119190078,
+    "cond_Jl": 1.3881008464643143,
+    "fro_Jl_minus_I": 1.5571028284541433
+   },
+   {
+    "case": "real-000010-15",
+    "norm_w": 2.7958180801784156,
+    "max_abs_Jl_minus_I": 0.8220015680756564,
+    "cond_Jl": 1.4190641914709565,
+    "fro_Jl_minus_I": 1.5837524382920538
+   },
+   {
+    "case": "real-000011-20",
+    "norm_w": 2.6621212364298015,
+    "max_abs_Jl_minus_I": 0.8265574568444783,
+    "cond_Jl": 1.3702486841331238,
+    "fro_Jl_minus_I": 1.540147148402787
+   }
+  ],
+  "what_g_bpnp_is": "BPnP.BPnP.forward returns P_6d = [rvec(3); t(3)] and BPnP.BPnP.backward returns dL/dpts2d = grad_output . d(rvec,t)/dpts2d.  So g_bpnp is the derivative of the **(rvec, t) parameter** vector w.r.t. the 2-D keypoints, contracted with the input perturbation.  Our paper's 6-DoF gradient is the **(omega, t_dot) tangent** vector (dR/dtheta=[omega]_x R); omega = J_l(w) w_dot.  The two bases agree only at w=0."
+ },
+ "B_reproduction": {
+  "toy": [
+   {
+    "case": "exact",
+    "rel": 0.17012899109453447,
+    "norm_released": 0.03551060114692194,
+    "norm_fd": 0.03500131596264679,
+    "t_bwd_ms": 57.679458210865654
+   },
+   {
+    "case": "noisy_2px",
+    "rel": 0.17096927442940305,
+    "norm_released": 0.05485799433732443,
+    "norm_fd": 0.054057132058962266,
+    "t_bwd_ms": 53.91714721918106
+   }
+  ],
+  "toy_matches_report": {
+   "exact": 0.0,
+   "noisy_2px": 0.0
+  },
+  "in_tree_p1_path": {
+   "C": 0.06628302652619218,
+   "grad_norm_tangent": 7.1004081803441474,
+   "nfev": 34,
+   "delivered_C": 0.00016086991613163784,
+   "delivered_grad_norm": 0.004256976465675788,
+   "bpnp_jacobian_error": "TypeError: p1_solve() got an unexpected keyword argument 'iters'"
+  },
+  "delivered_g_ift6_reproduction": [
+   {
+    "case": "synthetic-planar",
+    "rel": 0.0
+   },
+   {
+    "case": "real-000010-15",
+    "rel": 0.0
+   },
+   {
+    "case": "real-000011-20",
+    "rel": 0.0
+   }
+  ]
+ },
+ "C_algebraic_solution_test": {
+  "n_points": 8,
+  "data": "demo_data/cube.mat + poses.mat, exact (no noise)",
+  "algebraic_solve": {
+   "C": 8.91928462084684e-09,
+   "grad_norm": 2.188286080091416e-10,
+   "dist_to_ground_truth": 8.21553831150023e-08,
+   "nfev": 6
+  },
+  "depth_spread_rel": 0.6107130298657154,
+  "fd_step_study_norm": {
+   "1e-03": 0.021258435164293283,
+   "1e-04": 0.021258435165669477,
+   "1e-05": 0.021258435135043264
+  },
+  "ift_alg_vs_fd": 6.86445920568641e-10,
+  "released_vs_fd_alg": 0.1677293582117268,
+  "released_vs_ift_alg": 0.16772935844110337,
+  "cond_fy": 9.502643091249057,
+  "f_root": {
+   "f_norm": 8.333852710125561e-11,
+   "iters": 9,
+   "dist_to_alg": 1.2996190298386631e-08
+  },
+  "released_vs_ift_f": 1.6453304274311016e-07,
+  "ift_f_vs_ift_alg": 0.1677293514282464,
+  "released_vs_fd_f": 1.5515896972739189e-07,
+  "ift_f_vs_fd_f": 3.4047749250545355e-08,
+  "verdict": "Setting the forward to the algebraic LS solution does NOT make the released backward consistent with it (rel=1.7e-01): both f=0 and grad C_alg=0 vanish there, but they are different systems, so their solution *maps* differ.  The released backward is nevertheless a correct IFT -- of its own f=0 system (rel=1.6e-07 vs FD of the f-root forward, 1.7e-07 vs the exact IFT of f).  The 17% is the depth weighting: f is the stationarity of sum_i S_i ||e_i||^2, the algebraic cost is sum_i ||r_i||^2 = sum_i S_i^2 ||e_i||^2; with the cube's depth spread of 0.61 the two maps differ by O(spread)."
+ },
+ "D_p1_readjudication": {
+  "rows": [
+   {
+    "case": "synthetic-planar",
+    "n_points": 196,
+    "solve": {
+     "C": 0.0001448030337645163,
+     "grad_norm": 7.858480043436371e-14,
+     "nfev": 8,
+     "newton_iters": 0
+    },
+    "depth_spread_rel": 0.16711052201082177,
+    "norms": {
+     "bpnp": 4.81026416072665,
+     "ours": 4.800897998005312,
+     "fd": 4.800893978469052,
+     "ift_f": 4.807799371041057,
+     "fd_study": {
+      "1e-02": 4.770672375326769,
+      "1e-03": 4.800497314547215,
+      "1e-04": 4.800893978469052
+     }
+    },
+    "released_vs_fd": 0.015371421845377802,
+    "cos_released_fd": 0.9998839907963438,
+    "ours_vs_fd": 5.071355581272566e-06,
+    "cos_ours_fd": 0.9999999999874912,
+    "released_vs_ours": 0.015369145962852254,
+    "cos_released_ours": 0.9998840239783109,
+    "released_vs_ours_TANGENT_BASIS": 1.370884633320957,
+    "released_vs_ift_f": 0.0005532284270593845,
+    "ift_f_vs_fd": 0.015418731087610053,
+    "f_norm_at_solution": 0.0002981244958661899,
+    "cond_fy": 1391.709643385958,
+    "pose": [
+     1.8717312149605145,
+     0.5907127782299664,
+     1.8723634504655777,
+     3.0961358323053924e-05,
+     1.7399364072056703e-05,
+     1.0002009016668405
+    ],
+    "g_released": [
+     -0.8635518586906796,
+     4.437413072759211,
+     1.4903975939087004,
+     -0.10529128470548801,
+     -0.09295577804817874,
+     0.679170586666173
+    ],
+    "g_ours": [
+     -0.7958560229745412,
+     4.441614410444784,
+     1.497878139040607,
+     -0.10529242634741345,
+     -0.09295384869237638,
+     0.6510993583372597
+    ],
+    "g_ift_f": [
+     -0.8633043082299824,
+     4.434872435404861,
+     1.4898970586331073,
+     -0.10529152623409894,
+     -0.09295496175116194,
+     0.6797255104275792
+    ],
+    "g_fd": [
+     -0.7958541689367937,
+     4.441614114387704,
+     1.4978778038476914,
+     -0.1052911424351151,
+     -0.0929527105987952,
+     0.6510751468269405
+    ],
+    "baseline_helper_check": {
+     "rel_helper_vs_Jl_times_ours": 0.0038676344241547157,
+     "rel_helper_mapped_vs_ours": 0.002926118370250368
+    },
+    "published": {
+     "rel_bpnp_vs_fd": 0.9992361128774833,
+     "rel_ift6_vs_fd": 0.9997759684825692,
+     "rel_bpnp_vs_ift6": 1.3703781119914904,
+     "theta": 0.001,
+     "solve_grad_norm": 0.004256976465675788,
+     "solve_C": 0.00016086991613163784,
+     "norm_g_bpnp": 0.004809004931280702,
+     "norm_g_fd": 5.550853172421838,
+     "basis_only_error": 1.3725555383248873
+    }
+   },
+   {
+    "case": "real-000010-15",
+    "n_points": 200,
+    "solve": {
+     "C": 0.00031044557574441337,
+     "grad_norm": 3.696601007386979e-14,
+     "nfev": 9,
+     "newton_iters": 0
+    },
+    "depth_spread_rel": 0.07854791358634403,
+    "norms": {
+     "bpnp": 4.100927601856371,
+     "ours": 4.097297016923523,
+     "fd": 4.097284860252202,
+     "ift_f": 4.082853398377385,
+     "fd_study": {
+      "1e-02": 3.8957496230575304,
+      "1e-03": 4.096068419614121,
+      "1e-04": 4.097284860252202
+     }
+    },
+    "released_vs_fd": 0.09362642285310846,
+    "cos_released_fd": 0.9956213345942205,
+    "ours_vs_fd": 2.4787936625636257e-05,
+    "cos_ours_fd": 0.9999999996971816,
+    "released_vs_ours": 0.09364422104719058,
+    "cos_released_ours": 0.9956196539050114,
+    "released_vs_ours_TANGENT_BASIS": 1.3148330780289348,
+    "released_vs_ift_f": 0.007339600362709119,
+    "ift_f_vs_fd": 0.08894835886450844,
+    "f_norm_at_solution": 0.0009396196300058174,
+    "cond_fy": 15131.1400929241,
+    "pose": [
+     1.8367470710659044,
+     1.9847257253992177,
+     -0.7079163569749383,
+     0.19245901954799227,
+     0.03929525069685197,
+     0.8957576014756012
+    ],
+    "g_released": [
+     1.5328195460233807,
+     -2.0754504042659963,
+     3.017166016979372,
+     -0.3681258595754345,
+     -0.13034652792994525,
+     -0.9511989353345228
+    ],
+    "g_ours": [
+     1.251019611499969,
+     -2.2515614382211875,
+     2.949795180274805,
+     -0.4109002690122633,
+     -0.12720835552892706,
+     -1.1255892963621366
+    ],
+    "g_ift_f": [
+     1.5209094071432339,
+     -2.0815987129678315,
+     2.9916347613452556,
+     -0.36957850416585447,
+     -0.13003624612345432,
+     -0.9592168705454551
+    ],
+    "g_fd": [
+     1.2510307603541548,
+     -2.2514969927600603,
+     2.9498464284127834,
+     -0.4108858910101265,
+     -0.12720646219599452,
+     -1.1255327199227727
+    ],
+    "baseline_helper_check": {
+     "rel_helper_vs_Jl_times_ours": 0.04192255874296563,
+     "rel_helper_mapped_vs_ours": 0.03904533024169623
+    },
+    "published": {
+     "rel_bpnp_vs_fd": 0.9999813474689341,
+     "rel_ift6_vs_fd": 0.9997446063250871,
+     "rel_bpnp_vs_ift6": 1.3092514523135987,
+     "theta": 0.001,
+     "solve_grad_norm": 0.0026357192240265832,
+     "solve_C": 0.0003111670632555076,
+     "norm_g_bpnp": 0.004100719205216589,
+     "norm_g_fd": 11.630197265504604,
+     "basis_only_error": 1.2625150279759427
+    }
+   },
+   {
+    "case": "real-000011-20",
+    "n_points": 200,
+    "solve": {
+     "C": 0.00045997696367942653,
+     "grad_norm": 1.6811241409087792e-15,
+     "nfev": 12,
+     "newton_iters": 1
+    },
+    "depth_spread_rel": 0.10693953111095872,
+    "norms": {
+     "bpnp": 9.979957805067357,
+     "ours": 12.233612518490267,
+     "fd": 12.230849420565887,
+     "ift_f": 9.573895284390083,
+     "fd_study": {
+      "1e-02": 6.676009593227475,
+      "1e-03": 11.963005735470404,
+      "1e-04": 12.230849420565887
+     }
+    },
+    "released_vs_fd": 0.2985231715996099,
+    "cos_released_fd": 0.9661459032839769,
+    "ours_vs_fd": 0.0003226364370632574,
+    "cos_ours_fd": 0.9999999734770145,
+    "released_vs_ours": 0.2987620562153034,
+    "cos_released_ours": 0.9660924003209214,
+    "released_vs_ours_TANGENT_BASIS": 0.8735063103096181,
+    "released_vs_ift_f": 0.11265882759418908,
+    "ift_f_vs_fd": 0.261027311246666,
+    "f_norm_at_solution": 0.001757594082295472,
+    "cond_fy": 91062.65892057834,
+    "pose": [
+     2.660043201048518,
+     -0.03666081702252831,
+     -0.09858578502229583,
+     -0.020351660792520015,
+     -0.11096243561798862,
+     0.7211126434745098
+    ],
+    "g_released": [
+     4.711940880305403,
+     5.6883032545197985,
+     -5.8211757820956205,
+     0.15523492600399685,
+     0.2810858847327379,
+     -3.324331868683851
+    ],
+    "g_ours": [
+     7.926076883577161,
+     5.681369532611865,
+     -5.409200660287824,
+     0.1956355487452976,
+     0.4452396038864097,
+     -5.00646156142591
+    ],
+    "g_ift_f": [
+     5.179396318338708,
+     4.936352203556461,
+     -5.255883912673292,
+     0.14473174920396606,
+     0.3053751135008487,
+     -3.567525006754428
+    ],
+    "g_fd": [
+     7.922355566485351,
+     5.681951585846077,
+     -5.408829330028134,
+     0.19561669812939025,
+     0.44519269096987557,
+     -5.0053460276772155
+    ],
+    "baseline_helper_check": {
+     "rel_helper_vs_Jl_times_ours": 0.12909553030275445,
+     "rel_helper_mapped_vs_ours": 0.11678430589878586
+    },
+    "published": {
+     "rel_bpnp_vs_fd": 0.9998615545476661,
+     "rel_ift6_vs_fd": 0.9998218143089481,
+     "rel_bpnp_vs_ift6": 0.9242463477367383,
+     "theta": 0.001,
+     "solve_grad_norm": 0.00043217501016446245,
+     "solve_C": 0.0004599791077114219,
+     "norm_g_bpnp": 0.009979835414467344,
+     "norm_g_fd": 48.43494192073449,
+     "basis_only_error": 0.7624791837216017
+    }
+   }
+  ],
+  "verdict": "At a properly converged C_P1 solution the released backward, our exact 6-DoF IFT and a branch-following FD all agree to 1.5% / 9.4% / 30% (cos 0.9999 / 0.9956 / 0.9661); our IFT alone matches the FD to 5e-6 / 2e-5 / 3e-4.  The published 1.37 / 1.31 / 0.92 was a basis error (released = d(rvec,t)/dtheta, published 'ift6' = omega): the same-pose basis factor alone is 1.37 / 1.26 / 0.76, and the published solutions were non-stationary (||grad C|| = 4e-3 / 3e-3 / 4e-4).  The remaining gap is the depth weighting (released differentiates sum_i S_i||e_i||^2, ours sum_i S_i^2||e_i||^2) plus the float32 implementation of the release, which loses accuracy as cond(f_y) grows (1.4e3 -> 9.1e4 here); it is case dependent, not a shared 6-DoF IFT."
+ },
+ "E_cost_identity": {
+  "at_data_pose_max_abs_perp": 4.440892098500626e-16,
+  "at_data_pose_max_abs_r": 2.220446049250313e-16,
+  "delivered_check_value": 1.8e-15,
+  "cases": [
+   {
+    "case": "synthetic-planar",
+    "mean_abs_u_sq": 0.0013859651147164725,
+    "implied_factor": 1.0013859651147166,
+    "solution": {
+     "ratio_min": 1.0000000103422224,
+     "ratio_max": 1.005631793244028,
+     "identity_rel_residual": 4.870982025623703e-15
+    },
+    "perturbed": {
+     "ratio_min": 1.0000000178108712,
+     "ratio_max": 1.0057767186497628,
+     "identity_rel_residual": 8.579100081368303e-16
+    }
+   },
+   {
+    "case": "real-000010-15",
+    "mean_abs_u_sq": 0.05084256081286668,
+    "implied_factor": 1.0508425608128666,
+    "solution": {
+     "ratio_min": 1.000012368910286,
+     "ratio_max": 1.0737146969465685,
+     "identity_rel_residual": 1.0277994194682447e-13
+    },
+    "perturbed": {
+     "ratio_min": 1.0000000093850432,
+     "ratio_max": 1.0040102751973885,
+     "identity_rel_residual": 3.33233491209107e-15
+    }
+   }
+  ],
+  "statement": "The delivered check compares P^perp X with (-r1,-r2,0) at the pose that generated u, where both are identically zero (max |P^perp X| = 4.4e-16, max |r| = 2.2e-16); the 1.8e-15 is 0 vs 0.  Off that pose ||r||^2 = (1+|u|^2)||P^perp X||^2 - |u x X_12|^2 (verified below), so the two costs agree only to leading order in the residual; for the P1 synthetic data the per-point factor is 1+|u|^2 ~ 1.001, for real frames |u| can reach 0.3."
+ },
+ "verdicts": [
+  "The released backward IS a correct IFT -- of its own implicit system f=0 (rel 1.6e-07 vs the exact IFT of f, 1.6e-07 vs central FD of the f-root forward).",
+  "It is NOT the IFT of the algebraic LS solution (rel 1.68e-01 on the demo cube) nor of cv.solvePnP's geometric solution (17.1% on the toy), because f is the stationarity of the depth-weighted normalised reprojection cost sum_i S_i||e_i||^2, not of sum_i||r_i||^2.",
+  "The P1 adaptation table in the published JSON is not reproducible from the committed script (P1ViaReleasedBPnP.forward raises TypeError; the in-tree p1_solve returns C=6.6e-02 vs the reported 1.6e-04 and feeds a permuted Jacobian to least_squares), and its FD reference is ~1000x larger than both gradient arms, i.e. invalid.",
+  "The published rel_bpnp_vs_ift6 = 1.37/1.31/0.92 is dominated by a BASIS error: g_bpnp is d(rvec,t)/dtheta (parameter basis) while the published g_ift6 was the tangent (omega) rate; the same-vector basis factor is 0.76-1.37.",
+  "At a properly converged C_P1 solution (|grad C| <= 1e-13) the released backward vs our exact 6-DoF IFT is 1.5%, 9.4%, 29.9% (cos 0.9999, 0.9956, 0.9661); our IFT alone matches a branch-following FD to 5e-06, 2e-05, 3e-04. The gap is the depth weighting (released differentiates sum_i S_i||e_i||^2, ours sum_i S_i^2||e_i||^2) plus the float32 implementation of the release, whose cond(f_y) is 1.4e+03, 1.5e+04, 9.1e+04. It is case dependent, not a shared IFT."
+ ],
+ "headline_corrected": "released BPnP backward is the exact IFT of *its own* depth-weighted algebraic normal equations; it is not the IFT of the P1 cost nor of the geometric forward, and the published P1 adaptation table is invalid (basis error + non-converged solve + invalid FD)."
+}
