@@ -192,9 +192,17 @@ def main():
                     except Exception as ex:
                         print("cert fail", ex)
                         val = float("nan")
+                    try:
+                        sres_rlt = shor_bound(M0, D0, G0, A, B, add_rlt=True)
+                        val_rlt = float(sres_rlt["value"])
+                    except Exception as ex:
+                        print("cert RLT fail", ex)
+                        val_rlt = float("nan")
                     for rr in rows[-4:]:
                         rr["shor"] = val
                         rr["cert"] = bool(np.isfinite(val) and (rr["J"] - val <= 1e-6) and rr["feas"])
+                        rr["shor_rlt"] = val_rlt
+                        rr["cert_rlt"] = bool(np.isfinite(val_rlt) and (rr["J"] - val_rlt <= 1e-6) and rr["feas"])
         print("frame", frame, "done", flush=True)
     json.dump(rows, open(OUT / "raw.json", "w"), indent=2, default=float)
     # aggregate
@@ -213,6 +221,9 @@ def main():
         cert = [r.get("cert") for r in rs if r.get("cert") is not None]
         if cert:
             lines.append(f"- certified: {100*np.mean(cert):.0f}%")
+        cert_rlt = [r.get("cert_rlt") for r in rs if r.get("cert_rlt") is not None]
+        if cert_rlt:
+            lines.append(f"- certified + RLT: {100*np.mean(cert_rlt):.0f}%")
         lines.append("")
     (OUT / "main_table.md").write_text("\n".join(lines) + "\n")
     print("wrote", OUT / "main_table.md", "rows", len(rows))

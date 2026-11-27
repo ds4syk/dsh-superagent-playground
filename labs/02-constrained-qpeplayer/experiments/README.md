@@ -311,3 +311,44 @@ $RUN $PY code/make_results.py   2>&1 | tee results/make_results.log   # 生成�
 | Lemma 2.2（14×14 证书） | ✅ 400/400 tight + 与 verify 逐位回归 |
 | 定理 2.3 / Prop 2.1（FB） | ✅ 四脚桌 + kink 数值表 |
 | C5 d(μ) 负 gap 现象 | ✅ 复现（δ_min=−5.9e-13） |
+
+---
+
+# 2026-11-27 P2 补充证明后的验证 / 消融
+
+作者 P2 补充证明（Feishu wiki `DLCEwhinxiE4EWkhuh7ckCZsnUg`）结案 P2-Q4–Q10 与 P1 剩余 Q4/Q8/Q11/Q15，并给出 **14×14 零升维 RLT 割平面** $g_i g_j \ge 0$。本轮新增：
+
+## A. RLT 割平面的紧性消融（合成）
+
+`theory/run_rlt.py`：p=16、4 个噪声档 × 4 seeds；比较 base 14×14 与 +RLT 的下界 gap / 认证。
+
+| noise | bias | base cert | RLT cert | 备注 |
+|-|-|-|-|-|
+| 0.02 | 0.10 | 4/4 | 4/4 | 低噪均紧 |
+| 0.05 | 0.20 | 4/4 | 4/4 | 低噪均紧 |
+| 0.10 | 0.30 | 1/4 | **2/4** | seed1 RLT gap $2.4\times10^{-4}\to7.6\times10^{-12}$ |
+| 0.20 | 0.40 | 0/4 | 0/4 | RLT 把 gap 缩小 10–20%，仍不紧 |
+
+文件：`theory/results/rlt.md`、`rlt.json`。
+
+## B. 真实数据 RLT（LM / LM-O）
+
+| 数据集 | ALM 认证 base | ALM 认证 + RLT | 软惩罚 base→RLT |
+|-|-|-|-|
+| LINEMOD | 50% | 50% | 50%→44% |
+| LM-O | 22% | **39%** | 17%→33% |
+
+- RLT 对 LM-O 的遮挡/高噪确实收紧（+17pp），但 LM 无变化、投影出现数值退化（6%→0）；**真实证书仍不是 100%**。
+- YCB 未重跑 RLT（基表 83% 已较高）；后续可补。
+
+## C. 其余 P2 证明验证
+
+- P2-Q5：`verify/sanity_fb_saddle.py` F4b 已给 `cond ~ 1/ε²`（理论斜率 2）；补充证明的 $\epsilon^*\asymp m_0 u_{\rm mach}^{1/4}$ 与四脚桌秩亏实验一致。
+- P2-Q6：`sanity_fb_saddle.py` F6 验证 4×3 接触 Jacobian 秩 3（LICQ 失效）；单侧 Bouligand 导数的两步 LP+QP 公式已写入补充证明，本地未单独数值复现（列入缺口）。
+- P2-Q8：Woodbury 条件数标度与 `theory/run_rlt.py` 的 RLT 数值一致方向；未做独立 $\rho$ sweep。
+- P2-Q9/Q10：补充证明已给松弛升维零增益与 Maxwell 平滑；本地未单独搭 slack-SDP 实验（列入缺口）。
+
+## D. 证明状态
+
+- P2-Q4–Q10 **证明已结案**（补充证明）；RLT 实验支持“低噪紧、高噪失紧”的机制。
+- 剩余 P2 缺口转为**实验/实现**：真实 cert 仍 50%/39%/83%（不是 100%）、40 根精确内层未接、真实检测器/端到端未接、YCB RLT 未跑。

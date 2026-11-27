@@ -7,3 +7,9 @@ code/
 kb/**/00_feishu*.md
 kb/**/01_feishu.md
 artifacts/
+
+# experiment code lives under experiments/code but is part of the paper artifacts
+!labs/01-laplace-qpeplayer/experiments/code/
+!labs/01-laplace-qpeplayer/experiments/code/**
+!labs/02-constrained-qpeplayer/experiments/code/
+!labs/02-constrained-qpeplayer/experiments/code/**

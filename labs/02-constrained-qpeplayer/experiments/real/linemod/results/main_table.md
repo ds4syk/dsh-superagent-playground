@@ -10,6 +10,7 @@ N=30, P_CON=16, noise=1.0px, bias=[10.0, 20.0, 30.0]px
 - trans median: 36.82 mm
 - feasible: 39%
 - certified: 33%
+- certified + RLT: 33%
 
 ## Soft penalty
 
@@ -19,6 +20,7 @@ N=30, P_CON=16, noise=1.0px, bias=[10.0, 20.0, 30.0]px
 - trans median: 38.55 mm
 - feasible: 94%
 - certified: 50%
+- certified + RLT: 44%
 
 ## Projection
 
@@ -28,6 +30,7 @@ N=30, P_CON=16, noise=1.0px, bias=[10.0, 20.0, 30.0]px
 - trans median: 33.73 mm
 - feasible: 100%
 - certified: 33%
+- certified + RLT: 39%
 
 ## ALM-QPEP
 
@@ -37,4 +40,5 @@ N=30, P_CON=16, noise=1.0px, bias=[10.0, 20.0, 30.0]px
 - trans median: 37.69 mm
 - feasible: 100%
 - certified: 50%
+- certified + RLT: 50%
 
