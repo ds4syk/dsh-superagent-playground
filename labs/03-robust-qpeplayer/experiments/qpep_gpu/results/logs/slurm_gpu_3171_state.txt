@@ -1,0 +1,20 @@
+2026年 11月 27日 星期五 22:06:32 CST
+$ scontrol show node ls
+   Gres=gpu:3
+   State=MIXED+PLANNED ThreadsPerCore=2 TmpDisk=0 Weight=1 Owner=N/A MCS_label=N/A
+   AllocTRES=cpu=32,mem=48G,gres/gpu=3
+
+$ squeue -o ...
+   JOBID     USER ST       TIME TRES_P                 NAME
+    3171      syk PD       0:00 gres/g         p3b_qpep_gpu
+    3170      syk PD       0:00 gres/g               python
+    3151      cyr  R      43:25 gres/g meow3x_F_to_350epoch
+    3094      cyr  R    1:19:49 gres/g d17_ground_motion27_
+    3086      cyr  R    2:07:20 gres/g      d16_dense27_50e
+
+$ scontrol show job 3171
+   JobState=PENDING Reason=Priority Dependency=(null)
+   RunTime=00:00:00 TimeLimit=00:20:00 TimeMin=N/A
+   StartTime=2026-11-28T21:34:00 EndTime=2026-11-28T21:54:00 Deadline=N/A
+   Command=(null)
+   WorkDir=/mnt/storage1/syk/.superagent-work/wt-p3b-paper2/labs/03-robust-qpeplayer/experiments/qpep_gpu

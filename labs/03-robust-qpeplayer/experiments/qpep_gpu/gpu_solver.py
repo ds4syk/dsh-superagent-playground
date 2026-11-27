@@ -97,7 +97,11 @@ def eigh4_jacobi(K, sweeps=JACOBI_SWEEPS):
             aqq = A[:, q, q]
             # Givens rotation that zeroes A[p,q]; guard the 0/0 case with
             # atan2's branch (theta = pi/4 when app == aqq and apq == 0).
-            theta = 0.5 * torch.atan2(2.0 * apq, app - aqq)
+            # For G = [[c,s],[-s,c]] on the (p,q) plane, zeroing A'[p,q]
+            # requires tan(2 theta) = 2 apq / (aqq - app); the opposite
+            # sign silently leaves the off-diagonal nonzero (caught by the
+            # correctness gate in probe.py).
+            theta = 0.5 * torch.atan2(2.0 * apq, aqq - app)
             c = torch.cos(theta)
             s = torch.sin(theta)
             G = torch.eye(4, dtype=K.dtype, device=K.device).expand(B, 4, 4).clone()
