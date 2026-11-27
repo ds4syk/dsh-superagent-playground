@@ -8,36 +8,19 @@ $\mathbf q=[q_0,q_1,q_2,q_3]^\top\in\mathbb{S}^3$ 是单位四元数，$\mathbf 
 \end{equation}
 于是对 $\mathbf q\in\mathbb{S}^3$ 有 $\|\mathbf v_2(\mathbf q)\|_2^2=\|\mathbf q\|_2^4=1$，且 $\mathbf e_{\rm tr}=[1,1,1,1,0,\dots,0]^\top$ 满足 $\mathbf e_{\rm tr}^\top\mathbf v_2(\mathbf q)=1$。
 
-\textbf{事实 3.1（仿射可表示性）。} 对任意 $\mathbf p\in\mathbb{R}^3$ 与 $a\in\{1,2,3\}$，存在 $\mathbf m_a(\mathbf p)\in\mathbb{R}^{10}$，使得对所有 $\mathbf q\in\mathbb{S}^3$ 有 $\mathbf e_a^\top\mathbf R(\mathbf q)\mathbf p=\mathbf m_a(\mathbf p)^\top\mathbf v_2(\mathbf q)$（验证到 $4\times10^{-15}$）；这正是四类约束族都在 $(\mathbf v_2,\mathbf t)$ 中仿射的原因。
+\textbf{事实 3.1（仿射可表示性）。} 对任意 $\mathbf p\in\mathbb{R}^3$ 与 $a\in\{1,2,3\}$，存在 $\mathbf m_a(\mathbf p)\in\mathbb{R}^{10}$，使得对所有 $\mathbf q\in\mathbb{S}^3$ 有 $\mathbf e_a^\top\mathbf R(\mathbf q)\mathbf p=\mathbf m_a(\mathbf p)^\top\mathbf v_2(\mathbf q)$；这正是四类约束族都在 $(\mathbf v_2,\mathbf t)$ 中仿射的原因。
 
 \subsection{目标与约束}\label{sec:objective}
 \begin{equation}
-\resizebox{\columnwidth}{!}{$
-J_\theta(\mathbf q,\mathbf t)=\mathbf v_2(\mathbf q)^\top\mathbf M_0(\theta)\mathbf v_2(\mathbf q)+2\mathbf t^\top\mathbf D_0(\theta)\mathbf v_2(\mathbf q)+\mathbf t^\top\mathbf G_0(\theta)\mathbf t .$}
+\begin{aligned}
+J_\theta(\mathbf q,\mathbf t)={}&\mathbf v_2(\mathbf q)^\top\mathbf M_0(\theta)\mathbf v_2(\mathbf q)+2\mathbf t^\top\mathbf D_0(\theta)\mathbf v_2(\mathbf q)\\
+&+\mathbf t^\top\mathbf G_0(\theta)\mathbf t .
+\end{aligned}
 \label{eq:objective}
 \end{equation}
-对 PnP 型残差 $\mathbf r_i(\mathbf q,\mathbf t)=\mathbf P_i(\mathbf R(\mathbf q)\mathbf p_i+\mathbf t)$，其中 $\mathbf P_i=\mathbf I-\mathbf u_i\mathbf u_i^\top/\|\mathbf u_i\|^2$ 为视线投影，\eqref{eq:objective} 成立，且 $\mathbf M_0=\sum_i\sum_{ab}P_{i,ab}\operatorname{sym}(\mathbf m_a(\mathbf p_i)\mathbf m_b(\mathbf p_i)^\top)$、$\mathbf D_0=\sum_i\mathbf P_i[\mathbf m_1;\mathbf m_2;\mathbf m_3]$、$\mathbf G_0=\sum_i\mathbf P_i$。这是 QPEP 的问题类去掉消元后的形式。所有约束都具有形式 $g_j(\mathbf q,\mathbf t)=\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)+\mathbf b_j^\top\mathbf t\le0$；表~\ref{tab:families} 列出四类约束族。
+对 PnP 型残差 $\mathbf r_i(\mathbf q,\mathbf t)=\mathbf P_i(\mathbf R(\mathbf q)\mathbf p_i+\mathbf t)$，其中 $\mathbf P_i=\mathbf I-\mathbf u_i\mathbf u_i^\top/\|\mathbf u_i\|^2$ 为视线投影，\eqref{eq:objective} 成立，且 $\mathbf M_0=\sum_i\sum_{ab}P_{i,ab}\operatorname{sym}(\mathbf m_a(\mathbf p_i)\mathbf m_b(\mathbf p_i)^\top)$、$\mathbf D_0=\sum_i\mathbf P_i[\mathbf m_1;\mathbf m_2;\mathbf m_3]$、$\mathbf G_0=\sum_i\mathbf P_i$；这是 QPEP 的问题类在消去 $\mathbf t$ 之前的形式。所有约束都具有形式 $g_j(\mathbf q,\mathbf t)=\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)+\mathbf b_j^\top\mathbf t\le0$，即正深度、平面非穿透、视场与倾角锥四类（表~\ref{tab:families}）。
 
-\begin{table}[t]
-\centering
-\caption{约束族。四类均验证到 $4\times10^{-15}$。倾角锥一行利用 $\|\mathbf q\|^2=1$，即流形上的 $q_1^2+q_2^2\le\sin^2(\alpha/2)$。}
-\label{tab:families}
-\scriptsize
-\setlength{\tabcolsep}{2pt}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}p{2.0cm}p{4.0cm}p{3.0cm}@{}}
-\toprule
-族 & 表达式 & $(\tilde{\mathbf a}_j,\mathbf b_j)$ \\
-\midrule
-正深度 & $z_{\min}-\mathbf e_3^\top(\mathbf R\mathbf p_i+\mathbf t)\le0$ & $(-\mathbf m_3(\mathbf p_i)+z_{\min}\mathbf e_{\rm tr},\ [0,0,-1]^\top)$ \\
-平面非穿透 & $-\mathbf n^\top(\mathbf R\mathbf v_j+\mathbf t)-d\le0$ & $(-\sum_a n_a\mathbf m_a(\mathbf v_j)-d\,\mathbf e_{\rm tr},\ -\mathbf n)$ \\
-视场（$\pm$） & $\pm(\mathbf R\mathbf p_i+\mathbf t)_x-\tau(\mathbf R\mathbf p_i+\mathbf t)_z\le0$ & $(\pm\mathbf m_1(\mathbf p_i)-\tau\mathbf m_3(\mathbf p_i),\ [\pm1,0,-\tau]^\top)$ \\
-倾角锥 & $q_1^2+q_2^2-\sin^2(\tfrac\alpha2)\|\mathbf q\|^2\le0$ & $(\mathbf e_2+\mathbf e_3-\sin^2(\tfrac\alpha2)\mathbf e_{\rm tr},\ \mathbf 0)$ \\
-\bottomrule
-\end{tabular}}
-\end{table}
-
-两个视场不等式只有在 $\tau<\infty$ 且约束沿正确方向活跃时才蕴含 $z>0$，因此我们总是对每个观测点显式加入一个正深度约束；这很廉价（$p$ 随点数增长），并消除了任何单独的手性论证。
+两个视场不等式只有在 $\tau<\infty$ 且约束沿正确方向活跃时才蕴含 $z>0$，因此我们总是对每个观测点显式加入一个正深度约束，代价随点数线性增长。
 
 \subsection{问题（C-QPEP）}\label{sec:cqpep}
 \begin{equation}
@@ -46,5 +29,4 @@ J_\theta(\mathbf q,\mathbf t)=\mathbf v_2(\mathbf q)^\top\mathbf M_0(\theta)\mat
 \begin{assumption}\label{asm:main}
 $\mathbf M_0,\mathbf D_0,\mathbf G_0$ 关于 $\theta$ 连续可微，且 $\mathbf G_0\succ0$（或活跃的 $\mathbf b_j$ 张成 $\mathbb{R}^3$）。
 \end{assumption}
-
-\textbf{范围之外。} (i) 非仿射约束，例如 $\|\mathbf R\mathbf p+\mathbf t-\mathbf c\|\ge d$ 或物体间间隙。(ii) 随 $\theta$ 变化而交换的多个最优解（解映射跳跃）。(iii) 对 $\mathbf q$ 的非多项式依赖，例如到参考旋转的测地距离。
+该表述覆盖在 $(\mathbf v_2,\mathbf t)$ 中仿射、对 $\mathbf q$ 多项式的约束，且限于单个受约束最优解随 $\theta$ 连续变化的参数区域。

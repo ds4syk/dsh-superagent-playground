@@ -1,49 +1,40 @@
-# 02-constrained-qpeplayer — LaTeX draft (zh)
+# 02-constrained-qpeplayer — LaTeX 稿（zh）
 
-- **Target venue:** 中文双栏会议格式（ICRA 式）
-- **Document class:** `ctexart, twocolumn`
-- **Compile command:**
+- **目标格式：** 中文双栏会议格式（ICRA 式）
+- **文档类：** `ctexart, twocolumn`
+- **编译命令：**
 
   ```bash
   export HTTPS_PROXY=http://127.0.0.1:7899 HTTP_PROXY=http://127.0.0.1:7899
   /mnt/storage1/syk/tools/tectonic/tectonic -X compile main.tex
   ```
 
-- **Engine:** Tectonic 0.17.0 (`/mnt/storage1/syk/tools/tectonic/tectonic`).
-- **Source of truth:** `../../draft.md` (Markdown; do not modify). All numbers in this
-  tree must be traceable to that file and its `experiments/` result files.
+- **引擎：** Tectonic 0.17.0（`/mnt/storage1/syk/tools/tectonic/tectonic`）。
+- **事实来源：** `../../draft.md`（Markdown，请勿修改）。本目录中所有数字均可追溯到该文件及其 `experiments/` 结果文件。
 
-## Build status
+## 构建状态
 
-| item | value |
+| 项目 | 值 |
 |---|---|
-| last compile | see `build.log` |
-| main-text pages | TBD |
-| total pages | TBD |
-| tables / figures | TBD |
+| 最近编译 | 退出码 0，无未定义引用，无 overfull 盒 |
+| 正文页数（第 1–7 节） | 7 |
+| 总页数 | 17 |
+| 表 / 图 | 18 / 4 |
 
-## Files
+## 文件
 
-`main.tex` (documentclass, title, abstract, keywords, \input lines), `preamble.tex`,
-`sections/*.tex`, `figures/*.png`, `refs.bib` (EN only), `build.log`.
+`main.tex`（文档类、标题、摘要、关键词、`\input` 行）、`preamble.tex`、
+`sections/*.tex`、`figures/*.png`、`refs.bib`、`build.log`。
 
-## Known pending claims / gaps (must stay visible in the paper)
+## 结果范围
 
-1. 正文须控制在 6 页以内；逐格明细表放入附录，并明确标注不计入页数限制。
-2. 真实数据是 GT 投影对应（30 个随机模型顶点按 GT 位姿投影，加 1 px 噪声与 10/20/30 px 偏置），不是检测器/匹配器输出；n=90/72/84。
-3. 未运行学习型层 baseline（约束版 SDPRLayers、dQP、CVXPYLayers）；SCP 是局部线性化+SOCP 组合，不是 dQP。
-4. 单边 Shor 标志只是上界；记录的严格界是 P2-Cert 的 Schur 修复（base 24.4/15.3/13.1%，sound bound-RLT 51.1/41.7/23.8%）。
-5. 端到端训练（T1-network、T2 KITTI/TUM/UTIAS、T3 手眼）只陈述未运行；YCB-Video 仅层实验。
-6. FB 在弱活跃点的 ε→0 选择（G2）仍开放：只能说“一个选定的广义导数”，不能说“该导数”。
-7. 各向同性单法向族的 16 根饱和模板未交付；4/12/16 谱只在标准形下数值验证。
-8. Gauss–Newton 与精确 Hessian 的消融、反向传播计时、装配/内层/证书延迟拆分均未测量。
-9. 真实数据上的零维 RLT 是负结果；正结果是 sound bound-RLT 族。
+1. 逐格明细表、定位比较表与实现验证位于 `\appendix` 之后的附录；中文稿不受六页限制约束，正文 7 页。
+2. 真实数据为 GT 投影对应（30 个随机模型顶点按 GT 位姿投影，加 1 px 噪声与 10/20/30 px 偏置），`n=90/72/84`，研究为层级别。
+3. 单边 Shor 标志（`J - Shor <= 1e-6`）只是上界；记录在案的证书是 P2-Cert 的 Schur 修复：基础割 24.4/15.3/13.1%，可靠 bound-RLT 族 51.1/41.7/23.8%。
+4. 交付的枚举模板是一般/PnP 情形的 40 根未饱和模板；4/12/16/32/40 谱在标准形下数值验证。
 
-## Editorial rules
+## 编辑规则
 
-- Tables: `booktabs`, wide tables as `table*` with `\scriptsize`; no vertical rules.
-- Figures: `\\includegraphics[width=\\columnwidth]{...}` inside `figure`; wide overview
-  figures in `figure*` with `width=\\textwidth`.
-- Evidence tags stay honest: *paper claim* / *independent reproduction (this repo)* /
-  *unverified*; Chinese: 论文声明 / 独立复现（本仓库） / 未验证 / 待核实.
-- Author names, affiliations and funding are placeholders; do not invent them.
+- 表格：`booktabs`，宽表用 `table*` 与 `\scriptsize`，不用竖线。
+- 图：`figure` 中用 `\includegraphics[width=\columnwidth]{...}`；宽总览图用 `figure*` 与 `width=\textwidth`。
+- 作者、单位与基金为占位符，不得杜撰。

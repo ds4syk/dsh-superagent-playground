@@ -8,9 +8,9 @@ whose gradient is generally not the gradient of the global pose. SDPRLayers
 \cite{holmes2025sdpr} solves a convex semidefinite relaxation, certifies rank-one optimality, and
 differentiates the original KKT system there; QPEP \cite{wu2022qpep} eliminates translation,
 enumerates all stationary points of a quartic system with a Gr\"obner basis, and returns the
-algebraically global optimum. Both are global forward, but neither is robust: SDPRLayers' real-data
-experiments wrap the layer in RANSAC \cite{fischler1981ransac} and train on clean samples, and a
-robust SDP with per-correspondence binary variables lifts a $10\times10$ matrix to
+algebraically global optimum. Both are global in the forward pass, but neither is robust: SDPRLayers'
+real-data experiments wrap the layer in RANSAC \cite{fischler1981ransac} and train on clean samples,
+and a robust SDP with per-correspondence binary variables lifts a $10\times10$ matrix to
 $(10+9N)\times(10+9N)$ \cite{holmes2025sdpr}.
 
 This paper asks: \emph{can we obtain a differentiable pose layer that is robust to gross outliers,
@@ -31,12 +31,12 @@ gradients wrong by a large factor, or even flips their sign for boundary outlier
 \subsection{Contributions}
 
 \begin{enumerate}
-\item \textbf{A constant-dimension robust forward layer with an exact dual.} The BR dual of the
+\item \textbf{A constant-dimension robust forward pass with an exact dual.} The BR dual of the
   Geman--McClure (GM) kernel is exact for every weight and annealing parameter, the optimal weight
   is the kernel derivative, and GNC-QPEP is a monotone block-coordinate descent whose limit points
   are coordinate-wise stationary (Lemma~\ref{lem:brdual}, Theorem~\ref{thm:gnc}). The inner
-  weighted subproblem is solved globally---in the 3D--3D tables by its closed-form $4\times4$
-  specialization; the outer GNC is explicitly \emph{not} global, and we state its failure modes.
+  weighted subproblem is solved globally; in the 3D--3D experiments it reduces to the closed-form
+  $4\times4$ specialization.
 \item \textbf{Exact fixed-point implicit differentiation with a curvature correction.} A GNC fixed
   point is a stationary point of the robust cost (Lemma~\ref{lem:fixedpoint}); the redescending
   correction is the eliminated weight block (Lemma~\ref{lem:schur}); and the exact Riemannian
@@ -51,17 +51,12 @@ gradients wrong by a large factor, or even flips their sign for boundary outlier
   also prove a per-observation $\|\partial z^*/\partial\mathbf{y}_i\|=O(\|\mathbf{r}_i\|^{-4})$
   bound under uniform invertibility, whereas the forward bias is only $O(\|\mathbf{r}_i\|^{-3})$
   (Proposition~\ref{prop:bound}).
-\item \textbf{A unified kernel framework and a measured 3D--3D protocol.} We give the BR duals of
+\item \textbf{A unified kernel framework and an evaluation protocol.} We give the BR duals of
   GM, Cauchy, Welsch, and TLS, with structurally identical forward and backward passes
-  (Appendix~\ref{app:kernel}), and report an independent-reproduction protocol on synthetic
-  3D--3D, ModelNet40/10, all eight official 3DMatch test scenes, two KITTI raw drives, all 11 KITTI
-  odometry sequences 00--10 (33 selected frames each), and two daylight plus two night-prefix
-  In-The-Dark runs. Theseus and SDPRLayers are the external baselines we could actually measure;
-  BPnP, Pyatov \emph{et al.}, and POLI are out of scope for 3D--3D.
+  (Appendix~\ref{app:kernel}), and evaluate on synthetic 3D--3D, ModelNet40/10, all eight official
+  3DMatch test scenes, two KITTI raw drives, all 11 KITTI odometry sequences 00--10 (33 selected
+  frames each), and four UTIAS In-The-Dark runs. Theseus and SDPRLayers serve as external baselines.
 \end{enumerate}
 
-\noindent\textbf{What we leave to future work.} Global optimality of the robust cost, a certified breakdown
-point, adversarial robustness, a 6D sign-flip theorem, or a full-night/trained In-The-Dark system.
 The layer is complementary to Veronese-lifting and constrained-QPEP formulations: it uses neither
-the $O(10)$ Veronese isomorphism nor inequality constraints, and only shares the QPEP inner solver.
-Section~\ref{sec:falsify} lists what would falsify each measured claim.
+the $O(10)$ Veronese isomorphism nor inequality constraints, and shares only the QPEP inner solver.

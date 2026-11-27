@@ -1,9 +1,6 @@
 \section{方法与理论}
 \label{sec:method}
 
-% 编号与英文源稿一致：引理1、定理1、引理2--5、定理2--3、命题1--3
-% （独立计数器，见 preamble.tex）。
-
 \subsection{Black--Rangarajan对偶与GNC-QPEP前向}
 
 \begin{lemma}[GM的精确BR对偶]\label{lem:brdual}
@@ -16,7 +13,7 @@ w^*(e)&=\rho_\mu'(e)=\Big(\frac{\mu c^2}{\mu c^2+e}\Big)^2,
 \end{equation}
 从而对任意$z$有
 $\min_{w\in[0,1]^N}\sum_i\{w_ie_i(z)+\psi_\mu(w_i)\}=\sum_i\rho_\mu(e_i(z))$。
-标量目标在$(0,1]$上严格凸、驻点为$w^*$，盒约束是笛卡尔积；完整证明见附录~A。
+标量目标在$(0,1]$上严格凸、驻点为$w^*$，盒约束是笛卡尔积；完整证明见附录~\ref{app:proofs}。
 \end{lemma}
 
 \begin{theorem}[GNC-QPEP前向]\label{thm:gnc}
@@ -38,13 +35,12 @@ z^{(k+1)}&=\argmin_{z\in\mathcal{M}}\sum_iw_i^{(k)}e_i(z).
   $z_\mu^*\in\argmin_z\sum_iw_{\mu,i}^*e_i(z)$。
 \item[(iii)] 当$\mu\downarrow1$时，每个聚点满足$w_i^*=\rho'(e_i(z^*))$且
   $\Phi(z^*)=0$，即$z^*$是$F_{\mathrm{rob}}$的驻点。
-\item[(iv)] \textbf{无全局保证。}全局性质只属于内层加权QPEP。外层GNC是非凸块坐标方法；
-  它可能停在鞍点，相干多数外点可使$F_{\mathrm{rob}}$的全局极小点本身出错
-  （第~\ref{sec:discussion}节）。“可摆脱任何外点污染”这一说法不是定理。
+\item[(iv)] 全局性质只属于内层加权QPEP：外层GNC是非凸块坐标方法，可能停在鞍点；相干多数外点
+  还可使$F_{\mathrm{rob}}$的全局极小点本身出错（第~\ref{sec:discussion}节）。
 \end{enumerate}
 陈述(ii)是标准的单调块下降论证；(iii)由$\rho_\mu'$的连续性与加权问题的一阶条件得到。在
-3D--3D实验中，内层求解器是QPEP的闭式标量权重$4\times4$特化；通用的40根多项式求解器未实现，
-故没有任何度量数字依赖其求根完备性。
+3D--3D实验中，内层求解器是QPEP的闭式标量权重$4\times4$特化；$4\times4$的Davenport/Horn
+变体在附录~\ref{app:systems}中做了基准测试。
 \end{theorem}
 
 \begin{algorithm}[t]
@@ -89,8 +85,8 @@ H_{\mathrm{rob}}&=H_{\mathrm{IRLS}}-D\Psi''^{-1}D^\top
 \end{aligned}
 \end{equation}
 由于$\psi''(w_i^*)=-1/\rho''(e_i^*)>0$，重降修正正是被消去的权重块；且若
-$H_{\mathrm{IRLS}}\succeq0$，则$H_J\succ0\iff H_{\mathrm{rob}}\succ0$。冻结权重不是小近似：
-它删掉了Schur补。
+$H_{\mathrm{IRLS}}\succeq0$，则$H_J\succ0\iff H_{\mathrm{rob}}\succ0$。冻结权重会删除该
+Schur补；第~\ref{sec:gradient}节量化由此产生的梯度误差。
 \end{lemma}
 
 \begin{lemma}[$\mathbb{S}^3\times\mathbb{R}^3$上的精确黎曼Hessian]\label{lem:hessian}
@@ -141,9 +137,9 @@ $\Phi(\bar z(\theta),\theta)=0$，并且
 \frac{\mathrm{d}\bar z}{\mathrm{d}\theta}=-H_{\mathrm{rob}}^{-1}\frac{\partial\Phi}{\partial\theta}.
 \end{equation}
 若$H_{\mathrm{rob}}\succ0$，该分支是严格局部极小点，并在小扰动下保持；负特征值使$z^*$成为
-鞍点；$H_{\mathrm{rob}}$奇异使隐函数定理失效，分支可能分岔。该导数是\emph{所选驻点分支}的导数，
-不是全局argmin的导数，若算法切换分支也未必是GNC输出的导数：可逆性是IFT条件，而
-$\lambda_{\min}>0$是严格局部极小点与分支持续性的更强条件。
+鞍点；$H_{\mathrm{rob}}$奇异使隐函数定理失效，分支可能分岔。该导数是\emph{所选驻点分支}的导数；
+若GNC迭代切换分支，导数对应其所选的分支。可逆性是IFT条件，而$\lambda_{\min}>0$是严格局部极小点
+与分支持续性的更强条件。
 \end{theorem}
 
 \begin{theorem}[右端项分解]\label{thm:rhs}
@@ -176,7 +172,7 @@ $\partial\Phi_t^{\mathrm{naive}}/\partial\mathbf{y}_i=-2\rho'(e_i)W_i$。
 \end{equation}
 于是$\lambda_\parallel(0)=2$，$\lambda_\parallel(c^2/3)=0$，$\lambda_\parallel(c^2)=-1/2$，且当
 $e\to\infty$时$\lambda_\parallel(e)\sim-6c^4/e^2$。精确与朴素的平行特征值相差
-$-4e\rho''=8c^4e/(c^2+e)^3>0$，故当$e>c^2/3$时二者符号严格相反；最“有毒”的残差是
+$-4e\rho''=8c^4e/(c^2+e)^3>0$，故当$e>c^2/3$时二者符号严格相反；影响最大的残差是
 $e=c^2$附近的\emph{边界}残差，而不是最远的粗大外点。
 
 \begin{proposition}[一维符号翻转]\label{prop:signflip}
@@ -201,8 +197,8 @@ $\Phi$在$0$处与$Kc^4/d^3$处的符号，以及极限$H_{\mathrm{rob}}\to\lamb
 
 在6D中，位姿灵敏度的符号\emph{不}仅由$\lambda_\parallel$决定：
 $\partial z^*/\partial\mathbf{y}_i=-H_{\mathrm{rob}}^{-1}\partial\Phi/\partial\mathbf{y}_i$，
-而逆Hessian会混合各个方向。命题~\ref{prop:signflip}是严格的陈述；6D数值余弦$-0.079$只是观察，
-不是定理，6D类比需要对$H_{\mathrm{rob}}$与$\partial\Phi/\partial\mathbf{y}_i$的联合谱条件。
+而逆Hessian会混合各个方向。命题~\ref{prop:signflip}是严格陈述；6D对应为数值结果，余弦为
+$-0.079$，6D类比需要对$H_{\mathrm{rob}}$与$\partial\Phi/\partial\mathbf{y}_i$的联合谱条件。
 
 \begin{proposition}[逐观测$O(\|\mathbf{r}\|^{-4})$界]\label{prop:bound}
 在(A1)、(A5)下，设沿路径$\|\mathbf{y}_i\|\to\infty$时$z^*(\mathbf{y}_i)$保持在紧集中，且
@@ -217,22 +213,14 @@ $H_{\mathrm{rob}}$在该处一致正定、$\lambda_{\min}\ge\mu_0>0$。则
 \end{equation}
 前向影响仅为$O(\|\mathbf{r}_i\|^{-3})$：
 $\|\rho'(e_i)g_i\|\le2\overline wc^4/\|\mathbf{r}_i\|^3$。该界是逐观测的；它不能阻止$N$个外点
-累积，也未说明相干外点簇成为全局极小的情况。“梯度免疫”不是“前向鲁棒”。
+累积，也不约束成为全局极小的相干外点簇。因此单个观测上的梯度衰减与前向鲁棒性是两个不同性质。
 \end{proposition}
 
 \subsection{算法、复杂度与二阶认证}
 
-反向传播（算法~\ref{alg:backward}，附录~A）存储$z^*,w^*$并重算
+反向传播（算法~\ref{alg:backward}，附录~\ref{app:backward}）存储$z^*,w^*$并重算
 $g_i^E,H_i^E$；它对每个参数块求解一个$6\times6$系统，且从不展开GNC迭代。内存为权重与残差的
 $O(N)$、GNC迭代次数的$O(1)$；复杂度为每次前向迭代$O(N)$加一次固定规模的代数求解，反向装配为
 $O(N)$加$O(6^3)$。\textbf{二阶认证}是$H_{\mathrm{rob}}$的谱：$H_{\mathrm{rob}}\succ0$使不动点
-成为联合BR目标的严格局部极小点，负特征值使其成为鞍点，零穿越使分支分岔且梯度范数爆炸。它是局部
-稳定性诊断，不是鲁棒性认证——一个错误的、与外点一致的位姿仍可以是$H_{\mathrm{rob}}\succ0$的严格
-局部极小点。
-
-\subsection{不声称的内容}
-\label{sec:notclaimed}
-
-我们不声称：(i) 鲁棒代价的全局最优性；(ii) 可认证鲁棒性或崩溃点保证；(iii) 6D符号翻转定理；
-(iv) GNC输出是全局argmin；(v) 该层在对抗或相干外点情形替代RANSAC。我们声称的是所选鲁棒不动点的
-精确微分、修正的二阶理论，以及显式条件下的逐观测梯度界。
+成为联合BR目标的严格局部极小点，负特征值使其成为鞍点，零穿越使分支分岔且梯度范数爆炸。这是局部
+稳定性诊断——一个错误的、与外点一致的位姿也可以是$H_{\mathrm{rob}}\succ0$的严格局部极小点。

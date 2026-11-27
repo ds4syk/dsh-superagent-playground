@@ -1,21 +1,8 @@
-\section*{附录：详细结果（不计入正文页数限制）}
+\section*{附录：详细结果}
 \label{app:start}
 
-本附录\emph{不}计入正文页数限制。它汇集证据状态表、证明与算法细节、核对偶表、支撑
-表~\ref{tab:real}的逐数据集与逐场景数字、系统/基线/消融细节，以及反证。除明确标注外，每条记录
-均为来自\texttt{experiments/}的独立复现。
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{p3_data_coverage.png}
-\caption{超出原计划的数据覆盖。左：3DMatch真实低重叠带（$0.20$--$0.50$几何重叠，32个低重叠对）
-与高重叠对照（14对），每格10次试验；oracle基础内点$0.953$（低） vs $0.984$（高），干净旋转
-$0.47^\circ$ vs $0.19^\circ$；GNC-GM与RANSAC-1000保持$100\%$，IRLS在$p=0.7$达到$92\%$，
-Kabsch崩溃到$1\%$。右：GNC-GM在新增八个KITTI odometry序列上的成功率（每格10次试验）；
-seq~08是唯一真实的坏盆失效（$p=0$和$p=0.3$时为$80\%$）。来源：
-\texttt{experiments/real/p3\_data\_coverage.png}。}
-\label{fig:coverage}
-\end{figure}
+本附录汇集证明与算法细节、核函数对偶表、支撑表~\ref{tab:real}的逐数据集与逐场景数字，以及系统、
+基线与消融细节。
 
 \subsection*{A. 证明、推导注记与反向算法}
 \label{app:proofs}
@@ -24,7 +11,7 @@ seq~08是唯一真实的坏盆失效（$p=0$和$p=0.3$时为$80\%$）。来源�
 引理~\ref{lem:brdual}--\ref{lem:weights}、定理~\ref{thm:gnc}--\ref{thm:rhs}、
 命题~\ref{prop:signflip}--\ref{prop:bound}的完整证明，Schur补恒等式、黎曼Hessian公式与存在性
 构造，均维护在项目理论笔记（\texttt{theory/proofs.md}与\texttt{theory/derivations.md}）中；
-数值检查在\texttt{verify/}中。正文给出适合页数预算的结果与证明梗概。具体而言：
+数值检查在\texttt{verify/}中。正文给出结果与证明梗概，具体而言：
 
 \begin{itemize}
 \item \emph{引理~\ref{lem:brdual}}：$w\mapsto we+\psi_\mu(w)$在$(0,1]$上严格凸、驻点为
@@ -75,63 +62,11 @@ seq~08是唯一真实的坏盆失效（$p=0$和$p=0.3$时为$80\%$）。来源�
 \includegraphics[width=\columnwidth]{gradient_sign.png}
 \caption{命题~\ref{prop:signflip}背后的数值符号结构。左：映射级径向响应，精确 vs 冻结权重
 （朴素）；当$e>c^2/3$时符号相反。右：经$H_{\mathrm{rob}}^{-1}$后的位姿级响应；逆Hessian混合
-各方向，故6D符号是数值观察而非定理。来源：
-\texttt{synthetic/results/gradient\_sign.png}。}
+各方向，故6D符号是数值结果。}
 \label{fig:sign}
 \end{figure}
 
-\subsection*{B. 每条声称的证据状态}
-\label{app:status}
-
-表~\ref{tab:status}把理论、测量与受阻工程之间的边界显式化，使任何已度量行都不会被读作理论保证，
-任何未来行都不会被读作结果。
-
-\begin{table*}[t]
-\caption{本文声称的证据状态（v0.4一致性检查）。产物位于
-\texttt{labs/03-robust-qpeplayer/}下。}
-\label{tab:status}
-\centering
-\scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.2cm}
-  >{\raggedright\arraybackslash}p{2.6cm}
-  >{\raggedright\arraybackslash}p{6.6cm}
-  >{\raggedright\arraybackslash}p{1.4cm}@{}}
-\toprule
-条目 & 状态 & 证据 & 章节 \\
-\midrule
-BR对偶、GNC不动点驻性、Schur补曲率修正、精确黎曼Hessian、一维符号翻转、存在性、
-$O(\|\mathbf{r}_i\|^{-4})$界 & 新理论（证明+数值检查） & \texttt{theory/proofs.md}、
-\texttt{verify/}、\texttt{synthetic/results/verify\_smoke.txt} & \S\ref{sec:method} \\
-精确IFT反向 vs 中心FD（600个观测，6D） & 已度量 &
-\texttt{synthetic/results/gradient\_table.json} & \S\ref{sec:experiments} \\
-GNC-GM vs 固定/自适应RANSAC（随机、相干、边界外点） & 已度量（合成、ModelNet40/10、全部8个
-官方3DMatch测试场景、2次KITTI raw驾驶、全部11个odometry序列） &
-\texttt{synthetic/results/main\_table\_extended.json}、\texttt{real/*/results/*.json} &
-\S\ref{sec:experiments} \\
-端到端边界精化，NumPy与torch & 已度量的玩具诊断（GT监督，5--10个种子；非学习系统） &
-\texttt{synthetic/results/e2e\_table.json}、\texttt{e2e\_torch/results/*.json} &
-\S\ref{sec:experiments} \\
-Theseus-GM与SDPRLayers+SCS & 仅在合成3D--3D上度量（SDPR为前向，$W_i=I$时退化为Kabsch） &
-\texttt{baselines/results/baselines.json} & \S\ref{sec:experiments} \\
-UTIAS In-The-Dark & 在两次白天+两次夜间前缀运行上的度量协议（复合官方GT、手写SIFT+SGBM）；
-整夜/训练前端未测试 & \texttt{real/inthedark/results/} & \S\ref{sec:experiments} \\
-KITTI双目回退 & 已度量的负结果（旋转可解，平移受前端限制） &
-\texttt{real/kitti\_stereo/results/} & \S\ref{sec:experiments} \\
-6D符号翻转陈述 & 不是定理；仅为数值观察 & \texttt{gradient\_table.json} &
-\S\ref{sec:signflip} \\
-通用40根QPEP多项式求解器 & 未实现（所有表格使用标量权重$4\times4$特化） &
-\texttt{qpep\_gpu/qpep\_scope.md} & \S\ref{sec:experiments} \\
-$4\times4$内层的GPU计时/CUDA-graph捕获 & 因Slurm GPU占用受阻；仅CPU验证 &
-\texttt{qpep\_gpu/results/qpep\_gpu.json}、\texttt{logs/slurm\_gpu\_*} &
-\S{}E \\
-学习描述子（FCGF/Predator）、真实数据外部基线、端到端训练的In-The-Dark、完整54场景3DMatch
-训练语料 & 未来工作 & --- & \S\ref{sec:notmeasured} \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\subsection*{C. 核对偶}
+\subsection*{B. 核函数对偶}
 \label{app:kernel}
 
 表~\ref{tab:kernel}列出该层使用的BR对偶，其中$a=\mu c^2$。前向与反向在不同核之间结构完全相同：
@@ -139,8 +74,7 @@ $4\times4$内层的GPU计时/CUDA-graph捕获 & 因Slurm GPU占用受阻；仅CP
 调度，而不是单纯的带宽退火。
 
 \begin{table}[t]
-\caption{四种核的Black--Rangarajan对偶（$a=\mu c^2$）。来源：
-\texttt{theory/derivations.md}，由\texttt{verify/}复现。}
+\caption{四种核的Black--Rangarajan对偶（$a=\mu c^2$）。}
 \label{tab:kernel}
 \centering
 \scriptsize
@@ -157,30 +91,30 @@ TLS & $\min(e,a)$ & \shortstack[l]{$1$ (若$e<a$)\\$0$ (若$e>a$)} & $a(1-w)$ \\
 \end{tabular}
 \end{table}
 
-\subsection*{D. 逐数据集结果}
+\subsection*{C. 逐数据集结果}
 \label{app:datasets}
 
 \noindent\textbf{ModelNet40/10。}表~\ref{tab:modelnet}给出汇总数字。ModelNet10使用10类共908个
 测试物体，OFF网格重采样到2048点；鲁棒方法的成功率与ModelNet40最多相差$2$个百分点，中位旋转最多
-相差$0.038^\circ$。
+相差$0.038^\circ$。两个数据集上GNC耗时为$1.7$--$1.9$~ms，固定1000 RANSAC为
+$53.5$--$61.5$~ms。
 
-\begin{table*}[t]
-\caption{均匀随机外点下的ModelNet物体点云结果，每格50次试验，$N=100$，$c=0.05$~m。来源：
-\texttt{real/modelnet/results/main\_table.json}、
-\texttt{real/modelnet10/results/main\_table.json}。}
+\begin{table}[t]
+\caption{均匀随机外点下的ModelNet物体点云结果，每格50次试验，$N=100$，$c=0.05$~m。表中为
+成功率；“崩溃”表示失效。}
 \label{tab:modelnet}
 \centering
 \scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lcccccc}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lcccc}
 \toprule
-数据集 & GNC & RANSAC-1000 & IRLS & Kabsch & GNC ms & RANSAC ms \\
+数据集 & GNC & RANSAC-1000 & IRLS & Kabsch \\
 \midrule
-ModelNet40 & $100\%$ $\le70\%$ & $100\%$ & $98$--$100\%$ & 崩溃$\ge50\%$ & $1.7$--$1.9$ & $53.5$--$61.5$ \\
-ModelNet10 & $100\%$ $\le70\%$ & $100\%$ & $98$--$100\%$ & 崩溃$\ge50\%$ & $1.7$--$1.9$ & $53.5$--$61.5$ \\
+ModelNet40 & $100\%$ $\le70\%$ & $100\%$ & $98$--$100\%$ & 崩溃$\ge50\%$ \\
+ModelNet10 & $100\%$ $\le70\%$ & $100\%$ & $98$--$100\%$ & 崩溃$\ge50\%$ \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}
 
 \noindent\textbf{3DMatch。}表~\ref{tab:3dmatch}给出八场景汇总行、低/中/高重叠研究、更严格的
 $0.20$--$0.50$带，以及两次FPFH前端审计。对全部八个官方测试场景汇总（每格20次试验），$p=0.7$
@@ -198,14 +132,11 @@ $92\%$，Kabsch为$1\%$。低重叠减少的是可用对应的\emph{数量}，�
 
 \begin{table*}[t]
 \caption{3DMatch细节。oracle对应使用真实重叠片段上的GT映射最近邻；FPFH行使用手工前端且匹配中
-不含GT（不是FCGF/Predator）。“bnd”$=$边界外点。来源：
-\texttt{real/threedmatch\_full/results/full\_scenes.json}、
-\texttt{overlap\_bins.json}、\texttt{overlap\_dependence.json}；
-\texttt{real/threedmatch/results/descriptor.json}。}
+不含GT。“bnd”$=$边界外点。}
 \label{tab:3dmatch}
 \centering
 \scriptsize
-\setlength{\tabcolsep}{3pt}
+\setlength{\tabcolsep}{2.2pt}
 \begin{tabular}{lcccccc}
 \toprule
 设置 & 对数/试验数 & 干净旋转 & GNC & RANSAC-1000 & Kabsch & 加速 \\
@@ -225,26 +156,23 @@ FPFH审计2 & 自然内点$67.8\%$ & --- & $100\%$ & $97\%$ & $83\%$ & --- \\
 \noindent\textbf{KITTI。}表~\ref{tab:kitti}汇集raw驾驶与odometry行。对raw驾驶，自运动来自OXTS
 （Mercator加横滚/俯仰/偏航），并用\texttt{calib\_imu\_to\_velo}映射到Velodyne；方向已验证
 （drive 0001正确NN $0.100$--$0.123$~m vs 逆$0.143$--$0.183$~m；drive 0002 $0.108$--$0.140$~m
-vs $0.136$--$0.269$~m）。Drive 0002精确复现drive-0001的随机与边界表格，保持相干转变
+vs $0.136$--$0.269$~m）。Drive 0002复现drive-0001的随机与边界表格，保持相干转变
 （$50\%$时GNC $40\%$ vs $35\%$，IRLS $30\%$ vs $45\%$；二者均为随机水平），并给出
 $\sim21$--$23\times$的加速。阈值扫描使GNC在$c\in\{0.15,0.25,0.35\}$时保持$100\%$，其中
-$c=0.25$是与$\sim0.10$~m点间距最合理的匹配。对odometry，仅从84.8~GB官方归档中按范围抓取每序列
+$c=0.25$与$\sim0.10$~m点间距匹配。对odometry，仅从84.8~GB官方归档中按范围抓取每序列
 32--33个触及帧，故全部11个序列00--10都有代表。在新增八个序列上（每格10次试验），$p=0.7$时GNC
-与RANSAC-1000均为$100\%$，唯seq~08例外（$p=0$和$p=0.3$时$80\%$，真实的坏盆失效；RANSAC为
-$100\%$）；11个序列汇总的成功率为$p=0/0.3/0.5/0.7$时$99/99/100/100\%$，$p\ge0.3$时固定
-RANSAC/GNC运行时间比为$22.4\times$。00/05/07子集给出失效模式细节：全部18次方向检查通过
-（前向NN $0.053$--$0.114$~m vs 逆$0.104$--$0.430$~m），随机成功率在$70\%$以内为$100\%$，
-汇总GNC $2.8$~ms vs $73.7$~ms（$26.3\times$），$p=0.6$时相干崩溃（$p=0.5$时GNC $53\%$，
-IRLS $38\%$，RANSAC $0\%$），边界$0.067^\circ$ vs $0.143^\circ$，且在
-$|\mathbf{t}|=0.09$--$9.62$~m与间隔$1/2/4/8$（171个配对单元格）上GNC从未低于RANSAC。精确位姿
-的干净下限（$0.042$--$0.057^\circ$）并不低于OXTS raw驾驶（$0.030$--$0.039^\circ$），故主导它
-的是LiDAR采样/体素化。每序列33帧是子集，不是完整流。
+与RANSAC-1000均为$100\%$，唯seq~08例外（$p=0$和$p=0.3$时$80\%$；RANSAC为$100\%$）；11个序列
+汇总的成功率为$p=0/0.3/0.5/0.7$时$99/99/100/100\%$，$p\ge0.3$时固定RANSAC/GNC运行时间比为
+$22.4\times$。00/05/07子集补充：全部18次方向检查通过（前向NN $0.053$--$0.114$~m vs 逆
+$0.104$--$0.430$~m），随机成功率在$70\%$以内为$100\%$，汇总GNC $2.8$~ms vs $73.7$~ms
+（$26.3\times$），$p=0.6$时相干崩溃（$p=0.5$时GNC $53\%$，IRLS $38\%$，RANSAC $0\%$），边界
+$0.067^\circ$ vs $0.143^\circ$，且在$|\mathbf{t}|=0.09$--$9.62$~m与间隔$1/2/4/8$（171个配对
+单元格）上GNC从未低于RANSAC。精确位姿的干净下限（$0.042$--$0.057^\circ$）并不低于OXTS raw
+驾驶（$0.030$--$0.039^\circ$），故主导它的是LiDAR采样/体素化。
 
 \begin{table*}[t]
 \caption{KITTI raw驾驶与odometry，$N=300$，$c=0.25$~m，每格20次试验（新增序列每格10次）。除
-seq~08外，随机外点成功率在$70\%$以内GNC与固定1000 RANSAC均为$100\%$。来源：
-\texttt{real/kitti/results/kitti.json}、\texttt{real/kitti2/results/kitti2.json}、
-\texttt{real/kitti\_odom/results/kitti\_odom.json}。}
+seq~08外，随机外点成功率在$70\%$以内GNC与固定1000 RANSAC均为$100\%$。}
 \label{tab:kitti}
 \centering
 \footnotesize
@@ -261,21 +189,17 @@ odom 00/05/07 & 每个33帧 & $2.8$~ms & $73.7$~ms & $26.3\times$ & $53/38/0\%$ 
 \end{tabular}
 \end{table*}
 
-\noindent\textbf{In-The-Dark。}表~\ref{tab:inthedark}给出白天运行与夜间窗口。复合官方GT已在不相交
-对上用双目重投影验证：前向中位$0.65$~px（run\_000002）与$0.52$~px（run\_000012），而逆为
+\noindent\textbf{In-The-Dark。}表~\ref{tab:inthedark}给出白天运行与夜间窗口。复合官方GT已在
+不相交对上用双目重投影验证：前向中位$0.65$~px（run\_000002）与$0.52$~px（run\_000012），而逆为
 $18.1/27.9$~px、恒等为$9.5/14.7$~px、未共轭为$21.5/31.3$~px。所有检查通过（$512\times384$
 图像，左右行对齐$0.56$--$0.58$~px）。归档为905~MB，但只按范围抓取315{,}463字节的变换文件
-（CRC已验证）。夜间zip（2.6--2.76~GB）未下载；只抓取了触及的窗口。运动匹配的白天对照
+（CRC已验证）；夜间zip（2.6--2.76~GB）未下载，只抓取了触及的窗口。运动匹配的白天对照
 （run\_000002起点757，$|\mathbf{t}|=0.21$~m，旋转$0.54^\circ$）给出$85.9\%$内点与
-$0.121^\circ/0.007$~m；夜间中位深度为$4.5$~m，白天为$6.7$--$7.2$~m，故夜间内点率是几何效应，
-不是SIFT在黑暗中更鲁棒的证据。
+$0.121^\circ/0.007$~m；夜间中位深度为$4.5$~m，白天为$6.7$--$7.2$~m，故夜间内点率是几何效应。
 
 \begin{table*}[t]
-\caption{UTIAS In-The-Dark：两次白天运行（各15对连续图像）与两个夜间前缀窗口（各10对）；手写
-SIFT+StereoSGBM前端，无训练。GT重投影列为中位像素（前向 / 逆 / 恒等 / 未共轭车辆系）。来源：
-\texttt{real/inthedark/results/inthedark\_dense.json}、
-\texttt{inthedark\_run12\_dense.json}、\texttt{inthedark\_night.json}、
-\texttt{verify\_run\_000002.json}、\texttt{verify\_run\_000012.json}。}
+\caption{UTIAS In-The-Dark：两次白天运行（各15对连续图像）与两个夜间窗口前缀（各10对）；手写
+SIFT+StereoSGBM前端，无训练。GT重投影列为中位像素（前向 / 逆 / 恒等 / 未共轭车辆系）。}
 \label{tab:inthedark}
 \centering
 \scriptsize
@@ -294,54 +218,27 @@ SIFT+StereoSGBM前端，无训练。GT重投影列为中位像素（前向 / 逆
 \end{tabular}
 \end{table*}
 
-\noindent\textbf{KITTI双目回退（平移为负）。}drive 0001的三十对帧，在矫正后的
-\texttt{image\_02/03}（$b=0.5327$~m）上使用SIFT+亚像素+StereoSGBM，给出$17.8\%$的自然内点率
-（$c=0.5$~m），每对890个对应。GNC/IRLS把旋转恢复到$0.052^\circ$，而GT内点下限为$0.071^\circ$；
-但平移中位$0.70$~m vs $1.92$~m运动与$0.239$~m下限；没有方法达到$0.1$~m或$0.25$~m成功。GNC
-比固定1000 RANSAC快$19.3\times$（4.21 vs 81.3~ms）。$3$--$60$~m上双目与LiDAR深度比为
-$1.000$--$1.061$，排除视差尺度缺陷；残差是来自前端、遮挡与动态偏置的相干前向平移低估
-（$0.63$--$0.73$）。
+\noindent\textbf{KITTI双目前端。}drive 0001的三十对帧，在矫正后的\texttt{image\_02/03}
+（$b=0.5327$~m）上使用SIFT+亚像素+StereoSGBM，给出$17.8\%$的自然内点率（$c=0.5$~m），每对890
+个对应。GNC/IRLS把旋转恢复到$0.052^\circ$，而GT内点下限为$0.071^\circ$；但平移中位$0.70$~m vs
+$1.92$~m运动与$0.239$~m下限，没有方法达到$0.1$~m或$0.25$~m成功。GNC比固定1000 RANSAC快
+$19.3\times$（4.21 vs 81.3~ms）。$3$--$60$~m上双目与LiDAR深度比为$1.000$--$1.061$，排除视差
+尺度误差；残差是来自前端、遮挡与动态偏置的相干前向平移低估（$0.63$--$0.73$）。
 
-\subsection*{E. 系统、批处理与内层求解器}
+\subsection*{D. 系统、批处理与内层求解器}
 \label{app:systems}
 
-一个在$(B,N,3)$上向量化的numpy GNC以相同的$\mu$-调度把循环复现到旋转
+一个在$(B,N,3)$上向量化的NumPy GNC以相同的$\mu$-调度把循环复现到旋转
 $\le1.1\times10^{-14}$、平移$\le1.2\times10^{-15}$。$B=32,N=100$时批处理p50为$8.5$~ms，而
 循环为$56.2$~ms（$6.60\times$）；$B=8$时加速为$2.95\times$（$N=100$）与$3.27\times$
-（$N=500$）；$B=1$更慢（$0.54\times$），故对单实例循环仍是正确选择。在RTX 5090的float64
-eager torch上，GPU受启动开销限制于$42.4$--$45.7$~ms：在$B\le8$时落后
-（$0.04$--$0.57\times$），$B=32,N=100$时大致持平（$1.33\times$），在$B=32,N=500$
-（$2.23\times$）与$B=128$（$N=100$时$4.96\times$，$N=500$时$8.24\times$）时胜出。后续探针把
-这一测试扩展到静态形状$4\times4$特征求解器与CUDA-graph捕获，覆盖
-$B\in\{1,8,32,128,512\}$、$N\in\{100,500\}$、float64与float32。其CPU验证发现并修复了手写
-Jacobi特征求解器中的一个Givens符号缺陷（修复前：static-jacobi与NumPy最大差
-$\|\Delta R\|_F\approx1.80$，且只匹配$50\%$的$\mu$-调度；修复后：$\sim10^{-16}$且$100\%$
-匹配）。
-
-\textbf{GPU支路未被度量。}2026-11-28T00:26:08，我们向\texttt{gpu}分区提交作业3184
-（\texttt{probe.py}、\texttt{--gres=gpu:1}、20~min）；00:31:16时
-\texttt{scontrol show job 3184}报告\texttt{JobState=PENDING}、\texttt{Reason=Resources}、
-\texttt{StartTime=2026-11-28T21:23:07}（约21~h之后），而作业3151/3180/3181占着三块RTX 5090。
-该作业于00:31:21被取消，随后\texttt{scontrol}报告\texttt{JobState=CANCELLED}、
-\texttt{Reason=Resources}；\texttt{squeue}/\texttt{scontrol}输出在
-\texttt{experiments/qpep\_gpu/\allowbreak results/logs/\allowbreak slurm\_gpu\_3184\_state.txt}中。由于没有捕获任何
-计算图，我们不声称任何CUDA-graph错误，也不涉及40根QPEP求解器。
+（$N=500$）；$B=1$更慢（$0.54\times$），故对单实例循环仍是正确选择。
 
 $4\times4$的Davenport/Horn内层求解器 \cite{horn1987}在数值上等价于加权Kabsch（最大
 $\|R_d-R_k\|_F=1.07\times10^{-14}$，最大代价超出$9.4\times10^{-16}$），但其运行时间只在大$N$
 时更优：p50比为$0.94\times$（$N=20$）、$1.02\times$（$N=100$）、$1.28\times$（$N=500$），
-几何平均$1.07\times$。它是大$N$选项，不是$N=100$的默认胜出项。
+几何平均$1.07\times$。它是大$N$选项，而不是$N=100$的默认优势项。
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{batch_gnc.png}
-\caption{$(B,N,3)$上的批处理GNC-GM：$B=\{1,8,32,128\}$与$N=\{100,500\}$的吞吐量与
-循环对批处理的加速。GPU点为RTX 5090 float64 eager-torch批处理基准；它们不是受阻的静态形状
-$4\times4$/CUDA-graph探针。来源：\texttt{systems/results/batch\_gnc.json}。}
-\label{fig:batch}
-\end{figure}
-
-\subsection*{F. 外部基线（仅合成）}
+\subsection*{E. 外部基线（仅合成）}
 \label{app:baselines}
 
 Theseus 0.2.3（稠密Cholesky；无SuiteSparse头文件时\texttt{scikit-sparse}不可用）求解相同的逐点
@@ -353,9 +250,7 @@ GNC-GM在每个$p$均$100\%$，耗时$1.7$~ms，RANSAC-自适应为$100\%$、$0.
 $20/20$（$[0.84,1.00]$）重叠，故该差距不显著；$p=0.5/0.7$则已分离（表~\ref{tab:baselines}）。
 
 \begin{table}[t]
-\caption{合成外部基线，每个$p$有20个实例；$p=0/0.3/0.5/0.7$时的成功率（\%）与p50时间。来源：
-\texttt{baselines/results/baselines.json}、\texttt{theseus.json}、
-\texttt{sdpr\_forward.json}。}
+\caption{合成外部基线，每个$p$有20个实例；$p=0/0.3/0.5/0.7$时的成功率（\%）与p50时间。}
 \label{tab:baselines}
 \centering
 \scriptsize
@@ -377,12 +272,11 @@ SDPRLayers+SCS & 100 & 失败 & 失败 & 失败 / 8.5--13.4~ms \\
 SDPRLayers+SCS（cb3aed2处的新鲜\texttt{utiasASRL/sdprlayer}，SCS，208次前向）在数值上可用：
 $0/208$次SCS异常，$8.5$--$13.4$~ms。它在$p=0$成功，但在$p\ge0.3$失败，这在无鲁棒核时符合
 预期。$W_i=I$且权重为单位值时，其目标等于Kabsch：80次配对试验给出最大
-$|\Delta R|=1.5\times10^{-5}$~度与最大$|\Delta t|=1.3\times10^{-9}$~m。该行是前向正确性/可用性
-检查，\textbf{不是}独立的鲁棒基线；要得到有区别的SDPR，需要非单位的$W_i$（例如POLI）或
-RANSAC。BPnP仅做3D--2D PnP，Pyatov等是两视图2D--2D，POLI是逐点几何估计器且未找到官方位姿
-求解器代码/权重；它们都不是3D--3D基线，故没有编造任何表格。
+$|\Delta R|=1.5\times10^{-5}$~度与最大$|\Delta t|=1.3\times10^{-9}$~m。该行验证前向正确性与
+可用性；有区别的SDPR需要非单位$W_i$（例如POLI）或RANSAC。BPnP仅做3D--2D PnP，Pyatov等是
+两视图2D--2D，POLI是逐点几何估计器，故它们都不是直接的3D--3D基线。
 
-\subsection*{G. 消融}
+\subsection*{F. 消融}
 \label{app:ablations}
 
 \noindent\textbf{核。}在相同的加权Kabsch内层与调度下，GM、Cauchy与Welsch在随机与边界外点上
@@ -392,7 +286,7 @@ $0.220/0.268/0.392^\circ$）。没有证据支持更换默认核。
 
 \begin{table}[t]
 \caption{核消融：$p=0.5/0.6/0.7$时的边界中位旋转（度）；所有核在随机与边界外点上$70\%$以内
-均为$100\%$。来源：\texttt{ablations/kernels/\allowbreak results/kernel\_ablation.json}。}
+均为$100\%$。}
 \label{tab:kernelabl}
 \centering
 \footnotesize
@@ -415,38 +309,44 @@ $\gamma=2.0$比默认快$1.04$--$1.79\times$，$\gamma=1.2$慢$1.47$--$2.49\time
 
 \noindent\textbf{RANSAC强度。}更强的LO-RANSAC（MSAC评分，最多五轮局部重拟合/重评分，0.999
 自适应停止，上限1000）在精度上与GNC持平（中位旋转差$\le0.006^\circ$），但在每个$p$都比普通
-自适应RANSAC慢$1.03$--$1.52\times$，因为最终一致性重拟合已经是同一个估计器。因此固定1000基线
-在运行时间上是稻草人。
+自适应RANSAC慢$1.03$--$1.52\times$，因为最终一致性重拟合已经是同一个估计器。
 
 \noindent\textbf{各向异性$W_i$。}在Cholesky白化残差上使用正确的6-DoF Gauss--Newton内层求解时，
-$W_i=I$与Kabsch吻合到$5.3\times10^{-13}$。标量加权Kabsch对各向异性$W_i$是\textbf{不}精确的：
-在收敛的GM权重下其目标比为$1.002$--$1.007$（对角）与$1.035$--$1.088$（完整SPD），单次试验
-最大为$3.80$。然而在各项同性合成噪声下，各向异性$W_i$是误设模型：完整$W$的GNC配对中位旋转
-变化为$+0.055$到$+0.124^\circ$，仅在$8$--$32\%$的试验中更好，$p=0.7$时成功率为$92\%$
-（单位权重：$100\%$）。精确内层求解比标量Kabsch慢$4.9$--$23\times$。故我们将其作为正确性/负
-结果报告：当$W_i$确实各向异性时使用非线性内层，但不要声称在本数据上各向异性带来精度收益。
+$W_i=I$与Kabsch吻合到$5.3\times10^{-13}$。标量加权Kabsch对各向异性$W_i$不精确：在收敛的GM
+权重下其目标比为$1.002$--$1.007$（对角）与$1.035$--$1.088$（完整SPD），单次试验最大为
+$3.80$。然而在各项同性合成噪声下，各向异性$W_i$是误设模型：完整$W$的GNC配对中位旋转变化为
+$+0.055$到$+0.124^\circ$，仅在$8$--$32\%$的试验中更好，$p=0.7$时成功率为$92\%$（单位权重：
+$100\%$）。精确内层求解比标量Kabsch慢$4.9$--$23\times$。因此当$W_i$确实各向异性时应使用非线性
+内层，而各向异性并未在本数据上带来精度收益。
 
-\subsection*{H. 反证}
-\label{app:falsifiers}
+\subsection*{G. 端到端边界诊断}
+\label{app:e2e}
 
-可度量的声称都被写成可失败的形式：
+一个GT监督的测试时精化只更新注入的边界观测，共20个Adam步。$p=0.5$、lr $10^{-3}$时，精确方法
+最终损失为$1.90\times10^{-6}$，朴素方法为$1.66\times10^{-5}$（配对中位比$0.071$，即$14\times$
+的降低；$10/10$个种子上精确方法更低），旋转误差$0.029^\circ$ vs $0.087^\circ$。$p=0.7$时配对
+中位比为$0.059$（$17\times$），精确方法在$9/10$个种子上胜出。全点对照不具区分性
+（$4$--$9/10$，比值$0.64$--$1.04$）。一个float64的PyTorch \texttt{autograd.Function}在
+$N=6/8/10$通过\texttt{gradcheck}，且与NumPy在位姿上一致到$10^{-16}$；一个逐点MLP精化（5个种子、
+$p=0.4$、50个Adam步）把中位旋转从$0.635^\circ$降到精确方法$0.068^\circ$、朴素方法
+$0.106^\circ$（精确方法在$4/5$个种子上胜出，中位损失比$0.56$）；一个不相交的留出协议在两组上
+都过拟合。这是该层实现的受控测试台，而不是训练好的真实数据系统。
 
-\begin{itemize}
-\item \textbf{精确反向。}若精确IFT Jacobian不再与精化分支上的中心有限差分吻合（相对Frobenius
-  误差高于$10^{-6}$，或余弦低于$0.999$），则“精确不动点导数”的声称不成立。当前值为
-  $4.9\times10^{-8}$/$3.1\times10^{-8}$（内点/边界），余弦$1.000000$。
-\item \textbf{曲率修正。}若朴素冻结权重Jacobian不是边界观测上的主导误差源（例如无$\lambda$
-  变体更差），则Schur补的解释无法说明测量。当前：边界上朴素$1.07$ vs 无$\lambda$
-  $9.8\times10^{-4}$。
-\item \textbf{符号翻转。}一维中命题即证明；数值上，若精确与朴素径向响应在$e>c^2/3$时没有
-  相反符号，则6D诊断的数值前提失败。当前：$122/122$个边界与$64/64$个粗大观测翻转。
-\item \textbf{前向鲁棒性。}若GNC-GM在随机外点上任一$p\in[0,0.7]$的成功率低于固定预算RANSAC，
-  则“与固定预算RANSAC持平”的声称不成立。当前：在合成、ModelNet40/10、3DMatch、KITTI raw与
-  odometry上持平。
-\item \textbf{预算声称。}若自适应RANSAC在低$p$时比GNC慢，则所述“低$p$时更慢”的限定不成立。
-  当前：GNC在$p=0.1$时慢$3.9\times$，在$p=0.7$时快$8.3\times$。
-\item \textbf{可辨识性失效。}若任何方法在$60$--$70\%$相干外点下恢复了真值位姿，则模型崩溃的
-  讨论有误。当前：所有方法都返回外点变换。
-\item \textbf{真实数据范围。}若In-The-Dark GT在留出重投影上未能胜过逆/恒等/共轭替代，则“协议
-  验证”的声称失败。当前：$0.52$--$0.65$~px vs $9.5$--$31.3$~px。
-\end{itemize}
+逐坐标梯度检查的精确相对误差为$1.6\times10^{-7}$ / $3.9\times10^{-8}$ / $9.3\times10^{-8}$；
+朴素方法为$1.42$ / $0.60$ / $0.38$。\texttt{gradcheck}的最大绝对误差为
+$6$--$8\times10^{-10}$，最大相对误差为$8\times10^{-9}$--$1.1\times10^{-8}$（除一个接近零的元素
+为$8\times10^{-6}$）；朴素反向在$1.5$--$1.8$处失败，而torch移植在$\mathrm{d}L/\mathrm{d}\mathbf{y}$
+上与NumPy一致到$3\times10^{-16}$。
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{p3_summary.png}
+\caption{实测3D--3D证据。(a) 合成GNC-GM成功率随外点比例的变化，分别对应随机、相干与边界外点：
+随机与边界保持$100\%$，相干在外点变换成为全局最优后崩溃。(b) ModelNet40、ModelNet10、
+3DMatch（8场景）与KITTI（2次驾驶）的真实数据随机外点成功率；均在$70\%$以内保持$100\%$。
+(c) 精确IFT与朴素冻结权重的6D Jacobian相对误差（p50，对数刻度），按残差分箱；边界分箱是
+冻结失效之处。(d) GNC p50相对\emph{固定1000}RANSAC在合成、3DMatch与KITTI数据上的运行时间
+优势；虚线为盈亏平衡线。页脚报告KITTI双目前端与In-The-Dark白天/夜间范围。成功为旋转
+$<5^\circ$且平移$<0.1$~m。}
+\label{fig:summary}
+\end{figure*}

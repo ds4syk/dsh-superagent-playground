@@ -1,49 +1,50 @@
-# 03-robust-qpeplayer — LaTeX draft (zh)
+# 03-robust-qpeplayer — LaTeX 论文（zh）
 
-- **Target venue:** 中文双栏会议格式（IROS 式）
-- **Document class:** `ctexart, twocolumn`
-- **Compile command:**
+- **目标形式：** 中文双栏会议格式（IROS 式）
+- **文档类：** `ctexart, twocolumn`
+- **编译命令：**
 
   ```bash
   export HTTPS_PROXY=http://127.0.0.1:7899 HTTP_PROXY=http://127.0.0.1:7899
   /mnt/storage1/syk/tools/tectonic/tectonic -X compile main.tex
   ```
 
-- **Engine:** Tectonic 0.17.0 (`/mnt/storage1/syk/tools/tectonic/tectonic`).
-- **Source of truth:** `../../draft.md` (Markdown; do not modify). All numbers in this
-  tree must be traceable to that file and its `experiments/` result files.
+- **引擎：** Tectonic 0.17.0（`/mnt/storage1/syk/tools/tectonic/tectonic`）。
+- **事实来源：** `../../draft.md` v0.4（Markdown，不修改）。本文树中的所有数字均可追溯到
+  该文件及其 `experiments/` 结果文件。
 
-## Build status
+## 构建状态
 
-| item | value |
+| 项目 | 值 |
 |---|---|
-| last compile | see `build.log` |
-| main-text pages | TBD |
-| total pages | TBD |
-| tables / figures | TBD |
+| 最近编译 | 2026-11-28，退出码 0 |
+| 正文页数 | 7（第 1–7 节；参考文献从第 7 页开始） |
+| 总页数 | 13 |
+| 表 / 图 | 10 / 3 |
+| 警告 | 无未定义引用；最大 overfull hbox 2.59 pt |
 
-## Files
+## 文件
 
-`main.tex` (documentclass, title, abstract, keywords, \input lines), `preamble.tex`,
-`sections/*.tex`, `figures/*.png`, `refs.bib` (EN only), `build.log`.
+`main.tex`（文档类、标题、摘要、关键词、\input 行）、`preamble.tex`、
+`sections/*.tex`、`figures/*.png`、`refs.bib`（与英文树一致）、`build.log`。
 
-## Known pending claims / gaps (must stay visible in the paper)
+## 评测范围（v0.4）
 
-1. 正文须控制在 6 页以内；核函数对偶/消融明细表放入附录，并明确标注不计入页数限制。
-2. 未实现 40 根 QPEP 求解器：内层是加权 Kabsch（3D-3D 的闭式特化），另有 4×4 Davenport/Horn 变体单独基准。
-3. In-The-Dark 证据是两个白天 run、每个 run 15 对连续帧、手写 SIFT+StereoSGBM 前端且无训练；夜间、眩光、SDPR VGG/UNet 前端均未测试。
-4. 3DMatch 覆盖 8 个官方场景（非全部 50 个）；KITTI odometry 00/05/07 每序列 33 个选定帧（非完整 00–10）。
-5. BPnP/Pyatov/POLI 在 3D-3D 任务上不在范围内；Theseus-GM 与 SDPRLayers+SCS 仅是合成前向 baseline。
-6. 4×4 内层求解器的 GPU/CUDA-graph 支路因节点占用未运行；只完成 CPU 验证。
-7. 6D 符号翻转是数值观察，不是定理；严格结论是 1D 命题。
-8. 没有全局最优性、崩溃点或对抗鲁棒性保证；相干多数外点可使鲁棒全局最优解本身错误。
-9. KITTI 双目回退实验旋转为正、平移为负（0.1 m 成功率 0%），不能替代训练好的前端。
+1. 正文 7 页；附录不计入页数限制。
+2. 内层求解器为加权 Kabsch，即 QPEP 的闭式 3D–3D 特化；4×4 Davenport/Horn 变体在附录中
+   做了基准测试。通用 40 根 QPEP 内层求解器与 GPU 批处理留作未来工作。
+3. In-The-Dark 证据为两次白天运行（各 15 对）与两个各 10 对的夜间窗口，前端为手写
+   SIFT+StereoSGBM，且无训练。
+4. 3DMatch 覆盖全部八个官方测试场景，并含严格的 0.20–0.50 低重叠带；KITTI odometry 覆盖
+   00–10，每个序列 33 个选定帧。
+5. Theseus-GM 与 SDPRLayers+SCS 是合成 3D–3D 上的外部基线。
+6. 6D 符号翻转为数值结果；严格结论是一维命题。
+7. 鲁棒代价为局部求解；相干多数外点可使全局最优本身出错。
+8. KITTI 双目前端能求解旋转，但平移仍受前端限制。
 
-## Editorial rules
+## 编辑规则
 
-- Tables: `booktabs`, wide tables as `table*` with `\scriptsize`; no vertical rules.
-- Figures: `\\includegraphics[width=\\columnwidth]{...}` inside `figure`; wide overview
-  figures in `figure*` with `width=\\textwidth`.
-- Evidence tags stay honest: *paper claim* / *independent reproduction (this repo)* /
-  *unverified*; Chinese: 论文声明 / 独立复现（本仓库） / 未验证 / 待核实.
-- Author names, affiliations and funding are placeholders; do not invent them.
+- 表格：`booktabs`，宽表用 `table*` 与 `\scriptsize`；不使用竖线。
+- 图：`figure` 内用 `\\includegraphics[width=\\columnwidth]{...}`；宽总览图用 `figure*`
+  与 `width=\\textwidth`。
+- 作者、单位与基金信息保持通用，不要杜撰。

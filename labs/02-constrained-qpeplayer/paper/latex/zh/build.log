@@ -9,14 +9,8 @@ warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSerifCJK-Me
 warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc`; build may not be reproducible in other environments
 warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSerifCJK-Black.ttc`; build may not be reproducible in other environments
 warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSerifCJK-ExtraLight.ttc`; build may not be reproducible in other environments
-warning: sections/01_introduction:4: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/01_introduction:10: Underfull \vbox (badness 4518) has occurred while \output is active
-warning: sections/03_formulation:37: Underfull \hbox (badness 10000) in paragraph at lines 37--37
-warning: sections/03_formulation:37: Underfull \hbox (badness 10000) in paragraph at lines 37--37
-warning: sections/03_formulation:37: Underfull \hbox (badness 10000) in paragraph at lines 37--37
-warning: sections/03_formulation:45: Underfull \vbox (badness 6063) has occurred while \output is active
 warning: sections/05_experiments:8: Underfull \hbox (badness 3724) in paragraph at lines 7--8
-warning: sections/05_experiments:24: Underfull \hbox (badness 1270) in paragraph at lines 23--24
+warning: sections/05_experiments:47: Underfull \hbox (badness 1412) in paragraph at lines 46--47
 warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSansCJK-Black.ttc`; build may not be reproducible in other environments
 warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSansCJK-Medium.ttc`; build may not be reproducible in other environments
 warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSansCJK-Light.ttc`; build may not be reproducible in other environments
@@ -24,106 +18,57 @@ warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSansCJK-Reg
 warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSansCJK-DemiLight.ttc`; build may not be reproducible in other environments
 warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSansCJK-Thin.ttc`; build may not be reproducible in other environments
 warning: accessing absolute path `/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc`; build may not be reproducible in other environments
-warning: sections/06_discussion:4: Underfull \vbox (badness 4328) has occurred while \output is active
-warning: sections/06_discussion:8: Underfull \vbox (badness 4156) has occurred while \output is active
-warning: main.tex:27: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:30: Underfull \hbox (badness 10000) in paragraph at lines 30--30
-warning: sections/08_appendix:39: Underfull \hbox (badness 2547) in paragraph at lines 38--39
-warning: sections/08_appendix:53: Underfull \vbox (badness 1454) has occurred while \output is active
-warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
-warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
-warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
-warning: sections/08_appendix:102: Underfull \hbox (badness 10000) in paragraph at lines 101--102
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:363: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:363: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:398: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:401: Underfull \hbox (badness 1509) in paragraph at lines 400--401
-warning: sections/08_appendix:401: Underfull \hbox (badness 10000) in paragraph at lines 400--401
-warning: sections/08_appendix:402: Underfull \hbox (badness 2564) in paragraph at lines 401--402
-warning: sections/08_appendix:402: Underfull \hbox (badness 10000) in paragraph at lines 401--402
-warning: sections/08_appendix:402: Underfull \hbox (badness 10000) in paragraph at lines 401--402
-warning: sections/08_appendix:402: Underfull \hbox (badness 10000) in paragraph at lines 401--402
+warning: sections/08_appendix:28: Underfull \hbox (badness 10000) in paragraph at lines 28--28
+warning: sections/08_appendix:37: Underfull \hbox (badness 2547) in paragraph at lines 36--37
+warning: sections/08_appendix:44: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:68: Underfull \hbox (badness 10000) in paragraph at lines 68--68
+warning: sections/08_appendix:68: Underfull \hbox (badness 10000) in paragraph at lines 68--68
+warning: sections/08_appendix:206: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:261: Underfull \vbox (badness 3942) has occurred while \output is active
+warning: sections/08_appendix:368: Underfull \hbox (badness 10000) in paragraph at lines 368--368
+warning: sections/08_appendix:372: Underfull \hbox (badness 10000) in paragraph at lines 372--372
+warning: sections/08_appendix:376: Underfull \hbox (badness 10000) in paragraph at lines 376--376
+warning: sections/08_appendix:419: Underfull \vbox (badness 3657) has occurred while \output is active
+warning: sections/08_appendix:419: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:421: Underfull \vbox (badness 7595) has occurred while \output is active
 note: Running BibTeX on main.aux ...
 note: Rerunning TeX because bibtex was run ...
 warning: algorithm.sty:11: 
 Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
-warning: sections/01_introduction:4: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/01_introduction:10: Underfull \vbox (badness 4518) has occurred while \output is active
-warning: sections/03_formulation:37: Underfull \hbox (badness 10000) in paragraph at lines 37--37
-warning: sections/03_formulation:37: Underfull \hbox (badness 10000) in paragraph at lines 37--37
-warning: sections/03_formulation:37: Underfull \hbox (badness 10000) in paragraph at lines 37--37
-warning: sections/03_formulation:45: Underfull \vbox (badness 6063) has occurred while \output is active
 warning: sections/05_experiments:8: Underfull \hbox (badness 3724) in paragraph at lines 7--8
-warning: sections/06_discussion:4: Underfull \vbox (badness 4328) has occurred while \output is active
-warning: sections/06_discussion:8: Underfull \vbox (badness 4156) has occurred while \output is active
-warning: main.tex:27: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:30: Underfull \hbox (badness 10000) in paragraph at lines 30--30
-warning: sections/08_appendix:39: Underfull \hbox (badness 2547) in paragraph at lines 38--39
-warning: sections/08_appendix:53: Underfull \vbox (badness 1454) has occurred while \output is active
-warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
-warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
-warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
-warning: sections/08_appendix:102: Underfull \hbox (badness 10000) in paragraph at lines 101--102
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:363: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:363: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:398: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:401: Underfull \hbox (badness 1509) in paragraph at lines 400--401
-warning: sections/08_appendix:401: Underfull \hbox (badness 10000) in paragraph at lines 400--401
-warning: sections/08_appendix:402: Underfull \hbox (badness 2564) in paragraph at lines 401--402
-warning: sections/08_appendix:402: Underfull \hbox (badness 10000) in paragraph at lines 401--402
-warning: sections/08_appendix:402: Underfull \hbox (badness 10000) in paragraph at lines 401--402
-warning: sections/08_appendix:402: Underfull \hbox (badness 10000) in paragraph at lines 401--402
+warning: sections/05_experiments:47: Underfull \hbox (badness 1412) in paragraph at lines 46--47
+warning: sections/08_appendix:28: Underfull \hbox (badness 10000) in paragraph at lines 28--28
+warning: sections/08_appendix:37: Underfull \hbox (badness 2547) in paragraph at lines 36--37
+warning: sections/08_appendix:44: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:68: Underfull \hbox (badness 10000) in paragraph at lines 68--68
+warning: sections/08_appendix:68: Underfull \hbox (badness 10000) in paragraph at lines 68--68
+warning: sections/08_appendix:206: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:261: Underfull \vbox (badness 3942) has occurred while \output is active
+warning: sections/08_appendix:368: Underfull \hbox (badness 10000) in paragraph at lines 368--368
+warning: sections/08_appendix:372: Underfull \hbox (badness 10000) in paragraph at lines 372--372
+warning: sections/08_appendix:376: Underfull \hbox (badness 10000) in paragraph at lines 376--376
+warning: sections/08_appendix:419: Underfull \vbox (badness 1400) has occurred while \output is active
+warning: sections/08_appendix:419: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:421: Underfull \vbox (badness 7595) has occurred while \output is active
 note: Rerunning TeX because "main.aux" changed ...
 warning: algorithm.sty:11: 
 Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
-warning: sections/01_introduction:4: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/01_introduction:10: Underfull \vbox (badness 4518) has occurred while \output is active
-warning: sections/03_formulation:37: Underfull \hbox (badness 10000) in paragraph at lines 37--37
-warning: sections/03_formulation:37: Underfull \hbox (badness 10000) in paragraph at lines 37--37
-warning: sections/03_formulation:37: Underfull \hbox (badness 10000) in paragraph at lines 37--37
-warning: sections/03_formulation:45: Underfull \vbox (badness 6063) has occurred while \output is active
 warning: sections/05_experiments:8: Underfull \hbox (badness 3724) in paragraph at lines 7--8
-warning: sections/06_discussion:4: Underfull \vbox (badness 4328) has occurred while \output is active
-warning: sections/06_discussion:8: Underfull \vbox (badness 4156) has occurred while \output is active
-warning: main.tex:27: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:30: Underfull \hbox (badness 10000) in paragraph at lines 30--30
-warning: sections/08_appendix:39: Underfull \hbox (badness 2547) in paragraph at lines 38--39
-warning: sections/08_appendix:53: Underfull \vbox (badness 1454) has occurred while \output is active
-warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
-warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
-warning: sections/08_appendix:101: Underfull \hbox (badness 10000) in paragraph at lines 101--101
-warning: sections/08_appendix:102: Underfull \hbox (badness 10000) in paragraph at lines 101--102
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:128: Underfull \hbox (badness 1092) in paragraph at lines 128--128
-warning: sections/08_appendix:363: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:363: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:398: Underfull \vbox (badness 10000) has occurred while \output is active
-warning: sections/08_appendix:401: Underfull \hbox (badness 1509) in paragraph at lines 400--401
-warning: sections/08_appendix:401: Underfull \hbox (badness 10000) in paragraph at lines 400--401
-warning: sections/08_appendix:402: Underfull \hbox (badness 2564) in paragraph at lines 401--402
-warning: sections/08_appendix:402: Underfull \hbox (badness 10000) in paragraph at lines 401--402
-warning: sections/08_appendix:402: Underfull \hbox (badness 10000) in paragraph at lines 401--402
-warning: sections/08_appendix:402: Underfull \hbox (badness 10000) in paragraph at lines 401--402
+warning: sections/05_experiments:47: Underfull \hbox (badness 1412) in paragraph at lines 46--47
+warning: sections/08_appendix:28: Underfull \hbox (badness 10000) in paragraph at lines 28--28
+warning: sections/08_appendix:37: Underfull \hbox (badness 2547) in paragraph at lines 36--37
+warning: sections/08_appendix:44: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:68: Underfull \hbox (badness 10000) in paragraph at lines 68--68
+warning: sections/08_appendix:68: Underfull \hbox (badness 10000) in paragraph at lines 68--68
+warning: sections/08_appendix:206: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:261: Underfull \vbox (badness 3942) has occurred while \output is active
+warning: sections/08_appendix:368: Underfull \hbox (badness 10000) in paragraph at lines 368--368
+warning: sections/08_appendix:372: Underfull \hbox (badness 10000) in paragraph at lines 372--372
+warning: sections/08_appendix:376: Underfull \hbox (badness 10000) in paragraph at lines 376--376
+warning: sections/08_appendix:419: Underfull \vbox (badness 1400) has occurred while \output is active
+warning: sections/08_appendix:419: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: sections/08_appendix:421: Underfull \vbox (badness 7595) has occurred while \output is active
 warning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details.
 note: Running xdvipdfmx ...
-note: Writing `main.pdf` (832.2685546875 KiB)
+note: Writing `main.pdf` (785.224609375 KiB)
 note: Skipped writing 3 intermediate files (use --keep-intermediates to keep them)
