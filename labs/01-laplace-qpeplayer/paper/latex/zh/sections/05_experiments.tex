@@ -1,0 +1,683 @@
+\section{实验}\label{sec:experiments}
+
+本节报告所有已执行的实验；每个表格都带有其证据级别以及产出它的结果文件。已完成的实验包括：合成 6D 分支交叉基准（含 FD 步长研究与实测折叠）、一维精确后验校验、SDP 证书与三部分 $10\times10$/$13\times13$ 关系、真实数据 LINEMOD 双模态研究（含位姿误差/ADD-S 代理）、同一组对应关系上的经典前向求解器与 Theseus 参照，以及总度同伦根计数。LINEMOD 研究是对歧义性、正确性与偏差/光滑性的受控测量，而不是检测器精度基准：没有学习型前端，没有检测器级 ADD(-S)/ADD-S AUC，UTIAS In-The-Dark 也未运行。
+
+\subsection{任务与数据集：实际运行了什么}\label{sec:whatran}
+
+表~\ref{tab:inventory} 列出了已执行的实验组以及仍未运行的实验组。合成 6D 基准给出全部局部极小值，以及一个在网格上沿分支跟踪的有限差分（FD）参照；一维正规形则是唯一可以用稠密求积计算后验积分的设定。
+
+\begin{table*}[t]
+\centering
+\caption{已执行的实验组与未运行项。ID E1--E18 是本文已执行的实验组；N1--N3 是没有测量的设计计划。}
+\label{tab:inventory}
+\scriptsize
+\setlength{\tabcolsep}{1pt}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabular}{@{}l p{2.4cm} p{3.7cm} p{4.1cm} l p{4.0cm}@{}}
+\toprule
+ID & 设置 & 实例 / 数据 & 规模与设置 & 状态 & 结果文件\\
+\midrule
+E1 & 6D QPEP 分支交叉（主实验） & 合成 $10\times10$ QPEP 代价；$q_A=e_0$，$q_B=e_3$（绕 $z$ 轴 $180^\circ$）；分支交叉在 $\theta=0$；$\theta=0$ 处有 2 个全局与 2 个局部极小值 & $[-0.2,0.2]$ 上的 81 点 $\theta$ 网格；$\tau=0.01$；FD $h=10^{-4}$；模式级 MC $n=200$、20 个种子；128 次多起点 & 已运行 & \url{results/main_table.json}, \url{results/raw_grid.json}\\
+E2 & 1D 精确后验，曲率不等 & $J=(x^2-1)^2(1+cx)+gx$，$c=0.25$；极小值在 $x=\pm1$，曲率为 5 与 3 & 2 种情形（$g=0$ 交叉、$g=0.2$ 分离）$\times$ 6 个 $\tau\in[0.005,0.2]$ 取值 & 已运行 & \url{theory/results/uniform_unequal_table.md}\\
+E3 & 折叠合并与 $\tau^{1/3}$ 正则化 & $J=x^4/4-ax^2/2$ & 3 个 $\tau$ 取值 $\times$ 6 个 $a$ 取值 & 已运行 & \url{theory/results/fold_table.md}\\
+E4 & 闭式 $\partial_\theta\log\det H$ & 随机的分支跟踪二次实例 & 5 次试验 & 已运行 & \url{theory/results/q6_verify.md}\\
+E5 & 旋转 SDP 证书 & 构造的 Choi--Lam $+2I$ 实例 & 用 SCS 求解 $10\times10$ SDP & 已运行 & \url{verify/verify_theorem0_output.json}\\
+E6 & 反向传播与 Laplace 常数 & 随机的分支跟踪二次实例 & 4 个 $\tau$ 取值 & 已运行 & \url{verify/verify_theorem11_output.json}\\
+E7 & LINEMOD 对称物体，旧构造 & BOP \texttt{eggbox}（目标 10）与 \texttt{glue}（目标 11） & 9 个候选帧，每帧至多 2 幅图像，$N=30$ 个模型点，$\tau=0.01$，FD $h=10^{-3}$ & 已运行；负结果 & \url{real/linemod/results/symmetry.json}\\
+E8 & LINEMOD 真实双模态代价（A 部分） & BOP 深度像素 + 网格顶点，主导平面 & 15 帧（8 帧 \texttt{eggbox}、7 帧 \texttt{glue}），$n_{\rm points}=900$，RANSAC 带宽 2.5 mm，$n_{\rm starts}=384$，$\tau=0.01$ & 已运行 & \url{real/linemod/results/two_mode.md} (A)\\
+E9 & LINEMOD 受控横向交叉（B 部分） & 相同真实几何，两个带标签假设各自独立的 $t$ & $[0.35,0.65]$ 上 11 个 $\theta$ 取值，FD $h=10^{-4}$，MC $n=400$ & 已运行 & \url{real/linemod/results/two_mode.md} (B)\\
+E10 & FD 步长研究 & 合成 6D 交叉 & $h\in[10^{-6},10^{-3}]$，6 个 $\theta$ 取值 & 已运行 & \url{results/fd_step.md}\\
+E11 & 导数回归测试 & 6 个随机二次实例 & \url{code/test_derivatives.py} & 已运行 & \url{code/test_derivatives.py}\\
+E12 & $10\times10$ 与 $13\times13$ SDP 校验 & Choi--Lam、随机与构造实例，以及 6 点物理 3D--3D 实例（$13\times13$ 约束复制自上游代码） & 10 个实例 + 8 个扰动 + 1 个物理实例 & 已运行 & \url{sdp/results/sdp_check.md}, \url{sdp/results/six_point.md}\\
+E13 & 鲁棒性、折叠与计时研究 & 合成 6D 交叉 & \texttt{n\_starts} 扫描，20 次计时重复，批量前向 & 已运行 & \url{results/robustness.md}\\
+E14 & Scorer/Airy 折叠延拓（P1-Q5c） & 1D $A_2$ 正规形 + 合成 6D \url{instance.py} 折叠 & 1D 交叉 $\alpha=\pm10^{-5}$；$\theta_f=1.3185\times10^{-3}$ 周围 14 个双侧 6D 点；21 点位姿网格，步长 $2\times10^{-5}$ & 已运行 & \url{theory/results/scorer_fold.md}\\
+E15 & 真实位姿误差与 ADD-S 代理 & 与 E8 相同的 15 个真实 \texttt{eggbox}/\texttt{glue} 帧 & $\tau=0.01$；MC $n=400$、20 个种子；ADD-S：1000 个查询顶点对完整 GT 网格 KD-tree $\times$ 3 个子样本；1000 次重采样的帧自举；相同的 $n_{\rm starts}=384$ & 已运行 & \url{real/linemod/results/pose_error.md}\\
+E16 & 经典前向基线 & 相同的 15 组真实对应关系，逐位相同 & cv2 5.0.0 EPnP/ITERATIVE/SQPNP/IPPE + 局部 GN/LM（恒等/GT/翻转初始化）；2000 次重采样的帧自举 & 已运行 & \url{real/linemod/results/classical_baselines.md}\\
+E17 & Theseus LM 基线 & 相同的 15 帧与方位代价 & Theseus 0.2.3 LM float64 CPU；GT、恒等、每帧 20 个随机初始化（300 次试验）；5 帧上 8 初始化多起点（40 次试验） & 已运行 & \url{real/linemod/results/theseus_baseline.md}\\
+E18 & 快速根计数（P1-Q3） & 3 个随机对称 $M$ + E1 实例 $M(0)$ & 射影平稳系统上的总度同伦，全部 4 个仿射图；残差 $\le7.1\times10^{-15}$；每实例 5.3--8.0 s & 已运行 & \url{roots/results/rootcount_fast.md}\\
+N1 & LINEMOD / LINEMOD-Occlusion 精度 & 包含 SDPR-IS、SDPR-SDP、EPro-PnP、BPnP 的完整基准（Theseus 仅作 E17 的局部参照） & --- & \textbf{未运行} & TODO\\
+N2 & UTIAS In-The-Dark & 完整 SDPRLayers 流水线 & --- & \textbf{未运行} & TODO\\
+N3 & 端到端训练与 GPU 批处理 & --- & --- & \textbf{未运行} & TODO\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\textwidth}\scriptsize
+证据级别：E1--E18 为\emph{独立复现（本仓库）}；N1--N3 为\emph{未验证}（仅设计）。E16--E17 是同一组真实对应关系上的前向/局部参照，不是可微层比较。
+\end{minipage}
+\end{table*}
+
+\textbf{E1 实例。}它是构造出来的，不是拟合出来的（\path{experiments/code/instance.py}）：$M(\theta)=M_{\rm sym}+\theta M_{\rm break}$，具有 $P$ 不变的双井，$M_{\rm break}$ 的选取使 $d(J_B-J_A)/d\theta|_{\theta=0}=2.0$，并带一个 $G\succ0$ 的固定平移块；种子为 20261127。模式枚举是 $\mathbb{S}^3$ 上带 128 个随机起点的批量阻尼牛顿，配合 $SO(3)$ 距离去重（阈值 $10^{-5}$ rad）与平稳性过滤（$\|\nabla J\|\le10^{-8}$、$\lambda_{\min}(H_{\mathbb{S}^3})>10^{-8}$）。它不是已发布的 LibQPEP 求解器，因此（A2）在这些运行中并未被独立认证；第~\ref{sec:rootcount} 节的同伦认证的是该系统的根计数，而不是这个枚举器。
+
+\textbf{未运行，也未估计。}所有\emph{学习型或可微层}基线比较（SDPR-IS、SDPR-SDP、EPro-PnP、BPnP）、LINEMOD/LINEMOD-Occlusion 精度矩阵、UTIAS In-The-Dark 流水线、端到端训练，以及 GPU 批量根枚举。Theseus（E17）与 cv2 经典求解器（E16）是受控真实代价上的前向/局部参照，不是可微层比较，也不对它们附加任何梯度主张。仓库中不存在检测器级 ADD(-S)、ADD-S AUC、检测器旋转或平移误差、成功率、训练曲线、吞吐量或峰值内存数值；这些均标为 TODO，而不是用猜测填充。
+
+\subsection{指标}\label{sec:metrics}
+
+以下所有量都由表~\ref{tab:inventory} 引用的结果文件算出。
+\begin{itemize}
+\item \textbf{梯度相对误差。} $\|\hat d\phi-d\phi_{\mathrm{FD}}\|_2/\|d\phi_{\mathrm{FD}}\|_2$，其中 $\phi=[\mathrm{vec}\,R(q);t^\star(q)]\in\mathbb{R}^{12}$，参照为沿分支跟踪的中心 FD，$h=10^{-4}$（E1、E8、E9）或 $h=10^{-3}$（旧 E7）；E13 使用由 $h=10^{-4}$ 与 $5\times10^{-5}$ 做 Richardson 外推得到的参照。对 Laplace 层，FD 微分的是同一个平滑映射；对全局打平处的硬 argmin，参照分支在 $\pm h$ 内切换，该项记为 N/A，而不是用一个跳变填充。FD 自身的截断误差在 E10 中单独测量。
+\item \textbf{MC 位姿散布（E1）。} 12 维向量 $\phi$ 在 20 个独立模式级 MC 均值上的标准差之欧氏范数，每个均值来自 $n=200$ 个模式样本。平移块固定在尺度 $D_{\text{scale}}=0.30$，因此这是相对散布而非米。E9 对每个 $\theta$ 使用一个 $n=400$ 的模式级估计；E13 使用 $n=200$、3 个种子，并同时报告 20 个种子的均值。
+\item \textbf{真实数据位姿误差（E8、E15）。} 旋转误差是真旋转上的 $\arccos((\operatorname{tr}(R_{\rm est}^\top R_{\rm gt})-1)/2)$，单位为度；平移误差是 $\|t_{\rm est}-t_{\rm gt}\|$，单位为米（BOP 的 \texttt{cam\_t\_m2c} 以毫米为单位）。Laplace 估计是\textbf{投影弦均值} $R_{\rm Lap}=\mathrm{Proj}_{SO(3)}(\sum_kw_kR_k)$（SVD 极投影），配以 $t_{\rm Lap}=\sum_kw_kt_k$。原始的 9 维向量平均 $\sum_kw_kR_k$ 不是正交的，因此对它套用测地线公式得到的并不是旋转误差：该量等于 $\arccos(\sum_kw_k\cos e_k)$，给出 $58.28^\circ$ 的中位数；本文任何地方都\emph{不}把它作为位姿误差报告。在投影均值上中位数为 $44.24^\circ$。MC 对从 $w$ 独立同分布抽取的 $n=400$ 个模式施加同样的投影，重复 20 个种子。
+\item \textbf{ADD-S 与 ADD（E15）。} 取 1000 个网格顶点的固定随机子样本 $V$，用估计位姿变换后，把每个点匹配到 GT 变换后的\emph{完整}网格 $V_{\rm gt}$ 的最近顶点（对全部 18{,}473 个 \texttt{eggbox} / 7{,}479 个 \texttt{glue} 顶点建 KD-tree；三个独立查询子样本，取均值报告）：$\mathrm{ADD\text{-}S}=\frac{1}{|V|}\sum_{x\in V}\min_{y\in V_{\rm gt}}\|R_{\rm est}x+t_{\rm est}-(R_{\rm gt}y+t_{\rm gt})\|$。查询稠密 GT 网格很重要：若 GT 集只有 1000 个顶点，同子样本变体平均会带上 $+1.1$ mm 的离散化下限（硬位姿），而 1000 查询/稠密 GT 估计器与完整网格对完整网格的 ADD-S 一致到 $0.51$ mm。ADD 是用同索引距离 $\|(R_{\rm est}-R_{\rm gt})x+(t_{\rm est}-t_{\rm gt})\|$ 得到的同一均值，仅作为参照报告。ADD-S 是合适的指标，因为 \texttt{eggbox}（目标 10）与 \texttt{glue}（目标 11）在 \texttt{models\_info.json} 中各有一个离散的 $\sim180^\circ$ 对称：对称等价的位姿是同一个物理位姿，而 ADD 会因此判给它约等于物体直径（$0.165$ m / $0.176$ m）量级的误差。
+\item \textbf{自举置信区间与配对偏差（E15、E16）。} 对 15 帧做百分位自举（E15 用 1000 次重采样，E16 用 2000 次），以均值/中位数加 95\% 置信区间报告。配对偏差是逐帧差值（Laplace 或 MC 减去硬 argmin），用其均值与跨帧置信区间汇总。在 15 帧的情况下，置信区间描述的是这一固定的帧集合，而不是某个总体。对 MC，另在 20 个逐种子聚合量上做种子级自举，以分离种子噪声（聚合旋转误差的种子间标准差为 $1.011^\circ$）。
+\item \textbf{实际耗时、一维与 SDP 量。} 实际耗时是每次层调用的 CPU 毫秒（E13：20 次重复的中位数与 p95；不是内存基准）。一维后验误差是 $|E_{\mathrm{Lap}}-E_{\mathrm{exact}}|$、它与 $\tau$ 的比值、相对 $\tau$ 的双对数斜率，以及 $\hat E=dE/dg$ 相对精确求积的相对误差；折叠误差是 $|Z_{\mathrm{Lap}}-Z_{\mathrm{exact}}|/Z_{\mathrm{exact}}$。SDP 量包括原值、对偶 $\mu$、$\lambda_{\min}(Z)$、容差 $10^{-6}$ 下的 $\operatorname{rank}(X^\star)$、$\lambda_1/\lambda_2$ 与间隙 $f^\star-\mu$，以及精确的约束张成秩（21 $\to$ 20；上游 24 $\to$ 17；24 + 3 个行正交 $\to$ 20）。导数校验报告解析黎曼 Hessian、隐式 $q^\star$ 与 $t^\star$ Jacobian、以及 $\partial_\theta\log\det H$ 相对中心 FD 的相对误差。
+\item \textbf{未测量。} 检测器级 ADD(-S) 与 ADD-S AUC、检测器上的旋转误差（度）或平移误差（米）、成功率、NLL 校准、训练曲线、端到端训练吞吐量、峰值内存，以及枚举器相对某个独立认证求解器的漏根率。
+\end{itemize}
+
+\subsection{结果与消融}\label{sec:results}
+
+图~\ref{fig:p1summary} 在一张图中概括了本文的四个结果族：6D 交叉、实测的 6D 折叠、真实 LINEMOD 的双模态结构，以及 $10\times10$/$13\times13$ 分离。
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{p1_summary.png}
+\caption{四个结果族的概览。\textbf{(A)} 在 81 点合成 6D 交叉上，解析 Laplace 层、模式级 MC 估计器与硬 argmin 的梯度相对误差随 $\theta$ 的变化（交叉处为 N/A）；Laplace 曲线没有跳变，硬映射有。\textbf{(B)} $|\theta|\sim1.3\times10^{-3}$ 附近实测的 6D 折叠：极小值数目 $K$、位姿映射跳变 $\|d\phi\|$（标准与 $\tau^{1/3}$ 正则化）以及脆弱模式的 Laplace 权重，均相对于 $\theta$ 画在 $1.3\times10^{-3}$ 尺度的坐标轴上；该模式在 $\theta_f$ 处消亡，$\|d\phi\|$ 在该处出现尖峰。\textbf{(C)} 真实 LINEMOD 帧：目标间隙 $\Delta J$（翻转模式减真实模式）相对翻转与 GT 之间的旋转差；全部 15 帧都有 $K=2$。\textbf{(D)} 在 10 个 SDP 实例与 8 个扰动上，上游 24 约束 $13\times13$ 值与完整 20D $10\times10$ 值的对比，六点物理反例（星标）把两者分开：$5.415$（完整 20D）对 $3.594$（上游）。}
+\label{fig:p1summary}
+\end{figure*}
+
+\subsubsection{合成 6D 分支交叉（主要结果）}\label{sec:synthetic}
+
+\begin{table}[t]
+\centering
+\caption{解析 Laplace 层、模式级 MC 基线与硬 argmin 的梯度相对误差，以及 MC 位姿散布，按 81 点交叉网格的情形分组（$\tau=0.01$、FD $h=10^{-4}$、模式级 MC $n=200$ 配 20 个种子、CPU）。每个条目是该情形内网格点上的中位数；逐点值见 \texttt{raw\_grid.json}。$\theta=0$ 处的硬 argmin 条目为 N/A，因为全局分支在 $\pm h$ 内切换。}
+\label{tab:main6d}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l r l l l l@{}}
+\toprule
+情形 & $n$ & Laplace & MC & 硬 argmin & MC 标准差\\
+\midrule
+远 & 61 & 4.74e-07 & 4.74e-07 & 4.74e-07 & 2.76e-16\\
+近 & 19 & 3.46e-05 & 9.40e-05 & 2.23e-05 & 2.89e-16\\
+交叉处 & 1 & 4.34e-04 & 3.26e-02 & N/A & 1.07e-01\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\columnwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{results/main_table.md}、\path{results/raw_grid.json}。情形：远（61 点）、近（19 点）、交叉处（单点 $\theta=0$）；名义边界为 $|\theta|=0.05$ 与 $|\theta|=0.005$。\emph{交叉处}与\emph{近}两类条目的 FD 受限读法在正文中说明。
+\end{minipage}
+\end{table}
+
+三点观察，不作超出实测网格的外推。
+\begin{enumerate}
+\item \textbf{远离交叉处时三种方法一致。} 在远区，三个中位相对误差都是 $4.74\times10^{-7}$，中位 MC 位姿散布为 $2.76\times10^{-16}$：全局模式几乎承载了全部 Laplace 质量，采样器只看到一个模式。
+\item \textbf{Laplace 的优势只出现在交叉处。} 在近区，硬 argmin 仍有定义，且中位误差最小（$2.23\times10^{-5}$），优于 Laplace（$3.46\times10^{-5}$）与 MC（$9.40\times10^{-5}$）；中位 MC 散布为 $2.89\times10^{-16}$，尽管逐点最大值为 $3.41\times10^{-2}$（\path{raw_grid.json}）。在 $\theta=0$ 处，硬 argmin 条目为 N/A，Laplace 对 FD 的条目为 $4.34\times10^{-4}$（受 FD 限制；见下文），而 MC 误差为 $3.26\times10^{-2}$，位姿散布为 $1.07\times10^{-1}$。
+\item \textbf{交叉处是唯一具有四个枚举极小值的网格点}，也是模式数取最大值的唯一点。
+\end{enumerate}
+
+\textbf{$4.34\times10^{-4}$ 这一条目是 FD 截断，而不是方法误差。} 相对 Richardson 外推的 FD，它在 $\theta=0$ 处为 $1.8\times10^{-7}$；而相对 $h=10^{-4}$ 的普通中心 FD，它是 $4.3\times10^{-4}$；序列 $4.34\times10^{-8}$（$h=10^{-6}$）、$4.34\times10^{-6}$（$h=10^{-5}$）、$4.34\times10^{-4}$（$h=10^{-4}$）说明了同一点（\path{results/fd_step.md}、\path{results/robustness.md}）。近区那一行同样受 FD 限制：在 $\theta=0.01$ 处，该研究给出 $h=10^{-6}$ 时 $3.46\times10^{-9}$，而 $h=10^{-4}$ 时为 $3.46\times10^{-5}$。对 $|\theta|\ge0.05$，$h=10^{-5}$ 的误差至多为 $7.0\times10^{-8}$。解析梯度在交叉处与 Richardson FD 一致到 $1.8\times10^{-7}$，而不是 $4\times10^{-4}$。
+
+\textbf{硬 argmin 是阶跃映射；Laplace 映射不是。} 跨 $\theta=0$ 的硬位姿跳变在 $\delta\to0$ 时保持 $2.86$（$\delta=10^{-3},10^{-4},10^{-5}$），而 Laplace 跳变线性衰减（$9.73\times10^{-1}$、$1.00\times10^{-1}$、$1.00\times10^{-2}$），FD 斜率 $\approx502$，即真实导数。这就是“在交叉处光滑”这一主张的经验内容，而且它是被测量出来的，不是被假定的。在中心 FD 有定义的地方，硬映射与 Laplace 一样自洽（非切换情形下中位数为 $1.2\times10^{-4}$），但在精确交叉情形中有一半会在 $\pm h$ 内切换分支。图~\ref{fig:maintable} 给出逐点误差与 MC 散布。
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{main_table.png}
+\caption{81 点 6D 交叉网格上的主表诊断图。左：解析 Laplace 层（蓝）、模式级 MC 估计器（橙）与硬 argmin（绿点；在 FD 参照切换分支的精确交叉处为 N/A）相对沿分支跟踪 FD 的梯度相对误差。右：20 个种子上的 MC 位姿标准差，除 $\theta=0$ 附近的一个窄窗口外基本为零。复现自 \texttt{results/main\_table.png}。}
+\label{fig:maintable}
+\end{figure}
+
+\textbf{MC 基线在固定预算下无偏但有噪声。} 在同一平滑目标上，$n=200\times3$ 个种子给出每种子的梯度相对误差中位数 $0.05$（20 个种子的均值 $7.7\times10^{-3}$），鲁棒性条件下位姿标准差中位数 $0.09$；而解析 Laplace 梯度相对 Richardson 参照为 $9.3\times10^{-8}$。这是模式级采样实测到的方差代价，而不是与 EPro-PnP 的比较（第~\ref{sec:risks} 节）。
+
+\textbf{模式数与折叠。} 网格上的模式数为 $K\in\{1,2,3,4\}$（$K=1$ 有 30 点，$K=2$ 有 38 点，$K=3$ 有 12 点，$K=4$ 在交叉点）；这些是用上述过滤器做多起点牛顿返回的局部极小值，而不是认证的根计数。光滑性陈述只限定在 $\theta=0$ 与 $|\theta|\lesssim1.3\times10^{-3}$：次级极小值只在该处存在，并在折叠处消失，而 Laplace 映射在折叠处不连续（第~\ref{sec:risks} 节）。
+
+\subsubsection{一维精确后验：Laplace 误差为 \texorpdfstring{$O(\tau)$}{O(tau)}}\label{sec:onepd}
+
+\begin{table*}[t]
+\centering
+\caption{曲率不等的一维正规形中精确后验与双模态 Laplace 的对比（$c=0.25$；$g=0$ 时两个极小值都在 $x=\pm1$，曲率为 5 与 3）。$E$ 是 $x$ 的后验均值；误差相对 $[-3,3]$ 上 2{,}000{,}001 点的梯形求积。能量无量纲，$\Delta J=6.16\times10^{-32}$ 是数值零。}
+\label{tab:1d}
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}l l l l l l l l@{}}
+\toprule
+情形 & $\tau$ & $\Delta J$ & $E_{\mathrm{exact}}$ & $E_{\mathrm{Lap}}$ & $|{\rm err}|$ & $|{\rm err}|/\tau$ & 梯度相对误差\\
+\midrule
+交叉 & 0.05 & 6.16e-32 & -0.125102 & -0.127017 & 1.92e-03 & 3.83e-02 & 1.77e-02\\
+交叉 & 0.02 & 6.16e-32 & -0.126275 & -0.127017 & 7.42e-04 & 3.71e-02 & 6.93e-03\\
+交叉 & 0.01 & 6.16e-32 & -0.126649 & -0.127017 & 3.67e-04 & 3.67e-02 & 3.44e-03\\
+交叉 & 0.005 & 6.16e-32 & -0.126834 & -0.127017 & 1.83e-04 & 3.66e-02 & 1.71e-03\\
+分离 & 0.05 & 4.01e-01 & -1.024203 & -1.031750 & 7.55e-03 & 1.51e-01 & 2.77e-02\\
+分离 & 0.02 & 4.01e-01 & -1.029356 & -1.032296 & 2.94e-03 & 1.47e-01 & 1.27e-02\\
+分离 & 0.01 & 4.01e-01 & -1.030838 & -1.032296 & 1.46e-03 & 1.46e-01 & 6.27e-03\\
+分离 & 0.005 & 4.01e-01 & -1.031570 & -1.032296 & 7.26e-04 & 1.45e-01 & 3.12e-03\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\textwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{theory/results/uniform_unequal_table.md}。完整表格还包含 $\tau=0.2$ 与 $\tau=0.1$。
+\end{minipage}
+\end{table*}
+
+期望值误差按 $O(\tau)$ 缩放：双对数斜率在交叉处为 1.066，在分离盆中为 1.036；$|{\rm err}|/\tau$ 在交叉处保持在 $3.66$--$3.83\times10^{-2}$，分离时保持在 $1.45$--$1.51\times10^{-1}$。在 $\tau=0.01$ 处，梯度相对误差在交叉处为 $3.44\times10^{-3}$，分离时为 $6.27\times10^{-3}$。在所打印的行上，梯度误差随 $\tau$ 单调下降（$\tau=0.05$ 的 $1.77\times10^{-2}$ 降到 $\tau=0.005$ 的 $1.71\times10^{-3}$），但没有为它拟合斜率，而且梯度余项仍是一个证明缺口：这是数值校验，而不是对梯度主张的证明。
+
+\subsubsection{折叠合并与 \texorpdfstring{$\tau^{1/3}$}{tau^(1/3)} 正则化}\label{sec:fold1d}
+
+\begin{table*}[t]
+\centering
+\caption{$\tau=0.01$ 时标准 Laplace 与 $\tau^{1/3}$ 正则化体积因子的对比，$J=x^4/4-ax^2/2$；精确配分由 $[-3.5,3.5]$ 上 2{,}000{,}001 点梯形求积给出。$H=2a$ 是极小值处曲率，势垒为 $a^2/4$。完整文件还包含 $\tau=0.02$ 与 $\tau=0.005$。}
+\label{tab:fold}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l l l l l l l l@{}}
+\toprule
+$a$ & $H$ & 势垒 & $Z_{\mathrm{exact}}$ & $Z_{\mathrm{Lap}}$ & Lap 相对误差 & $Z_{\mathrm{reg}}$ & 正则化相对误差\\
+\midrule
+0.50 & 1.00e+00 & 6.25e-02 & 2.6976e+02 & 2.5969e+02 & 3.73e-02 & 2.3556e+02 & 1.27e-01\\
+0.20 & 4.00e-01 & 1.00e-02 & 2.3994e+00 & 2.1547e+00 & 1.02e-01 & 1.7371e+00 & 2.76e-01\\
+0.10 & 2.00e-01 & 2.50e-03 & 1.2349e+00 & 1.4394e+00 & 1.66e-01 & 9.9871e-01 & 1.91e-01\\
+0.05 & 1.00e-01 & 6.25e-04 & 9.7810e-01 & 1.6876e+00 & 7.25e-01 & 9.5017e-01 & 2.86e-02\\
+0.02 & 4.00e-02 & 1.00e-04 & 8.6986e-01 & 2.5318e+00 & 1.91e+00 & 1.0019e+00 & 1.52e-01\\
+0.01 & 2.00e-02 & 2.50e-05 & 8.3916e-01 & 3.5538e+00 & 3.24e+00 & 1.0358e+00 & 2.34e-01\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\textwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{theory/results/fold_table.md}。相对误差是无量纲比值，不是百分数。
+\end{minipage}
+\end{table*}
+
+当 $a\to0$ 时两个极小值与鞍点合并，$H\to0$，标准体积因子 $1/\sqrt{H}$ 发散：相对误差从 $a=0.5$ 的 $3.73\times10^{-2}$ 增长到 $a=0.02$ 的 $1.91$、$a=0.01$ 的 $3.24$。把 $H$ 换成 $H+\tau^{1/3}$ 后，在最小的两个 $a$ 处误差降到 $1.52\times10^{-1}$ 与 $2.34\times10^{-1}$，但它并非一致更优：在 $a=0.5$ 处反而更差（$1.27\times10^{-1}$ 对 $3.73\times10^{-2}$）。正则化形式是合并机制中 $\tau^{1/3}$ 缩放的一个证据，而不是处处可用的直接替代。
+
+\subsubsection{旋转 SDP 证书与三部分 \texorpdfstring{$10\times10$/$13\times13$}{10x10/13x13} 关系}\label{sec:results_sdp}
+
+\begin{table}[t]
+\centering
+\caption{构造的 $10\times10$ 旋转 SDP 的数值证书（Choi--Lam 四次型加 $2I$；SCS）。间隙为 $f^\star-\mu$，其中 $f^\star=2$ 是四次型在 $\mathbb{S}^3$ 上的解析极小值，$\mu$ 是认证的对偶值。}
+\label{tab:sdp_cert}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{3.4cm} l l@{}}
+\toprule
+量 & 值 & 证据\\
+\midrule
+$f^\star$（解析，$C\ge0$，$C(e_0)=0$） & 2.0 & \emph{论文声明}\\
+SDP 原值 & 1.9658119658 & \emph{独立复现}\\
+对偶 $\mu$ & 1.9658119658 & \emph{独立复现}\\
+对偶证书的 $\lambda_{\min}(Z)$ & $-1.79\times10^{-11}$ & \emph{独立复现}\\
+认证间隙 $f^\star-\mu$ & 0.034188 & \emph{独立复现}\\
+容差 $10^{-6}$ 下的 $\operatorname{rank}(X^\star)$ & 6 & \emph{独立复现}\\
+$\lambda_1/\lambda_2$ & 1.451 & \emph{独立复现}\\
+多起点 QPEP 极小值（独立校验） & 2.00186 & \emph{独立复现}\\
+间隙为正的随机扰动 & 8 个中的 8 个（0.0453--0.0782） & \emph{独立复现}\\
+21 个 $SO(3)$ 约束的秩 & 20 & \emph{独立复现}\\
+二次消失理想的维数 & 20 & \emph{独立复现}\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\columnwidth}\scriptsize
+来源 \path{verify/verify_theorem0_output.json}。这里的“认证”是指对偶矩阵在 SCS 容差下为 PSD，而不是符号证明。
+\end{minipage}
+\end{table}
+
+该 $10\times10$ 实例的原值、对偶值与间隙在打印位数上相互一致；JSON 中的间隙是 $0.034188034\ldots$。这是我们自己的构造（例~\ref{ex:choilam}），不是源文档中的实例。定理~\ref{thm:thirteen} 给出与已发布 $13\times13$ 实现的三部分关系；我们报告实例化各层的测量结果。
+
+\begin{table*}[t]
+\centering
+\caption{上游 24 约束 $13\times13$ 松弛比完整 20D $10\times10$ 松弛更松，且一般而言严格更松。$f^\star_{10}$ 是 $10\times10$ 的值，$f^\star_{13,\mathrm{up}}$ 是已发布 24 约束实现（17 维张成）的值；\texttt{CL\_exact} 是构造的 Choi--Lam 实例，\texttt{rowdot} 是构造的反例。差值列由打印的 $f$ 值算出；对 \texttt{CL\_exact} 与 \texttt{p6\_data}，真实差值分别为 $3.7\times10^{-11}$ 与 $-2.9\times10^{-10}$，低于六位小数的列宽。此处只列代表性行；完整的 10 实例与 8 扰动表见 \texttt{sdp/results/sdp\_check.md}。}
+\label{tab:13v10}
+\footnotesize
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{@{}l l l l l l@{}}
+\toprule
+实例 & $f^\star_{10}$ & $f^\star_{13,\mathrm{up}}$ & $f^\star_{10}-f^\star_{13,\mathrm{up}}$ & $\operatorname{rank}X_{10}^\star$ & $\operatorname{rank}X_{13,\mathrm{up}}^\star$\\
+\midrule
+\texttt{CL\_exact} & 1.965812 & 1.965812 & 3.7e-11 & 6 & 6\\
+\texttt{CL\_pert0} & 1.962860 & 1.960078 & 2.8e-03 & 6 & 5\\
+\texttt{CL\_pert5} & 1.964571 & 1.950275 & 1.4e-02 & 6 & 4\\
+\texttt{rowdot} & 1.000000 & -1.000000 & 2.00 & 10 & 7\\
+\texttt{rowdot\_gen} & -0.060192 & -2.029230 & 1.97 & 1 & 4\\
+\texttt{p6\_data} & 0.252326 & 0.252326 & 0.0 & 1 & 1\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\textwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{sdp/results/sdp_check.md} 与 \path{sdp/run_sdp_check.py}。
+\end{minipage}
+\end{table*}
+
+\textbf{解读。} Choi--Lam 的相等是对称性带来的巧合：其上游最优落在行正交面上，因此 $f^\star_{13,\mathrm{up}}=f^\star_{10}=1.9658119658$，两侧秩都是 6，行点积残差至多 $8.8\times10^{-15}$。在 8 次量级 $10^{-2}$ 的对称破缺扰动之后，$8/8$ 个实例都有 $f^\star_{13,\mathrm{up}}<f^\star_{10}$，差距为 $2.5\times10^{-3}$--$1.4\times10^{-2}$，且 $\operatorname{rank}(X^\star_{13,\mathrm{up}})\in\{4,5\}$ 而 $\operatorname{rank}(X^\star_{10})=6$，上游最优处的 $\max|r_a\cdot r_b|$ 为 $0.59$--$0.88$。构造的目标 $Q=-r_1\cdot r_2+\tfrac14I$ 隔离出该机制：它在完整 20D 可行集上恒为常数 1（$f^\star_{10}=1.000000$），而在上游可达到 $-1.000000$（间隙 $2.00$），在 $10^{-2}$ 扰动之后仍是 $1.97$。这些测量实例化的是定理~\ref{thm:thirteen} 的第 (2) 层，而不是第 (1) 层：完整 20D 松弛并不是它们所测量的对象。
+
+\begin{table}[t]
+\centering
+\caption{分离上游 $13\times13$ 松弛与完整 20D 松弛的 6 点物理 3D--3D 反例。构造：$p_i=\pm e_1,\pm e_2,\pm e_3$，$y_i=\varepsilon p_i$，$\varepsilon=0.05$；共享矩阵权重 $W$ 满足 $W_{11}=W_{22}=W_{33}=1$、$W_{12}=W_{21}=-0.6$（特征值 $0.4,1.0,1.6>0$）；$N=6$，于是 $D=0$、$G=6W\succ0$；真值旋转 $R^\star=I_3$ 唯一。“此处测量”指 \texttt{sdp/results/six\_point.md}；“修订后的证明”是所引用的主张。中间的秩由第 (1) 层推出；证明显式给出秩 1 与 4。}
+\label{tab:6point}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{3.9cm} l l@{}}
+\toprule
+量 & 此处测量 & 修订后的证明\\
+\midrule
+$f^\star_{10}$（21 约束，精确秩 20） & 5.41500000 & 5.41500000\\
+$f^\star_{13,\mathrm{full}}$（24 + 3 行正交 = 27 约束，完整 20D） & 5.41500000 & 5.41500000\\
+$f^\star_{13,\mathrm{up}}$（24 约束，17D 张成） & 3.59431373 & 3.59430886\\
+$f^\star_{10}-f^\star_{13,\mathrm{up}}$ & 1.82068627 & 1.82069114\\
+$X^\star_{10}$ / $X^\star_{13,\mathrm{full}}$ / $X^\star_{13,\mathrm{up}}$ 的秩 & 1 / 1 / 4 & 1 / 1 / 4\\
+$f_{\rm nonconv}-f^\star_{10}$ & $-8.38\times10^{-13}$ & 0\\
+$f_{\rm nonconv}-f^\star_{13,\mathrm{full}}$ & $-3.38\times10^{-13}$ & 0\\
+$f_{\rm nonconv}-f^\star_{13,\mathrm{up}}$ & 1.820686 & 1.820691\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\columnwidth}\scriptsize
+证据级别：“此处测量”一列是\emph{独立复现（本仓库）}（\path{sdp/results/six_point.md}，脚本 \path{sdp/run_6point_check.py}）；“修订后的证明”一列是定理~\ref{thm:thirteen} 的解析主张。$f_{\rm nonconv}=6(1-\varepsilon)^2=5.415$ 是精确值，两个负值条目是零间隙处的 SCS 可行性误差。证明中的 $f^\star_{13,\mathrm{up}}$ 条目比同一 SDP 的精确有理对偶下界低 $4.87\times10^{-6}$，因此不是一个可行的最优值。
+\end{minipage}
+\end{table}
+
+\textbf{这个实例为什么能分离两者。} 由于 $\pm p_i$ 成对抵消，$D=\mathbf{0}$，代价为
+\begin{equation}
+\begin{split}
+J(R,t)={}&2\,\mathrm{tr}(WRR^\top)-4\varepsilon\,\mathrm{tr}(WR)\\
+&+2\varepsilon^2\mathrm{tr}(W)+6t^\top Wt .
+\end{split}
+\label{eq:sixpoint}
+\end{equation}
+唯一能感知行正交性的项是 $2\,\mathrm{tr}(WRR^\top)=2(\|r_1\|^2+\|r_2\|^2+\|r_3\|^2-1.2\,r_1^\top r_2)$。在完整 20D 约束下 $r_1^\top r_2=0$ 使它成为常数 $6$，而 $-4\varepsilon\,\mathrm{tr}(WR)$ 在 $R=I$ 处取最小、值为 $6(1-\varepsilon)^2=5.415$，因此 $f^\star_{10}=f^\star_{13,\mathrm{full}}=f^\star_{\mathrm{QPEP}}=5.41500000$，秩为 1，在 SCS 层面间隙为零。而在上游，缺失的 $r_1^\top r_2=0$ 让松弛可以取 $\langle r_1^\top r_2\rangle>0$，从而降到 $f^\star_{13,\mathrm{up}}=3.59431373$，秩为 4。
+
+\textbf{$4.9\times10^{-6}$ 的差异属于证明所引的值，而不属于求解器。} SCS（$\varepsilon=10^{-11}$）给出 $3.59431373$，CLARABEL 给出 $3.59431371$（一致到 $2\times10^{-8}$）；一个精确有理对偶证书（显式对偶解、精确有理 LDU，$\eta=10^{-11}$；最小主元 $1.0\times10^{-11}$，mpmath 60 位 $\lambda_{\min}=+8.0\times10^{-12}$）给出严格下界 $f^\star_{13,\mathrm{up}}\ge3.594313732834$。证明中的 $3.59430886$ 比\emph{这个下界还低} $4.87\times10^{-6}$，因此它不可能是所述 24 约束 SDP 的最优值；36 个自然变体（行正交性缩放、子集、布局/转置、$h$ 归一化、$t$ 块、约束消融、求解器容差）都无法在 $10^{-8}$ 内重现它，最接近的也差 $4.1\times10^{-6}$。同一 SDP 下唯一可能的机制是对偶值收敛不足；我们建议引用 $f^\star_{13,\mathrm{up}}=3.5943137\ldots$ 与间隙 $1.8206863\ldots$。定性分离（间隙 $1.82$、秩 $1$ 对 $>1$）不受影响；$\operatorname{rank}(X^\star_{13,\mathrm{up}})$ 在 $10^{-5}$ 阈值下为 $4$，在 $10^{-6}$ 阈值下为 $6$。由于这是一个真实的、权重为正且真值旋转唯一的矩阵加权 3D--3D 代价，Choi--Lam 可实现性的问题在这里不适用：该间隙是已发布约束集的性质，而不是某个非物理目标的性质。
+
+\textbf{$13\times13$ 问题的状态。} 该项已关闭，而不是“重新打开”：完整 20D 等价性已被证明，上游实现一般而言严格更松，并由一个物理反例分离。早期那个数值读法——一般而言 $f^\star_{13}<f^\star_{10}$——对已发布的 24 约束实现是正确的，三个缺失的行正交约束就是全部原因；它不是关于 $13\times13$ 松弛本身的陈述。
+
+\subsubsection{导数公式、Laplace 常数与根计数}\label{sec:rootcount}
+
+\begin{table}[t]
+\centering
+\caption{反向传播（E6）与闭式 $\partial_\theta\log\det H$（E4）的数值校验。除标为绝对误差者外，所有条目都是相对误差。}
+\label{tab:backward}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{3.85cm} p{3.9cm}@{}}
+\toprule
+校验 & 值\\
+\midrule
+$E(q)$ 正交归一误差 & 1.14e-16\\
+$E(q)^\top q$ 误差 & 4.41e-18\\
+欧拉恒等式绝对误差 & 5.33e-15\\
+黎曼 Hessian，解析 vs FD & 9.63e-08\\
+隐式 $\partial q^\star/\partial\theta$ vs FD & 1.51e-07\\
+隐式 $\partial t^\star/\partial\theta$ vs FD & 4.58e-08\\
+对映误差（$E$、$H$、$\partial q^\star$、$\partial R$） & 0（精确）\\
+Laplace 积分相对误差（$S^3$ 上的图），$\tau=0.2/0.1/0.05/0.025$ & 8.26e-02 / 3.81e-02 / 1.86e-02 / 9.25e-03\\
+Laplace 误差对 $\tau$ 的双对数斜率 & 1.05\\
+闭式 $\partial_\theta\log\det H$ vs FD，5 次试验 & 1.65e-09 -- 8.84e-09\\
+\quad（最大绝对误差） & 1.59e-09\\
+修正后闭式 \texttt{dlogdetH\_dtheta} vs \texttt{dlogdet\_exact} & 8.9e-16\\
+修正后闭式 \texttt{dlogdetH\_dtheta} vs 分支 FD & 1.8e-9\\
+回归 \path{test_derivatives.py}：\texttt{dE}/\texttt{dH}/\texttt{dq} & 2.9e-11 / 1.6e-8 / 2.5e-10\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\columnwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{verify/verify_theorem11_output.json}、\path{theory/results/q6_verify.md}、\path{code/test_derivatives.py}、\path{experiments/rounds_2026-11-27.md}。“绝对”行之后的值为绝对误差。
+\end{minipage}
+\end{table}
+
+反向传播校验在 FD 精度内确认了定理~\ref{thm:implicit}；它们并不认证根集。Laplace 常数校验给出斜率 1.05，与定理~\ref{thm:laplace} 的 $O(\tau)$ 主张一致，而与“精确旋转积分”不一致。闭式 $\log\det$ 导数在全部五次试验中与 FD 一致到 $9\times10^{-9}$ 或更好。
+
+\textbf{发现并修复的一个缺陷。} 2026-11-27 发现 \texttt{qpep\_core.dE} 在 $d_1/d_2/d_3$ 偏导的第 1--2 行有错误条目，导致 \texttt{dlogdetH\_dtheta} 与独立的 \texttt{dlogdet\_exact} 以及与分支 FD 相差 $O(1)$（该轮日志记录为 $8.4\times10^{-2}$--$2.8\times10^{-1}$）。主表与 Q6 校验不受影响，因为它们使用的是数值回退与 \texttt{dlogdet\_exact}。修复之后，闭式与 \texttt{dlogdet\_exact} 一致到 $8.9\times10^{-16}$，与分支 FD 一致到 $1.8\times10^{-9}$；\path{code/test_derivatives.py} 固定住 \texttt{dE}、\texttt{dH} 与 \texttt{dq} 并通过。现在闭式就是重新生成主表（\path{results/main_table.*}）所走的路径，该表的数值列没有变化。
+
+\textbf{根计数。} 在射影平稳系统上做总度同伦，在全部四个仿射图中以批量复预测—校正与残差验证的并集运行，在 \textbf{4/4 个实例上找到 40 个复射影根}——三个随机对称 $M$ 与 6D 实例 $M(0)$——最大图残差 $7.1\times10^{-15}$，每实例 5.3--8.0 s。每个射影根在 $\pm$ 双覆盖下对应 80 个仿射根。实根的情况则各有不同：实射影根 $26/12/12/20$，实局部极小值 $5/2/2/4$。复根计数是通用的（QPEP 作用矩阵的 40 上界）；实根计数是实例性质，不得当作常数引用。这确认了第~\ref{sec:cert} 节的“至多 40 个候选复根”，但认证的是代数系统，而不是 E1/E8 中使用的多起点牛顿枚举器；它相对该同伦的漏根率仍未测量（\path{roots/results/rootcount_fast.md}；原始数据 \path{results/rootcount_fast.json}；脚本 \path{roots/run_rootcount_fast.py}，四个实例约需 $\sim$30 s）。
+
+\subsubsection{消融}\label{sec:ablations}
+
+\textbf{A. 温度。} 表~\ref{tab:tau} 报告精确 logdet Laplace 层在交叉处、交叉附近与远离交叉处、$\tau\in\{0.05,0.02,0.01,0.005\}$ 的梯度相对误差。
+
+\begin{table}[t]
+\centering
+\caption{$\tau$ 扫描（梯度相对误差）。}
+\label{tab:tau}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l l l l l@{}}
+\toprule
+$\theta$ & $\tau=0.05$ & 0.02 & 0.01 & 0.005\\
+\midrule
++0.000 & 1.20e-03 & 5.84e-04 & 4.34e-04 & 1.51e-03\\
++0.010 & 1.29e-05 & 1.07e-04 & 3.46e-05 & 1.64e-05\\
+-0.010 & 1.29e-05 & 1.06e-04 & 3.46e-05 & 1.63e-05\\
++0.100 & 8.47e-07 & 8.46e-07 & 8.46e-07 & 8.46e-07\\
+-0.100 & 8.43e-07 & 8.42e-07 & 8.42e-07 & 8.42e-07\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\columnwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{results/ablation.md} 第 A 节。
+\end{minipage}
+\end{table}
+
+在交叉处，误差在 $\tau=0.01$ 时最小（$4.34\times10^{-4}$），到 $\tau=0.005$ 时又上升（$1.51\times10^{-3}$），这与两个模式近乎简并且 $\tau$ 又小时 FD 参照变得不可靠相一致；它并不是存在最优 $\tau$ 的证据。远离交叉处时误差约为 $8.5\times10^{-7}$，并在打印精度上与 $\tau$ 无关。没有运行学习型 $\tau$ 的实验。
+
+\textbf{B. 体积因子。} 表~\ref{tab:volume} 比较闭式 $\log\det$ 导数、切空间 FD，以及从权重中去掉体积因子这三种做法。
+
+\begin{table}[t]
+\centering
+\caption{体积因子变体。\texttt{exact} 是第~\ref{sec:laplace} 节的闭式，\texttt{numeric} 是切空间 FD，\texttt{none} 从权重中去掉 $\tfrac12\log\det H_k$；\emph{位姿差}与\emph{梯度差}是 12 维向量中差值相对 \texttt{exact} 的欧氏范数。}
+\label{tab:volume}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l l l l l@{}}
+\toprule
+$\theta$ & 模式 & 梯度相对误差 & 位姿差 & 梯度差\\
+\midrule
++0.000 & exact & 4.34e-04 & 0.00e+00 & 0.00e+00\\
++0.000 & numeric & 4.34e-04 & 0.00e+00 & 2.22e-08\\
++0.000 & none & 3.75e-04 & 6.47e-02 & 5.34e+01\\
++0.010 & exact & 3.46e-05 & 0.00e+00 & 0.00e+00\\
++0.010 & numeric & 3.46e-05 & 0.00e+00 & 1.22e-11\\
++0.010 & none & 3.86e-05 & 7.77e-04 & 4.38e-01\\
+-0.010 & exact & 3.46e-05 & 0.00e+00 & 0.00e+00\\
+-0.010 & numeric & 3.46e-05 & 0.00e+00 & 1.89e-11\\
+-0.010 & none & 3.86e-05 & 7.79e-04 & 4.39e-01\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\columnwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{results/ablation.md} 第 B 节。在 $|\theta|=0.1$ 处三种变体重合（位姿差与梯度差均为 $0.00\times10^{0}$）。
+\end{minipage}
+\end{table}
+
+去掉体积因子使交叉处的梯度相对误差几乎不变（$3.75\times10^{-4}$ 对 $4.34\times10^{-4}$），但使平滑位姿改变 $6.47\times10^{-2}$，梯度在绝对范数上改变 $5.34\times10^{1}$；在交叉附近梯度改变 $0.44$。因此，即使 FD 相对误差相近，这个因子对平滑映射而言也并非是表面修饰。闭式与切空间 FD 一致到 $2.22\times10^{-8}$ 或更好。
+
+\textbf{C. Top-$K$ 模式截断。} 表~\ref{tab:topk} 只保留权重最高的 $K$ 个模式，并与全部模式求和的结果比较。
+
+\begin{table}[t]
+\centering
+\caption{Top-$K$ 模式截断（参照：全部模式）。}
+\label{tab:topk}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l l l l@{}}
+\toprule
+$\theta$ & $K$ & 位姿差 & 梯度差\\
+\midrule
++0.000 & 1 & 1.44e+00 & 4.99e+02\\
++0.000 & 2 & 1.05e-01 & 6.83e+01\\
++0.000 & 3 & 7.95e-02 & 4.93e+01\\
++0.000 & 4 & 0.00e+00 & 0.00e+00\\
++0.010 & 1 & 2.72e-03 & 1.98e+00\\
++0.010 & 2 & 3.02e-05 & 2.65e-02\\
++0.010 & 3 & 0.00e+00 & 0.00e+00\\
++0.010 & 4 & 0.00e+00 & 0.00e+00\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\columnwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{results/ablation.md} 第 C 节。在 $\theta=0.1$ 处所有 $K$ 的差都为零。
+\end{minipage}
+\end{table}
+
+在 $\theta=0$ 处，相对全部模式之和，只保留最高模式会使位姿改变 $1.44$、梯度改变 $499$；$K=2$ 把这些降到 $0.105$ 与 $68.3$；而 $K=4$（全部模式）按构造是精确的。在 $\theta=0.01$ 处，$K=3$ 在打印精度上已经精确。这就是“对所有枚举极小值求和、而非只取 top-1”的实测依据；它并不确立真实代价会有多少个模式。
+
+以下协议消融\textbf{未运行}：解析 $3\times3$ 与穿过根求解器的自动微分之别；$H_{\mathbb{S}^3}$ 与欧氏 $\nabla^2J$ 之别；$E$ 基与旋转向量缩放之别；LibQPEP 与多起点牛顿之别；丢弃 $w_k<10^{-3}$ 的模式；带与不带冗余约束的 SDPR；学习型 $\tau$；群轨道平均。它们标为 TODO，而不是给出估计。
+
+\subsection{实际使用的计算资源}\label{sec:compute}
+
+\textbf{仅 CPU。} 所有报告的运行都是单进程 CPU 作业：6D 主运行是一个 Slurm \texttt{cpu} 作业，消融、LINEMOD、一维、\texttt{verify/}、SDP 校验（含 6 点实例）、鲁棒性、FD 步长与回归脚本都是短的 CPU 运行（LINEMOD 的计时是在登录节点 CPU 上）。没有使用 GPU、没有使用 Mosek、也没有多节点运行。SDP 证书使用 cvxpy 1.9.3 配 SCS（$\varepsilon=10^{-9}$、\texttt{max\_iters=200000}）；SDP 比较在 cvxpy 1.7.5 下使用相同容差的 SCS，6 点校验使用 $\varepsilon=10^{-11}$、\texttt{max\_iters=10\textasciicircum 6} 的 SCS。第 4 阶段的真实数据与根计数运行是短的登录节点 CPU 作业：位姿误差/ADD-S 约 $\approx10$ s（E15）、经典基线 $3.0$ s（E16）、Theseus $9.5$ s（E17）、四个实例的根计数约 $\approx30$ s（E18）。
+
+\textbf{计时（E13）。} 由 20 次重复，$\theta=0$ 处一次完整的合成层调用中位耗时为 61.9 ms（p95 为 62.1）：模式枚举占 88\%，$K$ 次隐式 $3\times3$ 求解占 1.6\%，解析反向传播（权重梯度与混合）占 0.1\%。在 $\theta=-0.1$ 处整个调用为 17.7 ms。早先某次主表运行中的逐点中位数是在机器有负载时测得的，不作为计时主张使用，仅供参考。LINEMOD 运行报告每帧前向 24.2--265.9 ms（E8），每个 $\theta$（含 FD）33.1--42.6 ms（E9）。总实际耗时、端到端训练吞吐与峰值内存均未记录，因此我们不引用它们。
+
+\textbf{批处理（E13）。} 真正的批量多起点牛顿在批大小 64 时只比循环快 $1.30\times$（59.9 对 46.2 样本/秒），批大小 8 时为 $0.78\times$，为 1 时为 $0.46\times$：收敛异质性与逐实例分类循环占主导，因此要获得真正的吞吐收益需要 GPU 或自定义内核。瓶颈是模式枚举，而不是 $3\times3$ 求解。
+
+\textbf{未运行。} GPU 批量根枚举、端到端训练，以及完整的 LINEMOD/In-The-Dark 精度矩阵。早先“1--2 块 GPU、4--6 周”的规划假设只是一个计划，不是测量结果（\emph{未验证}）。
+
+\subsection{负结果、真实数据研究与复现风险}\label{sec:risks}
+
+\subsubsection{真实数据双模态代价（LINEMOD）}\label{sec:real}
+
+一个确实能在真实数据上产生真正双模态代价的构造实现在 \path{real/linemod/run_two_mode.py} 中。A 部分使用 BOP \texttt{mask\_visib} 内的真实深度像素，用真实内参反投影为方位向量，为每个方位指定最近的真是网格顶点（KD-tree）作为 3D 模型点，并用确定性 RANSAC（2.5 mm 内点带）选出主导平面。平面目标具有经典的两重位姿歧义，因此方位代价有两个真正的极小值；变换后落在相机之后（$z\le0$）的模式被剔除。设置为 15 帧（8 帧 \texttt{eggbox}、7 帧 \texttt{glue}），每次观测 $n_{\rm points}=900$，$n_{\rm starts}=384$，$\tau=0.01$，FD $h=10^{-4}$，在登录节点 CPU 上运行。
+
+\begin{table*}[t]
+\centering
+\caption{主导平面上的真实双模态方位代价（A 部分）。全部 15 帧都有 $K_{\rm phys}=2$ 个物理极小值（$z>0$ 过滤之前为 $K_{\rm all}=4$）。$w({\rm other})$ 是不是硬 argmin 的那个物理模式的 Laplace 权重（14/15 帧中是翻转模式；\texttt{000010/72} 中是类 GT 模式）。旋转误差相对 BOP 真值，单位为度；Laplace 一列是\textbf{投影弦均值} $\mathrm{Proj}_{SO(3)}(\sum_kw_kR_k)$。早先未投影的 9 维向量数值（中位数 $58.28^\circ$）不是旋转误差，本文任何地方都不使用。}
+\label{tab:twomode}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l r r l r r r r@{}}
+\toprule
+帧/图像 & 目标 & $n_{\rm plane}$ & $\Delta J$ & 其他模式（度） & $w({\rm other})$ & 硬旋转误差（度） & Laplace 旋转误差（度，投影）\\
+\midrule
+000010/15 & 10 & 558 & 9.58e-04 & 69.3 & 0.483 & 1.47 & 33.90\\
+000010/18 & 10 & 474 & 1.25e-03 & 91.9 & 0.472 & 0.51 & 42.85\\
+000010/40 & 10 & 482 & 9.71e-04 & 69.1 & 0.482 & 2.20 & 33.07\\
+000010/60 & 10 & 452 & 1.69e-03 & 104.0 & 0.459 & 0.96 & 46.45\\
+000010/66 & 10 & 460 & 7.00e-04 & 88.4 & 0.488 & 2.29 & 43.67\\
+000010/72 & 10 & 501 & 1.25e-04 & 3.8 & 0.504 & 44.46 & 23.02\\
+000010/80 & 10 & 508 & 5.11e-04 & 54.7 & 0.501 & 1.08 & 27.71\\
+000010/90 & 10 & 474 & 4.13e-04 & 54.8 & 0.497 & 3.49 & 27.91\\
+000011/20 & 11 & 413 & 2.07e-03 & 69.1 & 0.608 & 8.14 & 44.24\\
+000011/24 & 11 & 423 & 1.65e-03 & 131.1 & 0.457 & 1.37 & 54.99\\
+000011/26 & 11 & 439 & 1.90e-03 & 126.9 & 0.450 & 2.06 & 51.65\\
+000011/32 & 11 & 474 & 2.10e-03 & 123.9 & 0.451 & 1.78 & 51.60\\
+000011/33 & 11 & 365 & 1.49e-03 & 149.6 & 0.460 & 1.62 & 59.09\\
+000011/40 & 11 & 428 & 2.56e-03 & 106.0 & 0.457 & 2.77 & 46.19\\
+000011/49 & 11 & 347 & 2.10e-03 & 83.7 & 0.528 & 4.95 & 46.75\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\textwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；硬旋转误差与权重两列来自 \path{real/linemod/results/two_mode.md}（A 部分），Laplace 一列来自 \path{real/linemod/results/pose_error.md}（逐帧表）。\texttt{pose\_error} 精确重现了逐帧的 $\Delta J$、权重与硬旋转误差（最大绝对差为 $0$；唯一的 $2.1\times10^{-14}$ 差异出现在旧的未投影值上）。
+\end{minipage}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{two_mode.png}
+\caption{真实双模态代价。左：对 15 个 LINEMOD 帧中的每一帧，翻转模式与类 GT 模式之间的目标间隙 $\Delta J$ 相对两个模式之间夹角的关系；每一帧都有 $K_{\rm phys}=2$，且 $\Delta J\in[1.25\times10^{-4},2.56\times10^{-3}]$。右：真实几何上的受控横向交叉（B 部分），其中两个带标签假设按 $J_\theta=(1-\theta)J_{\rm true}+\theta J_{\rm sym}$ 混合；$\Delta J$ 在 $\theta\approx0.475$ 附近变号。插图报告解析 Laplace 梯度相对中心 FD 的误差（$1.9\times10^{-10}$--$1.8\times10^{-9}$）与 400 样本 MC 误差（$9\times10^{-5}$--$1.7\times10^{-1}$）。}
+\label{fig:twomode}
+\end{figure}
+
+三点。第一，双模态结构是真实的、可复现的：15/15 帧都有 $K_{\rm phys}=2$，$\Delta J\in[1.25\times10^{-4},2.56\times10^{-3}]$，其他模式夹角为 $3.8^\circ$--$149.6^\circ$，$w({\rm other})=0.450$--$0.608$。第二，类 GT 模式在 14/15 帧中就是 $J$ 最低的物理模式，因此硬 argmin 在那里是准确的：旋转误差中位数 $2.06^\circ$ $[1.47,3.49]$，ADD-S 中位数 $3.7$ mm $[3.0,4.3]$，只有一帧失败超过 $10^\circ$（\texttt{000010/72}，$44.5^\circ$）。第三——这是诚实的读法——Laplace 后验均值在这些近平局上\textbf{不是}精度胜利：投影旋转误差中位数 $44.24^\circ$ $[33.90,46.87]$，相对硬 argmin 的配对偏差 $+36.9^\circ$ $[+27.2,+44.9]$，ADD-S 中位数 $13.9$ mm $[10.3,20.2]$，而硬 argmin 为 $3.7$ mm。它把大约一半的质量放在了翻转模式上。该集合中最小的 Hessian 行列式为 $6.09\times10^{-3}$（\texttt{000011/20}），即翻转模式本身也接近一个折叠。
+
+\textbf{关于 $58.3^\circ$ 的更正。} 早期草稿把测地线公式套用在\emph{未投影}的 9 维向量平均 $\sum_kw_kR_k$ 上，而那不是旋转。该量恰为 $\arccos(\sum_kw_k\cos e_k)$（已验证到 $10^{-14}$），给出 $58.28^\circ$ 的中位数；它不是测地距离，并且夸大了误差。在投影弦均值 $\mathrm{Proj}_{SO(3)}(\sum_kw_kR_k)$ 上，中位数为 $44.24^\circ$，而 ADD-S 只对投影位姿有定义。偏差主张的方向没有变——Laplace 均值被拉向翻转——但其幅度在早期草稿中被夸大了。某些下游结果文件仍带有旧的 $58.28^\circ$；本文使用 $44.24^\circ$，即有效的投影值。
+
+\begin{table*}[t]
+\centering
+\caption{15 个真实帧上的聚合位姿误差与 ADD-S（E15）。中位数配 95\% 百分位自举置信区间（1000 次重采样）。配对偏差是相对硬 argmin 的逐帧差值均值（跨帧 95\% 置信区间）；配对旋转偏差的中位数为 $+41.8^\circ$。“$10^\circ$ 以内”统计估计值与 GT 相差 $10^\circ$ 以内的帧数；对后验均值而言这并不等于“真模式”，因为均值未必是一个模式。}
+\label{tab:aggregate}
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}l l l l l l l@{}}
+\toprule
+方法 & 旋转中位数（度） & ADD-S 中位数（mm） & ADD 中位数（mm） & 旋转偏差（度） & ADD-S 偏差（mm） & $\le10^\circ$ / 真模式\\
+\midrule
+硬 argmin & 2.06 [1.47, 3.49] & 3.7 [3.0, 4.3] & 5.9 [5.2, 11.1] & --- & --- & 14/15 真模式\\
+Laplace（投影） & 44.24 [33.90, 46.87] & 13.9 [10.3, 20.2] & 38.1 [31.0, 41.5] & +36.9 [+27.2, +44.9] & +9.4 [+6.4, +12.6] & 0/15\\
+MC（20 个种子） & 43.80 [33.90, 47.43] & 14.1 [10.3, 20.0] & 38.0 [31.0, 41.5] & +37.2 [+26.7, +45.0] & +9.4 [+6.4, +12.5] & 0/15\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\textwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{real/linemod/results/pose_error.md} \S2。ADD-S 把 1000 个均匀顶点查询（三个独立子样本；取均值报告）对完整 GT 网格匹配；三个查询子样本在任一帧上的差异至多 $1.87$ mm，且 1000 查询/稠密 GT 估计器与完整网格对完整网格的 ADD-S 一致到 $0.51$ mm。置信区间描述的是这 15 帧，而不是某个总体。
+\end{minipage}
+\end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{real_summary.png}
+\caption{15 帧上的真实 LINEMOD \texttt{eggbox}/\texttt{glue} 结果，中位数配 95\% 自举置信区间。左：P1 层（硬 argmin、投影 Laplace 均值、20 种子 MC）以及前向/局部参照（SQPNP、IPPE、EPnP、由 GT 初始化的局部 LM、由 GT 初始化的 Theseus）相对 BOP 真值的旋转误差。右：同一批方法的 ADD-S（Theseus 未绘出）。硬 argmin 处于经典求解器水平；两个后验均值估计都在 $44^\circ$ 附近，因为它们对两个模式作了平均。绿色柱是前向/局部参照；红色柱是从真值出发的局部求解器，不是可部署的基线。}
+\label{fig:realsummary}
+\end{figure*}
+
+\textbf{聚合位姿误差与 ADD-S（E15）。} 表~\ref{tab:aggregate} 给出 15 帧的聚合值与自举置信区间；逐帧的旋转与平移误差以及全部置信区间见 \path{pose_error.md}/\path{pose_error.json}。硬 argmin 的均值大于中位数（$5.28^\circ$、$6.0$ mm），原因是那一帧失败；而 Laplace 的均值为 $42.21^\circ$ 与 $15.5$ mm；平移中位数为 $6.2$ mm（硬 argmin）与 $20.2$ mm（Laplace）。MC 估计的是与 Laplace 相同的平滑均值（20 个种子均值的平均相对 Laplace 聚合值为 $0.23^\circ$，在其种子级置信区间内），因此继承了该偏差；它只是额外增加了种子噪声（种子间标准差 $1.011^\circ$），所以并不是解决方案。
+
+\begin{table}[t]
+\centering
+\caption{15 个真实帧上的逐帧 ADD-S（mm）与 ADD 参照（mm）。ADD-S 是主要的物体空间指标；ADD 是同索引距离，对物体的 $\sim180^\circ$ 对称不变。}
+\label{tab:perframe}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l r l l l l@{}}
+\toprule
+& & \multicolumn{3}{c}{ADD-S} & ADD\\
+\cmidrule(lr){3-5}
+帧/图像 & 目标 & 硬 & Lap & MC & 参照\\
+\midrule
+000010/15 & 10 & 3.0 & 10.3 & 10.3 & 31.0\\
+000010/18 & 10 & 4.3 & 12.2 & 12.3 & 37.6\\
+000010/40 & 10 & 6.2 & 9.7 & 9.7 & 31.1\\
+000010/60 & 10 & 3.0 & 13.9 & 14.1 & 40.7\\
+000010/66 & 10 & 2.7 & 12.1 & 12.0 & 38.0\\
+000010/72 & 10 & 12.5 & 8.4 & 8.4 & 22.3\\
+000010/80 & 10 & 3.8 & 8.8 & 8.9 & 24.1\\
+000010/90 & 10 & 3.1 & 8.5 & 8.4 & 23.3\\
+000011/20 & 11 & 13.8 & 22.9 & 22.8 & 72.7\\
+000011/24 & 11 & 2.8 & 20.2 & 20.0 & 40.5\\
+000011/26 & 11 & 3.7 & 17.6 & 17.5 & 38.1\\
+000011/32 & 11 & 3.1 & 19.0 & 19.0 & 41.5\\
+000011/33 & 11 & 3.8 & 23.4 & 23.7 & 41.5\\
+000011/40 & 11 & 2.2 & 16.8 & 16.7 & 44.7\\
+000011/49 & 11 & 22.4 & 28.1 & 28.2 & 75.9\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\columnwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{real/linemod/results/pose_error.md} \S1。“Lap”是投影弦均值。
+\end{minipage}
+\end{table}
+
+逐帧有两个读数值得注意。(i) 在 \texttt{000010/72} 上，硬 argmin 是距 GT $44.5^\circ$ 的那个模式，而类 GT 模式只差 $3.8^\circ$，但在 $J$ 上高出 $1.25\times10^{-4}$；Laplace/MC 落在两个模式之间（$23.0^\circ$、$8.4$ mm），比硬 argmin 的失败更接近真值。这是损失排序在单帧上的偶然，而不是后验均值一般而言更准确的证据。(ii) 对 Laplace 位姿，ADD 是 ADD-S 的 $2$--$3$ 倍（中位数 $38.1$ 对 $13.9$ mm），因为 \texttt{glue} 物体细长，$\sim180^\circ$ 对称会给它重新贴标签；这正是报告 ADD-S 而非 ADD 的原因。
+
+\subsubsection{同一对应关系上的经典前向求解器}\label{sec:classical}
+
+表~\ref{tab:classical} 在逐位相同的 15 帧对应关系上运行 cv2 的 EPnP、ITERATIVE、SQPNP 与 IPPE，以及在同一方位代价上的普通局部 GN/LM（已断言与 \path{two_mode.json} 相同；GT 位姿的重投影残差中位数为 $1.47$ px，即约 $\sim1$ px 的最近顶点量化）。这些是\textbf{前向求解器，不是可微层}：其中的 LM 只是同一代价上的普通前向优化器，不是 BPnP，这里也没有任何东西穿过 PnP 求导或支持梯度主张。IPPE 在投影到拟合平面上的 RANSAC 内点上运行（它要求严格共面，平面性 RMS 为 $0.83$--$1.47$ mm）；其余求解器使用原始内点。
+
+\begin{table*}[t]
+\centering
+\caption{15 个真实帧上的经典前向 PnP 基线（E16）。中位数配跨帧 95\% 自举置信区间（2000 次重采样）。“真模式”统计与 GT 相差 $10^\circ$ 以内的解。在 cv2 5.0.0 中 SQPNP 只返回一个解（文档中针对非 P3P/IPPE 标志如此，且在全部 15 帧上观察到）；IPPE 返回两个平面解，而第一个（重投影代价最小）在全部 15 帧上都是更接近 GT 的那个，因此 oracle 行会与“IPPE 第一个”相同。}
+\label{tab:classical}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l l l l@{}}
+\toprule
+方法 & 旋转中位数 [CI]（度） & ADD-S 中位数 [CI]（mm） & 真模式\\
+\midrule
+EPnP & 2.05 [1.41, 3.71] & 6.5 [5.0, 13.5] & 12/15\\
+ITERATIVE（单应初始化 + LM） & 2.07 [1.60, 3.54] & 6.5 [5.7, 8.7] & 11/15\\
+SQPNP（1 个解） & 2.04 [1.47, 2.77] & 4.6 [4.0, 5.8] & 15/15\\
+IPPE（第一个，平面投影） & 2.21 [1.68, 2.76] & 5.5 [4.4, 7.4] & 15/15\\
+局部 LM，恒等初始化 & 106.01 [69.14, 179.82] & 40.7 [28.0, 1708.7] & 3/15\\
+局部 LM，GT 初始化 & 2.06 [1.47, 2.77] & 4.6 [4.0, 5.8] & 15/15\\
+局部 LM，翻转初始化 & 88.39 [69.08, 106.01] & 23.5 [16.9, 28.0] & 0/15\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\textwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{real/linemod/results/classical_baselines.md}。LM 各行只在初始化上不同；GT 初始化那一行不是可部署的基线。此处的 ADD-S 列使用该脚本的 1000 查询/1000 GT 顶点估计器，相对表~\ref{tab:aggregate} 的稠密 GT 网格 ADD-S 带有 $+1.1$ mm 的离散化下限；因此两个 ADD-S 列不能直接比较，可比的精度列是旋转误差。
+\end{minipage}
+\end{table*}
+
+三点读数。(i) 前向点精度处于经典水平：SQPNP/EPnP/ITERATIVE 的中位数为 $2.04$--$2.07^\circ$，IPPE 为 $2.21^\circ$，即在帧噪声范围内等于硬 argmin 的 $2.06^\circ$；没有哪个经典求解器接近 Laplace 均值的 $44.2^\circ$。(ii) 单解求解器在某些帧上自信地给出错误结果：EPnP 在 3/15 帧上偏离 GT 超过 $10^\circ$，ITERATIVE 在 4/15 帧上如此（第四帧 \texttt{000011/20} 为 $10.0^\circ$，恰在阈值上）；在 \texttt{000010/72} 上 EPnP 与 ITERATIVE 都返回 $44.3^\circ$/$44.0^\circ$ 的平面翻转解，重投影残差为 $0.78$--$0.79$ px，而且在原始内点上该翻转解的方位代价甚至低于真实模式的平面解。(iii) 若没有 $z>0$ 的物理性过滤与多起点，局部 LM 基线从恒等初始化出发会失败（3/15 为真模式，7/15 落在相机之后；中位数 $106^\circ$），从翻转初始化出发则始终进不了真模式（0/15）；只有 GT 初始化能恢复它。该层显式的物理性过滤与枚举在这个代价上确实起了作用。
+
+\subsubsection{同一代价上的 Theseus LM}\label{sec:theseus}
+
+Theseus 0.2.3（\texttt{LevenbergMarquardt}，float64 CPU）最小化同一方位代价 \cite{pineda2022theseus}；其目标与一个 numpy 参照一致到 $1.1\times10^{-13}$，其解析 Jacobian 与中心差分一致到 $1.3\times10^{-10}$。它是\textbf{局部优化器，不是可微层比较}：每次调用只返回一个位姿，没有枚举模式集合的概念，不返回后验，也不施加 $z>0$ 的物理性过滤。
+
+\begin{table*}[t]
+\centering
+\caption{真实方位代价上的 Theseus LM（E17）。“真模式”指与 GT 相差 $10^\circ$ 以内。随机初始化那一行在 15 帧的每一帧上各取 20 个初始化（共 300 次求解）；多起点那一行在 5 个代表性帧的每一帧上各取 8 个初始化（共 40 次求解），其中位数是对这 40 次试验误差取的中位数，而不是取 8 个中的最好。}
+\label{tab:theseus}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l l l p{7.4cm}@{}}
+\toprule
+协议 & 旋转中位数（度） & 真模式 & 结果分解\\
+\midrule
+GT 初始化（15 帧） & 2.06 & 15/15 & 恢复到最近的 P1 模式（在 \texttt{000010/72} 上那是 $3.8^\circ$ 的模式，而不是全局 argmin）\\
+恒等初始化（15 帧） & 178.82 & 1/15 & 6 个翻转、8 个其他；8 个落在相机之后\\
+每帧 20 个随机初始化（300 次求解） & 123.91 & 100/300（33.3\%） & 57 个翻转、143 个其他、134 个非物理\\
+8 初始化 $\times$ 5 帧（40 次求解） & 4.95 & 11/40（27.5\%） & 无聚合后验；给出的是逐试验误差\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\textwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{real/linemod/results/theseus_baseline.md} \S3--\S6。“非物理”指估计把物体放到相机之后（\texttt{frac z>0.05 < 0.99}），而 P1 层按构造会拒绝这类解。
+\end{minipage}
+\end{table*}
+
+GT 初始化那一行体现的是局部收敛，而不是基线的胜利。从冷启动出发，Theseus 返回的是下降所进入的那个盆——常常是翻转模式，或是无约束代价中落在相机之后的驻点，而这些正是该层枚举所拒绝的解。在这个近平局代价上，它是自然的\emph{无枚举}参照，而不是用于 Laplace 均值的估计器；在这里，局部优化并不能替代模式枚举。
+
+\subsubsection{真实几何上的受控横向交叉}\label{sec:partb}
+
+B 部分去掉了旧构造中“共享平移”的失效：两个带标签假设各自消去\textbf{自己}的平移，代价按 $J_\theta=(1-\theta)J_{\rm true}+\theta J_{\rm sym}$ 混合。在真实帧 \texttt{000010/15} 上，实测打平点在 $\theta^\star\approx0.475$（构造设计为在 $0.5$ 处打平，但重采样使两个带标签的代价不再严格对称）；$\Delta J$ 在 $\theta=0.46$ 与 $0.479$ 之间变号，因此交叉是横向的，且两个极小值都保持在其带标签位姿的 $\sim2^\circ$ 以内。
+
+\begin{table}[t]
+\centering
+\caption{真实几何上的受控横向交叉（B 部分，节选）。完整的 11 行表见 \texttt{real/linemod/results/two\_mode.md}。\emph{梯度相对误差}是解析 Laplace 梯度相对层输出中心 FD 的误差；MC 是模式级、400 个样本。“Lap 梯度相对”与“MC 梯度相对”分别是解析 Laplace 梯度与模式级 MC 梯度相对中心 FD 的相对误差。}
+\label{tab:partb}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l l l l l l@{}}
+\toprule
+$\theta$ & $\Delta J$ & $w(A)$ & Lap 梯度相对 & MC 梯度相对 & $\|d\phi\|$\\
+\midrule
+0.3500 & +1.64e-05 & 0.50031 & 2.59e-10 & 9.51e-03 & 1.129e-02\\
+0.4600 & +2.20e-06 & 0.50004 & 8.61e-10 & 8.94e-05 & 1.123e-02\\
+0.4790 & -2.22e-07 & 0.50000 & 7.82e-10 & 1.68e-01 & 1.122e-02\\
+0.5000 & -2.89e-06 & 0.49995 & 1.76e-09 & 5.09e-02 & 1.121e-02\\
+0.6500 & -2.17e-05 & 0.49960 & 4.03e-10 & 1.10e-02 & 1.112e-02\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\columnwidth}\scriptsize
+证据级别：\emph{独立复现（本仓库）}；来源 \path{real/linemod/results/two_mode.md}（B 部分）。
+\end{minipage}
+\end{table}
+
+在这 11 行上，Laplace 梯度与中心 FD 一致到 $1.9\times10^{-10}$--$1.8\times10^{-9}$，而 400 样本的模式级 MC 误差为 $8.9\times10^{-5}$--$1.7\times10^{-1}$；硬 argmin 在打平处有跳变，其 FD 在该处无定义，因此不报告硬梯度。这是关于闭式反向传播在真实代价上正确性的结果，而不是精度主张：没有使用前端，E15 的 ADD-S 代理属于 A 部分而不属于这个交叉。B 部分还检验了修复后的 \texttt{dlogdetH\_dtheta} 路径（第~\ref{sec:rootcount} 节）。
+
+\subsubsection{早期的负结果构造：保留并诊断}\label{sec:negative}
+
+\path{run_symmetry.py} 把同一组图像方位分别与模型点 $P$ 以及对称变换后的点 $SP$ 配对，混合两个完整的方位代价矩阵，并消去一个共享平移。它在 9 个候选帧中产生了 0 条可用行（\path{symmetry.json} 是 \texttt{[]}，\path{symmetry.md} 只有表头）。诊断出两个原因。(B1) \texttt{sym\_of} 把 \texttt{models\_info} 中以毫米为单位的对称平移当成了米，使第二个点云偏移了约 $0.69$ m；修正之后，$J_B$ 在其自身位姿处为 $4\times10^{-14}$，而不是一个虚假的值。(B2) 即使修好 (B1)，把两个完整代价相加并只消去一个共享 $t$，会使两个假设争抢同一个平移：极小值塌缩成一个折中位姿（$t\approx-0.1$，而真实 $t_z\approx0.887$），因此代价在交叉处是单峰的。这是构造失败，而不是关于对称物体的证据；A 部分的构造才是正结果。
+
+\subsubsection{已报告运行的根枚举未经认证}\label{sec:enumeration}
+
+6D 运行使用的是 \path{instance.py} 中的批量多起点牛顿，而不是 LibQPEP；E1/E8 假定完备性（A2），而该枚举器相对某个独立代数求解器的漏根率并未测量。相对 1024 起点的参照，$n_{\rm starts}\ge64$ 在扫描上重现模式集合，$32$ 能匹配中位数 $K$，而 $n_{\rm starts}=16$ 在 10\% 的独立抽样中漏掉脆弱模式；因此第~\ref{sec:synthetic} 节的模式数应读作真实计数的下界，而不是认证计数。计数问题现在已单独测量：总度同伦在 $4/4$ 个实例上找到 40 个复射影根（第~\ref{sec:rootcount} 节），实根计数为 $26/12/12/20$，局部极小值为 $5/2/2/4$。那认证的是代数系统的通用复根计数，而不是实验中使用的枚举器。
+
+\subsubsection{实测折叠，以及实根代理能与不能做的事}\label{sec:fold6d}
+
+6D 合成映射在交叉稍远处有一个真正的折叠。次级极小值只在 $|\theta|\lesssim1.3\times10^{-3}$ 时存在（精细折叠扫描把模式消亡定位在 $\theta_f=1.31\times10^{-3}$；较粗的鲁棒性扫描把它框在 $\approx1.4\times10^{-3}$ 附近）；当它接近折叠时，其 $3\times3$ Hessian 行列式降至 $3.35\times10^{-1}$，而其 Laplace 权重从 $0.09$ 升到 $0.187$（在该行列式处为 $0.122$），随后该模式消失（$K$ 从 4 降到 3）。跨过折叠时，位姿映射在一步 $2\times10^{-5}$ 内跳变 $0.31$（在网格细化下保持不变，即真正的间断），$\|d\phi\|$ 峰值达 $3529$，而远离折叠处的中位数为 $379$；有效 FD 斜率可达 $1.5\times10^4$。更小的 $\tau$ 或更多起点都去不掉它：$n_{\rm starts}\ge32$ 能匹配 1024 起点的中位数 $K$（64 起点在扫描上重现完整模式集合），而 $n_{\rm starts}=16$ 在 10\% 的独立抽样中漏掉脆弱模式，一次漏失会使位姿最多偏移 28\%、梯度最多偏移 97\%。因此光滑性与 $O(\tau)$ 精度陈述只限定在 $\theta=0$ 与 $|\theta|\lesssim1.3\times10^{-3}$；在极小值诞生或消亡之处，多模态 Laplace 映射是不连续的。证据：\emph{独立复现（本仓库）}；来源 \path{results/robustness.md}（a2 节）、\path{results/fold_6d.md}，以及 \path{experiments/rounds_2026-11-27.md} 中记录的鲁棒性轮次。
+
+\textbf{针对折叠的一个廉价部分修复。} 把 $\det H$ 换成 $\det(H+\epsilon I)$，取 $\epsilon=\tau^{1/3}$（即第~\ref{sec:fold1d} 节的一维规则，其导数仍是闭式 $\operatorname{tr}((H+\epsilon I)^{-1}\dot H)$），可以大幅消除\emph{导数}奇异性：在 $\theta=1.30\times10^{-3}$ 处，标准 $\|d\phi\|$ 为 $3529$，正则化后为 $443$，近折叠处的梯度误差从 $2.90\times10^{-1}$ 降到 $1.19\times10^{-2}$（24 倍）；远离折叠处（$\theta=0.1,0.02$）两种变体在打印精度上一致。但它\textbf{不能}消除由极小值消亡造成的\emph{取值}不连续：跨折叠的位姿跳变只从 $0.309$ 降到 $0.107$，$K$ 仍从 4 变为 3。因此，Hessian 正则化对折叠邻域是一个站得住脚的廉价缓解手段，但跨折叠的连续性主张仍需要第~\ref{sec:discussion} 节的 Scorer 延拓，或对合并对做局部数值积分。
+
+\textbf{跨折叠的取值跳变是结构性的。} 实测的 $0.309\to0.107$ 正是折叠理论所预言的。由命题~\ref{prop:q5b}，任何只对实局部极小值求和、并给合并模式一个正的正则化底权重的代理，都必须在标准余维 1 折叠处跳变，跳变量正比于该权重——对 $\eta=c_0\tau^{1/3}$ 的底权重为 $\Theta(\tau^{1/3}e^{-(J_0-J_{\rm glob})/\tau})$——所以 $\tau^{1/3}$ 正则化器能治导数，却治不了取值。命题~\ref{prop:q5c} 通过把合并对作为复共轭对来跟踪、并用半线 Airy/Scorer 权重替代两个实根权重来消除该跳变；该权重在折叠处是 $C^\infty$ 的，并在 $\zeta\gg1$ 时回到三维 Laplace 权重。主表报告的仍是仅实根层。
+
+\subsubsection{剩余的复现风险}\label{sec:residualrisks}
+
+\begin{itemize}
+\item \textbf{“认证”间隙是数值的。} SDP 证书只在 SCS 容差内是 PSD 的（$\lambda_{\min}(Z)=-1.79\times10^{-11}$）；$13\times13$ 的比较则是混合的：完整 20D 等价是代数恒等式，上游 17 维不等式已被证明，而严格分离是在扰动 Choi--Lam 集合与 6 点实例上测量得到的（表~\ref{tab:6point}），其数值是数值性的。
+\item \textbf{没有运行任何学习型或可微层基线。} SDPR-IS、SDPR-SDP、EPro-PnP 与 BPnP 缺席于每一张表，因此不存在与它们的精度、方差或计时比较。Theseus 是没有后验、没有枚举的局部优化器，EPnP/SQPNP/IPPE 是经典前向求解器；它们都不是可微层比较。缺少学习层比较仍是实验部分最大的缺口。
+\item \textbf{模式级 MC、折叠与 In-The-Dark。} MC 基线对离散模式权重采样（$n=200$、20 个种子），不是 EPro-PnP 的 $SE(3)$ AMIS 采样器；其数值只测量离散模式采样方差。一维斜率（1.07）、一维折叠爆炸（$a=0.01$ 时相对误差 $3.24$）、$|\theta|\approx1.3\times10^{-3}$ 处真正的 6D 折叠，以及真实数据近平局偏差（Laplace 中位数 $44.24^\circ$ 对硬 argmin $2.06^\circ$），共同界定了 Laplace 求和可靠的区域。UTIAS In-The-Dark 未尝试：其下载、运行划分以及 \texttt{pose\_sdp\_block.py}-at-HEAD 的问题都未测试，也不对该流水线作任何主张。
+\end{itemize}
+
+\subsection{主张—证据映射}\label{sec:claimmap}
+
+表~\ref{tab:claimmap} 把本文提出的每个主张映射到其最强的证据，以及承载该数值的文件或表格。它刻意保守：只有当第~\ref{sec:method} 节给出论证时才标为“已证明”，只有当存在结果文件时才标为“已测量”。
+
+\begin{table*}[t]
+\centering
+\caption{主张—证据映射。}
+\label{tab:claimmap}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{7.1cm} p{4.1cm} p{4.9cm}@{}}
+\toprule
+主张 & 证据级别 & 位置\\
+\midrule
+$x_R=2Uv_2(q)$；21 个 $SO(3)$ 约束张成 20 维二次 Veronese 理想；$10\times10$ SDP 是其 Shor 松弛 & 已证明；精确有理秩校验 & 第~\ref{sec:lift}--\ref{sec:sdp} 节；E12\\
+构造的 Choi--Lam 间隙 $0.034188$、$\operatorname{rank}(X^\star)=6$、$\lambda_{\min}(Z)=-1.8\times10^{-11}$ & 构造实例上的数值对偶证书 & 表~\ref{tab:sdp_cert}；E5\\
+$\lambda^\star=4J$、$3\times3$ 黎曼隐式微分、对映不变性 & 已证明；FD 校验达 $10^{-7}$ 或更好 & 表~\ref{tab:backward}；E4、E6\\
+平移被精确积分；Laplace 旋转误差 $O(\tau)$ 及其常数 & 推导；一维数值斜率 1.07 & 表~\ref{tab:1d}；E2、E6\\
+折叠行为：$\tau^{1/3}$ 正则化器与 Scorer 延拓 & 推导；一维与 6D 实测 & 表~\ref{tab:fold}、\ref{tab:scorer}；E3、E14\\
+6D 交叉：Laplace 映射光滑，硬 argmin 是阶跃映射 & 已测量 & 表~\ref{tab:main6d}；E1\\
+真实双模态代价：15/15 帧中 $K_{\rm phys}=2$ & 已测量 & 表~\ref{tab:twomode}；E8\\
+硬 argmin $2.06^\circ$ / $3.7$ mm；Laplace $44.24^\circ$ / $13.9$ mm，偏差 $+36.9^\circ$ & 已测量的位姿误差代理，不是检测器基准 & 表~\ref{tab:aggregate}--\ref{tab:perframe}；E15\\
+经典前向求解器达到 $2.0$--$2.2^\circ$ 中位数 & 已测量的前向参照，不是层比较 & 表~\ref{tab:classical}；E16\\
+Theseus 是局部的：从 GT 出发 15/15，从随机初始化出发 100/300 & 已测量的局部参照 & 表~\ref{tab:theseus}；E17\\
+4/4 个实例上 40 个复射影根 & 已测量的代数系统同伦计数 & 第~\ref{sec:rootcount} 节；E18\\
+完整 20D $10\times10$/$13\times13$ 等价；上游 17 维严格更松 & 已证明；已测量的物理分离 & 表~\ref{tab:13v10}--\ref{tab:6point}；E12\\
+检测器级 ADD(-S)/ADD-S AUC、UTIAS、学习型前端、SDPR/EPro-PnP/BPnP 比较 & 未测量 & N1--N3\\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\textwidth}\scriptsize
+证据级别：映射本身对“已证明”各行是\emph{论文声明}，对“已测量”各行是\emph{独立复现（本仓库）}；“未测量”各行为\emph{未验证}。
+\end{minipage}
+\end{table*}

@@ -1,0 +1,45 @@
+\documentclass[twocolumn,10pt]{ctexart}
+\input{preamble}
+
+% 浮动体放置：正文共 19 个表格与 5 幅插图，其中多数为双栏浮动体。
+% 放宽默认参数，使浮动体尽量排入正文页，而不是被推迟到全文末尾。
+\setcounter{topnumber}{4}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{6}
+\setcounter{dbltopnumber}{3}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.5}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.6}
+\renewcommand{\dbltopfraction}{0.92}
+\renewcommand{\dblfloatpagefraction}{0.6}
+
+\begin{document}
+\zihao{5}
+
+\title{\zihao{2}\bfseries Laplace-QPEPLayer：基于四元数代数与多模态Laplace平滑的零提升可微位姿估计}
+\author{\zihao{4} 第一作者\quad 第二作者\\[2pt] \zihao{5}（[单位名称]，[城市] [邮编]）}
+\date{}
+\maketitle
+
+\begin{abstract}
+\zihao{-5}
+\input{sections/00_abstract}
+\end{abstract}
+
+\noindent{\zihao{-5}\textbf{关键词：}可微位姿估计；四元数代数；Veronese松弛；Laplace近似；隐式微分；全局优化}
+
+\noindent{\zihao{-5}\textbf{中图分类号：}TP242\quad\textbf{文献标志码：}A}
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_formulation}
+\input{sections/04_method}
+\input{sections/05_experiments}
+\input{sections/06_discussion}
+\input{sections/07_conclusion}
+
+\bibliographystyle{plain}
+\bibliography{refs}
+
+\end{document}
