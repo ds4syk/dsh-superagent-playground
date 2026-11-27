@@ -205,7 +205,6 @@ res["H_antipodal_rel_err"] = float(np.linalg.norm(Hm - Hs) / np.linalg.norm(Hs))
 dq_an_neg = -E(-qstar) @ np.linalg.solve(Hm, E(-qstar).T @ (2 * Jv(-qstar).T @ (M1 @ v2(-qstar))))
 res["dq_antipodal_relation_rel"] = float(np.linalg.norm(dq_an_neg + dq_an) /
                                          max(np.linalg.norm(dq_an), 1e-14))
-dR_pos = 2 * np.array([0.0])  # placeholder replaced below
 # dR/dtheta via the chain rule dR = sum_a (dR/dq_a) dq_a ; compare +q and -q
 def dR_dq(q):
     """Jacobian of vec(R(q)) w.r.t. q, shape (9,4)."""
