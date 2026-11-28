@@ -43,7 +43,9 @@ def _clean_math(text):
         s = s.replace("\\,", " ").replace("\\;", " ").replace("\\!", "")
         s = s.replace("\\max", "max").replace("\\min", "min").replace("\\log", "log")
         s = s.replace("\\det", "det").replace("\\exp", "exp")
-        s = s.replace("\\succ", "≻").replace("\\succeq", "≽").replace("\\preceq", "≼")
+        s = s.replace("\\succeq", "≽").replace("\\preceq", "≼")
+        s = s.replace("\\succ", "≻").replace("\\prec", "≺")
+        s = s.replace("\\rm", "")
         s = s.replace("\\star", "⋆").replace("\\ast", "∗")
         s = s.replace("\\supsetneq", "⊋").replace("\\subsetneq", "⊊")
         s = s.replace("\\setminus", "∖").replace("\\in", "∈")
@@ -63,6 +65,8 @@ def _clean_math(text):
         s = re.sub(r"\\mathcal\s*\{([^}]*)\}", r"\1", s)
         s = re.sub(r"\\([A-Za-z]+)", r"\1", s)  # 未知命令去反斜杠
         s = s.replace("{", "").replace("}", "")
+        s = re.sub(r"_\s+", "_", s)
+        s = re.sub(r"\^\s+", "^", s)
         return s
     return re.sub(r"\$([^$]+)\$", repl, text)
 

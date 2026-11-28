@@ -54,7 +54,7 @@ $P experiments/e3_spec.py       # SpecQPEP
 $P experiments/make_figures.py  # 四张图 + 一页总览
 
 # 可选：重建 DOCX
-$P ../scripts/build_qpep_batch2_docx.py
+$P scripts/build_docx.py
 ```
 
 依赖：`numpy scipy cvxpy matplotlib python-docx`（本机 `sdpr` 环境已装；
