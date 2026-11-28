@@ -42,7 +42,8 @@ def _clean_math(text):
         s = s.replace("\\left", "").replace("\\right", "")
         s = s.replace("\\,", " ").replace("\\;", " ").replace("\\!", "")
         s = s.replace("\\max", "max").replace("\\min", "min").replace("\\log", "log")
-        s = s.replace("\\det", "det").replace("\\exp", "exp")
+        s = s.replace("\\det", "det ").replace("\\exp", "exp ")
+        s = s.replace("\\frac12", "1/2").replace("\\frac{1}{2}", "1/2")
         s = s.replace("\\succeq", "≽").replace("\\preceq", "≼")
         s = s.replace("\\succ", "≻").replace("\\prec", "≺")
         s = s.replace("\\rm", "")
@@ -150,6 +151,24 @@ def md_to_docx(md_path, out_path, title=None, subtitle=None, image=None):
                 _set_font(r, {1: 15, 2: 13, 3: 11.5, 4: 11}[min(level, 4)],
                           bold=True, color=RGBColor(0x1A, 0x1A, 0x1A))
             i += 1
+            continue
+        # code fence
+        if line.strip().startswith("```"):
+            j = i + 1
+            block = []
+            while j < n and not lines[j].strip().startswith("```"):
+                block.append(lines[j])
+                j += 1
+            for bl in block:
+                p = doc.add_paragraph()
+                r = p.add_run(bl if bl else " ")
+                r.font.name = "Noto Sans Mono"
+                r._element.rPr.rFonts.set(qn("w:eastAsia"), "Noto Sans CJK SC")
+                r.font.size = Pt(8.5)
+                p.paragraph_format.space_after = Pt(0)
+                p.paragraph_format.left_indent = Pt(6)
+            doc.add_paragraph()
+            i = j + 1
             continue
         # table
         if line.strip().startswith("|") and i + 1 < n and _is_table_sep(lines[i + 1]):

@@ -58,9 +58,9 @@ qpep-batch2/
 
 | 原型 | 前向 | 反向 | 本批实现 |
 |-|-|-|-|
-| **RiemQPEP** | 多起点黎曼牛顿枚举 $S^3$ 极小，取最低 | $\bm H_{S^3}=\bm E^\top(\nabla^2f-\lambda\bm I)\bm E$，$\bm\eta=\bm H^{-1}\bm E^\top\bm g_q$，$\partial\ell/\partial\bm Q_m=\frac12(\bm u\bm m_2^\top+\bm m_2\bm u^\top)$，$\bm u=-2\bm J\bm E\bm\eta$ | `p1_riem/layer.py`；含平移链式 |
-| **BarrierQPEP** | 把倾角/深度约束写成 $\bm c_j^\top\bm m_2\le0$；同伦 $\tau$ 对数障碍 + 可行内点牛顿 | 统一 3×3 $\bm H_\tau^{-1}$；$\partial\ell/\partial\bm Q_m$ 与 $\partial\ell/\partial\bm c_j$ 闭式 | `p2_barrier/layer.py` |
-| **SpecQPEP** | 枚举全部极小；$Z_0=\sum e^{-f_k/\beta}$，$Z_{\rm ML}=\sum(2\pi\beta)^{3/2}(\det\bm H_k)^{-1/2}e^{-f_k/\beta}$ | 零阶包络（矩匹配）；ML 需曲率项 | `p3_spec/layer.py` |
+| **RiemQPEP** | 多起点黎曼牛顿枚举 $S^3$ 极小，取最低 | 3×3 黎曼 Hessian + 闭式秩 2 外积 + 平移链式 | `p1_riem/layer.py` |
+| **BarrierQPEP** | 把倾角/深度约束写成 $\bm c_j^\top\bm m_2\le0$；同伦 $\tau$ 对数障碍 + 可行内点牛顿 | 统一 3×3 障碍 Hessian；Q 与 c 的闭式梯度 | `p2_barrier/layer.py` |
+| **SpecQPEP** | 枚举全部极小；Boltzmann 配分 $Z_0$ 与 Laplace 配分 $Z_{\rm ML}$ | 零阶包络矩匹配；ML 加曲率项 | `p3_spec/layer.py` |
 
 **共同前提**：本批的“全局”是**多起点数值枚举 + 二阶检查**，不是 27×27 作用矩阵的
 代数全根证书。这是 G5 的缺口，也是所有实验的解释边界。
