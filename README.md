@@ -22,3 +22,9 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
+
+- **QPEP 第二批：构建与预实验**（2026-11-28）：
+  [工作目录](qpep-batch2/README.md) · [数学缺口](qpep-batch2/math/MATHEMATICAL_GAPS.md) ·
+  [一页总览](docs/visuals/2026-11-28-qpep-batch2.png) ·
+  [DOCX 构建与预实验](deliverables/QPEP_第二批构建与预实验_2026-11.docx) ·
+  [DOCX 数学缺口](deliverables/QPEP_第二批数学缺口_2026-11.docx)
