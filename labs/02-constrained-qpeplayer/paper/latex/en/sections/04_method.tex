@@ -24,19 +24,19 @@ If $\mathbf G_{\mathcal A}\succ0$ then $\min_{\mathbf t}\mathcal L_\rho|_{\mathc
 \end{theorem}
 Two details matter in an implementation. First, $\kappa_{\mathcal A}$ sums over \emph{inactive} $j$ only: the symmetric choice changes $\mathcal L_\rho|_{\mathcal A}$ by $\sum_{j\in\mathcal A}\mu_j^2/(2\rho)$, an error of $5.57\times10^{-1}$ instead of $3.55\times10^{-15}$. Second, the form is quadratic in $\mathbf v_2$ but \emph{quartic in $\mathbf q$}: the KKT system is four cubics plus one quadratic (Bezout bound $3^4\cdot2=162$) with generic root count 40 (Thm.~\ref{thm:spectrum}), so the template is regenerated for the actual monomial support at $O(1)$ cost in $p$.
 
-\subsection{Conditional global optimality}\label{sec:conditional}
-\begin{theorem}[Conditional global optimality]\label{thm:cond}
-Let $\hat{\mathbf z}$ be the ALM output with $\hat{\boldsymbol\mu}\ge0$ and violation $\nu=\max_j[g_j(\hat{\mathbf z})]_+$, and for $\boldsymbol\mu\ge0$ let $d(\boldsymbol\mu)=\min_{\mathbb{S}^3\times\mathbb{R}^3}\{J_\theta+\sum_j\mu_jg_j\}$. Then
+\subsection{Two-sided optimality bounds for infeasible outputs}\label{sec:conditional}
+\begin{theorem}[Two-sided bounds via calmness]\label{thm:cond}
+Let $\hat{\mathbf z}$ be the ALM output with $\hat{\boldsymbol\mu}\ge0$ and violation $\nu=\max_j[g_j(\hat{\mathbf z})]_+$. For $\boldsymbol\mu\ge0$ let $d(\boldsymbol\mu)=\min_{\mathbb{S}^3\times\mathbb{R}^3}\{J_\theta+\sum_j\mu_jg_j\}$, and for $u\in\mathbb{R}^p$ let $v(u)=\inf\{J_\theta(\mathbf z):\mathbf z\in\mathbb{S}^3\times\mathbb{R}^3,\ g_j(\mathbf z)\le u_j\ \forall j\}$ be the perturbed value, so $v(\mathbf 0)=J^\star$. Assume calmness at $u=\mathbf 0$ along the positive diagonal: there is a calm modulus $L\ge0$ with $v(\mathbf 0)-v(\nu\mathbf 1)\le L\nu$. Then, with $\delta:=J_\theta(\hat{\mathbf z})-d(\hat{\boldsymbol\mu})$,
 \begin{equation}
 \begin{aligned}
-d(\hat{\boldsymbol\mu})\ \le\ J^\star\ \le\ J_\theta(\hat{\mathbf z})+L\nu ,\\
-\text{hence}\quad 0\le J_\theta(\hat{\mathbf z})-J^\star\le \underbrace{J_\theta(\hat{\mathbf z})-d(\hat{\boldsymbol\mu})}_{=:\delta}+L\nu .
+&-L\nu\ \le\ J_\theta(\hat{\mathbf z})-J^\star\ \le\ \delta\\
+\Longleftrightarrow\quad &0\le\big(J_\theta(\hat{\mathbf z})+L\nu\big)-J^\star\le\delta+L\nu,
 \end{aligned}
 \label{eq:sandwich}
 \end{equation}
-If $\delta+L\nu\le\tau$ then $\hat{\mathbf z}$ is $\tau$-globally optimal; in exact arithmetic $\delta\ge0$, and a computed $\delta<0$ is a numerical artefact.
+and in exact arithmetic $\delta+\sum_j\hat\mu_j[g_j(\hat{\mathbf z})]_+\ge0$, in particular $\delta\ge-\|\hat{\boldsymbol\mu}\|_1\nu$. If $\nu=0$, then $0\le J_\theta(\hat{\mathbf z})-J^\star\le\delta$ and $\delta\ge0$; if $\nu>0$, both $J_\theta(\hat{\mathbf z})-J^\star$ and $\delta$ can be strictly negative. Valid moduli are $L=\|\boldsymbol\mu^\star\|_1$ when strong duality holds with a dual optimum $\boldsymbol\mu^\star$, and $L=L_J\kappa_{\rm Rob}$ when $J_\theta$ is $L_J$-Lipschitz near the feasible set and the Robinson error bound $\operatorname{dist}(\mathbf z,\mathcal F_0)\le\kappa_{\rm Rob}\max_j[g_j(\mathbf z)]_+$ holds. If $\delta+L\nu\le\tau$, then $\hat{\mathbf z}$ is $\tau$-globally optimal.
 \end{theorem}
-A dual bound alone is not a certificate, because $d(\hat{\boldsymbol\mu})$ is itself a global solve of a non-convex problem; on our controlled instance $\delta=-1.67\times10^{-11}$, so the dual function serves as a diagnostic and the next construction as the bound of record.
+Two features differ from a one-sided sandwich. First, the lower side is $-L\nu$, not $0$: an infeasible output can have $J_\theta(\hat{\mathbf z})<J^\star$, and $\delta<0$ is then not an arithmetic artefact but part of the admissible range $\delta\ge-\|\hat{\boldsymbol\mu}\|_1\nu$; a non-negative gap is forced only when $\nu=0$. Second, the bound is not a certificate even when $\nu=0$: $d(\hat{\boldsymbol\mu})$ is itself a global solve of a non-convex problem. On our controlled instance we record $\delta=-1.67\times10^{-11}$ at $\nu\le2.4\times10^{-11}$, which is inside that range, so we report $\delta$ as a two-sided diagnostic and take the bound of record from Sec.~\ref{sec:cert}.
 
 \subsection{A sound certificate with a $p$-independent PSD block}\label{sec:cert}
 \begin{lemma}[Sound $14\times14$ certificate]\label{lem:cert}
@@ -63,25 +63,25 @@ Every feasible $\mathbf z$ yields a feasible rank-one $\mathbf X$ with the same 
 \label{eq:p2cert}
 \end{equation}
 \begin{theorem}[P2-Cert: rigorous dual repair]\label{thm:cert}
-If $\tilde{\mathbf H}_{tt}\succ0$, let $\mathbf S_{10}=\tilde{\mathbf H}_{RR}-\tilde{\mathbf H}_{Rt}\tilde{\mathbf H}_{tt}^{-1}\tilde{\mathbf H}_{Rt}^\top$ and $\delta_{\min}=\min(0,\lambda_{\min}(\mathbf S_{10}))$; otherwise let $\delta_{13}=\min(0,\lambda_{\min}(\tilde{\mathbf H}_{13}))$ and use $\|\mathbf t\|\le R_t$. Then
+Let $\tilde{\mathbf H}_{13}$ be as in \eqref{eq:p2cert}. If $\tilde{\mathbf H}_{tt}\succ0$ (Case A), let $\mathbf S_{10}=\tilde{\mathbf H}_{RR}-\tilde{\mathbf H}_{Rt}\tilde{\mathbf H}_{tt}^{-1}\tilde{\mathbf H}_{Rt}^\top$. If $\mathbf S_{10}-\delta_{\min}\mathbf I_{10}\succeq0$ in exact arithmetic for some $\delta_{\min}\in\mathbb{R}$, then $d(\hat{\boldsymbol\mu})\ge\hat\lambda_0+\delta_{\min}$. If $\tilde{\mathbf H}_{tt}$ is not positive definite (Case B), let $\delta_{13}=\lambda_{\min}(\tilde{\mathbf H}_{13})$ and use the ball bound $\|\mathbf t\|_2\le R_t$. With $\delta^-=\min(\delta,0)$ and $\delta^+=\max(\delta,0)$,
 \begin{equation}
 d_{\rm sound}=
 \begin{cases}
-\hat\lambda_0+\delta_{\min}-\delta_{\rm round}, & \tilde{\mathbf H}_{tt}\succ0,\\[1pt]
-\hat\lambda_0+(1+R_t^2)(\delta_{13}-\delta_{\rm round}), & \text{otherwise},
+\hat\lambda_0+\delta_{\min}, & \tilde{\mathbf H}_{tt}\succ0,\\[1pt]
+\hat\lambda_0+\delta_{13}^-(1+R_t^2)+\delta_{13}^+, & \text{otherwise},
 \end{cases}
 \label{eq:dsound}
 \end{equation}
-and $d_{\rm sound}\le f^\star_{\rm global}$, where $\delta_{\rm round}\sim10^{-12}\|\mathbf S_{10}\|_F$ is a floating-point margin certified by a Rump/Cholesky check.
+and $d_{\rm sound}\le f^\star_{\rm global}$. In floating point the exact eigenvalues are replaced by $\sigma-\delta_{\rm round}$, with $\delta_{\rm round}$ the Rump--Higham margin of Lemma~\ref{lem:rump}: Case A uses $\delta_{\min}:=\sigma-\delta_{\rm round}$ and Case B uses $\delta_{13}:=\sigma-\delta_{\rm round}$, and this replacement never overestimates the bound. The implementation takes the conservative shifts $\sigma=\min(0,\lambda_{\min}(\mathbf S_{10}))$ (Case A) and $\sigma=\min(0,\lambda_{\min}(\tilde{\mathbf H}_{13}))$ (Case B).
 \end{theorem}
-Only $\tilde\mu,\tilde\Gamma\ge0$, $g_j\le0$, $g_ig_j\ge0$, the Veronese equalities and $\|\mathbf v_2(\mathbf q)\|^2=1$ enter, never the SDP accuracy, so $J-d_{\rm sound}\ge0$ \emph{by construction}; our check records one raw difference of $-6.7\times10^{-13}$, inside the margin. The bound of record is $d_{\rm sound}$, whereas $J-\mathrm{Shor}\le10^{-6}$ is not a bound and serves only as an upper bound on the certifiable rate. The same proof explains the six LM-O plane-only failures in Sec.~\ref{sec:real}: a common normal leaves only $\mathbf n^\top\mathbf t$ constrained, and depth/tilt rows add the cross-direction products. The PSD block is $14\times14$ for every $p$, so the cost is $O(p\cdot14^3)$ per iteration and the certificate is solved asynchronously.
+Only $\tilde\mu,\tilde\Gamma\ge0$, $g_j\le0$, $g_ig_j\ge0$, the Veronese equalities and $\|\mathbf v_2(\mathbf q)\|^2=1$ enter, never the SDP accuracy, so $J-d_{\rm sound}\ge0$ \emph{by construction}; our check records one raw difference of $-6.7\times10^{-13}$, inside the margin. The bound of record is $d_{\rm sound}$, whereas $J-\mathrm{Shor}\le10^{-6}$ is not a bound and serves only as an upper bound on the certifiable rate. The proof, including the assembly of $\tilde{\mathbf H}_{13}$, the exact Schur complement and the Rump--Higham margin, is in App.~\ref{app:p2cert}. The same proof explains the six LM-O plane-only failures in Sec.~\ref{sec:real}: a common normal leaves only $\mathbf n^\top\mathbf t$ constrained, and depth/tilt rows add the cross-direction products. The PSD block is $14\times14$ for every $p$, so the cost is $O(p\cdot14^3)$ per iteration and the certificate is solved asynchronously.
 
 \subsection{FB-reduced implicit differentiation}\label{sec:fb}
 At a solution, stationarity and complementarity are $\nabla_{\mathbf z}\mathcal L=\mathbf 0\in\mathbb{R}^6$ and $0\le\mu_j^\star\perp(-g_j^\star)\ge0$. Differentiating them needs $d\mu_j$: strongly active constraints keep $dg_j=0$, inactive ones $d\mu_j=0$, and weakly active ones ($\mu_j=g_j=0$) satisfy neither. Classical active-set differentiation assumes full rank and strict complementarity; four contacts and a grazing contact violate both.
 
 The FB smoothing replaces complementarity by $\varphi_\varepsilon(\mu_j,g_j)=\mu_j-g_j-\sqrt{\mu_j^2+g_j^2+\varepsilon^2}=0$, a smooth surrogate whose zero set is $\mu_jg_j=-\varepsilon^2/2$. With $r=\sqrt{\mu^2+g^2+\varepsilon^2}$, $\partial_\mu\varphi_\varepsilon=1-\mu/r=:a\in(0,1]$ and $\partial_g\varphi_\varepsilon=-(1+g/r)=:-b$, where $b\in[0,1]$ for $g\le0$ and $b\in(1,2)$ for $g>0$; $a=b=1$ at a weakly active constraint (App.~\ref{app:deriv} gives the limits at strongly active and strictly inactive constraints). For the scalar kink $\min_z\tfrac12(z-a)^2$ s.t.\ $z\ge0$, the FB solution is $z_\varepsilon=\tfrac12(a+\sqrt{a^2+2\varepsilon^2})$, so $dz_\varepsilon/da|_{a=0}=1/2$ for every $\varepsilon$: FB selects the midpoint of the Clarke derivative $[0,1]$.
 
-Let $\mathcal A=\{j:a_j<\delta_{\rm act}\}$ and $\mathcal R$ its complement. Eliminating $d\mu_j=(b_j/a_j)(\mathbf J_{g,j}d\mathbf z+\partial_\theta g_j\,d\theta)$ for $j\in\mathcal R$, with $\mathbf H_{\rm eff}=\nabla^2_{\mathbf z}\mathcal L+\sum_{j\in\mathcal R}(b_j/a_j)\mathbf J_{g,j}^\top\mathbf J_{g,j}$ and
+Let $\mathcal A=\{j:a_j<\delta_{\rm act}\}$ and $\mathcal R$ its complement. Eliminating $d\mu_j=(b_j/a_j)(\mathbf J_{g,j}d\mathbf z+\partial_\theta g_j\,d\theta)$ for $j\in\mathcal R$, with $\mathbf H_{\rm eff}=\mathbf H_{\mathcal L}+\sum_{j\in\mathcal R}(b_j/a_j)\mathbf J_{g,j}^\top\mathbf J_{g,j}$ and
 $\mathbf s=-\partial_\theta\nabla_{\mathbf z}\mathcal L-\sum_{j\in\mathcal R}\frac{b_j}{a_j}\mathbf J_{g,j}^\top\partial_\theta g_j$, $\mathbf w=-\partial_\theta\mathbf g_{\mathcal A}$, the sensitivity system is
 \begin{equation}
 \begin{aligned}
@@ -95,15 +95,43 @@ $\mathbf s=-\partial_\theta\nabla_{\mathbf z}\mathcal L-\sum_{j\in\mathcal R}\fr
 \begin{theorem}[Invertibility under rank deficiency]\label{thm:fb}
 If $\mathbf H_{\rm eff}\succ0$ and $\mathbf D_a\succ0$, then $\mathbf S$ is invertible for \emph{any} $\mathbf J_{\mathcal A}$, including rank-deficient ones; its Schur complement is $-(\mathbf D_a+\mathbf J_{\mathcal A}\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top)\prec0$. As $\varepsilon\to0$, $\mathbf S$ tends to $\begin{bmatrix}\mathbf H_{\rm eff}&\mathbf J_{\mathcal A}^\top\\ \mathbf J_{\mathcal A}&0\end{bmatrix}$, invertible iff $\mathbf J_{\mathcal A}$ has full row rank and $\mathbf H_{\rm eff}\succ0$ on $\ker\mathbf J_{\mathcal A}$ (LICQ and SOSC). The condition number scales as $\kappa(\mathbf S)\asymp1/\varepsilon^2$ when $\mathbf J_{\mathcal A}$ is rank deficient, and is bounded otherwise.
 \end{theorem}
-\begin{proposition}[The $\varepsilon\to0$ limit]\label{prop:limit}
-With $\mathbf s$ and $\mathbf w$ as above, \eqref{eq:saddle} has a unique solution for every $\varepsilon>0$, and as $\varepsilon\to0$
+At a solution, partition the constraints into the strongly active set $\mathcal A_+=\{j:\mu_j>0,\ g_j=0\}$, the weakly active set $\mathcal A_0=\{j:\mu_j=0,\ g_j=0\}$ and the strictly inactive set $\mathcal I=\{j:\mu_j=0,\ g_j<0\}$; on $\mathcal A_0$ the FB coefficients are $a_j=b_j=1$, while on $\mathcal I$ they satisfy $b_j/a_j=\varepsilon^2/(2g_j^2)+O(\varepsilon^4)$. Since $\mathbf H_{\rm eff}(\varepsilon)=\tilde{\mathbf H}_{\rm eff}+O(\varepsilon^2)$ and $\mathbf s(\varepsilon)=\tilde{\mathbf s}+O(\varepsilon^2)$ with
 \begin{equation}
-d\mathbf z\to\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top\big(\mathbf J_{\mathcal A}\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top\big)^{+}\mathbf w+\big[\mathbf I-\mathbf P_{\mathcal A}\big]\mathbf H_{\rm eff}^{-1}\mathbf s,
+\begin{aligned}
+\tilde{\mathbf H}_{\rm eff}&:=\mathbf H_{\mathcal L}+\sum_{j\in\mathcal A_0}\mathbf J_{g,j}^\top\mathbf J_{g,j}\succ0,\quad
+\tilde{\mathbf D}:=\operatorname{diag}_{j\in\mathcal A_+}\Big(\frac{1}{2\mu_j^2}\Big),\\
+\tilde{\mathbf J}_+&:=\tilde{\mathbf D}^{-1/2}\mathbf J_{\mathcal A_+}=\operatorname{diag}_{j\in\mathcal A_+}(\sqrt2\,\mu_j)\,\mathbf J_{\mathcal A_+},\\
+\tilde{\mathbf s}&:=\mathbf s+\sum_{j\in\mathcal A_0}\mathbf J_{g,j}^\top\mathbf w_j,
+\end{aligned}
+\label{eq:tilde}
+\end{equation}
+the weakly active rows are eliminated exactly and never reach the vanishing block $\mathbf D_a$; on $\mathcal A_+$ we have $\mathbf D_a=\varepsilon^2\tilde{\mathbf D}+O(\varepsilon^4)$.
+\begin{proposition}[Weighted oblique-pseudoinverse limit]\label{prop:limit}
+Let $\mathbf M_+:=\tilde{\mathbf J}_+\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf J}_+^\top\succeq0$ and $\mathbf w_+=-\partial_\theta\mathbf g_{\mathcal A_+}$. Then \eqref{eq:saddle} has a unique solution for every $\varepsilon>0$, and as $\varepsilon\to0^+$
+\begin{equation}
+\begin{aligned}
+d\mathbf z_\varepsilon={}&\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf s}
++\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf J}_+^\top\mathbf M_+^+\,\tilde{\mathbf D}^{-1/2}\\
+&\times\Big(\mathbf w_+-J_{\mathcal A_+}\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf s}\Big)+O(\varepsilon^2).
+\end{aligned}
 \label{eq:limit}
 \end{equation}
-with $\mathbf P_{\mathcal A}=\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top(\cdot)^{+}\mathbf J_{\mathcal A}$, the $\mathbf H_{\rm eff}$-weighted minimum-norm solution of $\mathbf J_{\mathcal A}d\mathbf z=\mathbf w$. If $\mathbf w\in\operatorname{range}(\mathbf J_{\mathcal A})$ (compatibility), $d\mathbf z^\star$ is the true derivative and is independent of the multiplier distribution; otherwise the multipliers diverge as $\|d\boldsymbol\mu_{\mathcal A}\|\asymp1/\varepsilon^2$ and $d\mathbf z^\star$ is a \emph{selected} generalized derivative of a non-differentiable map.
+(i)~If $\mathbf w_+\in\operatorname{range}(J_{\mathcal A_+})$ (compatible contact), then $J_{\mathcal A_+}d\mathbf z^\star=\mathbf w_+$ exactly, $d\mathbf z^\star$ is the unique $\tilde{\mathbf H}_{\rm eff}$-minimum-norm solution and is independent of $\tilde{\mathbf D}$, i.e.\ of the non-uniform strong-active multipliers, and $\|d\boldsymbol\mu_{\mathcal A_+}\|=O(1)$. (ii)~If $\mathbf w_+\notin\operatorname{range}(J_{\mathcal A_+})$ (inconsistent contact), then $\|d\boldsymbol\mu_{\mathcal A_+}\|=\Theta(\varepsilon^{-2})$, while $d\mathbf z^\star$ stays finite and is the unique minimiser of $\frac12d\mathbf z^\top\tilde{\mathbf H}_{\rm eff}d\mathbf z-\tilde{\mathbf s}^\top d\mathbf z$ over the least-squares set of the weighted residual $\sum_{j\in\mathcal A_+}2\mu_j^2(J_{g,j}d\mathbf z-w_j)^2$.
 \end{proposition}
-For the four-legged table, $\mathbf J_{\mathcal A}\in\mathbb{R}^{4\times3}$ has rank 3. If $\theta$ moves the table rigidly, compatibility holds; if the four leg heights are independent it fails and the limit is one selected generalized derivative. A check gives error $1.3\times10^{-11}$ with bounded multipliers (difference $2.3\times10^{-9}$ over three distributions) in the compatible case, and $\|d\boldsymbol\mu\|=10^{-1}\to10^{6}$ as $\mathbf D_a$ goes $10^{-1}\to10^{-8}$ with $\|d\mathbf z\|$ staying at $0.707$ in the incompatible one. We use the Gauss--Newton choice $\mathbf H_{\rm tan}:=\nabla^2_{\mathbf z}J_\theta\succeq0$, so that $\mathbf H_{\rm eff}\succ0$ whenever $\nabla^2J_\theta\succ0$ and both results apply without an indefinite-Hessian assumption, at the price of a discrepancy $O(\sum_j\mu_j\|\nabla^2g_j\|)$ between the GN surrogate and the exact KKT map.
+\begin{proof}
+The reduced Schur complement in the weighted variables is $\varepsilon^2\mathbf I+\mathbf M_++O(\varepsilon^4)$. Write $\mathbf M_+=\mathbf U\operatorname{diag}(\boldsymbol\Lambda,\mathbf 0)\mathbf U^\top$ with $\mathbf U=[\mathbf U_1,\mathbf U_0]$. Since $\tilde{\mathbf H}_{\rm eff}^{-1}\succ0$, $\mathbf M_+\mathbf u=\mathbf 0$ iff $\tilde{\mathbf J}_+^\top\mathbf u=\mathbf 0$; hence $\mathbf U_0^\top\tilde{\mathbf J}_+^\top=\mathbf 0$ and the $\varepsilon^{-2}$ block of the inverse is annihilated by the left factor, giving $\tilde{\mathbf J}_+^\top(\varepsilon^2\mathbf I+\mathbf M_++O(\varepsilon^4))^{-1}=\tilde{\mathbf J}_+^\top\mathbf M_+^++O(\varepsilon^2)$. If $\mathbf w_+$ is compatible, the inhomogeneity $c=\tilde{\mathbf D}^{-1/2}(\mathbf w_+-J_{\mathcal A_+}\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf s})$ lies in $\operatorname{range}(\mathbf M_+)$ and the multiplier correction is $O(1)$; otherwise $d\boldsymbol\mu_{\mathcal A_+}=-\varepsilon^{-2}\tilde{\mathbf D}^{-1/2}\mathbf U_0\mathbf U_0^\top c+O(1)$. For (ii), put $y=\tilde{\mathbf H}_{\rm eff}^{1/2}(d\mathbf z-\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf s})$ and $\mathbf K=\tilde{\mathbf J}_+\tilde{\mathbf H}_{\rm eff}^{-1/2}$; then $\mathbf M_+=\mathbf K\mathbf K^\top$ and the minimum-norm least-squares solution is $\mathbf K^+c=\mathbf K^\top\mathbf M_+^+c$.
+\end{proof}
+For the four-legged table, $\mathbf J_{\mathcal A}\in\mathbb{R}^{4\times3}$ has rank 3. If $\theta$ moves the table rigidly, compatibility holds; if the four leg heights are independent it fails and the limit is one selected generalized derivative. A check gives error $1.3\times10^{-11}$ with bounded multipliers (difference $2.3\times10^{-9}$ over three distributions) in the compatible case, and $\|d\boldsymbol\mu\|=10^{-1}\to10^{6}$ as $\mathbf D_a$ goes $10^{-1}\to10^{-8}$ with $\|d\mathbf z\|$ staying at $0.707$ in the incompatible one.
+
+We replace the Gauss--Newton surrogate by the exact Riemannian Lagrangian Hessian. Let $\mathbf B(\mathbf q)=\operatorname{diag}(E(\mathbf q),\mathbf I_3)$, where the columns of $E(\mathbf q)\in\mathbb{R}^{4\times3}$ are an orthonormal basis of $\mathbf q^\perp$ ($E^\top E=\mathbf I_3$, $EE^\top=\mathbf I_4-\mathbf q\mathbf q^\top$). The unit sphere has unit normal $\mathbf q$ and shape operator $-\mathbf I_3$, so the second fundamental form contributes $-\big(\mathbf q^\top\nabla_{E,\mathbf q}F\big)\operatorname{diag}(\mathbf I_3,\mathbf 0_3)$ to the Hessian of any smooth $F$ in this frame. With $\mathcal L=J_\theta+\sum_j\mu_jg_j$ and $g_j=\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)+\mathbf b_j^\top\mathbf t$,
+\begin{equation}
+\begin{aligned}
+\mathbf H_{\mathcal L}={}&\mathbf B(\mathbf q)^\top\Big(\nabla_E^2J_\theta+\sum_{j=1}^p\mu_j\nabla_E^2g_j\Big)\mathbf B(\mathbf q)\\
+&-\Big(\mathbf q^\top\nabla_{E,\mathbf q}J_\theta+2\sum_{j=1}^p\mu_j\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)\Big)\operatorname{diag}(\mathbf I_3,\mathbf 0_3).
+\end{aligned}
+\label{eq:HL}
+\end{equation}
+Each constraint is $\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)=\mathbf q^\top\mathbf Q_j\mathbf q$ for a constant symmetric $\mathbf Q_j$, so $\nabla_E^2g_j=\operatorname{diag}(2\mathbf Q_j,\mathbf 0_3)$ is constant and \eqref{eq:HL} costs $O(p)$ (Lemma~\ref{lem:hessian}). Unlike the GN choice $\mathbf H_{\rm tan}:=\nabla^2_{\mathbf z}J_\theta$, which drops both the constraint-curvature sum and the sphere second-fundamental-form term, \eqref{eq:HL} is the exact Hessian of the KKT map; a tilt-cone diagnostic measures a 16.24\% relative error for the GN surrogate, which the exact assembly removes. Because $\mathbf H_{\mathcal L}$ need not be positive definite, \eqref{eq:saddle} uses $\mathbf H_{\rm eff}=\mathbf H_{\mathcal L}+\sum_{j\in\mathcal R}(b_j/a_j)\mathbf J_{g,j}^\top\mathbf J_{g,j}+(\delta-\lambda_{\min})_+\mathbf I_6\succeq\delta\mathbf I_6\succ0$ with $\lambda_{\min}=\lambda_{\min}(\mathbf H_{\mathcal L}+\sum_{\mathcal R}(b_j/a_j)\mathbf J_{g,j}^\top\mathbf J_{g,j})$; Theorem~\ref{thm:fb} and Proposition~\ref{prop:limit} then apply unchanged.
 
 \subsection{Inner root structure}\label{sec:spectrum}
 Let $N_{\mathbb C}$ be the number of isolated complex projective roots of $\nabla f(\mathbf q)=\lambda\mathbf q$, $\mathbf q^\top\mathbf q=1$, modulo $\mathbf q\leftrightarrow-\mathbf q$.

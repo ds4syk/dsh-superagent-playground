@@ -24,19 +24,19 @@
 \end{theorem}
 该展开利用铰链恒等式、$\mathbf e_{\rm tr}^\top\mathbf v_2=1$ 以及 $\mathbf t$-驻点条件。实现中有两点须注意。第一，$\kappa_{\mathcal A}$ 只对\emph{非活跃}的 $j$ 求和；对称的取法会使 $\mathcal L_\rho|_{\mathcal A}$ 改变 $\sum_{j\in\mathcal A}\mu_j^2/(2\rho)$，导致 $5.57\times10^{-1}$ 的误差而非 $3.55\times10^{-15}$。第二，该型在 $\mathbf v_2$ 中是二次的，但在 $\mathbf q$ 中是\emph{四次的}：KKT 系统为四个三次方程加一个二次方程（Bezout 界 $3^4\cdot2=162$），一般根数为 40（定理~\ref{thm:spectrum}），因此实现会按实际单项式支撑以对 $p$ 为 $O(1)$ 的代价重新生成根模板。
 
-\subsection{条件全局最优性}\label{sec:conditional}
-\begin{theorem}[条件全局最优性]\label{thm:cond}
-设 $\hat{\mathbf z}$ 为 ALM 输出，$\hat{\boldsymbol\mu}\ge0$，违反量 $\nu=\max_j[g_j(\hat{\mathbf z})]_+$；对 $\boldsymbol\mu\ge0$ 令 $d(\boldsymbol\mu)=\min_{\mathbb{S}^3\times\mathbb{R}^3}\{J_\theta+\sum_j\mu_jg_j\}$。则
+\subsection{不可行输出下的双边最优性界}\label{sec:conditional}
+\begin{theorem}[基于冷静性的双边界]\label{thm:cond}
+设 $\hat{\mathbf z}$ 为 ALM 输出，$\hat{\boldsymbol\mu}\ge0$，违反量 $\nu=\max_j[g_j(\hat{\mathbf z})]_+$。对 $\boldsymbol\mu\ge0$ 令 $d(\boldsymbol\mu)=\min_{\mathbb{S}^3\times\mathbb{R}^3}\{J_\theta+\sum_j\mu_jg_j\}$；对 $u\in\mathbb{R}^p$ 令 $v(u)=\inf\{J_\theta(\mathbf z):\mathbf z\in\mathbb{S}^3\times\mathbb{R}^3,\ g_j(\mathbf z)\le u_j\ \forall j\}$ 为扰动值函数，故 $v(\mathbf 0)=J^\star$。假设问题在 $u=\mathbf 0$ 处沿正对角线方向冷静：存在冷静模量 $L\ge0$ 使 $v(\mathbf 0)-v(\nu\mathbf 1)\le L\nu$。记 $\delta:=J_\theta(\hat{\mathbf z})-d(\hat{\boldsymbol\mu})$，则
 \begin{equation}
 \begin{aligned}
-d(\hat{\boldsymbol\mu})\ \le\ J^\star\ \le\ J_\theta(\hat{\mathbf z})+L\nu ,\\
-\text{因此}\quad 0\le J_\theta(\hat{\mathbf z})-J^\star\le \underbrace{J_\theta(\hat{\mathbf z})-d(\hat{\boldsymbol\mu})}_{=:\delta}+L\nu .
+&-L\nu\ \le\ J_\theta(\hat{\mathbf z})-J^\star\ \le\ \delta\\
+\Longleftrightarrow\quad &0\le\big(J_\theta(\hat{\mathbf z})+L\nu\big)-J^\star\le\delta+L\nu,
 \end{aligned}
 \label{eq:sandwich}
 \end{equation}
-若 $\delta+L\nu\le\tau$，则 $\hat{\mathbf z}$ 是 $\tau$-全局最优的；在精确算术下 $\delta\ge0$，计算得到的 $\delta<0$ 是数值假象。
+且在精确算术下 $\delta+\sum_j\hat\mu_j[g_j(\hat{\mathbf z})]_+\ge0$，特别地 $\delta\ge-\|\hat{\boldsymbol\mu}\|_1\nu$。若 $\nu=0$，则 $0\le J_\theta(\hat{\mathbf z})-J^\star\le\delta$ 且 $\delta\ge0$；若 $\nu>0$，则 $J_\theta(\hat{\mathbf z})-J^\star$ 与 $\delta$ 均可严格为负。当强对偶成立且有对偶最优乘子 $\boldsymbol\mu^\star$ 时，可取 $L=\|\boldsymbol\mu^\star\|_1$；当 $J_\theta$ 在可行集邻域内 $L_J$-Lipschitz 且 Robinson 误差界 $\operatorname{dist}(\mathbf z,\mathcal F_0)\le\kappa_{\rm Rob}\max_j[g_j(\mathbf z)]_+$ 成立时，可取 $L=L_J\kappa_{\rm Rob}$。若 $\delta+L\nu\le\tau$，则 $\hat{\mathbf z}$ 是 $\tau$-全局最优的。
 \end{theorem}
-仅凭对偶界并不构成证书，因为 $d(\hat{\boldsymbol\mu})$ 本身是非凸问题的全局求解；在我们的受控实例上 $\delta=-1.67\times10^{-11}$，故对偶函数只作为诊断量，记录在案的界由下一小节的构造给出。
+与单边夹逼相比有两点不同。第一，下侧是 $-L\nu$ 而非 $0$：不可行输出可以有 $J_\theta(\hat{\mathbf z})<J^\star$，此时 $\delta<0$ 不是数值假象，而是可行范围 $\delta\ge-\|\hat{\boldsymbol\mu}\|_1\nu$ 的一部分；只有 $\nu=0$ 时才强制间隙非负。第二，即使 $\nu=0$，该界也不是证书：$d(\hat{\boldsymbol\mu})$ 本身是非凸问题的全局求解。在我们的受控实例上，$\nu\le2.4\times10^{-11}$ 时记录到 $\delta=-1.67\times10^{-11}$，位于该范围内，因此我们把 $\delta$ 作为双边诊断量报告，记录在案的界取自第~\ref{sec:cert} 节。
 
 \subsection{具有 $p$ 无关 PSD 块的可靠证书}\label{sec:cert}
 \begin{lemma}[可靠的 $14\times14$ 证书]\label{lem:cert}
@@ -63,25 +63,25 @@ d(\hat{\boldsymbol\mu})\ \le\ J^\star\ \le\ J_\theta(\hat{\mathbf z})+L\nu ,\\
 \label{eq:p2cert}
 \end{equation}
 \begin{theorem}[P2-Cert：严格对偶修复]\label{thm:cert}
-若 $\tilde{\mathbf H}_{tt}\succ0$，令 $\mathbf S_{10}=\tilde{\mathbf H}_{RR}-\tilde{\mathbf H}_{Rt}\tilde{\mathbf H}_{tt}^{-1}\tilde{\mathbf H}_{Rt}^\top$、$\delta_{\min}=\min(0,\lambda_{\min}(\mathbf S_{10}))$；否则令 $\delta_{13}=\min(0,\lambda_{\min}(\tilde{\mathbf H}_{13}))$ 并使用 $\|\mathbf t\|\le R_t$。则
+令 $\tilde{\mathbf H}_{13}$ 如 \eqref{eq:p2cert}。若 $\tilde{\mathbf H}_{tt}\succ0$（情形 A），令 $\mathbf S_{10}=\tilde{\mathbf H}_{RR}-\tilde{\mathbf H}_{Rt}\tilde{\mathbf H}_{tt}^{-1}\tilde{\mathbf H}_{Rt}^\top$。若精确算术下对某个 $\delta_{\min}\in\mathbb{R}$ 有 $\mathbf S_{10}-\delta_{\min}\mathbf I_{10}\succeq0$，则 $d(\hat{\boldsymbol\mu})\ge\hat\lambda_0+\delta_{\min}$。若 $\tilde{\mathbf H}_{tt}$ 不正定（情形 B），令 $\delta_{13}=\lambda_{\min}(\tilde{\mathbf H}_{13})$ 并使用球界 $\|\mathbf t\|_2\le R_t$。记 $\delta^-=\min(\delta,0)$、$\delta^+=\max(\delta,0)$，则
 \begin{equation}
 d_{\rm sound}=
 \begin{cases}
-\hat\lambda_0+\delta_{\min}-\delta_{\rm round}, & \tilde{\mathbf H}_{tt}\succ0,\\[1pt]
-\hat\lambda_0+(1+R_t^2)(\delta_{13}-\delta_{\rm round}), & \text{否则},
+\hat\lambda_0+\delta_{\min}, & \tilde{\mathbf H}_{tt}\succ0,\\[1pt]
+\hat\lambda_0+\delta_{13}^-(1+R_t^2)+\delta_{13}^+, & \text{否则},
 \end{cases}
 \label{eq:dsound}
 \end{equation}
-且 $d_{\rm sound}\le f^\star_{\rm global}$，其中 $\delta_{\rm round}\sim10^{-12}\|\mathbf S_{10}\|_F$ 是由 Rump/Cholesky 检查认证的浮点裕量。
+且 $d_{\rm sound}\le f^\star_{\rm global}$。浮点下以 $\sigma-\delta_{\rm round}$ 替代精确特征值，$\delta_{\rm round}$ 为引理~\ref{lem:rump} 的 Rump--Higham 裕量：情形 A 取 $\delta_{\min}:=\sigma-\delta_{\rm round}$，情形 B 取 $\delta_{13}:=\sigma-\delta_{\rm round}$，该替代永不放大该界。实现采用保守位移 $\sigma=\min(0,\lambda_{\min}(\mathbf S_{10}))$（情形 A）与 $\sigma=\min(0,\lambda_{\min}(\tilde{\mathbf H}_{13}))$（情形 B）。
 \end{theorem}
-只有 $\tilde\mu,\tilde\Gamma\ge0$、$g_j\le0$、$g_ig_j\ge0$、Veronese 等式与 $\|\mathbf v_2(\mathbf q)\|^2=1$ 进入，SDP 精度从不进入，因此 $J-d_{\rm sound}\ge0$ \emph{按构造成立}；我们的检查记录到一个原始差 $-6.7\times10^{-13}$，位于裕量之内。记录在案的界是 $d_{\rm sound}$，而 $J-\mathrm{Shor}\le10^{-6}$ 不是界，仅用作可认证率的上界。同一定理还解释了第~\ref{sec:real} 节中六个 LM-O 纯平面失败：公共法向只留下 $\mathbf n^\top\mathbf t$ 受约束，而深度/倾角行补上交叉方向乘积。PSD 块对任意 $p$ 都是 $14\times14$，故每轮代价为 $O(p\cdot14^3)$，证书异步求解。
+只有 $\tilde\mu,\tilde\Gamma\ge0$、$g_j\le0$、$g_ig_j\ge0$、Veronese 等式与 $\|\mathbf v_2(\mathbf q)\|^2=1$ 进入，SDP 精度从不进入，因此 $J-d_{\rm sound}\ge0$ \emph{按构造成立}；我们的检查记录到一个原始差 $-6.7\times10^{-13}$，位于裕量之内。记录在案的界是 $d_{\rm sound}$，而 $J-\mathrm{Shor}\le10^{-6}$ 不是界，仅用作可认证率的上界。证明（包括 $\tilde{\mathbf H}_{13}$ 的装配、精确 Schur 补与 Rump--Higham 裕量）见附录~\ref{app:p2cert}。同一定理还解释了第~\ref{sec:real} 节中六个 LM-O 纯平面失败：公共法向只留下 $\mathbf n^\top\mathbf t$ 受约束，而深度/倾角行补上交叉方向乘积。PSD 块对任意 $p$ 都是 $14\times14$，故每轮代价为 $O(p\cdot14^3)$，证书异步求解。
 
 \subsection{FB 约简隐式微分}\label{sec:fb}
 在解处，驻点性与互补性为 $\nabla_{\mathbf z}\mathcal L=\mathbf 0\in\mathbb{R}^6$ 与 $0\le\mu_j^\star\perp(-g_j^\star)\ge0$。对它们求微分需要 $d\mu_j$：强活跃约束保持 $dg_j=0$，非活跃约束有 $d\mu_j=0$，弱活跃约束（$\mu_j=g_j=0$）则两者都不满足。经典活跃集微分假设满秩与严格互补性；四接触与擦边接触同时违反二者。
 
 FB 光滑化把互补性替换为 $\varphi_\varepsilon(\mu_j,g_j)=\mu_j-g_j-\sqrt{\mu_j^2+g_j^2+\varepsilon^2}=0$，它是一个光滑替代，其零集为 $\mu_jg_j=-\varepsilon^2/2$。令 $r=\sqrt{\mu^2+g^2+\varepsilon^2}$，则 $\partial_\mu\varphi_\varepsilon=1-\mu/r=:a\in(0,1]$、$\partial_g\varphi_\varepsilon=-(1+g/r)=:-b$，其中对 $g\le0$ 有 $b\in[0,1]$，对 $g>0$ 有 $b\in(1,2)$；在弱活跃约束处 $a=b=1$（强活跃与严格非活跃处的极限见附录~\ref{app:deriv}）。对标量折点 $\min_z\tfrac12(z-a)^2$ s.t.\ $z\ge0$，FB 解为 $z_\varepsilon=\tfrac12(a+\sqrt{a^2+2\varepsilon^2})$，故对任意 $\varepsilon$ 有 $dz_\varepsilon/da|_{a=0}=1/2$：FB 选取 Clarke 导数 $[0,1]$ 的中点。
 
-令 $\mathcal A=\{j:a_j<\delta_{\rm act}\}$，$\mathcal R$ 为其补集。对 $j\in\mathcal R$ 消去 $d\mu_j=(b_j/a_j)(\mathbf J_{g,j}d\mathbf z+\partial_\theta g_j\,d\theta)$，并令 $\mathbf H_{\rm eff}=\nabla^2_{\mathbf z}\mathcal L+\sum_{j\in\mathcal R}(b_j/a_j)\mathbf J_{g,j}^\top\mathbf J_{g,j}$、
+令 $\mathcal A=\{j:a_j<\delta_{\rm act}\}$，$\mathcal R$ 为其补集。对 $j\in\mathcal R$ 消去 $d\mu_j=(b_j/a_j)(\mathbf J_{g,j}d\mathbf z+\partial_\theta g_j\,d\theta)$，并令 $\mathbf H_{\rm eff}=\mathbf H_{\mathcal L}+\sum_{j\in\mathcal R}(b_j/a_j)\mathbf J_{g,j}^\top\mathbf J_{g,j}$、
 $\mathbf s=-\partial_\theta\nabla_{\mathbf z}\mathcal L-\sum_{j\in\mathcal R}\frac{b_j}{a_j}\mathbf J_{g,j}^\top\partial_\theta g_j$、$\mathbf w=-\partial_\theta\mathbf g_{\mathcal A}$，则灵敏度系统为
 \begin{equation}
 \begin{aligned}
@@ -95,15 +95,44 @@ $\mathbf s=-\partial_\theta\nabla_{\mathbf z}\mathcal L-\sum_{j\in\mathcal R}\fr
 \begin{theorem}[秩亏下的可逆性]\label{thm:fb}
 若 $\mathbf H_{\rm eff}\succ0$ 且 $\mathbf D_a\succ0$，则 $\mathbf S$ 对\emph{任意} $\mathbf J_{\mathcal A}$（包括秩亏情形）可逆；其 Schur 补为 $-(\mathbf D_a+\mathbf J_{\mathcal A}\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top)\prec0$。当 $\varepsilon\to0$ 时，$\mathbf S$ 趋于 $\begin{bmatrix}\mathbf H_{\rm eff}&\mathbf J_{\mathcal A}^\top\\ \mathbf J_{\mathcal A}&0\end{bmatrix}$，后者可逆当且仅当 $\mathbf J_{\mathcal A}$ 行满秩且 $\mathbf H_{\rm eff}\succ0$ 在 $\ker\mathbf J_{\mathcal A}$ 上成立（LICQ 与 SOSC）。当 $\mathbf J_{\mathcal A}$ 秩亏时条件数按 $\kappa(\mathbf S)\asymp1/\varepsilon^2$ 增长，否则有界。
 \end{theorem}
-\begin{proposition}[$\varepsilon\to0$ 极限]\label{prop:limit}
-如上取 $\mathbf s$ 与 $\mathbf w$，则 \eqref{eq:saddle} 对每个 $\varepsilon>0$ 有唯一解，且当 $\varepsilon\to0$ 时
+在解处把约束划分为强活跃集 $\mathcal A_+=\{j:\mu_j>0,\ g_j=0\}$、弱活跃集 $\mathcal A_0=\{j:\mu_j=0,\ g_j=0\}$ 与严格非活跃集 $\mathcal I=\{j:\mu_j=0,\ g_j<0\}$；在 $\mathcal A_0$ 上 FB 系数 $a_j=b_j=1$，在 $\mathcal I$ 上 $b_j/a_j=\varepsilon^2/(2g_j^2)+O(\varepsilon^4)$。由于 $\mathbf H_{\rm eff}(\varepsilon)=\tilde{\mathbf H}_{\rm eff}+O(\varepsilon^2)$、$\mathbf s(\varepsilon)=\tilde{\mathbf s}+O(\varepsilon^2)$，其中
 \begin{equation}
-d\mathbf z\to\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top\big(\mathbf J_{\mathcal A}\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top\big)^{+}\mathbf w+\big[\mathbf I-\mathbf P_{\mathcal A}\big]\mathbf H_{\rm eff}^{-1}\mathbf s,
+\begin{aligned}
+\tilde{\mathbf H}_{\rm eff}&:=\mathbf H_{\mathcal L}+\sum_{j\in\mathcal A_0}\mathbf J_{g,j}^\top\mathbf J_{g,j}\succ0,\\
+\tilde{\mathbf D}&:=\operatorname{diag}_{j\in\mathcal A_+}\Big(\frac{1}{2\mu_j^2}\Big),\\
+\tilde{\mathbf J}_+&:=\tilde{\mathbf D}^{-1/2}\mathbf J_{\mathcal A_+}
+=\operatorname{diag}_{j\in\mathcal A_+}(\sqrt2\,\mu_j)\,\mathbf J_{\mathcal A_+},\\
+\tilde{\mathbf s}&:=\mathbf s+\sum_{j\in\mathcal A_0}\mathbf J_{g,j}^\top\mathbf w_j,
+\end{aligned}
+\label{eq:tilde}
+\end{equation}
+弱活跃行被精确消去，从不进入消失块 $\mathbf D_a$；在 $\mathcal A_+$ 上有 $\mathbf D_a=\varepsilon^2\tilde{\mathbf D}+O(\varepsilon^4)$。
+\begin{proposition}[加权斜伪逆极限]\label{prop:limit}
+令 $\mathbf M_+:=\tilde{\mathbf J}_+\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf J}_+^\top\succeq0$、$\mathbf w_+=-\partial_\theta\mathbf g_{\mathcal A_+}$。则 \eqref{eq:saddle} 对每个 $\varepsilon>0$ 有唯一解，且当 $\varepsilon\to0^+$ 时
+\begin{equation}
+\begin{aligned}
+d\mathbf z_\varepsilon={}&\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf s}
++\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf J}_+^\top\mathbf M_+^+\,\tilde{\mathbf D}^{-1/2}\\
+&\times\Big(\mathbf w_+-J_{\mathcal A_+}\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf s}\Big)+O(\varepsilon^2).
+\end{aligned}
 \label{eq:limit}
 \end{equation}
-其中 $\mathbf P_{\mathcal A}=\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top(\cdot)^{+}\mathbf J_{\mathcal A}$，即 $\mathbf J_{\mathcal A}d\mathbf z=\mathbf w$ 的 $\mathbf H_{\rm eff}$-加权最小范数解。若 $\mathbf w\in\operatorname{range}(\mathbf J_{\mathcal A})$（相容），则 $d\mathbf z^\star$ 为真导数且与乘子分布无关；否则乘子按 $\|d\boldsymbol\mu_{\mathcal A}\|\asymp1/\varepsilon^2$ 发散，$d\mathbf z^\star$ 是不可微映射的\emph{一个选定的}广义导数。
+(i)~若 $\mathbf w_+\in\operatorname{range}(J_{\mathcal A_+})$（相容接触），则 $J_{\mathcal A_+}d\mathbf z^\star=\mathbf w_+$ 精确成立，$d\mathbf z^\star$ 是唯一的 $\tilde{\mathbf H}_{\rm eff}$-最小范数解，且与 $\tilde{\mathbf D}$（即非均匀强活跃乘子）无关，同时 $\|d\boldsymbol\mu_{\mathcal A_+}\|=O(1)$。(ii)~若 $\mathbf w_+\notin\operatorname{range}(J_{\mathcal A_+})$（不相容接触），则 $\|d\boldsymbol\mu_{\mathcal A_+}\|=\Theta(\varepsilon^{-2})$，而 $d\mathbf z^\star$ 保持有限，是加权残差 $\sum_{j\in\mathcal A_+}2\mu_j^2(J_{g,j}d\mathbf z-w_j)^2$ 的最小二乘解集中唯一极小化 $\frac12d\mathbf z^\top\tilde{\mathbf H}_{\rm eff}d\mathbf z-\tilde{\mathbf s}^\top d\mathbf z$ 的解。
 \end{proposition}
-对四腿桌子，$\mathbf J_{\mathcal A}\in\mathbb{R}^{4\times3}$ 的秩为 3。若 $\theta$ 使桌面刚性移动，则相容性成立；若四条腿高度相互独立则不成立，极限是一个选定的广义导数。检查给出：相容情形下误差 $1.3\times10^{-11}$、乘子有界（三种分布间差 $2.3\times10^{-9}$）；不相容情形下当 $\mathbf D_a$ 从 $10^{-1}$ 到 $10^{-8}$ 时 $\|d\boldsymbol\mu\|=10^{-1}\to10^{6}$，而 $\|d\mathbf z\|$ 保持 $0.707$。我们采用 Gauss--Newton 选择 $\mathbf H_{\rm tan}:=\nabla^2_{\mathbf z}J_\theta\succeq0$，于是只要 $\nabla^2J_\theta\succ0$ 就有 $\mathbf H_{\rm eff}\succ0$，两个结果无需不定 Hessian 假设，代价是 GN 替代映射与精确 KKT 映射之间存在 $O(\sum_j\mu_j\|\nabla^2g_j\|)$ 的偏差。
+\begin{proof}
+在加权变量下约化 Schur 补为 $\varepsilon^2\mathbf I+\mathbf M_++O(\varepsilon^4)$。写 $\mathbf M_+=\mathbf U\operatorname{diag}(\boldsymbol\Lambda,\mathbf 0)\mathbf U^\top$，$\mathbf U=[\mathbf U_1,\mathbf U_0]$。因 $\tilde{\mathbf H}_{\rm eff}^{-1}\succ0$，$\mathbf M_+\mathbf u=\mathbf 0$ 当且仅当 $\tilde{\mathbf J}_+^\top\mathbf u=\mathbf 0$，故 $\mathbf U_0^\top\tilde{\mathbf J}_+^\top=\mathbf 0$；逆矩阵的 $\varepsilon^{-2}$ 块被左乘因子精确消去，得 $\tilde{\mathbf J}_+^\top(\varepsilon^2\mathbf I+\mathbf M_++O(\varepsilon^4))^{-1}=\tilde{\mathbf J}_+^\top\mathbf M_+^++O(\varepsilon^2)$。若 $\mathbf w_+$ 相容，非齐次项 $c=\tilde{\mathbf D}^{-1/2}(\mathbf w_+-J_{\mathcal A_+}\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf s})$ 落在 $\operatorname{range}(\mathbf M_+)$ 内，乘子修正为 $O(1)$；否则 $d\boldsymbol\mu_{\mathcal A_+}=-\varepsilon^{-2}\tilde{\mathbf D}^{-1/2}\mathbf U_0\mathbf U_0^\top c+O(1)$。对 (ii)，令 $y=\tilde{\mathbf H}_{\rm eff}^{1/2}(d\mathbf z-\tilde{\mathbf H}_{\rm eff}^{-1}\tilde{\mathbf s})$、$\mathbf K=\tilde{\mathbf J}_+\tilde{\mathbf H}_{\rm eff}^{-1/2}$，则 $\mathbf M_+=\mathbf K\mathbf K^\top$，最小范数最小二乘解为 $\mathbf K^+c=\mathbf K^\top\mathbf M_+^+c$。
+\end{proof}
+对四腿桌子，$\mathbf J_{\mathcal A}\in\mathbb{R}^{4\times3}$ 的秩为 3。若 $\theta$ 使桌面刚性移动，则相容性成立；若四条腿高度相互独立则不成立，极限是一个选定的广义导数。检查给出：相容情形下误差 $1.3\times10^{-11}$、乘子有界（三种分布间差 $2.3\times10^{-9}$）；不相容情形下当 $\mathbf D_a$ 从 $10^{-1}$ 到 $10^{-8}$ 时 $\|d\boldsymbol\mu\|=10^{-1}\to10^{6}$，而 $\|d\mathbf z\|$ 保持 $0.707$。
+
+我们用精确黎曼拉格朗日 Hessian 替代 Gauss--Newton 替代矩阵。令 $\mathbf B(\mathbf q)=\operatorname{diag}(E(\mathbf q),\mathbf I_3)$，其中 $E(\mathbf q)\in\mathbb{R}^{4\times3}$ 的列是 $\mathbf q^\perp$ 的标准正交基（$E^\top E=\mathbf I_3$、$EE^\top=\mathbf I_4-\mathbf q\mathbf q^\top$）。单位球面在 $\mathbf q$ 处的单位外法向为 $\mathbf q$、形状算子为 $-\mathbf I_3$，故第二基本形式对任意光滑 $F$ 的 Hessian 贡献 $-\big(\mathbf q^\top\nabla_{E,\mathbf q}F\big)\operatorname{diag}(\mathbf I_3,\mathbf 0_3)$。代入 $\mathcal L=J_\theta+\sum_j\mu_jg_j$、$g_j=\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)+\mathbf b_j^\top\mathbf t$，得
+\begin{equation}
+\begin{aligned}
+\mathbf H_{\mathcal L}={}&\mathbf B(\mathbf q)^\top\Big(\nabla_E^2J_\theta+\sum_{j=1}^p\mu_j\nabla_E^2g_j\Big)\mathbf B(\mathbf q)\\
+&-\Big(\mathbf q^\top\nabla_{E,\mathbf q}J_\theta+2\sum_{j=1}^p\mu_j\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)\Big)\operatorname{diag}(\mathbf I_3,\mathbf 0_3).
+\end{aligned}
+\label{eq:HL}
+\end{equation}
+每条约束可写为 $\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)=\mathbf q^\top\mathbf Q_j\mathbf q$（$\mathbf Q_j$ 为常数对称阵），故 $\nabla_E^2g_j=\operatorname{diag}(2\mathbf Q_j,\mathbf 0_3)$ 为常数，\eqref{eq:HL} 的装配为 $O(p)$（引理~\ref{lem:hessian}）。与 GN 选择 $\mathbf H_{\rm tan}:=\nabla^2_{\mathbf z}J_\theta$ 不同——后者同时丢弃约束曲率求和与球面第二基本形式项——\eqref{eq:HL} 是 KKT 映射的精确 Hessian；倾角锥诊断测得 GN 替代的相对误差为 16.24\%，精确装配按构造消除了该偏差。由于 $\mathbf H_{\mathcal L}$ 不必正定，\eqref{eq:saddle} 采用 $\mathbf H_{\rm eff}=\mathbf H_{\mathcal L}+\sum_{j\in\mathcal R}(b_j/a_j)\mathbf J_{g,j}^\top\mathbf J_{g,j}+(\delta-\lambda_{\min})_+\mathbf I_6\succeq\delta\mathbf I_6\succ0$，其中 $\lambda_{\min}=\lambda_{\min}(\mathbf H_{\mathcal L}+\sum_{\mathcal R}(b_j/a_j)\mathbf J_{g,j}^\top\mathbf J_{g,j})$；定理~\ref{thm:fb} 与命题~\ref{prop:limit} 因而原样适用。
 
 \subsection{内层根结构}\label{sec:spectrum}
 设 $N_{\mathbb C}$ 为 $\nabla f(\mathbf q)=\lambda\mathbf q$、$\mathbf q^\top\mathbf q=1$ 的孤立复射影根数，模去 $\mathbf q\leftrightarrow-\mathbf q$。

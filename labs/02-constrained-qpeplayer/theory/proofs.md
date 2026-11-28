@@ -160,38 +160,47 @@ $$
 
 ## 2. 定理 2.2（条件全局最优性：弱对偶 + sound 下界）
 
-### 2.1 陈述
+### 2.1 陈述（2026-11-28 修订：双边不等式 + 冷静模量 $L$）
 
-> **定理 2.2（Conditional global optimality）**
-> 设 $\hat{\mathbf z}=(\hat q,\hat t)$ 是 ALM 的输出，$\hat\mu\ge0$ 是其乘子，$\nu=\max_j[g_j(\hat{\mathbf z})]_+$。
-> (a) **弱对偶（下界一侧）**：对任意 $\mu\ge0$，定义对偶函数
+> **定理 2.2（Two-sided suboptimality bounds under infeasibility via calmness；论文定理 4.2）**
+> 设 $\hat{\mathbf z}=(\hat q,\hat t)$ 是 ALM 输出，$\hat\mu\ge0$，$\nu=\max_j[g_j(\hat{\mathbf z})]_+\ge0$。对 $\mu\ge0$ 定义对偶函数
 > $$
-> d(\mu)=\min_{q\in\mathbb S^3,\,t\in\mathbb R^3}\Big\{J_\theta(q,t)+\sum_{j=1}^p\mu_j g_j(q,t)\Big\}. \tag{2.1}
+> d(\mu)=\min_{q\in\mathbb S^3,\,t\in\mathbb R^3}\Big\{J_\theta(q,t)+\sum_{j=1}^p\mu_j g_j(q,t)\Big\},
 > $$
-> 则 $d(\mu)\le J^\star$，其中 $J^\star$ 是 (C-QPEP) 的全局最优值。
-> (b) **三明治**：若 $J_\theta$ 在 $\hat{\mathbf z}$ 的 $\nu$-邻域内 $L$-Lipschitz，则
+> 并对 $u\in\mathbb R^p$ 定义扰动值函数
 > $$
-> d(\hat\mu)\;\le\;J^\star\;\le\;J_\theta(\hat{\mathbf z})+L\nu . \tag{2.2}
+> v(u)=\inf\big\{J_\theta(z):z\in\mathbb S^3\times\mathbb R^3,\ g_j(z)\le u_j\ \forall j\big\},\qquad v(0)=J^\star .
 > $$
-> 因此
+> 设问题在 $u=0$ 处沿正对角线方向**冷静（calm）**：存在冷静模量 $L\ge0$ 使 $v(0)-v(\nu\mathbf 1)\le L\nu$。记 $\delta:=J_\theta(\hat{\mathbf z})-d(\hat\mu)$。则
+> 1. **双边最优性界**：
 > $$
-> 0\;\le\;J_\theta(\hat{\mathbf z})-J^\star\;\le\;\underbrace{J_\theta(\hat{\mathbf z})-d(\hat\mu)}_{=:\delta}\;+\;L\nu . \tag{2.3}
+> -L\nu\ \le\ J_\theta(\hat{\mathbf z})-J^\star\ \le\ \delta
+> \quad\Longleftrightarrow\quad
+> 0\le\big(J_\theta(\hat{\mathbf z})+L\nu\big)-J^\star\le\delta+L\nu . \tag{2.2}
 > $$
-> (c) **可靠性**：若 $\delta+L\nu\le\tau$，则 $\hat{\mathbf z}$ 是 $\tau$-全局最优。
-> (d) **反面**：$\delta<0$ 在精确算术下不可能（当 A5、A6 成立），一律是数值误差；此时 $\delta$ 只能写成 $\max(0,\delta_{\rm num})+O(\text{求解容差})$。
+> 2. **精确算术下的表观间隙下界**：恒有 $\delta+\sum_j\hat\mu_j[g_j(\hat{\mathbf z})]_+\ge0$，特别地 $\delta\ge-\|\hat\mu\|_1\nu$。
+> 3. **可行解退化情形**：若 $\nu=0$，则 $0\le J_\theta(\hat{\mathbf z})-J^\star\le\delta$ 且 $\delta\ge0$；若 $\nu>0$，则 $J_\theta(\hat{\mathbf z})-J^\star$ 与 $\delta$ 均可严格为负。
+> 4. **显式冷静模量**：若强对偶成立且有对偶最优乘子 $\mu^\star$，可取 $L=\|\mu^\star\|_1$；若 $J_\theta$ 在可行集邻域内 $L_J$-Lipschitz 且 Robinson 误差界 $\operatorname{dist}(z,\mathcal F_0)\le\kappa_{\rm Rob}\max_j[g_j(z)]_+$ 成立，可取 $L=L_J\kappa_{\rm Rob}$。
+> 5. **可靠性**：若 $\delta+L\nu\le\tau$，则 $\hat{\mathbf z}$ 是 $\tau$-全局最优。
 
 **证明**：
-(a) 对任意可行 $z$ 有 $g_j(z)\le0$ 与 $\mu_j\ge0$，故 $\sum_j\mu_j g_j(z)\le0$，于是 $J(z)+\sum\mu_jg_j(z)\le J(z)$。对可行集取下确界：$d(\mu)=\min_{\mathbb S^3\times\mathbb R^3}(\cdot)\le\min_{\text{可行}}(\cdot)\le\min_{\text{可行}}J=J^\star$。∎
-(b) 右半边：由 A5，$\hat{\mathbf z}$ 到可行集的（加权）距离 $\le \nu$（每个约束的违反量以 $\nu$ 为上界，取一阶可行化即可），故存在可行 $\bar{\mathbf z}$ 使 $\|\bar{\mathbf z}-\hat{\mathbf z}\|\le C\nu$；于是 $J^\star\le J(\bar{\mathbf z})\le J(\hat{\mathbf z})+LC\nu$。把 $C$ 吸收进 $L$ 即得。∎
-(c) 直接由 (2.3)。
-(d) 若 A5、A6 成立，则 $d(\hat\mu)\le J^\star\le J(\hat{\mathbf z})$，故 $\delta=J(\hat{\mathbf z})-d(\hat\mu)\ge0$。矛盾 ⇒ 数值误差。∎
+1. **右侧上界**：对任意可行 $z$（$g_j(z)\le0$）与 $\hat\mu\ge0$，$d(\hat\mu)\le J_\theta(z)+\sum_j\hat\mu_jg_j(z)\le J_\theta(z)$；对可行集取下确界得 $d(\hat\mu)\le J^\star$，故 $J_\theta(\hat{\mathbf z})-J^\star\le J_\theta(\hat{\mathbf z})-d(\hat\mu)=\delta$。
+2. **左侧下界**：由 $\nu$ 的定义，$g_j(\hat{\mathbf z})\le\nu$ 对一切 $j$ 成立，即 $\hat{\mathbf z}$ 对右端 $u=\nu\mathbf 1$ 可行，故 $J_\theta(\hat{\mathbf z})\ge v(\nu\mathbf 1)$。冷静性给出 $v(0)-v(\nu\mathbf 1)\le L\nu$，即 $J_\theta(\hat{\mathbf z})-J^\star\ge v(\nu\mathbf 1)-v(0)\ge-L\nu$。联立即得 (2.2)；各项同加 $L\nu$ 得等价形式。
+3. **精确算术下界**：由 $d(\hat\mu)$ 的下确界定义取 $z=\hat{\mathbf z}$：
+$$
+d(\hat\mu)\le J_\theta(\hat{\mathbf z})+\sum_j\hat\mu_jg_j(\hat{\mathbf z})\le J_\theta(\hat{\mathbf z})+\sum_j\hat\mu_j[g_j(\hat{\mathbf z})]_+,
+$$
+移项得 $\delta+\sum_j\hat\mu_j[g_j(\hat{\mathbf z})]_+\ge0$；由 $[g_j(\hat{\mathbf z})]_+\le\nu$ 得 $\delta\ge-\|\hat\mu\|_1\nu$。$\nu=0$ 时 $[g_j(\hat{\mathbf z})]_+=0$，故 $\delta\ge0$ 且 $0\le J_\theta(\hat{\mathbf z})-J^\star\le\delta$。
+4. **显式 $L$**：
+   - 强对偶 + 最优 $\mu^\star$：对满足 $g_j(z)\le\nu$ 的任意 $z$，$J^\star=d(\mu^\star)\le J_\theta(z)+\sum_j\mu_j^\star g_j(z)\le J_\theta(z)+\|\mu^\star\|_1\nu$；对 $z$ 取下确界得 $v(0)-v(\nu\mathbf 1)\le\|\mu^\star\|_1\nu$。
+   - Robinson 误差界：取 $z_0\in\mathcal F_0$ 为 $z$ 的最近点，$\|z-z_0\|\le\kappa_{\rm Rob}\nu$，则 $J^\star\le J_\theta(z_0)\le J_\theta(z)+L_J\|z-z_0\|\le J_\theta(z)+L_J\kappa_{\rm Rob}\nu$；取下确界即得。
+5. 由 1 与 2：$J_\theta(\hat{\mathbf z})-J^\star\le\delta\le\tau-L\nu\le\tau$，且下界为 $-L\nu$；若要求非负意义下的 $\tau$-最优，用 $J+L\nu$ 的夹逼即可。$\square$
 
-> **对源文档的修正**：源文档写
-> $$0\le J(q^*)-J^\star_{\rm global}\le\delta_{\rm gap}:=J(q^*)-d(\mu^*),$$
-> 并称 "一旦 $\delta_{\rm gap}\approx0$，即 100% 认证"。三处问题：
-> 1. **方向对，但前提漏了**：需要 $\mu^*\ge0$ **且** $q^*$ 可行（A5、A6）。$q^*$ 不可行时 $J(q^*)$ 可以小于 $J^\star$，左侧不等式失效。
-> 2. **"100% 认证"不成立**：$d(\mu^*)$ 由 (2.1) 的内层全局极小给出，而该内层"全局"依赖 A2（Gröbner 枚举完备性），本身没有证书。用无证书的量去做证书，逻辑上不闭合。
-> 3. **负的 $\delta$ 不是小事**：源文档预实验 $\delta=-1.40\times10^{-12}$，本文 `verify` C5a 复现同类现象 $\delta=-1.67\times10^{-11}$。负值恰好说明 $d(\mu^*)$ 的数值精度不足以支撑"严格证书"。正确写法是"在求解容差 $\tau_{\rm solve}$ 内认证"，并给出 $\tau_{\rm solve}$ 的可验证估计。
+> **与 2026-11-27 版本的差异（重要）**：旧版写
+> $$d(\hat\mu)\le J^\star\le J_\theta(\hat{\mathbf z})+L\nu,\qquad 0\le J_\theta(\hat{\mathbf z})-J^\star\le\delta+L\nu,$$
+> 并断言"精确算术下 $\delta\ge0$，计算得到的 $\delta<0$ 是数值假象"。这在 $\nu>0$ 时**错误**：不可行输出可以有 $J_\theta(\hat{\mathbf z})<J^\star$，从而 $\delta<0$ 是精确算术下就可能出现的、被 $\delta\ge-\|\hat\mu\|_1\nu$ 允许的值；只有 $\nu=0$ 时才强制 $\delta\ge0$。论文已按上式改写（定理 4.2），并删除"$\delta<0$ 一律是数值假象"的表述。
+
+---
 
 ### 2.2 新增 Lemma 2.2（14×14 Shor 下界：真正的 sound 证书）
 
@@ -507,6 +516,110 @@ $$
 
 ---
 
+### 2.7.5 2026-11-28 修订：精确 Schur/Rump 证明（论文定理 4.4）
+
+旧版 §2.7.1 的两条公式在符号处理上不完整：情形 A 只允许 $\delta_{\min}=\min(0,\lambda_{\min}(S_{10}))\le0$（丢掉了 $\lambda_{\min}>0$ 时可取的更紧正位移），情形 B 只写 $\delta_{13}\le0$ 的分支。修订后的定理（论文定理 4.4）如下。
+
+> **定理 4.4（P2-Cert，修订版）**
+> 令 $\tilde H_{13}=F^\top(\cdot)F$ 如 (2.11)。**情形 A**（$\tilde H_{tt}\succ0$）：令 $S_{10}=\tilde H_{RR}-\tilde H_{Rt}\tilde H_{tt}^{-1}\tilde H_{Rt}^\top$。若精确算术下对某 $\delta_{\min}\in\mathbb R$ 有 $S_{10}-\delta_{\min}I_{10}\succeq0$，则 $d(\hat\mu)\ge\hat\lambda_0+\delta_{\min}$。**情形 B**（$\tilde H_{tt}$ 非正定）：令 $\delta_{13}=\lambda_{\min}(\tilde H_{13})$，用 $\|t\|_2\le R_t$，记 $\delta^-=\min(\delta,0)$、$\delta^+=\max(\delta,0)$，则
+> $$
+> d_{\rm sound}=\begin{cases}\hat\lambda_0+\delta_{\min}, & \tilde H_{tt}\succ0,\\[1pt]
+> \hat\lambda_0+\delta_{13}^-(1+R_t^2)+\delta_{13}^+, & \text{否则},\end{cases}
+> $$
+> 且 $d_{\rm sound}\le f^\star_{\rm global}$。实现取保守位移 $\sigma=\min(0,\lambda_{\min})$ 并令 $\delta_{\min}=\sigma-\delta_{\rm round}$。
+
+**证明**（完整链条）：
+
+1. **对偶可行性**：对任意可行 $(q,t)$，因 $\tilde\mu,\tilde\Gamma\ge0$、$g_j\le0$、$g_ig_j\ge0$ 且 Veronese 行在秩一提升上为零，
+$$
+J_\theta(q,t)-\hat\lambda_0=y_{14}^\top(Q_{\rm aug}-\hat\lambda_0A_0)y_{14}
+\ge y_{14}^\top\Big(Q_{\rm aug}+\sum_j\tilde\mu_jA_{g_j}-\sum_{i\le j}\tilde\Gamma_{ij}A_{g_ig_j}-\hat\lambda_0A_0-\sum_k\hat\lambda_kB_k\Big)y_{14}
+=y_{13}^\top\tilde H_{13}y_{13}.
+$$
+2. **情形 A 配平方**：
+$$
+y_{13}^\top\tilde H_{13}y_{13}=v_2(q)^\top S_{10}v_2(q)+\big\|\tilde H_{tt}^{1/2}(t+\tilde H_{tt}^{-1}\tilde H_{Rt}^\top v_2(q))\big\|_2^2\ge v_2(q)^\top S_{10}v_2(q).
+$$
+由 $S_{10}-\delta_{\min}I_{10}\succeq0$ 与 $\|v_2(q)\|_2^2=\|q\|_2^4=1$ 得 $v_2^\top S_{10}v_2\ge\delta_{\min}$，故 $d(\hat\mu)\ge\hat\lambda_0+\delta_{\min}$。此处**不需要** $\|t\|$ 的界。
+3. **情形 B**：$y_{13}^\top\tilde H_{13}y_{13}\ge\delta_{13}\|y_{13}\|_2^2$，且 $\|y_{13}\|_2^2=1+\|t\|_2^2$。若 $\delta_{13}\le0$，用上界 $1+R_t^2$ 得 $\ge\delta_{13}(1+R_t^2)$；若 $\delta_{13}>0$，用下界 $1$ 得 $\ge\delta_{13}$。统一为 $\delta_{13}^-(1+R_t^2)+\delta_{13}^+$。
+
+**Rump/Higham 浮点裕量（论文引理 A.3）**：
+
+> **引理**　令 $S\in\mathbb S^n$、$\sigma\in\mathbb R$、$B=S-\sigma I_n$、$\tilde B=\operatorname{fl}(S-\sigma I_n)=B+\Delta_{\rm sub}$，$\|\Delta_{\rm sub}\|_2\le\epsilon_{\rm sub}$，并设 $\operatorname{tr}(\tilde B)\ge0$。令 $u=2^{-53}$、$\gamma_{n+1}=(n+1)u/(1-(n+1)u)$。若 $\tilde B$ 的浮点 Cholesky 分解顺利完成并给出因子 $\hat R$，则精确算术下
+> $$
+> \lambda_{\min}(S)\ge\sigma-\delta_{\rm round},\qquad
+> \delta_{\rm round}=\frac{\gamma_{n+1}}{1-\gamma_{n+1}}\operatorname{tr}(\tilde B)+\epsilon_{\rm sub}.
+> $$
+
+**证明**：由 Higham《Accuracy and Stability of Numerical Algorithms》定理 10.3，存在对称 $\Delta\tilde B$ 使 $\hat R^\top\hat R=\tilde B+\Delta\tilde B$，$|\Delta\tilde B|\le\gamma_{n+1}|\hat R^\top||\hat R|$（逐元）。由 Cauchy–Schwarz，
+$$
+\|\Delta\tilde B\|_2\le\|\Delta\tilde B\|_F\le\gamma_{n+1}\Big(\sum_i\|\hat R_{:,i}\|_2^2\Big)^{1/2}\Big(\sum_j\|\hat R_{:,j}\|_2^2\Big)^{1/2}=\gamma_{n+1}\|\hat R\|_F^2.
+$$
+又 $\|\hat R\|_F^2=\operatorname{tr}(\tilde B)+\operatorname{tr}(\Delta\tilde B)\le\operatorname{tr}(\tilde B)+\gamma_{n+1}\|\hat R\|_F^2$，故 $\|\hat R\|_F^2\le\operatorname{tr}(\tilde B)/(1-\gamma_{n+1})$，从而 $\|\Delta\tilde B\|_2\le\frac{\gamma_{n+1}}{1-\gamma_{n+1}}\operatorname{tr}(\tilde B)$。对任意单位 $x$，
+$$
+x^\top(S-\sigma I_n)x=\|\hat Rx\|_2^2-x^\top(\Delta\tilde B+\Delta_{\rm sub})x\ge-(\|\Delta\tilde B\|_2+\epsilon_{\rm sub})\ge-\delta_{\rm round}.
+$$
+故 $S-\sigma I_n$ 的最小特征值不小于 $-\delta_{\rm round}$，即 $\lambda_{\min}(S)\ge\sigma-\delta_{\rm round}$。$\square$
+
+实现中，情形 A 对 $S_{10}$ 取 $\sigma=\min(0,\lambda_{\min}(S_{10}))$，并用成功 Cholesky 检验 $S_{10}-\sigma I_{10}$ 的浮点正定性（必要时把 $\delta_{\rm round}$ 逐次放大 10 倍，至多 12 次）；情形 B 对 $\tilde H_{13}$ 取 $\sigma=\min(0,\lambda_{\min}(\tilde H_{13}))$、$n=13$。这一链条使 $d_{\rm sound}\le f^\star_{\rm global}$ 在精确实算术下成立，而所有判定只依赖浮点矩阵。
+
+### 2.7.6 定理 4.7 的显式复直纹线证明（2026-11-28 修订）
+
+论文定理 4.7 的一般单法向计数 $16$ 与秩一特例 $12$ 由下述构造给出（$\mathbb{CP}^3$ 齐次坐标 $q=[q_0:q_1:q_2:q_3]$）。
+
+1. **截面与总根数**：由 Euler 关系 $q^\top\nabla f=4f$，临界概型是 $E=\mathcal O(3)^{\oplus4}/(q\cdot\mathcal O(2))$ 的截面 $s(q)=[\nabla f(q)]$ 的零点轨迹。由 $0\to\mathcal O(2)\to\mathcal O(3)^{\oplus4}\to E\to0$，
+$$
+c(E)=\frac{(1+3h)^4}{1+2h}=1+10h+34h^2+40h^3,
+$$
+故一般四次型有 $\int_{\mathbb{CP}^3}c_3(E)=40$ 个复射影临界点。
+2. **两条 Hopf 直纹线**：设 $n=e_3$，$u(q)=R(q)^\top e_3$ 的三分量为上式。$Q_{\rm iso}=\{q^\top q=0\}$ 上由 $q^\top q=0$ 与 $u_3=0$ 得 $q_0^2+q_3^2=0$、$q_1^2+q_2^2=0$；代入 $u_1=u_2=0$ 选出
+$$
+\mathcal L=\{[is:1:-i:s]\},\qquad \overline{\mathcal L}=\{[-is:1:i:s]\},
+$$
+显式代入得 $q_0^\top q_0=0$、$u(q_0)=0$ 恒成立。故 $f$ 与 $\nabla f$ 在两条直线上恒为零，直线是**多余分量**（excess component）。
+3. **剩余交数**：$N_{\mathcal L/\mathbb{CP}^3}=\mathcal O(1)^{\oplus2}$，Fulton 剩余交公式给出
+$$
+\int_{\mathcal L}\Big\{\frac{c(E|_{\mathcal L})}{c(N_{\mathcal L/\mathbb{CP}^3})}\Big\}_1
+=\Big[\frac{(1+3t)^4}{(1+2t)(1+t)^2}\Big]_{t^1}=12-2-2=8.
+$$
+4. **四个嵌入秩降点**：扰动 $q(s;\epsilon_1,\epsilon_2)=(is,1,-i,s)+\epsilon_1(1,0,0,0)+\epsilon_2(0,0,1,0)$，得
+$$
+q^\top q=2i(s\epsilon_1-\epsilon_2)+O(\epsilon^2),\quad
+u=\big(2i\epsilon_1-2is\epsilon_2,\ 2\epsilon_1+2s\epsilon_2,\ 2is\epsilon_1+2i\epsilon_2\big)^\top+O(\epsilon^2).
+$$
+沿 $TQ_{\rm iso}|_{\mathcal L}$（$\epsilon_2=s\epsilon_1$）方向
+$$
+v(s)=\big(2i(1-s^2),\ 2(1+s^2),\ 4is\big)^\top,\qquad v(s)^\top v(s)\equiv0 .
+$$
+法向 Jacobian 在 $v(s)^\top Cv(s)=0$ 时降秩（以 $t_1=(1,0,s,0)$ 作内积验证）。$P_4(s)=v(s)^\top Cv(s)$ 是四次方程，除非 $C\propto I_3$ 否则不恒为零，一般有四个互异根；每根按 Fulton 嵌入点公式贡献 $+1$。故每条直线吸收 $8+4=12$ 个根，共轭两条吸收 $24$，饱和后 $40-24=\mathbf{16}$（$\mathbb S^3$ 上 $32$ 个对映根）。
+5. **$Q_{\rm iso}$ 上无其他根**：若 $q\in Q_{\rm iso}\setminus(\mathcal L\cup\bar{\mathcal L})$，则 $u\ne0$、$u^\top u=0$。驻性 $J_u^\top Cu\parallel q$；对 $\delta q\in T_qQ_{\rm iso}$ 有 $(Cu)^\top du[\delta q]=0$，而 $du(T_qQ_{\rm iso})=u^\perp$，故 $Cu\in\mathbb Cu$，即 $u$ 是 $C$ 的非零零长度特征向量。一般实对称 $C$ 没有这种向量，矛盾。
+6. **秩一特例**：$C=\frac\rho2aa^\top$，$a^\top u(q)=q^\top Qq$，$Q$ 为对称正交对合，特征值 $(+1,+1,-1,-1)$。令 $q^\top q=1$、$s=\rho(q^\top Qq)$，驻性等价于 $(B+sQ)q=\lambda q$。由 Hellmann–Feynman 恒等式 $d\lambda/ds=s/\rho$，方程组化为平面四次曲线
+$$
+P(s,\lambda)=\det(B+sQ-\lambda I_4)=0,\qquad \Phi(s,\lambda)=s\frac{\partial P}{\partial\lambda}+\rho\frac{\partial P}{\partial s}=0
+$$
+的交点。Bézout 给 $16$ 个交点。无穷远 $z=0$ 处 $P_4=(s-\lambda)^2(s+\lambda)^2$、$\Phi_4=-4s\lambda(s-\lambda)(s+\lambda)$，只在 $(1:1:0)$、$(1:-1:0)$ 相交，每点交重数 $2$，共 $4$ 个。故有限复解 $16-4=\mathbf{12}$（$\mathbb S^3$ 上 $24$ 个对映根）。$\square$
+
+> **与旧版 §2.6 的关系**：§2.6 给出根结构二分与数值对照；本节补上 $16$ 与 $12$ 的显式代数证明（用户修订 P2-4）。两个不同法向的 $32$ 与各向异性/PnP 的 $40$ 分别是双直纹与无多余分量的饱和计数，数值普查见论文附录。
+
+### 2.7.7 Danskin $C^1$ 衔接引理（2026-11-28 新增）
+
+> **引理 2.6（Danskin gluing；论文引理 A.1）**
+> 固定 $\mu\ge0$、$\rho>0$，令 $\mathcal L_\rho$ 为 (1.1)，并设 $J_\theta(q,t)=t^\top G_0t+2\ell(q)^\top t+\alpha(q)$，$G_0\succeq\lambda_{\min}(G_0)I_3\succ0$，$g_j$ 关于 $t$ 仿射。令 $\phi_\rho(q)=\min_t\mathcal L_\rho(q,t,\mu)$、$t^\star(q)=\arg\min_t\mathcal L_\rho$。则：
+> 1. 每个固定 $q\in\mathbb S^3$，$t\mapsto\mathcal L_\rho$ 为 $C^1$ 且 $2\lambda_{\min}(G_0)$-强凸，故 $t^\star(q)$ 唯一；
+> 2. $t^\star$ 在 $\mathbb S^3$ 上 Lipschitz，且 $t^\star(\mathbb S^3)\subset\overline{B(0,R)}$；
+> 3. $\phi_\rho\in C^1(\mathbb S^3)$（跨活跃集切换面仍成立），$\nabla_{E,q}\phi_\rho=\nabla_{E,q}\mathcal L_\rho(q,t^\star(q),\mu)$，球面梯度为其正交投影；
+> 4. 在每个活跃模式恒定的胞腔内 $\phi_\rho\in C^\infty$，且等于定理 2.1 的 10 维四次型。
+
+**证明**：铰链 $\frac12[u]_+^2$ 凸且 $C^1$，与仿射 $t$ 复合后仍凸且 $C^1$；加 $t^\top G_0t$ 得强凸，故唯一极小点。由一阶最优性与强单调性
+$$
+2\lambda_{\min}(G_0)\|t^\star\|_2^2\le-\nabla_t\mathcal L_\rho(q,0)^\top t^\star\le\|\nabla_t\mathcal L_\rho(q,0)\|_2\|t^\star\|_2,
+$$
+紧球面上 $\|\nabla_t\mathcal L_\rho(q,0)\|\le C_0$，故 $\|t^\star\|\le R=C_0/(2\lambda_{\min}(G_0))$。对 $q_1,q_2$ 用同样不等式并利用 $\nabla_t\mathcal L_\rho$ 在 $\mathbb S^3\times\overline{B(0,R)}$ 上的 Lipschitz 性得 Lipschitz 连续性。在紧球上改写 $\phi_\rho=\min_{t\in\overline{B(0,R)}}\mathcal L_\rho$，极小点唯一且 $\mathcal L_\rho,\nabla_{E,q}\mathcal L_\rho$ 联合连续，由 Danskin 包络定理得可微性与梯度公式；梯度连续故 $\phi_\rho\in C^1$。胞腔内铰链符号固定，目标为 $(\mathbf v_2,t)$ 的二次-仿射函数，消去 $t$ 即定理 2.1 的精确 Schur 补。$\square$
+
+> **作用**：它保证多起点黎曼 BFGS 在活跃集切换面上梯度无跳变，是"冻结活跃集 + 内层数值解"这一算法口径与 ALM 外层目标之间的严格衔接；旧稿只在胞腔内论证四次型，未证明跨胞腔的 $C^1$ 性，这是用户修订 P2-4 指出的衔接缺口。
+
+---
+
 ## 3. 定理 2.3（FB 约化的隐微分：可逆性 / 极限 / 相容性）
 
 ### 3.1 FB 函数：先把"等价性"说清楚
@@ -538,12 +651,15 @@ $$
 
 > **定理 2.3（Regularized reduced system）**
 > 设 $\mathbf z=(q,t)$，切空间 $\delta\mathbf z=(\delta\boldsymbol\xi,\delta\mathbf t)\in\mathbb R^6$，$\mathbf J_{g,j}=\nabla_{\mathbf z}g_j\in\mathbb R^6$（对 $\delta\boldsymbol\xi$ 取右扰动 $\mathbf R\exp(\delta\boldsymbol\xi^\wedge)$ 的一阶系数）。
-> 设活跃集 $\mathcal A=\mathcal A(\varepsilon)=\{j:a_j<\delta_{\rm act}\}$，$\mathcal R=\{1..p\}\setminus\mathcal A$。定义
+> 设活跃集 $\mathcal A=\mathcal A(\varepsilon)=\{j:a_j<\delta_{\rm act}\}$，$\mathcal R=\{1..p\}\setminus\mathcal A$。定义精确黎曼拉格朗日 Hessian（Lemma 2.3b）
 > $$
-> \mathbf H_{\rm tan}:=\nabla^2_{\mathbf z}\mathcal L=\nabla^2_{\mathbf z}J+\sum_{j\in\mathcal A}\mu_j\nabla^2_{\mathbf z}g_j,\qquad
-> \mathbf H_{\rm eff}:=\mathbf H_{\rm tan}+\sum_{j\in\mathcal R}\frac{b_j}{a_j}\mathbf J_{g,j}^\top\mathbf J_{g,j},\qquad
+> \mathbf H_{\mathcal L}=B(q)^\top\Big(\nabla_E^2J+\sum_{j\in\mathcal A}\mu_j\nabla_E^2g_j\Big)B(q)-\Big(q^\top\nabla_{E,q}J+2\sum_{j\in\mathcal A}\mu_j\tilde a_j^\top v_2(q)\Big)\operatorname{diag}(I_3,0_3),
+> $$
+> $$
+> \mathbf H_{\rm eff}:=\mathbf H_{\mathcal L}+\sum_{j\in\mathcal R}\frac{b_j}{a_j}\mathbf J_{g,j}^\top\mathbf J_{g,j}+(\delta-\lambda_{\min})_+I_6\succeq\delta I_6\succ0,\qquad
 > \mathbf D_a:=\operatorname{diag}_{j\in\mathcal A}\Big(\frac{a_j}{b_j}\Big). \tag{3.2}
 > $$
+> 谱钳位项 $(\delta-\lambda_{\min})_+I_6$ 补偿 $\mathbf H_{\mathcal L}$ 可能的负特征值；$\delta>0$ 为可逆性阈值（与内层四次型使用的 $\delta$ 同一口径）。
 > 则 (i) 若 $\mathbf H_{\rm eff}\succ0$ 且 $\mathbf D_a\succ0$，则鞍点矩阵
 > $$
 > \mathbf S=\begin{bmatrix}\mathbf H_{\rm eff}&\mathbf J_{\mathcal A}^\top\\ \mathbf J_{\mathcal A}&-\mathbf D_a\end{bmatrix}\in\mathbb R^{(6+|\mathcal A|)\times(6+|\mathcal A|)} \tag{3.3}
@@ -564,48 +680,63 @@ $$
 * F4b：四脚桌 $\mathbf J_{\mathcal A}\in\mathbb R^{4\times3}$ 秩 3、$\mathbf H=\mathbf I_3$、$\mathbf D_a=d\mathbf I$：$d=4.96\times10^{-3}\to5.0\times10^{-13}$ 时 $\kappa=5.16\times10^{2}\to5.12\times10^{12}$，$\log\kappa/\log\varepsilon$ 斜率 $-2.00$ ⇒ $\kappa\asymp1/\varepsilon^2$。PASS。
 * F6：$\mathbf J_{\mathcal A}=\begin{bmatrix}1&0.15&0.1\\1&0.15&-0.1\\1&-0.15&0.1\\1&-0.15&-0.1\end{bmatrix}$，$\operatorname{rank}=3<4$；$\mathbf D_a=0$ 时 $\mathbf S$ 秩 $6/7$ ⇒ 奇异。PASS。
 
-### 3.3 新增 Proposition 2.1（$\varepsilon\to0$ 的极限：闭式与相容性）
+### 3.2a 新增 Lemma 2.3b（$\mathbb S^3\times\mathbb R^3$ 的精确黎曼拉格朗日 Hessian；论文 P2-3）
 
-> **Proposition 2.1（$\varepsilon\to0$ limit）**
-> 记 $\mathbf r=-\partial_\theta\nabla_{\mathbf z}\mathcal L$、$\mathbf w=-\partial_\theta\mathbf g_{\mathcal A}$，考虑正则化系统
+> **Lemma 2.3b（Exact Riemannian Lagrangian Hessian；论文 \eqref{eq:HL} 与附录引理 A.2）**
+> 令 $\mathcal M=\mathbb S^3\times\mathbb R^3$ 取乘积度量，$B(q)=\operatorname{diag}(E(q),I_3)$，其中 $E(q)\in\mathbb R^{4\times3}$ 的列是 $q^\perp$ 的标准正交基（$E^\top E=I_3$，$EE^\top=I_4-qq^\top$）。对任意 $F\in C^2$，在标架 $B$ 下的黎曼 Hessian 为
 > $$
-> \begin{bmatrix}\mathbf H_{\rm eff}&\mathbf J_{\mathcal A}^\top\\ \mathbf J_{\mathcal A}&-\mathbf D_a\end{bmatrix}
-> \begin{bmatrix}d\mathbf z\\ d\mu_{\mathcal A}\end{bmatrix}
-> =\begin{bmatrix}\mathbf r\\ \mathbf w\end{bmatrix},\qquad \mathbf D_a=D(\varepsilon)\to0\ \text{正定}. \tag{3.4}
+> H_F=B(q)^\top\nabla_E^2F\,B(q)-\big(q^\top\nabla_{E,q}F\big)\operatorname{diag}(I_3,0_3). \tag{3.2a}
 > $$
-> 则
-> (a) 对每个 $\varepsilon>0$，解 $(d\mathbf z(\varepsilon),d\mu_{\mathcal A}(\varepsilon))$ 存在唯一；
-> (b) $d\mathbf z(\varepsilon)\to d\mathbf z^\star$，其中
+> 对 $\mathcal L=J_\theta+\sum_j\mu_jg_j$、$g_j=\tilde a_j^\top v_2(q)+b_j^\top t$：
 > $$
-> d\mathbf z^\star=\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top\big(\mathbf J_{\mathcal A}\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top\big)^{+}\mathbf w+\Big[\mathbf I-\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top\big(\mathbf J_{\mathcal A}\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top\big)^{+}\mathbf J_{\mathcal A}\Big]\mathbf H_{\rm eff}^{-1}\mathbf r, \tag{3.5}
+> H_{\mathcal L}=B^\top\Big(\nabla_E^2J_\theta+\sum_{j=1}^p\mu_j\nabla_E^2g_j\Big)B-\Big(q^\top\nabla_{E,q}J_\theta+2\sum_{j=1}^p\mu_j\tilde a_j^\top v_2(q)\Big)\operatorname{diag}(I_3,0_3). \tag{3.2b}
 > $$
-> 即 $\mathbf H_{\rm eff}$-加权最小范数解；
-> (c) **相容性条件**：$\mathbf w\in\operatorname{range}(\mathbf J_{\mathcal A})$ 时 $d\mathbf z^\star$ 与 $\mathbf D_a$ 的分布（即乘子的选择）无关，且等于真方向导数；若 $\mathbf r=0$ 则退化为 $d\mathbf z^\star=\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top(\mathbf J_{\mathcal A}\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top)^{+}\mathbf w$；
-> (d) 不相容时 $d\mu_{\mathcal A}(\varepsilon)\sim\mathbf D_a^{-1}(\mathbf J_{\mathcal A}d\mathbf z^\star-\mathbf w)\to\infty$，$d\mathbf z$ 仍有限但**不是**任何可微选择的导数；
-> (e) 乘子极限：相容时 $d\mu_{\mathcal A}(\varepsilon)$ 有界；不相容时 $\|d\mu_{\mathcal A}\|\asymp 1/\lambda_{\min}(\mathbf D_a)\asymp1/\varepsilon^2$。
 
-**证明**：
-(a) 定理 2.3(i)。
-(b) 由 (3.4) 消去 $d\mu$：$d\mu=\mathbf D_a^{-1}(\mathbf J_{\mathcal A}d\mathbf z-\mathbf w)$（注意第二行 $\mathbf J_{\mathcal A}d\mathbf z-\mathbf D_a d\mu=\mathbf w$）。代入第一行：
+**证明**：取测地线 $\gamma(s)=(q(s),t(s))$，$q(s)=\cos(\|v_q\|s)q+\frac{\sin(\|v_q\|s)}{\|v_q\|}v_q$，$t(s)=t+sv_t$，初速度 $(v_q,v_t)=B(q)\delta\xi$。因 $\ddot\gamma(0)=(-\|v_q\|^2q,0)$，链式法则给出
 $$
-\big(\mathbf H_{\rm eff}+\mathbf J_{\mathcal A}^\top\mathbf D_a^{-1}\mathbf J_{\mathcal A}\big)d\mathbf z=\mathbf r+\mathbf J_{\mathcal A}^\top\mathbf D_a^{-1}\mathbf w. \tag{3.6}
+\delta\xi^\top H_F\delta\xi=\dot\gamma^\top\nabla_E^2F\dot\gamma+\nabla_EF^\top\ddot\gamma
+=\delta\xi^\top B^\top\nabla_E^2FB\,\delta\xi-(q^\top\nabla_{E,q}F)\|\delta\xi_q\|^2,
 $$
-当 $\mathbf D_a\to0$ 且 $\mathbf J_{\mathcal A}$ 行满秩时，$\mathbf J_{\mathcal A}^\top\mathbf D_a^{-1}\mathbf J_{\mathcal A}$ 的零空间是 $\ker\mathbf J_{\mathcal A}$（维数 $6-|\mathcal A|$），其上 $\mathbf H_{\rm eff}$ 起作用；在 $\operatorname{range}(\mathbf J_{\mathcal A}^\top)$ 上该项发散。将 $d\mathbf z$ 分解为 $\mathbf P d\mathbf z\oplus(\mathbf I-\mathbf P)d\mathbf z$，其中 $\mathbf P=\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top(\mathbf J_{\mathcal A}\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top)^{-1}\mathbf J_{\mathcal A}$ 是 $\mathbf H_{\rm eff}$-正交投影到 $\operatorname{range}(\mathbf H_{\rm eff}^{-1}\mathbf J_{\mathcal A}^\top)$ 上，取极限即得 (3.5)。$\mathbf J_{\mathcal A}$ 秩亏时把 $(\cdot)^{-1}$ 换成 Moore–Penrose 伪逆。∎
-(c) 若 $\mathbf w=\mathbf J_{\mathcal A}\mathbf v$，则 $(\mathbf J_{\mathcal A}\mathbf H^{-1}\mathbf J_{\mathcal A}^\top)^{+}\mathbf J_{\mathcal A}\mathbf v$ 与 $\mathbf D_a$ 无关（$\mathbf J_{\mathcal A}\mathbf H^{-1}\mathbf J_{\mathcal A}^\top$ 与 $\mathbf D_a$ 无耦合），故 $d\mathbf z^\star$ 与 $d$ 的分布无关。真方向导数由 KKT 微分方程唯一确定，与 (3.5) 在 $\mathbf r=0$ 时一致。∎
-(d)(e) 由 $d\mu=\mathbf D_a^{-1}(\mathbf J_{\mathcal A}d\mathbf z-\mathbf w)$，在相容情形 $\mathbf J_{\mathcal A}d\mathbf z^\star-\mathbf w=0$，故 $d\mu$ 的极限取决于差值的收敛速率；由 (3.6) 两端乘以 $\mathbf D_a^{1/2}$ 可证差值 $=O(\lambda_{\min}(\mathbf D_a))$，故 $d\mu$ 有界。在不相容情形，$\mathbf J_{\mathcal A}d\mathbf z^\star-\mathbf w=-(\mathbf I-\mathbf P_{\rm range})\mathbf w=:\boldsymbol\eta\ne0$，于是 $d\mu=\mathbf D_a^{-1}(\boldsymbol\eta+o(1))$，取 $\mathbf D_a=d\mathbf I$ 得 $\|d\mu\|\asymp\|\boldsymbol\eta\|/d\to\infty$。∎
+由 $\delta\xi$ 任意得 (3.2a)。对二次-仿射约束，$\tilde a_j^\top v_2(q)=q^\top Q_jq$（$Q_j$ 常数对称），故 $\nabla_E^2g_j=\operatorname{diag}(2Q_j,0_3)$ 与 $q,t$ 无关，且 $q^\top\nabla_{E,q}g_j=2q^\top Q_jq=2\tilde a_j^\top v_2(q)$，得 (3.2b)。装配只需 $O(p)$ 次 $4\times4$ 常数矩阵加权和与标量乘加。$\square$
 
-> **数值验证**（`verify/sanity_fb_saddle.py` F5）：
-> * 相容（$\mathbf w=\mathbf J_{\mathcal A}\mathbf v$，$\mathbf H=10^{-6}\mathbf I$，$\mathbf J_{\mathcal A}$ 列满秩）：$\mathbf D_a$ 从 $1$ 降到 $10^{-6}$ 时 $\|d\mathbf z-\mathbf v\|$ 从 $1.33\times10^{-5}$ 线性降到 $1.33\times10^{-11}$ ⇒ 收敛到 $\mathbf v$。$d\mu$ 恒为 $2.8\times10^{-6}$（有界）。
-> * $\mathbf D_a$ 分布不均匀（$[1,1,1,1]$ vs $[1,2,5,10]$ vs $[0,1,1,1]$）时 $d\mathbf z$ 的差 $2.3\times10^{-9}$ ⇒ **与乘子选择无关**。
-> * 不相容（$\mathbf w=\mathbf w_{\rm con}+10^{-2}\,\nu$，$\nu$ 为 $\mathbf J_{\mathcal A}^\top$ 的零空间向量）：$\mathbf D_a=d\mathbf I$，$d$ 从 $10^{-1}$ 到 $10^{-8}$ 时 $d\mathbf z$ 恒为 $\|d\mathbf z\|=0.707$（有限），$\|d\mu\|=10^{-1}\to10^{6}$，恰好 $\asymp1/d$。**$d\mu$ 爆破，$d\mathbf z$ 有限但非真导数。**
-> * 闭式验证（非各向同性 $\mathbf H=\operatorname{diag}(1,1,10)$，$\mathbf J$ 秩 2，$\mathbf w=\mathbf J\mathbf v$）：$d\mathbf z(\varepsilon)$ 收敛到 $\mathbf H$-加权闭式 $[1.1667,2.1667,0.3333]$（误差 $7.0\times10^{-7}$），而欧氏最小范数解是 $[0.1667,1.1667,1.3333]$，两者差 $1.73$。**证明极限是 $\mathbf H$-加权最小范数解，不是欧氏最小范数解**。
+> **与 GN 替代的差异**：旧稿取 $H_{\rm tan}=\nabla^2_zJ_\theta$，同时丢掉约束曲率 $\sum_j\mu_j\nabla^2g_j$ 与球面第二基本形式项 $-(q^\top\nabla_{E,q}\mathcal L)\operatorname{diag}(I_3,0_3)$。倾角锥诊断给出相对 $2$-范数偏差 $16.24\%$（用户修订 P2-3）；精确装配按构造消除该偏差。因 $H_{\mathcal L}$ 可能不定，鞍点系统用谱钳位
+> $$
+> H_{\rm eff}=H_{\mathcal L}+\sum_{j\in\mathcal R}\frac{b_j}{a_j}J_{g,j}^\top J_{g,j}+(\delta-\lambda_{\min})_+I_6\succeq\delta I_6\succ0,
+> $$
+> 使定理 2.3 与命题 2.1 的前提（$H_{\rm eff}\succ0$）继续成立。
 
-> **对源文档的修正**：源文档称"在 $\mathbf J_{\mathcal S_{\rm act}}$ 秩亏时依然严格可逆，并在 $\varepsilon\to0^+$ 时精确收敛到真方向导数"。正确的拆法是：
-> 1. **$\varepsilon>0$ 时恒可逆**——成立（定理 2.3(i)），且与秩无关；
-> 2. **$\varepsilon\to0$ 的极限**——只在相容性条件 $\mathbf w\in\operatorname{range}(\mathbf J_{\mathcal A})$ 下等于（$\mathbf H$-加权意义下的）真方向导数；秩亏本身**不**破坏可逆性，但**破坏极限的良定性**；
-> 3. 不相容时，原问题的解映射在 $\theta=0$ 处不可微（活跃集必须变化），FB 给出的是**一个选定的广义导数**，不是真导数。
+### 3.3 修订 Proposition 2.1（非均匀乘子加权斜伪逆极限 + 弱活跃集剥离；论文命题 4.6）
+
+> **Proposition 2.1（Weighted oblique-pseudoinverse limit；2026-11-28 修订）**
+> 在解处把约束划分为强活跃集 $\mathcal A_+=\{j:\mu_j>0,g_j=0\}$、弱活跃集 $\mathcal A_0=\{j:\mu_j=0,g_j=0\}$、严格非活跃集 $\mathcal I=\{j:\mu_j=0,g_j<0\}$。在 $\mathcal A_0$ 上 $a_j=b_j=1$；在 $\mathcal I$ 上 $b_j/a_j=\varepsilon^2/(2g_j^2)+O(\varepsilon^4)$；在 $\mathcal A_+$ 上 $D_a=\varepsilon^2\tilde D+O(\varepsilon^4)$，其中
+> $$
+> \tilde D=\operatorname{diag}_{j\in\mathcal A_+}\Big(\frac{1}{2\mu_j^2}\Big),\qquad
+> \tilde J_+=\tilde D^{-1/2}J_{\mathcal A_+}=\operatorname{diag}_{j\in\mathcal A_+}(\sqrt2\mu_j)J_{\mathcal A_+},
+> $$
+> $$
+> \tilde H_{\rm eff}=H_{\mathcal L}+\sum_{j\in\mathcal A_0}J_{g,j}^\top J_{g,j}\succ0,\qquad
+> \tilde s=s+\sum_{j\in\mathcal A_0}J_{g,j}^\top w_j,\qquad w_j=-\partial_\theta g_j .
+> $$
+> 记 $M_+=\tilde J_+\tilde H_{\rm eff}^{-1}\tilde J_+^\top\succeq0$，$w_+=-\partial_\theta g_{\mathcal A_+}$。则对每个 $\varepsilon>0$ 系统有唯一解，且当 $\varepsilon\to0^+$：
+> $$
+> dz_\varepsilon=\tilde H_{\rm eff}^{-1}\tilde s+\tilde H_{\rm eff}^{-1}\tilde J_+^\top M_+^+\,\tilde D^{-1/2}\big(w_+-J_{\mathcal A_+}\tilde H_{\rm eff}^{-1}\tilde s\big)+O(\varepsilon^2). \tag{3.5'}
+> $$
+> 1. **相容（$w_+\in\operatorname{range}(J_{\mathcal A_+})$）**：$J_{\mathcal A_+}dz^\star=w_+$ 精确成立；$dz^\star$ 是唯一 $\tilde H_{\rm eff}$-最小范数解，且与 $\tilde D$（非均匀强活跃乘子分布）无关；$\|d\mu_{\mathcal A_+}\|=O(1)$。
+> 2. **不相容（$w_+\notin\operatorname{range}(J_{\mathcal A_+})$）**：$\|d\mu_{\mathcal A_+}\|=\Theta(\varepsilon^{-2})$，而 $dz^\star$ 有限且唯一，是加权最小二乘解集
+> $$
+> \operatorname*{arg\,min}_{dz}\Big\{\sum_{j\in\mathcal A_+}2\mu_j^2(J_{g,j}dz-w_j)^2\Big\}
+> $$
+> 中极小化 $\tfrac12dz^\top\tilde H_{\rm eff}dz-\tilde s^\top dz$ 的解。
+
+**证明**：将 $\mathcal A_0,\mathcal I$ 代入驻性方程，得约化鞍点系统，其有效 Hessian 与右端为 $\tilde H_{\rm eff}+O(\varepsilon^2)$、$\tilde s+O(\varepsilon^2)$；对 $\mathcal A_+$，$D_a=\varepsilon^2\tilde D+O(\varepsilon^4)$。在加权变量下 Schur 补为 $\varepsilon^2I+M_++O(\varepsilon^4)$。对 $M_+=U\operatorname{diag}(\Lambda,0)U^\top$ 分块求逆。关键结构性质：因 $\tilde H_{\rm eff}^{-1}\succ0$，$M_+u=0\iff\tilde J_+^\top u=0$，故 $U_0^\top\tilde J_+^\top=0$，逆矩阵的 $\varepsilon^{-2}$ 块被左乘因子 $J_+^\top$ 精确消去：
+$$
+\tilde J_+^\top(\varepsilon^2I+M_++O(\varepsilon^4))^{-1}=\tilde J_+^\top M_+^++O(\varepsilon^2).
+$$
+于是得 (3.5')。若 $w_+$ 相容，非齐次项 $c=\tilde D^{-1/2}(w_+-J_{\mathcal A_+}\tilde H_{\rm eff}^{-1}\tilde s)$ 落在 $\operatorname{range}(M_+)$，乘子修正有界；否则其 $U_0$ 分量为非零，$d\mu_{\mathcal A_+}=-\varepsilon^{-2}\tilde D^{-1/2}U_0U_0^\top c+O(1)=\Theta(\varepsilon^{-2})$。对变分刻画令 $y=\tilde H_{\rm eff}^{1/2}(dz-\tilde H_{\rm eff}^{-1}\tilde s)$、$K=\tilde J_+\tilde H_{\rm eff}^{-1/2}$，则 $M_+=KK^\top$，最小范数最小二乘解为 $K^+c=K^\top M_+^+c$。证毕。$\square$
+
+> **对旧版的修正**：旧 Proposition 2.1 对**所有**活跃约束使用同一个 $\mathbf D_a$，因此漏掉两类情形：① 弱活跃行（$a=b=1$）不应进入消失块 $\mathbf D_a$，而应被精确消去并并入 $\tilde H_{\rm eff},\tilde s$；② 强活跃乘子一般非均匀，极限的正确权重是 $\tilde D=\operatorname{diag}(1/(2\mu_j^2))$，不是单位阵。英文旧稿的式 (10) 还多印了一个 $J_{\mathcal A}$。修订后极限 (3.5') 在相容时与乘子分布无关，在不相容时给出加权最小二乘选择，两者都与旧数值检查（相容误差 $1.3\times10^{-11}$；不相容 $\|d\mu\|=10^{-1}\to10^6$、$\|dz\|=0.707$）相容。
 >
-> **四脚桌实例的相容性**：线性化接触约束为 $g_j=(1,a_j,b_j)^\top(z,\text{roll},\text{pitch})-h_j(\theta)$，$\mathbf J_{\mathcal A}$ 的列恰为 $(1,a_j,b_j)$。若 $\theta$ 只改变接触平面的**刚体位姿**（高度/滚转/俯仰），则 $\partial_\theta g_{\mathcal A}=-(\partial_\theta h,\partial_\theta\text{roll},\partial_\theta\text{pitch})$ 是 $\mathbf J_{\mathcal A}$ 三列的组合 ⇒ $\mathbf w\in\operatorname{range}(\mathbf J_{\mathcal A})$ **自动成立**。若四条腿的高度被独立参数化（非刚体桌面），则 $\mathbf w$ 一般不在 $\operatorname{range}$，此时问题本身不可微。**论文里必须写明这一区分**，否则"四脚桌 LICQ 失效"这一招牌例子会被审稿人攻破。
+> **数值验证（`verify/sanity_fb_saddle.py` F5）**：相容时 $dz$ 收敛到真导数（误差随 $D_a$ 线性降到 $1.3\times10^{-11}$），三种乘子分布间差 $2.3\times10^{-9}$；不相容时 $D_a=dI$ 从 $10^{-1}$ 到 $10^{-8}$，$\|dz\|$ 恒为 $0.707$，$\|d\mu\|=10^{-1}\to10^{6}$。
 
 ### 3.4 新增 Lemma 2.4（冗余活跃集下与乘子选择无关）
 
@@ -672,14 +803,14 @@ $\mathbf J_{g}=-1$、$\mathbf H_{\rm eff}=1$、$\mathbf r=1$、$\mathbf w=0$，�
 | G2（=GAP 4） | 弱活跃点上 FB 极限与 Clarke 广义导数的关系 | P0 | 引用 Bolte 2021 + 构造 2D 反例，刻画选择规则 |
 | G3（=GAP 2） | SDP 证书的严格数值验证（区间算术） | P1 | 显式对偶解 + 舍入误差界 |
 | G4 | 非凸 ALM 只到 KKT：本文的"全局"完全来自 Lemma 2.2，需要 **ALM 的 KKT 点 + SDP 紧**才算认证；若 SDP 不紧则无结论 | P1 | 实验统计 SDP 紧的比例（YCB-V 全量） |
-| G5 | $\mathbf H_{\rm tan}$ 是否含 $\sum\mu_j\nabla^2g_j$：含则精确但可能不定；不含则是 GN 近似 | P0 | 论文里必须二选一并声明；建议给两个版本 + 误差实验 |
+| G5 | ~~$\mathbf H_{\rm tan}$ 是否含 $\sum\mu_j\nabla^2g_j$~~ **2026-11-28 关闭**：已改为精确 $\mathbf H_{\mathcal L}$（含约束曲率与球面第二基本形式项），并用谱钳位保证 $\mathbf H_{\rm eff}\succ0$ | — | 见 Lemma 2.3b、Lemma A.2；论文 §4.5 与附录 |
 | G6 | $\rho,\varepsilon,\delta_{\rm act}$ 的调度敏感性 | P1 | 网格实验 |
 | G7 | $p$ 很大时 SDP 线性约束的规模 | P2 | $p=10^4$ 实测 |
 | G8 | 多次全局解（$\Delta J=0$）时解映射的跳变与 FB 行为 | P1 | 与 Prototype 1/3 的共享问题，本文需声明范围外 |
 
-> **2026-11-27 状态更新（在用户新证明之后）**：G1 已由 §2.6 定理 P2-1b 解决——类型 I（PnP / 一般秩 9）仍是 40 复射影根且共享 15 元模板，类型 II（各向同性 3D–3D + 同法向平面）为 $4/12/16$，双法向 32；剩下的只是实现选择（是否同时维护 40 根与 16 根饱和模板，见论文 §4.7）。G3 已由 §2.7 定理 P2-Cert 解决——对偶修复 + Rump/Cholesky 检验使 sound 下界不再依赖 SCS 容差，剩余的是紧性统计 G4。G5 已在论文 §4.5 明确选择 GN（Remark 4.1 给精确 Hessian 变体）。G2 仍开放。
+> **2026-11-27 状态更新（在用户新证明之后）**：G1 已由 §2.6 定理 P2-1b 解决——类型 I（PnP / 一般秩 9）仍是 40 复射影根且共享 15 元模板，类型 II（各向同性 3D–3D + 同法向平面）为 $4/12/16$，双法向 32；剩下的只是实现选择（是否同时维护 40 根与 16 根饱和模板，见论文 §4.7）。G3 已由 §2.7 定理 P2-Cert 解决——对偶修复 + Rump/Cholesky 检验使 sound 下界不再依赖 SCS 容差，剩余的是紧性统计 G4。G5 已于 2026-11-28 关闭：论文 §4.5 改为精确 $\mathbf H_{\mathcal L}$（含约束曲率与球面第二基本形式项），并用谱钳位保证 $\mathbf H_{\rm eff}\succ0$，见 Lemma 2.3b / Lemma A.2。G2 仍开放。
 
-> **G5 特别说明**：这是审稿人最容易抓的一条。若 $\mathbf H_{\rm tan}$ 取完整 Hessian（含 $\mu_j\nabla^2 g_j$），则定理 2.3 的"$\mathbf H_{\rm eff}\succ0$"不再自动成立，可逆性只能退回"$\mathbf H_{\rm eff}$ 在 $\ker\mathbf J_{\mathcal A}$ 上非奇异"；若取 GN 近似（丢掉 $\mu_j\nabla^2g_j$），可逆性有保证但算出的 $d\mathbf z$ 是 GN 近似而非精确导数。源文档的 $\mathbf H_{\rm eff}=\mathbf H_{\rm tan}+\sum(b_j/a_j)\mathbf J^\top\mathbf J$ 两边都想要，必须二选一。建议：主定理给 GN 版本（可证），精确版本作为 Remark 并给数值对比。
+> **G5 关闭说明（2026-11-28）**：审稿人最容易抓的这一条已按"精确 Hessian + 正则化"处理：主定理与算法统一使用 $\mathbf H_{\mathcal L}$（含 $\sum_j\mu_j\nabla^2g_j$ 与球面第二基本形式项 $-(q^\top\nabla_{E,q}\mathcal L)\operatorname{diag}(I_3,0_3)$），可逆性由谱钳位 $\mathbf H_{\rm eff}\succeq\delta I_6\succ0$ 保证，代价是求解的是正则化 KKT 映射（$\delta$ 为显式阈值）。旧稿"GN 可证但近似 / 精确但可能不定"的二选一已不存在；倾角锥诊断的 GN 相对误差 $16.24\%$ 是这次修订的直接动因。
 
 ---
 

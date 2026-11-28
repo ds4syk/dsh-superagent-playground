@@ -112,7 +112,7 @@ C1 & $\mathbf R(\mathbf q)\mathbf p$ 在 $\mathbf v_2$ 中仿射；四类约束�
 C2 & 增广 Lagrange 活跃集展开等于直接求值 & $3.6\times10^{-15}$（正确 $\kappa_{\mathcal A}$；朴素取法为 $5.6\times10^{-1}$） \\
 C3 & $3\times3$ Schur 补；内层目标在 $\mathbf q$ 中为四次 & $6.2\times10^{-15}$；四次拟合相对误差 $2.0\times10^{-16}$ \\
 C4 & 系数维数与 $p$ 无关 & $p=256$：仍为 $(10,10)/(3,10)/(3,3)$；单核装配 4.4~ms \\
-C5 & 证书行为 & $\delta=J(\hat z)-d(\hat\mu)=-1.67\times10^{-11}$（\textbf{为负}，对偶函数不可用作界）；$14\times14$ Shor $+$ Veronese $+$ 不等式 $=0.0680069355$，对 $J(\hat z)=0.06800693548$，$\lambda_2/\lambda_1=2.2\times10^{-12}$（\textbf{紧}） \\
+C5 & 证书行为 & $\delta=J(\hat z)-d(\hat\mu)=-1.67\times10^{-11}$（\textbf{为负但可容许}：$\nu\le2.4\times10^{-11}$ 时 $\delta\ge-\|\hat{\boldsymbol\mu}\|_1\nu$，故对偶函数是诊断量而非证书）；$14\times14$ Shor $+$ Veronese $+$ 不等式 $=0.0680069355$，对 $J(\hat z)=0.06800693548$，$\lambda_2/\lambda_1=2.2\times10^{-12}$（\textbf{紧}） \\
 C6 & ALM 前向 & 30 次外层迭代内可行到 $2.4\times10^{-11}$；穿透 $18.94$~cm $\to2.4\times10^{-9}$~cm \\
 F1--F3 & FB 取值范围与零集 & 可行时 $a\in[0,1]$、$b\le1$；不可行时 $<2$；$\mu g=-\varepsilon^2/2$ 到 $1.8\times10^{-15}$ \\
 F4 & 鞍点可逆性与条件数 & 200/200 个随机秩亏情形可逆；$\log\kappa/\log\varepsilon=-2.00$ \\
@@ -458,6 +458,214 @@ YCB-Video & 84 & 无约束 QPEP & 14.09 & 1.08 & 17.33 & 6.0\% & 6.0\% & 3.6\% \
 \end{itemize}
 
 \textbf{后续实验。} 学习型与其余凸层基线（无约束及带 $p$ 个松弛变量的 SDPRLayers、Theseus）、T1-network、T2 与 T3 协议的端到端训练、反向传播与延迟拆分，以及超出 $n=90/72/84$ 的真实数据规模扩展，是本研究自然的延伸。上述实验在统一的研究实现上运行，实验脚本、聚合脚本与验证脚本随论文一并提供。
+
+\subsection{Danskin 衔接引理}\label{app:danskin}
+ALM 内层在冻结活跃集下求解，但外层目标必须在活跃集切换面两侧可微。下述引理给出所需的 $C^1$ 衔接；它在第~\ref{sec:alm} 节与多起点内层求解中使用。
+\begin{lemma}[消去后 ALM 目标的全局 $C^1$ 光滑性]\label{lem:danskin}
+固定 $\boldsymbol\mu\in\mathbb{R}^p_{\ge0}$ 与 $\rho>0$，令 $\mathcal L_\rho$ 如 \eqref{eq:alm}，并设 $J_\theta(\mathbf q,\mathbf t)=\mathbf t^\top\mathbf G_0\mathbf t+2\boldsymbol\ell(\mathbf q)^\top\mathbf t+\alpha(\mathbf q)$，其中 $\mathbf G_0\succeq\lambda_{\min}(\mathbf G_0)\mathbf I_3\succ0$，且每条 $g_j$ 关于 $\mathbf t$ 仿射。定义 $\phi_\rho(\mathbf q):=\min_{\mathbf t\in\mathbb{R}^3}\mathcal L_\rho(\mathbf q,\mathbf t,\boldsymbol\mu)$、$\mathbf t^\star(\mathbf q):=\argmin_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf t,\boldsymbol\mu)$。则：
+(i) 对每个 $\mathbf q\in\mathbb S^3$，$\mathbf t\mapsto\mathcal L_\rho(\mathbf q,\mathbf t,\boldsymbol\mu)$ 为 $C^1$ 且 $2\lambda_{\min}(\mathbf G_0)$-强凸，故 $\mathbf t^\star(\mathbf q)$ 唯一；
+(ii) $\mathbf t^\star$ 在 $\mathbb S^3$ 上 Lipschitz，且 $\mathbf t^\star(\mathbb S^3)$ 落在固定紧球 $\overline{B(\mathbf 0,R)}$ 内；
+(iii) $\phi_\rho\in C^1(\mathbb S^3)$（跨越活跃集切换面仍成立），且 $\nabla_{E,\mathbf q}\phi_\rho(\mathbf q)=\nabla_{E,\mathbf q}\mathcal L_\rho(\mathbf q,\mathbf t^\star(\mathbf q),\boldsymbol\mu)$、$\operatorname{grad}_{\mathbb S^3}\phi_\rho=(\mathbf I_4-\mathbf q\mathbf q^\top)\nabla_{E,\mathbf q}\phi_\rho$；
+(iv) 在每个活跃模式恒定的开胞腔内，$\phi_\rho$ 为 $C^\infty$，并等于定理~\ref{thm:dim} 的 $10$ 维四次型 $\mathbf v_2^\top\mathbf M_{\mathcal A}\mathbf v_2+\kappa_{\mathcal A}$。
+\end{lemma}
+\begin{proof}
+(i) 标量铰链 $\varphi(u)=\tfrac12[u]_+^2$ 凸且 $C^1$，$\varphi'(u)=[u]_+$，而 $u_j(\mathbf q,\mathbf t)=\mu_j+\rho g_j$ 关于 $\mathbf t$ 仿射；故每个罚项关于 $\mathbf t$ 凸且 $C^1$。加上 $\mathbf t^\top\mathbf G_0\mathbf t$（$2\mathbf G_0\succeq2\lambda_{\min}(\mathbf G_0)\mathbf I_3$）即得强凸性，从而极小点唯一。
+
+(ii) 在 $\mathbf t^\star(\mathbf q)$ 处的一阶最优性与强单调性给出
+\begin{equation}
+\begin{aligned}
+2\lambda_{\min}(\mathbf G_0)&\|\mathbf t^\star\|_2^2
+\le\big(\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf t^\star)-\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf 0)\big)^\top\mathbf t^\star\\
+&=-\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf 0)^\top\mathbf t^\star
+\le\|\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf 0)\|_2\|\mathbf t^\star\|_2 .
+\end{aligned}
+\end{equation}
+因 $\mathbf q\mapsto\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf 0)$ 在紧球面上连续，存在 $C_0$ 使其范数不超过 $C_0$，故对所有 $\mathbf q$ 有 $\|\mathbf t^\star(\mathbf q)\|_2\le R:=C_0/(2\lambda_{\min}(\mathbf G_0))$。对 $\mathbf q_1,\mathbf q_2$，把同一不等式用于两个最优性条件得
+\begin{equation}
+\begin{aligned}
+2\lambda_{\min}(\mathbf G_0)&\|\mathbf t^\star(\mathbf q_1)-\mathbf t^\star(\mathbf q_2)\|_2\\
+&\le\|\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q_1,\mathbf t^\star(\mathbf q_2))
+-\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q_2,\mathbf t^\star(\mathbf q_2))\|_2 ,
+\end{aligned}
+\end{equation}
+而 $\nabla_{\mathbf t}\mathcal L_\rho$ 在紧集 $\mathbb S^3\times\overline{B(\mathbf 0,R)}$ 上 Lipschitz（常数 $L_1$），故 $\mathbf t^\star$ 全局 $L_1/(2\lambda_{\min}(\mathbf G_0))$-Lipschitz。
+
+(iii) 在紧球上 $\phi_\rho(\mathbf q)=\min_{\mathbf t\in\overline{B(\mathbf 0,R)}}\mathcal L_\rho(\mathbf q,\mathbf t,\boldsymbol\mu)$，且 $\mathcal L_\rho$ 与 $\nabla_{E,\mathbf q}\mathcal L_\rho$ 在该紧集上联合连续。极小点集为单点集 $\{\mathbf t^\star(\mathbf q)\}$，由 Danskin 包络定理得可微性且 $\nabla_{E,\mathbf q}\phi_\rho(\mathbf q)=\nabla_{E,\mathbf q}\mathcal L_\rho(\mathbf q,\mathbf t^\star(\mathbf q),\boldsymbol\mu)$。右端连续（$\nabla_{E,\mathbf q}\mathcal L_\rho$ 联合连续、$\mathbf t^\star$ 连续），故 $\phi_\rho\in C^1$。黎曼梯度即欧氏梯度在 $T_{\mathbf q}\mathbb S^3$ 上的正交投影。
+
+(iv) 胞腔内 $\mu_j+\rho g_j$ 的符号固定，每个铰链或为 $0$、或为 $(\mu_j+\rho g_j)^2$；目标为 $(\mathbf v_2,\mathbf t)$ 的二次-仿射函数，消去 $\mathbf t$ 恰为定理~\ref{thm:dim} 的精确 Schur 补，得到所述四次型。光滑性显然。
+\end{proof}
+
+\subsection{精确黎曼拉格朗日 Hessian}\label{app:hessian}
+\begin{lemma}[含 $O(p)$ 约束曲率的精确 $\mathbf H_{\mathcal L}$]\label{lem:hessian}
+令 $\mathcal M=\mathbb S^3\times\mathbb R^3$ 取乘积度量，令 $\mathbf B(\mathbf q)=\operatorname{diag}(E(\mathbf q),\mathbf I_3)$，其中 $E(\mathbf q)^\top E(\mathbf q)=\mathbf I_3$、$E(\mathbf q)E(\mathbf q)^\top=\mathbf I_4-\mathbf q\mathbf q^\top$。对 $F\in C^2(\mathbb R^4\times\mathbb R^3)$ 与 $\delta\boldsymbol\xi\in\mathbb R^6$，$F$ 在标架 $\mathbf B$ 下的黎曼 Hessian 为
+\begin{equation}
+\mathbf H_F=\mathbf B(\mathbf q)^\top\nabla_E^2F\,\mathbf B(\mathbf q)-\big(\mathbf q^\top\nabla_{E,\mathbf q}F\big)\operatorname{diag}(\mathbf I_3,\mathbf 0_3).
+\label{eq:hF}
+\end{equation}
+对 $\mathcal L=J_\theta+\sum_{j=1}^p\mu_jg_j$、$g_j=\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)+\mathbf b_j^\top\mathbf t$，即得 \eqref{eq:HL}。此外 $\nabla_E^2g_j=\operatorname{diag}(2\mathbf Q_j,\mathbf 0_3)$ 为常数对称阵，\eqref{eq:HL} 的装配代价为 $O(p)$。
+\end{lemma}
+\begin{proof}
+令 $\gamma(s)=(\mathbf q(s),\mathbf t(s))$ 为 $\mathbb S^3\times\mathbb R^3$ 上过 $(\mathbf q,\mathbf t)$、初速度 $\dot\gamma(0)=(\mathbf v_q,\mathbf v_t)=\mathbf B(\mathbf q)\delta\boldsymbol\xi$ 的测地线。在单位球面上 $\mathbf q(s)=\cos(\|\mathbf v_q\|s)\mathbf q+\sin(\|\mathbf v_q\|s)\mathbf v_q/\|\mathbf v_q\|$、$\mathbf t(s)=\mathbf t+s\mathbf v_t$，故
+\[
+\ddot\gamma(0)=\big(-\|\mathbf v_q\|_2^2\,\mathbf q,\ \mathbf 0\big)=\big(-\|\delta\boldsymbol\xi_q\|_2^2\,\mathbf q,\ \mathbf 0\big).
+\]
+按定义 $\operatorname{Hess}_{\mathcal M}F[\dot\gamma(0),\dot\gamma(0)]=\frac{\mathrm d^2}{\mathrm ds^2}F(\gamma(s))|_{s=0}$，链式法则给出
+\begin{equation}
+\begin{aligned}
+\delta\boldsymbol\xi^\top\mathbf H_F\delta\boldsymbol\xi
+&=\dot\gamma(0)^\top\nabla_E^2F\,\dot\gamma(0)+\nabla_EF^\top\ddot\gamma(0)\\
+&=\delta\boldsymbol\xi^\top\big(\mathbf B^\top\nabla_E^2F\,\mathbf B\big)\delta\boldsymbol\xi-\big(\mathbf q^\top\nabla_{E,\mathbf q}F\big)\|\delta\boldsymbol\xi_q\|_2^2 .
+\end{aligned}
+\end{equation}
+由 $\delta\boldsymbol\xi$ 任意及 $\mathbf H_F$ 对称即得 \eqref{eq:hF}。代入 $F=\mathcal L$ 得 \eqref{eq:HL} 中的约束求和。对二次-仿射约束，$\mathbf v_2(\mathbf q)$ 构成二次单项式基，故存在唯一常数对称 $\mathbf Q_j$ 使 $\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)\equiv\mathbf q^\top\mathbf Q_j\mathbf q$；于是 $\nabla_{E,\mathbf q}g_j=2\mathbf Q_j\mathbf q$、$\nabla_E^2g_j=\operatorname{diag}(2\mathbf Q_j,\mathbf 0_3)$，并由 Euler 齐次性 $\mathbf q^\top\nabla_{E,\mathbf q}g_j=2\mathbf q^\top\mathbf Q_j\mathbf q=2\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)$。每条活跃约束只贡献一个常数 $4\times4$ 块与一个标量，故装配为 $O(p)$，无需高阶自动微分。
+\end{proof}
+\textbf{注.} Gauss--Newton 替代 $\mathbf H_{\rm tan}=\nabla^2_{\mathbf z}J_\theta$ 同时丢弃约束曲率求和 $\sum_j\mu_j\nabla_E^2g_j$ 与球面第二基本形式项 $-\big(\mathbf q^\top\nabla_{E,\mathbf q}\mathcal L\big)\operatorname{diag}(\mathbf I_3,\mathbf 0_3)$；在倾角锥诊断上，该替代与精确 KKT 导数的相对 $2$-范数偏差为 $16.24\%$，而 \eqref{eq:HL} 按构造消除该偏差。由于 $\mathbf H_{\mathcal L}$ 可能不定，鞍点系统采用第~\ref{sec:fb} 节的谱钳位，故定理~\ref{thm:fb} 与命题~\ref{prop:limit} 的前提保持成立。
+
+\subsection{P2-Cert 的精确 Schur/Rump 证明}\label{app:p2cert}
+我们证明定理~\ref{thm:cert}。令 $\mathbf F$ 为 \eqref{eq:p2cert} 的折叠映射，则 $\mathbf y_{14}=[\mathbf v_2(\mathbf q);\mathbf t;1]=\mathbf F\mathbf y_{13}$，其中 $\mathbf y_{13}=[\mathbf v_2(\mathbf q);\mathbf t]$；令 $\tilde{\mathbf H}_{13}$ 为 \eqref{eq:p2cert} 的折叠对偶松弛阵。始终有 $\tilde{\boldsymbol\mu}=[\hat{\boldsymbol\mu}]_+\ge\mathbf 0$、$\tilde{\boldsymbol\Gamma}=[\hat{\boldsymbol\Gamma}]_+\ge\mathbf 0$，且所有 Veronese 行在秩一提升上为零。
+
+\paragraph{对偶可行性.} 对任意可行 $(\mathbf q,\mathbf t)$，
+\begin{equation}
+\begin{aligned}
+J_\theta(\mathbf q,\mathbf t)-\hat\lambda_0
+&=\mathbf y_{14}^\top\big(\mathbf Q_{\rm aug}-\hat\lambda_0\mathbf A_0\big)\mathbf y_{14}\\
+&\ge\mathbf y_{14}^\top\Big(\mathbf Q_{\rm aug}+\sum_j\tilde\mu_j\mathbf A_{g_j}\\
+&\qquad-\sum_{i\le j}\tilde\Gamma_{ij}\mathbf A_{g_ig_j}-\hat\lambda_0\mathbf A_0\\
+&\qquad-\sum_k\hat\lambda_k\mathbf B_k\Big)\mathbf y_{14}\\
+&=\mathbf y_{13}^\top\tilde{\mathbf H}_{13}\mathbf y_{13},
+\end{aligned}
+\label{eq:app_dual}
+\end{equation}
+因为 $g_j\le0$、$\tilde\mu_j\ge0$ 给出 $\sum_j\tilde\mu_j g_j\le0$，而 $g_ig_j\ge0$、$\tilde\Gamma_{ij}\ge0$ 给出 $-\sum_{i\le j}\tilde\Gamma_{ij}g_ig_j\le0$。
+
+\paragraph{情形 A.} 若 $\tilde{\mathbf H}_{tt}\succ0$，在 $\mathbf t$ 上配方：
+\begin{equation}
+\begin{aligned}
+\mathbf y_{13}^\top\tilde{\mathbf H}_{13}\mathbf y_{13}
+&=\mathbf v_2(\mathbf q)^\top\mathbf S_{10}\mathbf v_2(\mathbf q)\\
+&\quad+\big\|\tilde{\mathbf H}_{tt}^{1/2}\big(\mathbf t+\tilde{\mathbf H}_{tt}^{-1}\tilde{\mathbf H}_{Rt}^\top\mathbf v_2(\mathbf q)\big)\big\|_2^2\\
+&\ge\mathbf v_2(\mathbf q)^\top\mathbf S_{10}\mathbf v_2(\mathbf q),
+\end{aligned}
+\end{equation}
+其中 $\mathbf S_{10}=\tilde{\mathbf H}_{RR}-\tilde{\mathbf H}_{Rt}\tilde{\mathbf H}_{tt}^{-1}\tilde{\mathbf H}_{Rt}^\top$。若 $\mathbf S_{10}-\delta_{\min}\mathbf I_{10}\succeq0$，利用 $\|\mathbf v_2(\mathbf q)\|_2^2=\|\mathbf q\|_2^4=1$ 得
+\begin{equation}
+\begin{aligned}
+\mathbf v_2(\mathbf q)^\top\mathbf S_{10}\mathbf v_2(\mathbf q)
+&=\delta_{\min}\|\mathbf v_2(\mathbf q)\|_2^2\\
+&\quad+\mathbf v_2(\mathbf q)^\top(\mathbf S_{10}-\delta_{\min}\mathbf I_{10})\mathbf v_2(\mathbf q)\\
+&\ge\delta_{\min}.
+\end{aligned}
+\end{equation}
+在 \eqref{eq:app_dual} 中对 $\mathbf q\in\mathbb S^3$ 取下确界得 $d(\hat{\boldsymbol\mu})\ge\hat\lambda_0+\delta_{\min}$；全程不需要 $\|\mathbf t\|$ 的任何界。
+
+\paragraph{情形 B.} 若 $\tilde{\mathbf H}_{tt}$ 不正定，令 $\delta_{13}=\lambda_{\min}(\tilde{\mathbf H}_{13})$。则 $\mathbf y_{13}^\top\tilde{\mathbf H}_{13}\mathbf y_{13}\ge\delta_{13}\|\mathbf y_{13}\|_2^2$，且 $\|\mathbf y_{13}\|_2^2=1+\|\mathbf t\|_2^2$。若 $\delta_{13}\le0$，用 $\|\mathbf y_{13}\|_2^2\le1+R_t^2$；若 $\delta_{13}>0$，用 $\|\mathbf y_{13}\|_2^2\ge1$。两种情形统一为 $\delta_{13}^-(1+R_t^2)+\delta_{13}^+$。
+
+\paragraph{Rump 裕量.} 还需在浮点下认证 $\lambda_{\min}$。
+\begin{lemma}[可认证的 Cholesky 裕量]\label{lem:rump}
+令 $\mathbf S\in\mathbb S^n$、$\sigma\in\mathbb R$、$\mathbf B=\mathbf S-\sigma\mathbf I_n$，并令 $\tilde{\mathbf B}=\operatorname{fl}(\mathbf S-\sigma\mathbf I_n)=\mathbf B+\Delta_{\rm sub}$，$\|\Delta_{\rm sub}\|_2\le\epsilon_{\rm sub}$；设 $\operatorname{tr}(\tilde{\mathbf B})\ge0$。令 $u=2^{-53}$、$\gamma_{n+1}=(n+1)u/(1-(n+1)u)$。若 $\tilde{\mathbf B}$ 的浮点 Cholesky 分解顺利完成并给出因子 $\hat{\mathbf R}$，则精确算术下
+\begin{equation}
+\begin{aligned}
+&\lambda_{\min}(\mathbf S)\ge\sigma-\delta_{\rm round},\\
+&\delta_{\rm round}:=\frac{\gamma_{n+1}}{1-\gamma_{n+1}}\operatorname{tr}(\tilde{\mathbf B})+\epsilon_{\rm sub}.
+\end{aligned}
+\label{eq:rump}
+\end{equation}
+\end{lemma}
+\begin{proof}
+由 Cholesky 的向后误差定理（Higham, \emph{Accuracy and Stability of Numerical Algorithms}, Thm.~10.3），存在对称 $\Delta\tilde{\mathbf B}$ 使 $\hat{\mathbf R}^\top\hat{\mathbf R}=\tilde{\mathbf B}+\Delta\tilde{\mathbf B}$，且逐元 $|\Delta\tilde{\mathbf B}|\le\gamma_{n+1}|\hat{\mathbf R}^\top||\hat{\mathbf R}|$。由 Cauchy--Schwarz，$|\Delta\tilde{\mathbf B}_{ij}|\le\gamma_{n+1}\|\hat{\mathbf R}_{:,i}\|_2\|\hat{\mathbf R}_{:,j}\|_2$，故
+\begin{equation}
+\begin{aligned}
+\|\Delta\tilde{\mathbf B}\|_2\le\|\Delta\tilde{\mathbf B}\|_F
+&\le\gamma_{n+1}\Big(\sum_i\|\hat{\mathbf R}_{:,i}\|_2^2\Big)^{1/2}\\
+&\quad\times\Big(\sum_j\|\hat{\mathbf R}_{:,j}\|_2^2\Big)^{1/2}\\
+&=\gamma_{n+1}\|\hat{\mathbf R}\|_F^2 .
+\end{aligned}
+\end{equation}
+因 $\|\hat{\mathbf R}\|_F^2=\operatorname{tr}(\tilde{\mathbf B})+\operatorname{tr}(\Delta\tilde{\mathbf B})\le\operatorname{tr}(\tilde{\mathbf B})+\gamma_{n+1}\|\hat{\mathbf R}\|_F^2$，得 $\|\hat{\mathbf R}\|_F^2\le\operatorname{tr}(\tilde{\mathbf B})/(1-\gamma_{n+1})$，从而 $\|\Delta\tilde{\mathbf B}\|_2\le\gamma_{n+1}\operatorname{tr}(\tilde{\mathbf B})/(1-\gamma_{n+1})$。对任意单位 $\mathbf x$，
+\begin{equation}
+\begin{aligned}
+\mathbf x^\top(\mathbf S-\sigma\mathbf I_n)\mathbf x
+&=\|\hat{\mathbf R}\mathbf x\|_2^2-\mathbf x^\top(\Delta\tilde{\mathbf B}+\Delta_{\rm sub})\mathbf x\\
+&\ge-\big(\|\Delta\tilde{\mathbf B}\|_2+\epsilon_{\rm sub}\big),
+\end{aligned}
+\end{equation}
+且 $\|\Delta\tilde{\mathbf B}\|_2+\epsilon_{\rm sub}\le\delta_{\rm round}$，故最后一个表达式不小于 $-\delta_{\rm round}$。
+\end{proof}
+实现中，情形 A 取 $\sigma=\min(0,\lambda_{\min}(\mathbf S_{10}))$ 并对 $\mathbf S_{10}$ 应用引理~\ref{lem:rump}；随后用一次成功的 Cholesky 分解检验位移后浮点矩阵的正定性，并在 \eqref{eq:dsound} 中使用 $\delta_{\min}=\sigma-\delta_{\rm round}$。情形 B 取 $\sigma=\min(0,\lambda_{\min}(\tilde{\mathbf H}_{13}))$、$n=13$。这就是 $d_{\rm sound}\le f^\star_{\rm global}$ 在精确实算术下成立、而所有判定都在浮点矩阵上完成的含义。
+
+\subsection{内层根数的复直纹线证明}\label{app:ruled}
+我们证明定理~\ref{thm:spectrum} 的各向同性单法向部分。记 $\mathbf q=[q_0:q_1:q_2:q_3]\in\mathbb{CP}^3$，$f$ 为齐次四次型。由 Euler 关系 $\mathbf q^\top\nabla f=4f$，$\nabla f$ 的径向分量由 $f$ 决定，故临界概型是截面 $s(\mathbf q)=[\nabla f(\mathbf q)]$ 的零点轨迹，其中 $s$ 是秩三丛 $E=\mathcal O_{\mathbb{CP}^3}(3)^{\oplus4}/\big(\mathbf q\cdot\mathcal O_{\mathbb{CP}^3}(2)\big)$ 的截面。由 $0\to\mathcal O(2)\xrightarrow{\cdot\mathbf q}\mathcal O(3)^{\oplus4}\to E\to0$，
+\begin{equation}
+c(E)=\frac{(1+3h)^4}{1+2h}=1+10h+34h^2+40h^3\pmod{h^4},
+\label{eq:cE}
+\end{equation}
+故一般四次型有 $\int_{\mathbb{CP}^3}c_3(E)=40$ 个复射影临界点。
+
+\paragraph{两条 Hopf 直纹线.} 由 $\mathrm{SO}(3)$ 等变性设 $\mathbf n=\mathbf e_3$，记 $\mathbf u(\mathbf q)=R(\mathbf q)^\top\mathbf e_3$：
+\begin{equation}
+\begin{aligned}
+\mathbf u(\mathbf q)=\big(&2(q_1q_3-q_0q_2),\ 2(q_2q_3+q_0q_1),\\
+&q_0^2-q_1^2-q_2^2+q_3^2\big)^\top .
+\end{aligned}
+\end{equation}
+在各向同性二次曲面 $Q_{\rm iso}=\{\mathbf q^\top\mathbf q=0\}$ 上，第三分量与 $\mathbf q^\top\mathbf q$ 给出 $q_0^2+q_3^2=0$ 与 $q_1^2+q_2^2=0$；代入前两个分量后选出两条共轭直线
+\begin{equation}
+\begin{aligned}
+\mathcal L&=\{[i s:1:-i:s]\}\cong\mathbb{CP}^1,\\
+\overline{\mathcal L}&=\{[-i s:1:i:s]\}\cong\mathbb{CP}^1 .
+\end{aligned}
+\end{equation}
+对 $\mathcal L$ 有 $q_0^2=-q_3^2$、$q_2^2=-q_1^2$；显式代入 $\mathbf q_0(s)=(is,1,-i,s)$ 得 $\mathbf q_0^\top\mathbf q_0=0$ 且 $\mathbf u(\mathbf q_0)=0$ 恒成立。故 $f=(\mathbf q^\top\mathbf q)(\mathbf q^\top\mathbf B\mathbf q)+\mathbf u^\top\mathbf C\mathbf u$ 与
+$\nabla f=2(\mathbf q^\top\mathbf B\mathbf q)\mathbf q+2(\mathbf q^\top\mathbf q)\mathbf B\mathbf q+2J_u(\mathbf q)^\top\mathbf C\mathbf u$
+的三项在 $\mathcal L\cup\overline{\mathcal L}$ 上同时为零：截面在该处恒为零，故每条直线都是多余分量。
+
+\paragraph{剩余交数.} $\mathbb{CP}^3$ 中直线的法丛为 $N_{\mathcal L/\mathbb{CP}^3}=\mathcal O_{\mathcal L}(1)^{\oplus2}$。因 $E|_{\mathcal L}$ 是 $\mathcal O(3)^{\oplus4}$ 模去 $\mathcal O(2)$ 的商，Fulton 剩余交公式给出截面与 $\mathcal L$ 的一般接触数
+\begin{equation}
+\begin{aligned}
+&\int_{\mathcal L}\left\{\frac{c(E|_{\mathcal L})}{c(N_{\mathcal L/\mathbb{CP}^3})}\right\}_1\\
+&\quad=\left[\frac{(1+3t)^4}{(1+2t)(1+t)^2}\right]_{t^1}=12-2-2=8 .
+\end{aligned}
+\end{equation}
+
+\paragraph{四个嵌入的秩降点.} 以 $\mathbf q(s;\epsilon_1,\epsilon_2)=(is,1,-i,s)+\epsilon_1(1,0,0,0)+\epsilon_2(0,0,1,0)$ 扰动 $\mathcal L$。直接展开得
+\begin{equation}
+\begin{aligned}
+\mathbf q^\top\mathbf q&=2i(s\epsilon_1-\epsilon_2)+O(\epsilon^2),\\
+\mathbf u&=\begin{pmatrix}2i\epsilon_1-2is\epsilon_2\\ 2\epsilon_1+2s\epsilon_2\\ 2is\epsilon_1+2i\epsilon_2\end{pmatrix}+O(\epsilon^2).
+\end{aligned}
+\end{equation}
+沿 $TQ_{\rm iso}|_{\mathcal L}$ 的方向，即 $\epsilon_2=s\epsilon_1$（它消去 $\mathbf q^\top\mathbf q$ 的一阶项），
+\begin{equation}
+\begin{aligned}
+\mathbf v(s)&:=\left.\frac{\partial\mathbf u}{\partial\epsilon_1}\right|_{\epsilon_2=s\epsilon_1}\\
+&=\big(2i(1-s^2),\ 2(1+s^2),\ 4is\big)^\top,\\
+\mathbf v(s)^\top\mathbf v(s)&\equiv0 .
+\end{aligned}
+\end{equation}
+截面沿横向方向 $\mathbf e_{\rm iso}=(1,0,s,0)$ 的法向导数为 $2J_u(\mathbf q_0(s))^\top\mathbf C\mathbf v(s)$（模 $\mathbf q_0(s)$），法向 Jacobian 恰在 $\mathbf v(s)^\top\mathbf C\mathbf v(s)=0$ 时降秩：取切向测试向量 $\mathbf t_1=(1,0,s,0)$（满足 $J_u(\mathbf q_0)\mathbf t_1=\mathbf v(s)$）作内积，得 $\mathbf t_1^\top J_u^\top\mathbf C\mathbf v=\mathbf v^\top\mathbf C\mathbf v$。由于 $\mathbf v(s)$ 关于 $s$ 二次，方程
+\[
+P_4(s):=\mathbf v(s)^\top\mathbf C\mathbf v(s)=0
+\]
+在 $\mathcal L\cong\mathbb{CP}^1$ 上是四次方程；因 $\mathbf v(s)^\top\mathbf v(s)\equiv0$，除非 $\mathbf C\propto\mathbf I_3$（在零锥上恒为零的对称型必为定义型的倍数），否则 $P_4$ 不恒为零。对一般 $\mathbf C$ 它有四个互异根。每个根处法向导数降一秩，由 Fulton 嵌入点公式对交重数贡献 $+1$；故每条直线吸收 $8+4=12$ 个射影根，共轭两条吸收 $24$ 个。
+
+\paragraph{$Q_{\rm iso}$ 上无其他根.} 设 $\mathbf q\in Q_{\rm iso}\setminus(\mathcal L\cup\overline{\mathcal L})$，则 $\mathbf u:=\mathbf u(\mathbf q)\ne0$ 且 $\mathbf u^\top\mathbf u=(\mathbf q^\top\mathbf q)^2=0$。驻性约化为 $J_u(\mathbf q)^\top\mathbf C\mathbf u=\lambda\mathbf q$。对任意 $\delta\mathbf q\in T_{\mathbf q}Q_{\rm iso}$ 有 $\mathbf q^\top\delta\mathbf q=0$，故 $(\mathbf C\mathbf u)^\top\mathrm d\mathbf u[\delta\mathbf q]=0$。因 $\mathbf u\ne0$，$\mathrm d\mathbf u(T_{\mathbf q}Q_{\rm iso})=\mathbf u^\perp\subset\mathbb C^3$，于是 $\mathbf C\mathbf u\in(\mathbf u^\perp)^\perp=\mathbb C\mathbf u$，$\mathbf u$ 将是 $\mathbf C$ 的非零零长度特征向量。一般实对称 $\mathbf C$ 的实特征向量范数为正，故不可能；$Q_{\rm iso}$ 上两条直线之外无孤立根。因此饱和计数为 $40-2\times(8+4)=\mathbf{16}$，即 $\mathbb S^3$ 上 $32$ 个对映根。
+
+\paragraph{秩一情形.} 令 $\mathbf C=\tfrac{\rho}{2}\mathbf a\mathbf a^\top$，则 $\mathbf a^\top\mathbf u(\mathbf q)=\mathbf q^\top\mathbf Q\mathbf q$，其中 $\mathbf Q=\mathbf Q_{\mathbf n,\mathbf a}$ 为对称正交对合：$\mathbf Q^2=\mathbf I_4$、$\operatorname{tr}\mathbf Q=0$，故特征值为 $(+1,+1,-1,-1)$。对 $\mathbf q^\top\mathbf q=1$ 的驻点，令 $s=\rho(\mathbf q^\top\mathbf Q\mathbf q)$；驻性等价于
+\begin{equation}
+(\mathbf B+s\mathbf Q)\mathbf q=\lambda\mathbf q,\qquad \rho(\mathbf q^\top\mathbf Q\mathbf q)=s,\qquad \mathbf q^\top\mathbf q=1 .
+\end{equation}
+令 $P(s,\lambda)=\det(\mathbf B+s\mathbf Q-\lambda\mathbf I_4)$，Hellmann--Feynman 恒等式 $\mathrm d\lambda/\mathrm ds=\mathbf q^\top\mathbf Q\mathbf q/\mathbf q^\top\mathbf q=s/\rho$ 把方程组化为两条平面四次曲线的交点
+\begin{equation}
+P(s,\lambda)=0,\qquad \Phi(s,\lambda):=s\frac{\partial P}{\partial\lambda}+\rho\frac{\partial P}{\partial s}=0 .
+\end{equation}
+由 Bézout 定理，其交点（计重数）为 $4\times4=16$。在无穷远 $z=0$ 处，
+\begin{equation}
+\begin{aligned}
+P_4(s,\lambda)&=\det(s\mathbf Q-\lambda\mathbf I_4)=(s-\lambda)^2(s+\lambda)^2,\\
+\Phi_4(s,\lambda)&=s\frac{\partial P_4}{\partial\lambda}=-4s\lambda(s-\lambda)(s+\lambda),
+\end{aligned}
+\end{equation}
+故两曲线只在 $(1:1:0)$ 与 $(1:-1:0)$ 相交。该处 $P_4$ 为二重点（重数 $2$），而对一般 $\mathbf B$，$\Phi_4$ 光滑且与两支横截，故每点交重数为 $2$，无穷远共 $4$ 个。于是有限复解为 $16-4=\mathbf{12}$，即 $\mathbb S^3$ 上 $24$ 个对映根，正是定理~\ref{thm:spectrum} 的秩一条目。两个不同法向的计数 $32$ 与各向异性/PnP 的 $40$ 分别是同一构造在双直纹与无多余分量时的饱和计数；数值普查见附录~\ref{app:deriv}。
 
 \subsection{补充推导}\label{app:deriv}
 \textbf{FB 灵敏度极限。} 在互补点处，光滑化驻点量 $a=\partial_\mu\varphi_\varepsilon$ 与 $b=-\partial_g\varphi_\varepsilon$ 的极限如下。对强活跃约束（$\mu_j>0$，$g_j=0$），$a\to\varepsilon^2/(2\mu_j^2)\to0$，$b\to1$。对严格非活跃约束（$\mu_j=0$，$g_j<0$），$a\to1$，$b\to\varepsilon^2/(2g_j^2)\to0$。对弱活跃约束（$\mu_j=g_j=0$），$a=b=1$，FB 残差为 $-\varepsilon$。这些极限给出定理~\ref{thm:fb} 的条件数规律 $\kappa(\mathbf S)\asymp1/\varepsilon^2$：$\mathbf D_a=\operatorname{diag}(a_j/b_j)$ 在强活跃行趋零，在非活跃行发散。

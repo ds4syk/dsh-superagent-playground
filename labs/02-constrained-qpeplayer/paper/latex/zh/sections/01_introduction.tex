@@ -9,7 +9,7 @@
 本文追问：一个位姿层能否同时具备硬不等式约束、与约束数量无关的逐样本代价、在冗余与弱活跃接触下仍存活的微分能力，以及全局最优性的后验证据。\textbf{贡献。}
 \begin{enumerate}
 \item \emph{加性常维约简}（定理~\ref{thm:dim}）。对于在 $(\mathbf v_2(\mathbf q),\mathbf t)$ 中仿射的约束——正深度、平面非穿透、视场、倾角锥——每个增广 Lagrange（ALM）内层子问题限制到活跃集后，经 $3\times3$ Schur 补坍缩为 $\mathbb{S}^3$ 上一个与 $p$ 无关的四次型：$O(p)$ 装配、$O(1)$ 内存。
-\item \emph{具有 $p$ 无关 PSD 块的可靠后验证书}（引理~\ref{lem:cert}）。$14\times14$ Veronese 增广 Shor 松弛对任意 $p$ 给出严格下界，并在紧时认证全局最优性；定理~\ref{thm:cert}（P2-Cert）修复求解器对偶，使每个报告的间隙按构造非负。在一个受控实例上，松弛紧到 $2\times10^{-11}$，而 Lagrange 对偶间隙为负（$-1.67\times10^{-11}$），因此记录在案的界取松弛值而非对偶函数值。
+\item \emph{具有 $p$ 无关 PSD 块的可靠后验证书}（引理~\ref{lem:cert}）。$14\times14$ Veronese 增广 Shor 松弛对任意 $p$ 给出严格下界，并在紧时认证全局最优性；定理~\ref{thm:cert}（P2-Cert）修复求解器对偶，使每个报告的间隙按构造非负。在一个受控实例上，松弛紧到 $2\times10^{-11}$，而定理~\ref{thm:cond} 的双边界在违反量 $\nu\le2.4\times10^{-11}$ 时容许对偶函数间隙为 $-1.67\times10^{-11}$；因此记录在案的界取松弛值而非对偶函数值。
 \item \emph{FB 约简隐式微分与精确的极限理论}（定理~\ref{thm:fb}、命题~\ref{prop:limit}）。$(6+|\mathcal A|)\times(6+|\mathcal A|)$ 鞍点系统对任意 $\varepsilon>0$ 可逆，且对活跃 Jacobian \emph{无秩假设}；其极限是 $H$-加权最小范数解，在可检验的相容条件下为真导数，否则为\emph{一个选定的}广义导数。
 \item \emph{可认证的层接口。} 该层返回位姿、证书值、可行性违反量、活跃集与条件数，下游代码可据此对认证结果分支；我们在合成桌面实例与三个 BOP 数据集上进行层级别评估。
 \end{enumerate}

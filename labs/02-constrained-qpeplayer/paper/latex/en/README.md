@@ -17,10 +17,11 @@
 
 | item | value |
 |---|---|
-| last compile | exit 0, no undefined references, no overfull box |
-| main-text pages (Secs. 1–7) | 6 |
-| total pages | 16 |
+| last compile | 2026-11-28, exit 0, no undefined references, no overfull box |
+| main-text pages (Secs. 1–7) | text ends p9 (table floats on pp. 6–8) |
+| total pages | 22 |
 | tables / figures | 18 / 4 |
+| math revision | P2-1..P2-4 applied 2026-11-28 (Prop. 4.6, Thm. 4.2, exact $H_{\mathcal L}$, App. Lemmas A.1–A.3 and the ruled-line proof) |
 
 ## Files
 

@@ -112,7 +112,7 @@ C1 & $\mathbf R(\mathbf q)\mathbf p$ affine in $\mathbf v_2$; all four constrain
 C2 & augmented-Lagrangian active-set expansion equals direct evaluation & $3.6\times10^{-15}$ (correct $\kappa_{\mathcal A}$; $5.6\times10^{-1}$ with the naive one) \\
 C3 & $3\times3$ Schur complement; inner objective quartic in $\mathbf q$ & $6.2\times10^{-15}$; quartic fit relative error $2.0\times10^{-16}$ \\
 C4 & coefficient dimensions independent of $p$ & $p=256$: still $(10,10)/(3,10)/(3,3)$; assembly 4.4~ms single-core \\
-C5 & certificate behaviour & $\delta=J(\hat z)-d(\hat\mu)=-1.67\times10^{-11}$ (\textbf{negative}: the dual function is not a usable bound); $14\times14$ Shor $+$ Veronese $+$ inequalities $=0.0680069355$ vs $J(\hat z)=0.06800693548$, $\lambda_2/\lambda_1=2.2\times10^{-12}$ (\textbf{tight}) \\
+C5 & certificate behaviour & $\delta=J(\hat z)-d(\hat\mu)=-1.67\times10^{-11}$ (\textbf{negative but admissible}: $\delta\ge-\|\hat{\boldsymbol\mu}\|_1\nu$ with $\nu\le2.4\times10^{-11}$, so the dual function is a diagnostic, not a certificate); $14\times14$ Shor $+$ Veronese $+$ inequalities $=0.0680069355$ vs $J(\hat z)=0.06800693548$, $\lambda_2/\lambda_1=2.2\times10^{-12}$ (\textbf{tight}) \\
 C6 & ALM forward & feasible to $2.4\times10^{-11}$ in 30 outer iterations; penetration $18.94$~cm $\to2.4\times10^{-9}$~cm \\
 F1--F3 & FB ranges and zero set & $a\in[0,1]$, $b\le1$ feasible / $<2$ infeasible; $\mu g=-\varepsilon^2/2$ to $1.8\times10^{-15}$ \\
 F4 & saddle invertibility and conditioning & invertible for 200/200 random rank-deficient cases; $\log\kappa/\log\varepsilon=-2.00$ \\
@@ -451,6 +451,209 @@ The prediction holds in a specific and checkable form. (a) The augmentation does
 \end{itemize}
 
 \textbf{Further experiments.} Learned and remaining convex-layer baselines (SDPRLayers unconstrained and with $p$ slacks, Theseus), end-to-end training on the T1-network, T2 and T3 protocols, backward-pass and latency decomposition, and real-data scale-up beyond $n=90/72/84$ are the natural extensions of this study. The experiments above use the research implementation under \texttt{experiments/code/}; all result files, the aggregation script and the figure script are under \texttt{experiments/results/}, and the verification scripts and outputs are under \texttt{verify/}.
+
+\subsection{Danskin gluing lemma}\label{app:danskin}
+The ALM inner problem is solved with a frozen active set, but the outer objective must be differentiable across the surfaces where that set changes. The following lemma supplies the missing $C^1$ step; it is used in Sec.~\ref{sec:alm} and in the multi-start inner solver.
+\begin{lemma}[Global $C^1$ gluing of the eliminated ALM objective]\label{lem:danskin}
+Fix $\boldsymbol\mu\in\mathbb{R}^p_{\ge0}$ and $\rho>0$, let $\mathcal L_\rho$ be \eqref{eq:alm}, and assume $J_\theta(\mathbf q,\mathbf t)=\mathbf t^\top\mathbf G_0\mathbf t+2\boldsymbol\ell(\mathbf q)^\top\mathbf t+\alpha(\mathbf q)$ with $\mathbf G_0\succeq\lambda_{\min}(\mathbf G_0)\mathbf I_3\succ0$ and every $g_j$ affine in $\mathbf t$. Define $\phi_\rho(\mathbf q):=\min_{\mathbf t\in\mathbb{R}^3}\mathcal L_\rho(\mathbf q,\mathbf t,\boldsymbol\mu)$ and $\mathbf t^\star(\mathbf q):=\argmin_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf t,\boldsymbol\mu)$. Then:
+(i) for every $\mathbf q\in\mathbb S^3$, $\mathbf t\mapsto\mathcal L_\rho(\mathbf q,\mathbf t,\boldsymbol\mu)$ is $C^1$ and $2\lambda_{\min}(\mathbf G_0)$-strongly convex, so $\mathbf t^\star(\mathbf q)$ is unique;
+(ii) $\mathbf t^\star$ is Lipschitz on $\mathbb S^3$ and $\mathbf t^\star(\mathbb S^3)$ lies in a fixed compact ball $\overline{B(\mathbf 0,R)}$;
+(iii) $\phi_\rho\in C^1(\mathbb S^3)$ across active-set switching surfaces, with $\nabla_{E,\mathbf q}\phi_\rho(\mathbf q)=\nabla_{E,\mathbf q}\mathcal L_\rho(\mathbf q,\mathbf t^\star(\mathbf q),\boldsymbol\mu)$ and $\operatorname{grad}_{\mathbb S^3}\phi_\rho=(\mathbf I_4-\mathbf q\mathbf q^\top)\nabla_{E,\mathbf q}\phi_\rho$;
+(iv) on each open cell of constant active pattern, $\phi_\rho$ is $C^\infty$ and equals the $10$-dimensional quartic $\mathbf v_2^\top\mathbf M_{\mathcal A}\mathbf v_2+\kappa_{\mathcal A}$ of Theorem~\ref{thm:dim}.
+\end{lemma}
+\begin{proof}
+(i) The scalar hinge $\varphi(u)=\tfrac12[u]_+^2$ is convex and $C^1$ with $\varphi'(u)=[u]_+$, and $u_j(\mathbf q,\mathbf t)=\mu_j+\rho g_j$ is affine in $\mathbf t$; hence each penalty term is convex and $C^1$ in $\mathbf t$. Adding $\mathbf t^\top\mathbf G_0\mathbf t$ with $2\mathbf G_0\succeq2\lambda_{\min}(\mathbf G_0)\mathbf I_3$ gives strong convexity, hence a unique minimiser.
+
+(ii) First-order optimality at $\mathbf t^\star(\mathbf q)$ and strong monotonicity give
+\begin{equation}
+\begin{aligned}
+2\lambda_{\min}(\mathbf G_0)&\|\mathbf t^\star\|_2^2
+\le\big(\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf t^\star)-\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf 0)\big)^\top\mathbf t^\star\\
+&=-\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf 0)^\top\mathbf t^\star
+\le\|\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf 0)\|_2\|\mathbf t^\star\|_2 .
+\end{aligned}
+\end{equation}
+Since $\mathbf q\mapsto\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf 0)$ is continuous on the compact sphere, $\|\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q,\mathbf 0)\|_2\le C_0$, so $\|\mathbf t^\star(\mathbf q)\|_2\le R:=C_0/(2\lambda_{\min}(\mathbf G_0))$ for all $\mathbf q$. For $\mathbf q_1,\mathbf q_2$, the same inequality applied to the two optimality conditions yields
+\begin{equation}
+\begin{aligned}
+2\lambda_{\min}(\mathbf G_0)&\|\mathbf t^\star(\mathbf q_1)-\mathbf t^\star(\mathbf q_2)\|_2\\
+&\le\|\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q_1,\mathbf t^\star(\mathbf q_2))
+-\nabla_{\mathbf t}\mathcal L_\rho(\mathbf q_2,\mathbf t^\star(\mathbf q_2))\|_2 ,
+\end{aligned}
+\end{equation}
+and $\nabla_{\mathbf t}\mathcal L_\rho$ is Lipschitz on the compact set $\mathbb S^3\times\overline{B(\mathbf 0,R)}$ with some constant $L_1$, so $\mathbf t^\star$ is globally $L_1/(2\lambda_{\min}(\mathbf G_0))$-Lipschitz.
+
+(iii) On the compact ball, $\phi_\rho(\mathbf q)=\min_{\mathbf t\in\overline{B(\mathbf 0,R)}}\mathcal L_\rho(\mathbf q,\mathbf t,\boldsymbol\mu)$, and $\mathcal L_\rho$ and $\nabla_{E,\mathbf q}\mathcal L_\rho$ are jointly continuous there. The minimiser set is the singleton $\{\mathbf t^\star(\mathbf q)\}$, so the Danskin envelope theorem gives differentiability with $\nabla_{E,\mathbf q}\phi_\rho(\mathbf q)=\nabla_{E,\mathbf q}\mathcal L_\rho(\mathbf q,\mathbf t^\star(\mathbf q),\boldsymbol\mu)$. The right-hand side is continuous because $\nabla_{E,\mathbf q}\mathcal L_\rho$ is jointly continuous and $\mathbf t^\star$ is continuous, so $\phi_\rho\in C^1$. The Riemannian gradient is the orthogonal projection of the Euclidean one onto $T_{\mathbf q}\mathbb S^3$.
+
+(iv) Inside a cell the signs of $\mu_j+\rho g_j$ are fixed, so each hinge is either $0$ or $(\mu_j+\rho g_j)^2$; the objective is a quadratic-affine function of $(\mathbf v_2,\mathbf t)$ and the elimination of $\mathbf t$ is the exact Schur complement of Theorem~\ref{thm:dim}, which produces the stated quartic. Smoothness is then evident.
+\end{proof}
+
+\subsection{Exact Riemannian Lagrangian Hessian}\label{app:hessian}
+\begin{lemma}[Exact $H_{\mathcal L}$ with $O(p)$ constraint curvature]\label{lem:hessian}
+Let $\mathcal M=\mathbb S^3\times\mathbb R^3$ carry the product metric and let $\mathbf B(\mathbf q)=\operatorname{diag}(E(\mathbf q),\mathbf I_3)$ with $E(\mathbf q)^\top E(\mathbf q)=\mathbf I_3$ and $E(\mathbf q)E(\mathbf q)^\top=\mathbf I_4-\mathbf q\mathbf q^\top$. For $F\in C^2(\mathbb R^4\times\mathbb R^3)$ and $\delta\boldsymbol\xi\in\mathbb R^6$, the Riemannian Hessian of $F$ in the frame $\mathbf B$ is
+\begin{equation}
+\mathbf H_F=\mathbf B(\mathbf q)^\top\nabla_E^2F\,\mathbf B(\mathbf q)-\big(\mathbf q^\top\nabla_{E,\mathbf q}F\big)\operatorname{diag}(\mathbf I_3,\mathbf 0_3).
+\label{eq:hF}
+\end{equation}
+For $\mathcal L=J_\theta+\sum_{j=1}^p\mu_jg_j$ with $g_j=\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)+\mathbf b_j^\top\mathbf t$, this gives \eqref{eq:HL}. Moreover $\nabla_E^2g_j=\operatorname{diag}(2\mathbf Q_j,\mathbf 0_3)$ is a constant symmetric matrix and the assembly of \eqref{eq:HL} costs $O(p)$.
+\end{lemma}
+\begin{proof}
+Let $\gamma(s)=(\mathbf q(s),\mathbf t(s))$ be the geodesic of $\mathbb S^3\times\mathbb R^3$ with $\gamma(0)=(\mathbf q,\mathbf t)$ and $\dot\gamma(0)=(\mathbf v_q,\mathbf v_t)=\mathbf B(\mathbf q)\delta\boldsymbol\xi$. On the unit sphere $\mathbf q(s)=\cos(\|\mathbf v_q\|s)\mathbf q+\sin(\|\mathbf v_q\|s)\mathbf v_q/\|\mathbf v_q\|$ and $\mathbf t(s)=\mathbf t+s\mathbf v_t$, so
+\[
+\ddot\gamma(0)=\big(-\|\mathbf v_q\|_2^2\,\mathbf q,\ \mathbf 0\big)=\big(-\|\delta\boldsymbol\xi_q\|_2^2\,\mathbf q,\ \mathbf 0\big).
+\]
+By definition $\operatorname{Hess}_{\mathcal M}F[\dot\gamma(0),\dot\gamma(0)]=\frac{\mathrm d^2}{\mathrm ds^2}F(\gamma(s))|_{s=0}$, and the chain rule gives
+\begin{equation}
+\begin{aligned}
+\delta\boldsymbol\xi^\top\mathbf H_F\delta\boldsymbol\xi
+&=\dot\gamma(0)^\top\nabla_E^2F\,\dot\gamma(0)+\nabla_EF^\top\ddot\gamma(0)\\
+&=\delta\boldsymbol\xi^\top\big(\mathbf B^\top\nabla_E^2F\,\mathbf B\big)\delta\boldsymbol\xi-\big(\mathbf q^\top\nabla_{E,\mathbf q}F\big)\|\delta\boldsymbol\xi_q\|_2^2 .
+\end{aligned}
+\end{equation}
+Since $\delta\boldsymbol\xi$ is arbitrary and $\mathbf H_F$ is symmetric, \eqref{eq:hF} follows. Substituting $F=\mathcal L$ yields the constraint sum in \eqref{eq:HL}. For the quadratic-affine constraints, $\mathbf v_2(\mathbf q)$ is a basis of the quadratic monomials, so $\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)\equiv\mathbf q^\top\mathbf Q_j\mathbf q$ for a unique constant symmetric $\mathbf Q_j$; hence $\nabla_{E,\mathbf q}g_j=2\mathbf Q_j\mathbf q$, $\nabla_E^2g_j=\operatorname{diag}(2\mathbf Q_j,\mathbf 0_3)$ and, by Euler homogeneity, $\mathbf q^\top\nabla_{E,\mathbf q}g_j=2\mathbf q^\top\mathbf Q_j\mathbf q=2\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)$. Each active constraint contributes one constant $4\times4$ block and one scalar, so the assembly is $O(p)$ with no higher-order automatic differentiation.
+\end{proof}
+\textbf{Remark.} The Gauss--Newton surrogate $\mathbf H_{\rm tan}=\nabla^2_{\mathbf z}J_\theta$ drops both the constraint-curvature sum $\sum_j\mu_j\nabla_E^2g_j$ and the sphere second-fundamental-form term $-\big(\mathbf q^\top\nabla_{E,\mathbf q}\mathcal L\big)\operatorname{diag}(\mathbf I_3,\mathbf 0_3)$; on a tilt-cone diagnostic the surrogate deviates from the exact KKT derivative by $16.24\%$ in relative $2$-norm, and \eqref{eq:HL} removes this discrepancy by construction. Because $\mathbf H_{\mathcal L}$ can be indefinite, the saddle system uses the spectral clamp of Sec.~\ref{sec:fb}, so Theorem~\ref{thm:fb} and Proposition~\ref{prop:limit} keep their hypotheses.
+
+\subsection{Exact Schur/Rump proof of P2-Cert}\label{app:p2cert}
+We prove Theorem~\ref{thm:cert}. Let $\mathbf F$ be the folding map of \eqref{eq:p2cert}, so that $\mathbf y_{14}=[\mathbf v_2(\mathbf q);\mathbf t;1]=\mathbf F\mathbf y_{13}$ with $\mathbf y_{13}=[\mathbf v_2(\mathbf q);\mathbf t]$, and let $\tilde{\mathbf H}_{13}$ be the folded dual slack of \eqref{eq:p2cert}. Throughout, $\tilde{\boldsymbol\mu}=[\hat{\boldsymbol\mu}]_+\ge\mathbf 0$ and $\tilde{\boldsymbol\Gamma}=[\hat{\boldsymbol\Gamma}]_+\ge\mathbf 0$, and every Veronese row vanishes on a rank-one lift.
+
+\paragraph{Dual feasibility.} For any feasible $(\mathbf q,\mathbf t)$,
+\begin{equation}
+\begin{aligned}
+J_\theta(\mathbf q,\mathbf t)-\hat\lambda_0
+&=\mathbf y_{14}^\top\big(\mathbf Q_{\rm aug}-\hat\lambda_0\mathbf A_0\big)\mathbf y_{14}\\
+&\ge\mathbf y_{14}^\top\Big(\mathbf Q_{\rm aug}+\sum_j\tilde\mu_j\mathbf A_{g_j}-\sum_{i\le j}\tilde\Gamma_{ij}\mathbf A_{g_ig_j}\\
+&\qquad-\hat\lambda_0\mathbf A_0-\sum_k\hat\lambda_k\mathbf B_k\Big)\mathbf y_{14}
+=\mathbf y_{13}^\top\tilde{\mathbf H}_{13}\mathbf y_{13},
+\end{aligned}
+\label{eq:app_dual}
+\end{equation}
+because $g_j\le0$ with $\tilde\mu_j\ge0$ gives $\sum_j\tilde\mu_j g_j\le0$, and $g_ig_j\ge0$ with $\tilde\Gamma_{ij}\ge0$ gives $-\sum_{i\le j}\tilde\Gamma_{ij}g_ig_j\le0$.
+
+\paragraph{Case A.} If $\tilde{\mathbf H}_{tt}\succ0$, complete the square in $\mathbf t$:
+\begin{equation}
+\begin{aligned}
+\mathbf y_{13}^\top\tilde{\mathbf H}_{13}\mathbf y_{13}
+&=\mathbf v_2(\mathbf q)^\top\mathbf S_{10}\mathbf v_2(\mathbf q)\\
+&\quad+\big\|\tilde{\mathbf H}_{tt}^{1/2}\big(\mathbf t+\tilde{\mathbf H}_{tt}^{-1}\tilde{\mathbf H}_{Rt}^\top\mathbf v_2(\mathbf q)\big)\big\|_2^2\\
+&\ge\mathbf v_2(\mathbf q)^\top\mathbf S_{10}\mathbf v_2(\mathbf q),
+\end{aligned}
+\end{equation}
+where $\mathbf S_{10}=\tilde{\mathbf H}_{RR}-\tilde{\mathbf H}_{Rt}\tilde{\mathbf H}_{tt}^{-1}\tilde{\mathbf H}_{Rt}^\top$. If $\mathbf S_{10}-\delta_{\min}\mathbf I_{10}\succeq0$, then, using $\|\mathbf v_2(\mathbf q)\|_2^2=\|\mathbf q\|_2^4=1$,
+\begin{equation}
+\begin{aligned}
+\mathbf v_2(\mathbf q)^\top\mathbf S_{10}\mathbf v_2(\mathbf q)
+&=\delta_{\min}\|\mathbf v_2(\mathbf q)\|_2^2\\
+&\quad+\mathbf v_2(\mathbf q)^\top(\mathbf S_{10}-\delta_{\min}\mathbf I_{10})\mathbf v_2(\mathbf q)\ge\delta_{\min}.
+\end{aligned}
+\end{equation}
+Taking the minimum over $\mathbf q\in\mathbb S^3$ in \eqref{eq:app_dual} gives $d(\hat{\boldsymbol\mu})\ge\hat\lambda_0+\delta_{\min}$; no bound on $\|\mathbf t\|$ is used.
+
+\paragraph{Case B.} If $\tilde{\mathbf H}_{tt}$ is not positive definite, let $\delta_{13}=\lambda_{\min}(\tilde{\mathbf H}_{13})$. Then $\mathbf y_{13}^\top\tilde{\mathbf H}_{13}\mathbf y_{13}\ge\delta_{13}\|\mathbf y_{13}\|_2^2$ with $\|\mathbf y_{13}\|_2^2=1+\|\mathbf t\|_2^2$. If $\delta_{13}\le0$, use $\|\mathbf y_{13}\|_2^2\le1+R_t^2$; if $\delta_{13}>0$, use $\|\mathbf y_{13}\|_2^2\ge1$. Both cases are the single expression $\delta_{13}^-(1+R_t^2)+\delta_{13}^+$.
+
+\paragraph{The Rump margin.} It remains to certify $\lambda_{\min}$ in floating point.
+\begin{lemma}[Certified Cholesky margin]\label{lem:rump}
+Let $\mathbf S\in\mathbb S^n$, $\sigma\in\mathbb R$, $\mathbf B=\mathbf S-\sigma\mathbf I_n$, and $\tilde{\mathbf B}=\operatorname{fl}(\mathbf S-\sigma\mathbf I_n)=\mathbf B+\Delta_{\rm sub}$ with $\|\Delta_{\rm sub}\|_2\le\epsilon_{\rm sub}$; assume $\operatorname{tr}(\tilde{\mathbf B})\ge0$. Let $u=2^{-53}$ and $\gamma_{n+1}=(n+1)u/(1-(n+1)u)$. If the floating-point Cholesky factorisation of $\tilde{\mathbf B}$ runs to completion with factor $\hat{\mathbf R}$, then in exact arithmetic
+\begin{equation}
+\lambda_{\min}(\mathbf S)\ge\sigma-\delta_{\rm round},\qquad
+\delta_{\rm round}:=\frac{\gamma_{n+1}}{1-\gamma_{n+1}}\operatorname{tr}(\tilde{\mathbf B})+\epsilon_{\rm sub}.
+\label{eq:rump}
+\end{equation}
+\end{lemma}
+\begin{proof}
+By the backward-error theorem for Cholesky (Higham, \emph{Accuracy and Stability of Numerical Algorithms}, Thm.~10.3) there is a symmetric $\Delta\tilde{\mathbf B}$ with $\hat{\mathbf R}^\top\hat{\mathbf R}=\tilde{\mathbf B}+\Delta\tilde{\mathbf B}$ and $|\Delta\tilde{\mathbf B}|\le\gamma_{n+1}|\hat{\mathbf R}^\top||\hat{\mathbf R}|$ elementwise. By Cauchy--Schwarz, $|\Delta\tilde{\mathbf B}_{ij}|\le\gamma_{n+1}\|\hat{\mathbf R}_{:,i}\|_2\|\hat{\mathbf R}_{:,j}\|_2$, hence
+\begin{equation}
+\begin{aligned}
+\|\Delta\tilde{\mathbf B}\|_2\le\|\Delta\tilde{\mathbf B}\|_F
+&\le\gamma_{n+1}\Big(\sum_i\|\hat{\mathbf R}_{:,i}\|_2^2\Big)^{1/2}\\
+&\quad\times\Big(\sum_j\|\hat{\mathbf R}_{:,j}\|_2^2\Big)^{1/2}
+=\gamma_{n+1}\|\hat{\mathbf R}\|_F^2 .
+\end{aligned}
+\end{equation}
+Since $\|\hat{\mathbf R}\|_F^2=\operatorname{tr}(\tilde{\mathbf B})+\operatorname{tr}(\Delta\tilde{\mathbf B})\le\operatorname{tr}(\tilde{\mathbf B})+\gamma_{n+1}\|\hat{\mathbf R}\|_F^2$, we get $\|\hat{\mathbf R}\|_F^2\le\operatorname{tr}(\tilde{\mathbf B})/(1-\gamma_{n+1})$ and therefore $\|\Delta\tilde{\mathbf B}\|_2\le\gamma_{n+1}\operatorname{tr}(\tilde{\mathbf B})/(1-\gamma_{n+1})$. For any unit $\mathbf x$,
+\begin{equation}
+\begin{aligned}
+\mathbf x^\top(\mathbf S-\sigma\mathbf I_n)\mathbf x
+&=\|\hat{\mathbf R}\mathbf x\|_2^2-\mathbf x^\top(\Delta\tilde{\mathbf B}+\Delta_{\rm sub})\mathbf x\\
+&\ge-\big(\|\Delta\tilde{\mathbf B}\|_2+\epsilon_{\rm sub}\big),
+\end{aligned}
+\end{equation}
+and $\|\Delta\tilde{\mathbf B}\|_2+\epsilon_{\rm sub}\le\delta_{\rm round}$, so the last expression is at least $-\delta_{\rm round}$.
+so every eigenvalue of $\mathbf S-\sigma\mathbf I_n$ is at least $-\delta_{\rm round}$.
+\end{proof}
+In the implementation, Case A takes $\sigma=\min(0,\lambda_{\min}(\mathbf S_{10}))$ and applies Lemma~\ref{lem:rump} to $\mathbf S_{10}$; positive-definiteness of the shifted floating-point matrix is then checked by a successful Cholesky factorisation, and $\delta_{\min}=\sigma-\delta_{\rm round}$ is used in \eqref{eq:dsound}. Case B takes $\sigma=\min(0,\lambda_{\min}(\tilde{\mathbf H}_{13}))$ with $n=13$. This is the sense in which $d_{\rm sound}\le f^\star_{\rm global}$ holds in exact real arithmetic while all decisions are made on the floating-point matrix.
+
+\subsection{Complex ruled-line proof of the inner root count}\label{app:ruled}
+We prove the isotropic single-normal part of Theorem~\ref{thm:spectrum}. Write $\mathbf q=[q_0:q_1:q_2:q_3]\in\mathbb{CP}^3$ and let $f$ be a homogeneous quartic. By the Euler relation $\mathbf q^\top\nabla f=4f$, the radial component of $\nabla f$ is determined by $f$, so the critical scheme is the zero locus of the section $s(\mathbf q)=[\nabla f(\mathbf q)]$ of the rank-three bundle $E=\mathcal O_{\mathbb{CP}^3}(3)^{\oplus4}/\big(\mathbf q\cdot\mathcal O_{\mathbb{CP}^3}(2)\big)$. From $0\to\mathcal O(2)\xrightarrow{\cdot\mathbf q}\mathcal O(3)^{\oplus4}\to E\to0$,
+\begin{equation}
+c(E)=\frac{(1+3h)^4}{1+2h}=1+10h+34h^2+40h^3\pmod{h^4},
+\label{eq:cE}
+\end{equation}
+so a general quartic has $\int_{\mathbb{CP}^3}c_3(E)=40$ complex projective critical points.
+
+\paragraph{The two Hopf lines.} By $\mathrm{SO}(3)$ equivariance set $\mathbf n=\mathbf e_3$ and write $\mathbf u(\mathbf q)=R(\mathbf q)^\top\mathbf e_3$:
+\begin{equation}
+\begin{aligned}
+\mathbf u(\mathbf q)=\big(&2(q_1q_3-q_0q_2),\ 2(q_2q_3+q_0q_1),\\
+&q_0^2-q_1^2-q_2^2+q_3^2\big)^\top .
+\end{aligned}
+\end{equation}
+On the isotropic quadric $Q_{\rm iso}=\{\mathbf q^\top\mathbf q=0\}$, the third component and $\mathbf q^\top\mathbf q$ give $q_0^2+q_3^2=0$ and $q_1^2+q_2^2=0$; substituting into the first two components selects the two conjugate lines
+\begin{equation}
+\begin{aligned}
+\mathcal L&=\{[i s:1:-i:s]\}\cong\mathbb{CP}^1,\\
+\overline{\mathcal L}&=\{[-i s:1:i:s]\}\cong\mathbb{CP}^1 .
+\end{aligned}
+\end{equation}
+For $\mathcal L$ one has $q_0^2=-q_3^2$ and $q_2^2=-q_1^2$; the explicit substitution $\mathbf q_0(s)=(is,1,-i,s)$ gives $\mathbf q_0^\top\mathbf q_0=0$ and $\mathbf u(\mathbf q_0)=0$ identically. Hence $f=(\mathbf q^\top\mathbf q)(\mathbf q^\top\mathbf B\mathbf q)+\mathbf u^\top\mathbf C\mathbf u$ and all three terms of
+$\nabla f=2(\mathbf q^\top\mathbf B\mathbf q)\mathbf q+2(\mathbf q^\top\mathbf q)\mathbf B\mathbf q+2J_u(\mathbf q)^\top\mathbf C\mathbf u$
+vanish on $\mathcal L\cup\overline{\mathcal L}$: the section vanishes identically there, so each line is an excess component.
+
+\paragraph{Residual intersection number.} The normal bundle of a line in $\mathbb{CP}^3$ is $N_{\mathcal L/\mathbb{CP}^3}=\mathcal O_{\mathcal L}(1)^{\oplus2}$. Since $E|_{\mathcal L}$ is the quotient of $\mathcal O(3)^{\oplus4}$ by $\mathcal O(2)$, Fulton's residual-intersection formula gives the generic contact number of a section with $\mathcal L$ as
+\begin{equation}
+\int_{\mathcal L}\left\{\frac{c(E|_{\mathcal L})}{c(N_{\mathcal L/\mathbb{CP}^3})}\right\}_1
+=\left[\frac{(1+3t)^4}{(1+2t)(1+t)^2}\right]_{t^1}=12-2-2=8 .
+\end{equation}
+
+\paragraph{Four embedded rank-drop points.} Perturb $\mathcal L$ by $\mathbf q(s;\epsilon_1,\epsilon_2)=(is,1,-i,s)+\epsilon_1(1,0,0,0)+\epsilon_2(0,0,1,0)$. Direct expansion gives
+\begin{equation}
+\begin{aligned}
+\mathbf q^\top\mathbf q&=2i(s\epsilon_1-\epsilon_2)+O(\epsilon^2),\\
+\mathbf u&=\begin{pmatrix}2i\epsilon_1-2is\epsilon_2\\ 2\epsilon_1+2s\epsilon_2\\ 2is\epsilon_1+2i\epsilon_2\end{pmatrix}+O(\epsilon^2).
+\end{aligned}
+\end{equation}
+Along the direction $TQ_{\rm iso}|_{\mathcal L}$, i.e.\ $\epsilon_2=s\epsilon_1$ (which kills the first-order term of $\mathbf q^\top\mathbf q$),
+\begin{equation}
+\begin{aligned}
+\mathbf v(s)&:=\left.\frac{\partial\mathbf u}{\partial\epsilon_1}\right|_{\epsilon_2=s\epsilon_1}
+=\big(2i(1-s^2),\ 2(1+s^2),\ 4is\big)^\top,\\
+\mathbf v(s)^\top\mathbf v(s)&\equiv0 .
+\end{aligned}
+\end{equation}
+The normal derivative of the section along the transverse direction $\mathbf e_{\rm iso}=(1,0,s,0)$ is $2J_u(\mathbf q_0(s))^\top\mathbf C\mathbf v(s)$ modulo $\mathbf q_0(s)$, and the normal Jacobian drops rank exactly when $\mathbf v(s)^\top\mathbf C\mathbf v(s)=0$: taking the inner product with the tangent test vector $\mathbf t_1=(1,0,s,0)$, for which $J_u(\mathbf q_0)\mathbf t_1=\mathbf v(s)$, gives $\mathbf t_1^\top J_u^\top\mathbf C\mathbf v=\mathbf v^\top\mathbf C\mathbf v$. Since $\mathbf v(s)$ is quadratic in $s$, the equation
+\[
+P_4(s):=\mathbf v(s)^\top\mathbf C\mathbf v(s)=0
+\]
+is quartic on $\mathcal L\cong\mathbb{CP}^1$; it is not identically zero unless $\mathbf C\propto\mathbf I_3$, because $\mathbf v(s)^\top\mathbf v(s)\equiv0$ and a symmetric form vanishing on the null quadric is a multiple of the defining form. For general $\mathbf C$ it has four distinct roots. At each root the normal derivative loses one rank, which by Fulton's embedded-point formula contributes $+1$ to the intersection multiplicity; hence each line absorbs $8+4=12$ projective roots, and the conjugate pair absorbs $24$.
+
+\paragraph{No other roots on $Q_{\rm iso}$.} Let $\mathbf q\in Q_{\rm iso}\setminus(\mathcal L\cup\overline{\mathcal L})$, so $\mathbf u:=\mathbf u(\mathbf q)\ne0$ and $\mathbf u^\top\mathbf u=(\mathbf q^\top\mathbf q)^2=0$. Stationarity reduces to $J_u(\mathbf q)^\top\mathbf C\mathbf u=\lambda\mathbf q$. For any $\delta\mathbf q\in T_{\mathbf q}Q_{\rm iso}$ we have $\mathbf q^\top\delta\mathbf q=0$, so $(\mathbf C\mathbf u)^\top\mathrm d\mathbf u[\delta\mathbf q]=0$. Since $\mathbf u\ne0$, $\mathrm d\mathbf u(T_{\mathbf q}Q_{\rm iso})=\mathbf u^\perp\subset\mathbb C^3$, hence $\mathbf C\mathbf u\in(\mathbf u^\perp)^\perp=\mathbb C\mathbf u$ and $\mathbf u$ would be a nonzero null eigenvector of $\mathbf C$. A general real symmetric $\mathbf C$ has real eigenvectors of positive norm, so this is impossible and there is no isolated root on $Q_{\rm iso}$ outside the two lines. Therefore the saturated count is $40-2\times(8+4)=\mathbf{16}$, i.e.\ $32$ antipodal roots on $\mathbb S^3$.
+
+\paragraph{The rank-one case.} Let $\mathbf C=\tfrac{\rho}{2}\mathbf a\mathbf a^\top$, so $\mathbf a^\top\mathbf u(\mathbf q)=\mathbf q^\top\mathbf Q\mathbf q$ with $\mathbf Q=\mathbf Q_{\mathbf n,\mathbf a}$ a symmetric orthogonal involution: $\mathbf Q^2=\mathbf I_4$, $\operatorname{tr}\mathbf Q=0$, hence eigenvalues $(+1,+1,-1,-1)$. For a stationary point with $\mathbf q^\top\mathbf q=1$ put $s=\rho(\mathbf q^\top\mathbf Q\mathbf q)$; stationarity is equivalent to
+\begin{equation}
+(\mathbf B+s\mathbf Q)\mathbf q=\lambda\mathbf q,\qquad \rho(\mathbf q^\top\mathbf Q\mathbf q)=s,\qquad \mathbf q^\top\mathbf q=1 .
+\end{equation}
+With $P(s,\lambda)=\det(\mathbf B+s\mathbf Q-\lambda\mathbf I_4)$, the Hellmann--Feynman identity $\mathrm d\lambda/\mathrm ds=\mathbf q^\top\mathbf Q\mathbf q/\mathbf q^\top\mathbf q=s/\rho$ turns the system into the intersection of the two plane quartics
+\begin{equation}
+P(s,\lambda)=0,\qquad \Phi(s,\lambda):=s\frac{\partial P}{\partial\lambda}+\rho\frac{\partial P}{\partial s}=0 .
+\end{equation}
+By Bézout their intersection has $4\times4=16$ points with multiplicity. At infinity $z=0$,
+\begin{equation}
+\begin{aligned}
+P_4(s,\lambda)&=\det(s\mathbf Q-\lambda\mathbf I_4)=(s-\lambda)^2(s+\lambda)^2,\\
+\Phi_4(s,\lambda)&=s\frac{\partial P_4}{\partial\lambda}=-4s\lambda(s-\lambda)(s+\lambda),
+\end{aligned}
+\end{equation}
+so the two curves meet only at $(1:1:0)$ and $(1:-1:0)$. There $P_4$ has a double point (multiplicity $2$) while $\Phi_4$ is smooth and transverse to both branches for general $\mathbf B$, so each has intersection multiplicity $2$; the total at infinity is $4$. Hence there are $16-4=\mathbf{12}$ finite complex solutions, i.e.\ $24$ antipodal roots on $\mathbb S^3$, which is the rank-one entry of Theorem~\ref{thm:spectrum}. The two-distinct-normal count $32$ and the anisotropic/PnP count $40$ are the saturated counts of the same construction with two rulings and with no excess component; the numerical census is in App.~\ref{app:deriv}.
 
 \subsection{Supplementary derivations}\label{app:deriv}
 \textbf{FB sensitivity limits.} At a complementarity point the smoothed stationarity $a=\partial_\mu\varphi_\varepsilon$ and $b=-\partial_g\varphi_\varepsilon$ behave as follows. For a strongly active constraint ($\mu_j>0$, $g_j=0$), $a\to\varepsilon^2/(2\mu_j^2)\to0$ and $b\to1$. For a strictly inactive constraint ($\mu_j=0$, $g_j<0$), $a\to1$ and $b\to\varepsilon^2/(2g_j^2)\to0$. For a weakly active constraint ($\mu_j=g_j=0$), $a=b=1$, and the FB residual is $-\varepsilon$. These limits give the conditioning law $\kappa(\mathbf S)\asymp1/\varepsilon^2$ of Thm.~\ref{thm:fb}: $\mathbf D_a=\operatorname{diag}(a_j/b_j)$ vanishes at strongly active rows and blows up at inactive ones.
