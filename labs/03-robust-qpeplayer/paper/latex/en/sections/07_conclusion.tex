@@ -1,0 +1,15 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented Robust-QPEPLayer, a RANSAC-free differentiable pose layer that combines BR duality,
+GNC, and a constant-size QPEP inner solver, and differentiates the robust fixed point exactly. The
+theory isolates two terms that a natural implementation drops: the redescending curvature
+correction (the Schur complement of the BR weight block) and the unit-quaternion constraint
+multiplier. The one-dimensional sign-flip proposition gives a rigorous setting in which the
+frozen-weight gradient has the wrong sign, and the $O(\|\mathbf{r}\|^{-4})$ bound quantifies gradient
+decay for a gross outlier. The exact IFT Jacobian matches central finite differences at
+$3$--$5\times10^{-8}$, whereas frozen weights give a boundary relative error of $1.07$ and a cosine
+of $0.234$. Across synthetic data, ModelNet40/10, eight 3DMatch scenes, two KITTI drives, 11 odometry
+sequences 00--10, and four In-The-Dark runs, GNC-GM matches fixed-1000 RANSAC success through $70\%$
+random outliers at $22$--$32\times$ lower runtime, and the In-The-Dark errors are
+$0.078$--$0.150^\circ$ and $0.007$--$0.020$~m.

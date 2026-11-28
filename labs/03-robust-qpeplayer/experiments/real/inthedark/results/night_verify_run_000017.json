@@ -1,0 +1,234 @@
+{
+  "run": "/mnt/storage1/syk/data/utias_in_the_dark/run_000017",
+  "teach": "/mnt/storage1/syk/data/utias_in_the_dark/teach_meta",
+  "protocol": {
+    "comp": {
+      "run": "run_000017",
+      "convention": "ba",
+      "n_vertices": 3771,
+      "n_spatial_rows": 3771,
+      "n_teach_links": 1115,
+      "multi_match": 0
+    },
+    "n_pairs": 3769,
+    "n_skipped": 1,
+    "camera_vehicle": [
+      [
+        0.000796327,
+        -1.0,
+        0.0,
+        0.119873
+      ],
+      [
+        -0.330472,
+        -0.000263164,
+        -0.943816,
+        1.49473
+      ],
+      [
+        0.943815,
+        0.000751586,
+        -0.330472,
+        0.354804
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "convention": "ba"
+  },
+  "pairs": [
+    {
+      "pair": "2713->2714",
+      "n_corr": 229,
+      "gt_trans": 0.41345544110114635,
+      "gt_rot_deg": 0.7220572561851671,
+      "reproj_gt_px": 0.5902123583830863,
+      "reproj_inverse_px": 30.322189367840103,
+      "reproj_identity_px": 16.579268819880134,
+      "reproj_vehicle_frame_px": 33.565370800843795,
+      "median_row_dy_px": 0.4796142578125,
+      "median_disparity_px": 25.031661987304688,
+      "depth_med_m": 3.7174082908355692,
+      "dt_s": 1.000001024,
+      "img_shape": [
+        384,
+        512
+      ]
+    },
+    {
+      "pair": "2714->2715",
+      "n_corr": 315,
+      "gt_trans": 0.17980724259699554,
+      "gt_rot_deg": 0.08169407982392629,
+      "reproj_gt_px": 0.6507790803455408,
+      "reproj_inverse_px": 19.455370067415828,
+      "reproj_identity_px": 10.355553690935835,
+      "reproj_vehicle_frame_px": 18.607816418360517,
+      "median_row_dy_px": 0.4798164367675781,
+      "median_disparity_px": 26.761695861816406,
+      "depth_med_m": 3.477093091763587,
+      "dt_s": 0.437500928,
+      "img_shape": [
+        384,
+        512
+      ]
+    },
+    {
+      "pair": "2715->2716",
+      "n_corr": 312,
+      "gt_trans": 0.15534496012749768,
+      "gt_rot_deg": 0.2464963865171498,
+      "reproj_gt_px": 0.7538877589344356,
+      "reproj_inverse_px": 13.804065759364828,
+      "reproj_identity_px": 7.096558081989253,
+      "reproj_vehicle_frame_px": 15.858073032574598,
+      "median_row_dy_px": 0.48613739013671875,
+      "median_disparity_px": 25.712669372558594,
+      "depth_med_m": 3.618951671517588,
+      "dt_s": 0.375001088,
+      "img_shape": [
+        384,
+        512
+      ]
+    },
+    {
+      "pair": "2716->2717",
+      "n_corr": 299,
+      "gt_trans": 0.22034342100230545,
+      "gt_rot_deg": 0.33484155084882955,
+      "reproj_gt_px": 0.5942407137142434,
+      "reproj_inverse_px": 18.648004145753134,
+      "reproj_identity_px": 9.753087230059105,
+      "reproj_vehicle_frame_px": 21.59376208632111,
+      "median_row_dy_px": 0.5130386352539062,
+      "median_disparity_px": 25.480072021484375,
+      "depth_med_m": 3.651987628863032,
+      "dt_s": 0.5,
+      "img_shape": [
+        384,
+        512
+      ]
+    },
+    {
+      "pair": "2717->2718",
+      "n_corr": 292,
+      "gt_trans": 0.21631158569811337,
+      "gt_rot_deg": 0.3858889109547545,
+      "reproj_gt_px": 0.5357287333132321,
+      "reproj_inverse_px": 23.942247476399686,
+      "reproj_identity_px": 12.436039606775507,
+      "reproj_vehicle_frame_px": 20.253493704634693,
+      "median_row_dy_px": 0.4998779296875,
+      "median_disparity_px": 26.5513916015625,
+      "depth_med_m": 3.5046339265895208,
+      "dt_s": 0.499998976,
+      "img_shape": [
+        384,
+        512
+      ]
+    },
+    {
+      "pair": "2718->2719",
+      "n_corr": 297,
+      "gt_trans": 0.21117916884640603,
+      "gt_rot_deg": 0.7463579090123295,
+      "reproj_gt_px": 0.5225702122985548,
+      "reproj_inverse_px": 24.600223589134302,
+      "reproj_identity_px": 13.036222945699082,
+      "reproj_vehicle_frame_px": 17.13589283585928,
+      "median_row_dy_px": 0.494110107421875,
+      "median_disparity_px": 27.13238525390625,
+      "depth_med_m": 3.429588181584705,
+      "dt_s": 0.500002048,
+      "img_shape": [
+        384,
+        512
+      ]
+    },
+    {
+      "pair": "2719->2720",
+      "n_corr": 305,
+      "gt_trans": 0.25281311089873404,
+      "gt_rot_deg": 1.4735091402838587,
+      "reproj_gt_px": 0.5440447955965674,
+      "reproj_inverse_px": 28.95362531094151,
+      "reproj_identity_px": 15.312869278800038,
+      "reproj_vehicle_frame_px": 20.536835211429164,
+      "median_row_dy_px": 0.4633331298828125,
+      "median_disparity_px": 26.235694885253906,
+      "depth_med_m": 3.5468055339102733,
+      "dt_s": 0.56251008,
+      "img_shape": [
+        384,
+        512
+      ]
+    },
+    {
+      "pair": "2720->2721",
+      "n_corr": 291,
+      "gt_trans": 0.2487457911064422,
+      "gt_rot_deg": 1.1122960257151053,
+      "reproj_gt_px": 0.4690126935874804,
+      "reproj_inverse_px": 30.50203006546139,
+      "reproj_identity_px": 15.85676611698276,
+      "reproj_vehicle_frame_px": 19.78667215015474,
+      "median_row_dy_px": 0.4659576416015625,
+      "median_disparity_px": 26.813636779785156,
+      "depth_med_m": 3.470357585926305,
+      "dt_s": 0.624992,
+      "img_shape": [
+        384,
+        512
+      ]
+    },
+    {
+      "pair": "2721->2722",
+      "n_corr": 264,
+      "gt_trans": 0.2661428271278973,
+      "gt_rot_deg": 1.0740671948806781,
+      "reproj_gt_px": 0.49548386856234117,
+      "reproj_inverse_px": 28.445290377794763,
+      "reproj_identity_px": 15.19133539193496,
+      "reproj_vehicle_frame_px": 26.08789529618221,
+      "median_row_dy_px": 0.4909515380859375,
+      "median_disparity_px": 27.145111083984375,
+      "depth_med_m": 3.4279803651236946,
+      "dt_s": 0.624999936,
+      "img_shape": [
+        384,
+        512
+      ]
+    },
+    {
+      "pair": "2722->2723",
+      "n_corr": 241,
+      "gt_trans": 0.21374072543895858,
+      "gt_rot_deg": 0.46417952435204224,
+      "reproj_gt_px": 0.7510003621574982,
+      "reproj_inverse_px": 19.70543588160843,
+      "reproj_identity_px": 10.207824795986491,
+      "reproj_vehicle_frame_px": 23.50836476189395,
+      "median_row_dy_px": 0.487945556640625,
+      "median_disparity_px": 28.999786376953125,
+      "depth_med_m": 3.208744595406797,
+      "dt_s": 0.500001024,
+      "img_shape": [
+        384,
+        512
+      ]
+    }
+  ],
+  "checks": {
+    "documented_512x384": true,
+    "rows_aligned": true,
+    "gt_beats_inverse": true,
+    "gt_beats_identity": true,
+    "camera_conjugation_beats_vehicle": true,
+    "gt_reproj_under_2px": true
+  },
+  "skipped": 1
+}

@@ -1,0 +1,5 @@
+p=0.0: Kabsch succ=1.00 p50=0.05ms | RANSAC-1000 succ=1.00 p50=0.20ms | RANSAC-adaptive succ=1.00 p50=0.18ms | IRLS-GM succ=1.00 p50=1.86ms | GNC-GM succ=1.00 p50=0.42ms
+p=0.3: Kabsch succ=0.00 p50=0.06ms | RANSAC-1000 succ=1.00 p50=56.22ms | RANSAC-adaptive succ=1.00 p50=1.12ms | IRLS-GM succ=1.00 p50=1.89ms | GNC-GM succ=1.00 p50=1.71ms
+p=0.5: Kabsch succ=0.00 p50=0.05ms | RANSAC-1000 succ=1.00 p50=54.89ms | RANSAC-adaptive succ=1.00 p50=2.99ms | IRLS-GM succ=1.00 p50=1.89ms | GNC-GM succ=1.00 p50=1.72ms
+p=0.7: Kabsch succ=0.00 p50=0.05ms | RANSAC-1000 succ=1.00 p50=54.90ms | RANSAC-adaptive succ=1.00 p50=14.06ms | IRLS-GM succ=1.00 p50=1.92ms | GNC-GM succ=1.00 p50=1.73ms
+done in 4.1s -> results/reference_n20.json

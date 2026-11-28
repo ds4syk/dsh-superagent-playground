@@ -1,0 +1,21 @@
+{
+  "dataset": "lmo",
+  "frames": [
+    "000002"
+  ],
+  "max_img": 8,
+  "obj_ids": [
+    8,
+    12,
+    5
+  ],
+  "plane_calib": "always",
+  "seed": 20261127,
+  "n_trials": 72,
+  "n_poses": 24,
+  "wall_s": 154.38763796491548,
+  "t_plane_mean_s": 0.09491985013786082,
+  "t_solve_mean_s": 0.37919556023553014,
+  "t_cert_mean_s": 0.6846168642126335,
+  "t_cert_rlt_mean_s": 1.0323902679762493
+}

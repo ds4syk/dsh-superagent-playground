@@ -1,0 +1,9 @@
+srun: job 3129 queued and waiting for resources
+srun: job 3129 has been allocated resources
+0->1: |t|=1.317 m, rot=0.37 deg, fwd NN=0.121 m, inv NN=0.269 m, dir=i->j
+7->8: |t|=1.493 m, rot=0.16 deg, fwd NN=0.140 m, inv NN=0.268 m, dir=i->j
+14->15: |t|=1.528 m, rot=0.61 deg, fwd NN=0.136 m, inv NN=0.228 m, dir=i->j
+21->22: |t|=1.567 m, rot=0.47 deg, fwd NN=0.122 m, inv NN=0.192 m, dir=i->j
+35->36: |t|=1.557 m, rot=0.35 deg, fwd NN=0.108 m, inv NN=0.136 m, dir=i->j
+63->64: |t|=1.808 m, rot=0.14 deg, fwd NN=0.122 m, inv NN=0.140 m, dir=i->j
+wrote /mnt/storage1/syk/.superagent-work/wt-p3-kitti2/labs/03-robust-qpeplayer/experiments/real/kitti2/results/verify_kitti2.json

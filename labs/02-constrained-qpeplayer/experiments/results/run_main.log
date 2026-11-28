@@ -1,0 +1,110 @@
+====================================================================================================
+Constrained-QPEPLayer main experiment  |  N_TRIALS=50  LAM_MAIN=1000
+p ∈ [8, 16, 32, 64] ; noise cells ['n000_b000', 'n005_b040', 'n010_b080', 'n020_b120']
+  [main_p8] 10/50  (5.7s)
+  [main_p8] 20/50  (11.4s)
+  [main_p8] 30/50  (17.2s)
+  [main_p8] 40/50  (23.0s)
+  [main_p8] 50/50  (28.8s)
+  ---- main_p8 summary (p=8 noise=0.010 bias=0.080) ----
+   unc   pen= 126.14±196.16 mm (rate  100%) rot= 8.67±24.45 deg trans=123.36±195.82 mm feas=  0% cert=  0% time= 142.5 ms
+   soft  pen=   0.08±  0.17 mm (rate    0%) rot= 6.04±3.62 deg trans= 20.72± 51.84 mm feas= 42% cert=  0% time=  96.7 ms
+   proj  pen=   0.00±  0.00 mm (rate    0%) rot= 7.81±24.47 deg trans=  9.53±  4.59 mm feas=100% cert=  0% time=  11.7 ms
+   alm   pen=   0.00±  0.00 mm (rate    0%) rot= 4.01±1.49 deg trans= 10.62±  3.14 mm feas=100% cert=100% time= 270.4 ms
+   sdp  tight=100% sound=100% max λ2/λ1=1.42e-09  time=52.9 ms
+  [saved] results/raw_main.json  (28.8s elapsed)
+  [main_p16] 10/50  (5.5s)
+  [main_p16] 20/50  (11.5s)
+  [main_p16] 30/50  (17.8s)
+  [main_p16] 40/50  (24.0s)
+  [main_p16] 50/50  (30.1s)
+  ---- main_p16 summary (p=16 noise=0.010 bias=0.080) ----
+   unc   pen= 126.14±196.16 mm (rate  100%) rot= 8.67±24.45 deg trans=123.36±195.82 mm feas=  0% cert=  0% time= 144.4 ms
+   soft  pen=   0.02±  0.04 mm (rate    0%) rot=10.07±21.28 deg trans= 23.78± 74.31 mm feas= 38% cert=  0% time=  95.2 ms
+   proj  pen=   0.00±  0.00 mm (rate    0%) rot= 7.81±24.47 deg trans=  9.53±  4.59 mm feas=100% cert=  0% time=  11.8 ms
+   alm   pen=   0.00±  0.00 mm (rate    0%) rot= 4.01±1.49 deg trans= 10.62±  3.14 mm feas=100% cert=100% time= 290.8 ms
+   sdp  tight=100% sound=100% max λ2/λ1=1.03e-09  time=57.6 ms
+  [saved] results/raw_main.json  (58.9s elapsed)
+  [main_p32] 10/50  (6.0s)
+  [main_p32] 20/50  (12.6s)
+  [main_p32] 30/50  (18.9s)
+  [main_p32] 40/50  (25.0s)
+  [main_p32] 50/50  (31.3s)
+  ---- main_p32 summary (p=32 noise=0.010 bias=0.080) ----
+   unc   pen= 126.14±196.16 mm (rate  100%) rot= 8.67±24.45 deg trans=123.36±195.82 mm feas=  0% cert=  0% time= 145.9 ms
+   soft  pen=   0.02±  0.03 mm (rate    0%) rot=10.46±23.33 deg trans= 24.99± 83.32 mm feas= 42% cert=  0% time=  98.7 ms
+   proj  pen=   0.00±  0.00 mm (rate    0%) rot= 7.81±24.47 deg trans=  9.53±  4.59 mm feas=100% cert=  0% time=  11.8 ms
+   alm   pen=   0.00±  0.00 mm (rate    0%) rot= 4.01±1.49 deg trans= 10.62±  3.14 mm feas=100% cert=100% time= 296.6 ms
+   sdp  tight=100% sound=100% max λ2/λ1=8.43e-10  time=70.0 ms
+  [saved] results/raw_main.json  (90.2s elapsed)
+  [main_p64] 10/50  (6.1s)
+  [main_p64] 20/50  (12.4s)
+  [main_p64] 30/50  (18.7s)
+  [main_p64] 40/50  (25.2s)
+  [main_p64] 50/50  (31.5s)
+  ---- main_p64 summary (p=64 noise=0.010 bias=0.080) ----
+   unc   pen= 126.14±196.16 mm (rate  100%) rot= 8.67±24.45 deg trans=123.36±195.82 mm feas=  0% cert=  0% time= 142.6 ms
+   soft  pen=   0.02±  0.06 mm (rate    0%) rot= 8.31±11.57 deg trans= 25.28± 87.09 mm feas= 50% cert=  0% time=  97.6 ms
+   proj  pen=   0.00±  0.00 mm (rate    0%) rot= 7.81±24.47 deg trans=  9.53±  4.59 mm feas=100% cert=  0% time=  12.0 ms
+   alm   pen=   0.00±  0.00 mm (rate    0%) rot= 4.01±1.49 deg trans= 10.62±  3.14 mm feas=100% cert=100% time= 288.9 ms
+   sdp  tight=100% sound=100% max λ2/λ1=1.51e-09  time=85.5 ms
+  [saved] results/raw_main.json  (121.7s elapsed)
+  [noise_n000_b000] 10/50  (4.3s)
+  [noise_n000_b000] 20/50  (8.7s)
+  [noise_n000_b000] 30/50  (12.8s)
+  [noise_n000_b000] 40/50  (16.6s)
+  [noise_n000_b000] 50/50  (20.5s)
+  ---- noise_n000_b000 summary (p=16 noise=0.000 bias=0.000) ----
+   unc   pen=   0.00±  0.00 mm (rate    0%) rot= 0.00±0.00 deg trans=  7.07±  0.00 mm feas=100% cert=100% time= 143.9 ms
+   soft  pen=   0.00±  0.00 mm (rate    0%) rot= 0.00±0.00 deg trans=  7.07±  0.00 mm feas=100% cert=100% time=  84.4 ms
+   proj  pen=   0.00±  0.00 mm (rate    0%) rot= 0.00±0.00 deg trans=  7.07±  0.00 mm feas=100% cert=100% time=  88.6 ms
+   alm   pen=   0.00±  0.00 mm (rate    0%) rot= 0.00±0.00 deg trans=  7.07±  0.00 mm feas=100% cert=100% time=  29.5 ms
+   sdp  tight=100% sound=100% max λ2/λ1=5.55e-10  time=62.5 ms
+  [saved] results/raw_main.json  (142.3s elapsed)
+  [noise_n005_b040] 10/50  (5.4s)
+  [noise_n005_b040] 20/50  (11.2s)
+  [noise_n005_b040] 30/50  (17.4s)
+  [noise_n005_b040] 40/50  (23.1s)
+  [noise_n005_b040] 50/50  (28.6s)
+  ---- noise_n005_b040 summary (p=16 noise=0.005 bias=0.040) ----
+   unc   pen=  45.25± 10.54 mm (rate  100%) rot= 2.55±1.26 deg trans= 45.19±  9.62 mm feas=  0% cert=  0% time= 146.6 ms
+   soft  pen=   0.03±  0.07 mm (rate    0%) rot= 5.86±3.50 deg trans= 10.38±  4.73 mm feas= 24% cert=  0% time=  98.0 ms
+   proj  pen=   0.00±  0.00 mm (rate    0%) rot= 2.44±1.02 deg trans=  7.83±  1.28 mm feas=100% cert=  0% time=  11.7 ms
+   alm   pen=   0.00±  0.00 mm (rate    0%) rot= 2.53±1.01 deg trans=  8.55±  1.66 mm feas=100% cert=100% time= 253.2 ms
+   sdp  tight=100% sound=100% max λ2/λ1=8.56e-10  time=61.2 ms
+  [saved] results/raw_main.json  (170.9s elapsed)
+  [noise_n010_b080] 10/50  (5.4s)
+  [noise_n010_b080] 20/50  (11.3s)
+  [noise_n010_b080] 30/50  (17.2s)
+  [noise_n010_b080] 40/50  (23.1s)
+  [noise_n010_b080] 50/50  (29.0s)
+  ---- noise_n010_b080 summary (p=16 noise=0.010 bias=0.080) ----
+   unc   pen= 126.14±196.16 mm (rate  100%) rot= 8.67±24.45 deg trans=123.36±195.82 mm feas=  0% cert=  0% time= 141.0 ms
+   soft  pen=   0.02±  0.04 mm (rate    0%) rot=10.07±21.28 deg trans= 23.78± 74.31 mm feas= 38% cert=  0% time=  92.1 ms
+   proj  pen=   0.00±  0.00 mm (rate    0%) rot= 7.81±24.47 deg trans=  9.53±  4.59 mm feas=100% cert=  0% time=  11.5 ms
+   alm   pen=   0.00±  0.00 mm (rate    0%) rot= 4.01±1.49 deg trans= 10.62±  3.14 mm feas=100% cert=100% time= 277.7 ms
+   sdp  tight=100% sound=100% max λ2/λ1=1.03e-09  time=56.7 ms
+  [saved] results/raw_main.json  (200.0s elapsed)
+  [noise_n020_b120] 10/50  (5.6s)
+  [noise_n020_b120] 20/50  (11.8s)
+  [noise_n020_b120] 30/50  (17.0s)
+  [noise_n020_b120] 40/50  (23.1s)
+  [noise_n020_b120] 50/50  (29.0s)
+  ---- noise_n020_b120 summary (p=16 noise=0.020 bias=0.120) ----
+   unc   pen= 417.60±491.95 mm (rate  100%) rot=41.00±64.55 deg trans=405.87±490.54 mm feas=  0% cert=  0% time= 136.6 ms
+   soft  pen=   0.06±  0.12 mm (rate    0%) rot=15.30±22.34 deg trans=165.10±740.98 mm feas= 38% cert=  0% time=  85.8 ms
+   proj  pen=   0.00±  0.00 mm (rate    0%) rot=38.16±65.68 deg trans= 20.61± 21.84 mm feas=100% cert=  0% time=  11.9 ms
+   alm   pen=   0.00±  0.00 mm (rate    0%) rot= 5.95±2.56 deg trans= 13.92±  5.48 mm feas=100% cert=100% time= 286.6 ms
+   sdp  tight=100% sound=100% max λ2/λ1=1.08e-09  time=57.6 ms
+  [saved] results/raw_main.json  (229.1s elapsed)
+
+=== 软惩罚 Pareto（p=16, noise=0.01, bias=0.08, 50 trials × 5 λ） ===
+  pareto 10/50 (5.9s)
+  pareto 20/50 (11.8s)
+  pareto 30/50 (17.9s)
+  pareto 40/50 (23.9s)
+  pareto 50/50 (29.9s)
+  [saved] results/raw_pareto.json
+
+总耗时 259.0 s ; 输出 results/raw_main.json / results/raw_pareto.json
+EXIT=0

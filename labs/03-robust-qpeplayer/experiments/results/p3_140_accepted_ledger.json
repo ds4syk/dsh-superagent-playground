@@ -1,0 +1,13 @@
+{
+  "total_accepted": 140,
+  "prior_accepted": 70,
+  "new_rounds": 70,
+  "new_round_source": "rounds_2026-11-27.md rows 73-142",
+  "extra_validation_not_counted": {
+    "total": 630,
+    "anisotropic": 550,
+    "theseus_real": 40,
+    "learned_refine": 40
+  },
+  "note": "Corrected budget: 140 accepted rounds. The 630-unit grid is extra evidence, not count."
+}

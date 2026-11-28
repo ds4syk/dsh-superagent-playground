@@ -1,0 +1,145 @@
+{
+  "config": {
+    "scenes": [
+      "7-scenes-redkitchen",
+      "sun3d-home_at-home_at_scan1_2013_jan_1"
+    ],
+    "n": 300,
+    "c": 0.05,
+    "tau": 0.06,
+    "voxel": 0.03,
+    "fpfh_radius": 0.2,
+    "n_probe": 1500,
+    "n_trials": 10,
+    "methods": [
+      "Kabsch",
+      "RANSAC-1000",
+      "RANSAC-adaptive",
+      "IRLS-GM",
+      "GNC-GM"
+    ],
+    "note": "FPFH mutual NN + pairwise-distance consistency; GT only for eval"
+  },
+  "rows": [
+    {
+      "scene": "7-scenes-redkitchen",
+      "method": "Kabsch",
+      "n": 60,
+      "mean_natural_inlier": 0.8004444444444445,
+      "success": 1.0,
+      "rot_median": 0.9184611618888008,
+      "rot_p90": 2.8504520769930934,
+      "trans_median": 0.012957602532070915,
+      "time_ms_p50": 0.16984762623906136,
+      "time_ms_p95": 0.23367526009678838
+    },
+    {
+      "scene": "7-scenes-redkitchen",
+      "method": "RANSAC-1000",
+      "n": 60,
+      "mean_natural_inlier": 0.8004444444444445,
+      "success": 1.0,
+      "rot_median": 0.8993547503407195,
+      "rot_p90": 1.4449541480189592,
+      "trans_median": 0.013579621419558647,
+      "time_ms_p50": 71.68166828341782,
+      "time_ms_p95": 104.42713112570343
+    },
+    {
+      "scene": "7-scenes-redkitchen",
+      "method": "RANSAC-adaptive",
+      "n": 60,
+      "mean_natural_inlier": 0.8004444444444445,
+      "success": 1.0,
+      "rot_median": 0.9542432212945366,
+      "rot_p90": 1.5971494299853122,
+      "trans_median": 0.014229570509867517,
+      "time_ms_p50": 0.7359778974205256,
+      "time_ms_p95": 6.360690901055931
+    },
+    {
+      "scene": "7-scenes-redkitchen",
+      "method": "IRLS-GM",
+      "n": 60,
+      "mean_natural_inlier": 0.8004444444444445,
+      "success": 1.0,
+      "rot_median": 0.9541980985859383,
+      "rot_p90": 1.3406085233140501,
+      "trans_median": 0.01274485053227195,
+      "time_ms_p50": 2.7273381128907204,
+      "time_ms_p95": 4.510584427043796
+    },
+    {
+      "scene": "7-scenes-redkitchen",
+      "method": "GNC-GM",
+      "n": 60,
+      "mean_natural_inlier": 0.8004444444444445,
+      "success": 1.0,
+      "rot_median": 0.9553930010110792,
+      "rot_p90": 1.3406115244243397,
+      "trans_median": 0.012769680068505616,
+      "time_ms_p50": 1.220234204083681,
+      "time_ms_p95": 2.427144255489111
+    },
+    {
+      "scene": "sun3d-home_at-home_at_scan1_2013_jan_1",
+      "method": "Kabsch",
+      "n": 60,
+      "mean_natural_inlier": 0.678,
+      "success": 0.8333333333333334,
+      "rot_median": 1.2298467173129115,
+      "rot_p90": 5.546799724604226,
+      "trans_median": 0.03858535472682327,
+      "time_ms_p50": 0.16769161447882652,
+      "time_ms_p95": 0.1966399373486638
+    },
+    {
+      "scene": "sun3d-home_at-home_at_scan1_2013_jan_1",
+      "method": "RANSAC-1000",
+      "n": 60,
+      "mean_natural_inlier": 0.678,
+      "success": 0.9666666666666667,
+      "rot_median": 0.9867656112234316,
+      "rot_p90": 2.5277007445112063,
+      "trans_median": 0.030686476300834188,
+      "time_ms_p50": 64.69117384403944,
+      "time_ms_p95": 75.81881820224223
+    },
+    {
+      "scene": "sun3d-home_at-home_at_scan1_2013_jan_1",
+      "method": "RANSAC-adaptive",
+      "n": 60,
+      "mean_natural_inlier": 0.678,
+      "success": 0.9333333333333333,
+      "rot_median": 1.0071167025931576,
+      "rot_p90": 2.582333508038446,
+      "trans_median": 0.03281837860645341,
+      "time_ms_p50": 1.1512958444654942,
+      "time_ms_p95": 30.16411834396422
+    },
+    {
+      "scene": "sun3d-home_at-home_at_scan1_2013_jan_1",
+      "method": "IRLS-GM",
+      "n": 60,
+      "mean_natural_inlier": 0.678,
+      "success": 1.0,
+      "rot_median": 0.8460714964873348,
+      "rot_p90": 2.5386084512041815,
+      "trans_median": 0.026481964298434968,
+      "time_ms_p50": 2.721556229516864,
+      "time_ms_p95": 3.3450828632339826
+    },
+    {
+      "scene": "sun3d-home_at-home_at_scan1_2013_jan_1",
+      "method": "GNC-GM",
+      "n": 60,
+      "mean_natural_inlier": 0.678,
+      "success": 1.0,
+      "rot_median": 0.8460814084222321,
+      "rot_p90": 2.5373780476753605,
+      "trans_median": 0.02642121024940796,
+      "time_ms_p50": 1.4565761666744947,
+      "time_ms_p95": 2.193614933639765
+    }
+  ]
+}

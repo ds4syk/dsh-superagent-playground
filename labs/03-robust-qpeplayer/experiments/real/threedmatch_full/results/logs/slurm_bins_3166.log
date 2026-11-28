@@ -1,0 +1,53 @@
+[scan] 7-scenes-redkitchen: 506 pairs, bins {'low': 200, 'mid': 277, 'high': 29}, overlap median 0.538 (3.2s)
+[scan] sun3d-home_at-home_at_scan1_2013_jan_1: 156 pairs, bins {'low': 66, 'mid': 79, 'high': 11}, overlap median 0.534 (4.2s)
+[scan] sun3d-hotel_uc-scan3: 226 pairs, bins {'low': 88, 'mid': 126, 'high': 12}, overlap median 0.543 (5.7s)
+[scan] sun3d-home_md-home_md_scan9_2012_sep_30: 208 pairs, bins {'low': 68, 'mid': 104, 'high': 36}, overlap median 0.591 (6.8s)
+[scan] sun3d-hotel_umd-maryland_hotel1: 104 pairs, bins {'low': 39, 'mid': 59, 'high': 6}, overlap median 0.536 (7.6s)
+[scan] sun3d-hotel_umd-maryland_hotel3: 54 pairs, bins {'low': 21, 'mid': 33, 'high': 0}, overlap median 0.533 (8.0s)
+[scan] sun3d-mit_76_studyroom-76-1studyroom2: 292 pairs, bins {'low': 102, 'mid': 159, 'high': 31}, overlap median 0.552 (10.0s)
+[scan] sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika: 77 pairs, bins {'low': 22, 'mid': 39, 'high': 16}, overlap median 0.602 (10.6s)
+selected 69 pairs across 8 scenes (10.6s)
+[run] 7-scenes-redkitchen bin=low: 9.7s, rows=600
+[run] 7-scenes-redkitchen bin=mid: 18.9s, rows=1200
+[run] 7-scenes-redkitchen bin=high: 27.9s, rows=1800
+[run] sun3d-home_at-home_at_scan1_2013_jan_1 bin=low: 37.3s, rows=2400
+[run] sun3d-home_at-home_at_scan1_2013_jan_1 bin=mid: 46.8s, rows=3000
+[run] sun3d-home_at-home_at_scan1_2013_jan_1 bin=high: 56.2s, rows=3600
+[run] sun3d-hotel_uc-scan3 bin=low: 66.4s, rows=4200
+[run] sun3d-hotel_uc-scan3 bin=mid: 76.2s, rows=4800
+[run] sun3d-hotel_uc-scan3 bin=high: 85.5s, rows=5400
+[run] sun3d-home_md-home_md_scan9_2012_sep_30 bin=low: 95.1s, rows=6000
+[run] sun3d-home_md-home_md_scan9_2012_sep_30 bin=mid: 106.0s, rows=6600
+[run] sun3d-home_md-home_md_scan9_2012_sep_30 bin=high: 116.3s, rows=7200
+[run] sun3d-hotel_umd-maryland_hotel1 bin=low: 128.4s, rows=7800
+[run] sun3d-hotel_umd-maryland_hotel1 bin=mid: 138.9s, rows=8400
+[run] sun3d-hotel_umd-maryland_hotel1 bin=high: 151.3s, rows=9000
+[run] sun3d-hotel_umd-maryland_hotel3 bin=low: 165.2s, rows=9600
+[run] sun3d-hotel_umd-maryland_hotel3 bin=mid: 176.9s, rows=10200
+[run] sun3d-hotel_umd-maryland_hotel3 bin=high: 176.9s, rows=10200
+[run] sun3d-mit_76_studyroom-76-1studyroom2 bin=low: 186.5s, rows=10800
+[run] sun3d-mit_76_studyroom-76-1studyroom2 bin=mid: 197.9s, rows=11400
+[run] sun3d-mit_76_studyroom-76-1studyroom2 bin=high: 207.2s, rows=12000
+[run] sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika bin=low: 216.8s, rows=12600
+[run] sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika bin=mid: 226.2s, rows=13200
+[run] sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika bin=high: 235.5s, rows=13800
+Traceback (most recent call last):
+  File "/mnt/storage1/syk/.superagent-work/wt-p3b-threedmatch-full2/labs/03-robust-qpeplayer/experiments/real/threedmatch_full/run_overlap_bins.py", line 478, in <module>
+    main()
+  File "/mnt/storage1/syk/.superagent-work/wt-p3b-threedmatch-full2/labs/03-robust-qpeplayer/experiments/real/threedmatch_full/run_overlap_bins.py", line 465, in main
+    json.dump({F.SCENE_SHORT[s]: rows for s, rows in scan.items()}, f, indent=2)
+  File "/home/syk/miniconda3/envs/WM/lib/python3.10/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "/home/syk/miniconda3/envs/WM/lib/python3.10/json/encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/home/syk/miniconda3/envs/WM/lib/python3.10/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/home/syk/miniconda3/envs/WM/lib/python3.10/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/home/syk/miniconda3/envs/WM/lib/python3.10/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/home/syk/miniconda3/envs/WM/lib/python3.10/json/encoder.py", line 438, in _iterencode
+    o = _default(o)
+  File "/home/syk/miniconda3/envs/WM/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type ndarray is not JSON serializable

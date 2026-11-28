@@ -1,0 +1,284 @@
+\section{方法与理论}\label{sec:method}
+
+\subsection{精确约化与零提升}\label{sec:reduction}
+
+唯一的非线性约束是 $q^\top q=1$。平移被精确消去而非松弛，因此非凸问题化为 $\mathbb{S}^3$ 上的四次型。“零提升”指优化变量：推理时不引入矩阵变量。$10$ 维对象 $v_2$ 与 $x_R$ 是\emph{分析}工具，层内从不在其上优化。
+
+\begin{lemma}[平移的精确消去]\label{lem:translation}
+对 $G\succ0$，$\min_t J_\theta(q,t)=J_{\mathrm{red}}(q;\theta)$，在 $t^\star(q)=-G^{-1}Dv_2(q)$ 处取得，并且
+\begin{equation}
+\begin{split}
+\int_{\mathbb{R}^3}e^{-J_\theta(q,t)/\tau}\,dt={}&\frac{(\pi\tau)^{3/2}}{\sqrt{\det G}}\\
+&\times e^{-J_{\mathrm{red}}(q;\theta)/\tau}.
+\end{split}
+\label{eq:gaussint}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+配方得 $J_\theta(q,t)=(t-t^\star)^\top G(t-t^\star)+J_{\mathrm{red}}(q;\theta)$，其中 $t^\star=-G^{-1}Dv_2(q)$；$\mathbb{R}^3$ 上的高斯积分是标准的。
+\end{proof}
+
+\subsection{旋转提升是 Veronese 映射的正交像}\label{sec:lift}
+
+\begin{theorem}\label{thm:lift}
+存在 $U\in O(10)$，使得对所有 $q\in\mathbb{R}^4$，
+\begin{equation}
+\begin{split}
+x_R(q)&=2Uv_2(q),\\
+\|x_R(q)\|^2&=4\|v_2(q)\|^2=4\|q\|^4 .
+\end{split}
+\label{eq:bridge}
+\end{equation}
+\end{theorem}
+
+\begin{proof}[证明梗概]
+$x_R$ 的每个元素都是 $q$ 的二次型，而 $v_2$ 是 $\mathrm{Sym}^2(\mathbb{R}^4)$ 的一组基，故存在唯一的 $B$ 使 $x_R=Bv_2$。由于 $R(q)$ 正交，$\|x_R\|^2=\|q\|^4+3\|q\|^4=4\|q\|^4=4\|v_2\|^2$；又 $\{v_2(q)\}$ 张成 $\mathbb{R}^{10}$，故 $B^\top B=4I$。令 $U=B/2$。分块结构是显式的：经行、列置换后，$U=\mathrm{diag}(\tfrac12H_4,\tfrac1{\sqrt2}H_2,\tfrac1{\sqrt2}H_2,\tfrac1{\sqrt2}H_2)$，其中 $H_4$ 为 Sylvester Hadamard 矩阵。
+\end{proof}
+
+\textbf{齐次提升。} $x_R$ 必须是\emph{齐次}提升 \eqref{eq:lift}，其首元素为 $\|q\|^2$。若该位置取字面常数 $1$，则恒等式仅在 $\mathbb{S}^3$ 上成立，且 $U$ 在球面外不再正交；齐次提升使定理~\ref{thm:lift} 成为 $\mathbb{R}^4$ 上的恒等式，并使第~\ref{sec:sdp}~节的锥论证成立。
+
+\subsection{21 条 \texorpdfstring{$SO(3)$}{SO(3)} 约束张成二次 Veronese 理想}\label{sec:ideal}
+
+\begin{theorem}\label{thm:ideal}
+设 $A_i\in\mathbb{S}^{10}$ 为 21 条标准 $SO(3)$ 约束的矩阵：3 条列范数、3 条列内积、3 条行范数、3 条行内积，以及 9 条齐次叉积方程 $c_a\times c_b-x_0c_c=0$。则
+\begin{equation}
+\dim\operatorname{span}\{A_i\}=20,
+\label{eq:span20}
+\end{equation}
+并且该张成空间在坐标变换 $x=2Uv_2$ 之后恰为二次消没理想 $\mathcal{I}_2(\nu_2(\mathbb{RP}^3))$。
+\end{theorem}
+
+\begin{proof}[证明梗概]
+每个 $A_i$ 在 $x_R(\mathbb{S}^3)$ 上为零；其拉回是球面上为零的齐次四次型，因而恒为零，故 $A_i$ 属于映射 $\phi:\mathbb{S}^{10}\to\mathbb{R}[q]_4$，$Q\mapsto Q(x_R(q))$ 的核。$\phi$ 是满射（$R_{ij}$ 的元素张成全部二次型，二次型之积张成全部四次型），故 $\dim\ker\phi=55-35=20$。精确有理秩计算给出 $\operatorname{rank}\{A_i\}=20$；唯一的线性相关是 $\operatorname{tr}(R^\top R)=\operatorname{tr}(RR^\top)$。20 维核中的 20 维子空间即该核。满射性与维数计数的自包含论证（含精确秩步骤）见附录~\ref{app:dimcount}。
+\end{proof}
+
+\textbf{维数计数与秩计算。} 仅凭维数计数 $55-\binom74=20$ 是必要而不充分的，因为它不能说明 21 个约束矩阵达到该计数；仅凭秩计算也不能把张成空间等同于理想。二者结合才能做到。该计数对约束集敏感：仅六个非对角内积给出秩 15 而非 20，这正是已发布 24 约束实现的约束亏缺并非记账细节的原因。
+
+\subsection{旋转 SDP 是 Veronese 松弛}\label{sec:sdp}
+
+\begin{theorem}\label{thm:sdp}
+设 $\{B_k\}_{k=1}^{20}$ 为 $\mathcal{I}_2$ 的一组基，$M\in\mathbb{S}^{10}$。SDP
+\begin{equation}
+\begin{split}
+\min_{Y\succeq0}\ &\langle M,Y\rangle\\
+\text{s.t.}\ &\langle B_k,Y\rangle=0\ (k=1,\dots,20),\quad \operatorname{tr}Y=1
+\end{split}
+\label{eq:sdpY}
+\end{equation}
+是 $\min_{q\in\mathbb{S}^3}v_2(q)^\top Mv_2(q)$ 的 Shor（Veronese）松弛。在 $x$ 坐标下，令 $Q=\tfrac14UMU^\top$，它等价于
+\begin{equation}
+\min_{X\succeq0}\ \langle Q,X\rangle\quad\text{s.t.}\quad X_{00}=1,\quad \langle A_i,X\rangle=0,
+\label{eq:sdpX}
+\end{equation}
+其中 $X=4UYU^\top$。
+\end{theorem}
+
+\begin{proof}[证明梗概]
+两个 PSD 锥由正交合同相联系。在 $(\mathcal{I}_2)^\perp$ 上，$\operatorname{tr}Y=\langle ee^\top,Y\rangle$，$e=(1,1,1,1,0,\dots,0)^\top$，因为两边在秩一生成元 $v_2(q)v_2(q)^\top$ 上一致；又 $U^\top e_0=\tfrac12e$，故 $X_{00}=\langle ee^\top,Y\rangle$。目标值由正交性相等。对偶为 $\max\mu$ s.t. $M-\mu I-\sum_k\lambda_kB_k\succeq0$，即模理想的 SOS 证书。
+\end{proof}
+
+\textbf{该等价的范围。} 讨论对象是精确消去平移后的旋转子问题。该 SDP 是二次 Veronese/Shor 松弛，局部化约束是单一的迹/$X_{00}$ 条件，而不是多项式理想的矩矩阵；更高阶松弛不在分析范围内。与已发布 $13\times13$ 实现的关系见定理~\ref{thm:thirteen}。
+
+\subsection{具有认证间隙的构造实例}\label{sec:example}
+
+\begin{example}\label{ex:choilam}
+令
+\begin{equation}
+C(q)=q_0^2q_1^2+q_1^2q_2^2+q_2^2q_0^2+q_3^4-4q_0q_1q_2q_3\ge0,
+\label{eq:choilam}
+\end{equation}
+即 Choi--Lam 非负非 SOS 四次型 \cite{choi1977extremal,choi1980zeros}，并令 $M=M_{CL}+2I_{10}$，其中 $M_{CL}$ 是 $C$ 在 $v_2$ 基下的对称矩阵。真最小值为 $f^\star=2$（因为 $C\ge0$ 且 $\|v_2\|^2=1$）。求解 $10\times10$ 旋转 SDP \eqref{eq:sdpX} 得 $f^\star_{\mathrm{SDP}}=1.9658119658$，对偶证书 $Z=Q-\mu E_{00}-\sum_i\lambda_iA_i$ 满足 $\lambda_{\min}(Z)=-1.8\times10^{-11}$，$\mu=1.9658119658$。因此认证间隙至少为 $0.034188$；原始解满足 $\operatorname{rank}(X^\star)=6$ 与 $\lambda_1/\lambda_2=1.451$。
+\end{example}
+
+该实例由本文构造；不同扰动会改变数值间隙与特征值比，因此只报告上述认证实例，表~\ref{tab:sdp_cert} 列出全部量。这里的“认证”指对偶矩阵在求解器容差内为 PSD，而非符号证明。$M$ 能否作为实际 PnP 或矩阵加权对应集的 Gram 矩阵实现，是一个开放问题；第~\ref{sec:thirteen}~节的物理六点实例是互补的可实现分离结果。非负非 SOS 形式的存在性是经典的 \cite{hilbert1888,blekherman2006}，Choi--Lam 形式是标准显式见证；例~\ref{ex:choilam} 的要点不在于这类形式存在，而在于二次 Veronese 松弛会在 QPEP 类中的某个代价上必然失效。
+
+\subsection{\texorpdfstring{$3\times3$}{3x3} 黎曼隐式微分}\label{sec:implicit}
+
+\begin{theorem}\label{thm:implicit}
+设 $J(q)=v_2(q)^\top Mv_2(q)$，$q^\star$ 为 $\mathbb{S}^3$ 上的驻点。则：
+\begin{enumerate}
+\item $\nabla J(q^\star)=\lambda^\star q^\star$，其中 $\lambda^\star=q^{\star\top}\nabla J(q^\star)=4J(q^\star)$。
+\item 在基 $E$ 下的黎曼 Hessian 为
+\begin{equation}
+H_{\mathbb{S}^3}(q^\star)=E(q^\star)^\top\big(\nabla^2J(q^\star)-4J(q^\star)I_4\big)E(q^\star),
+\label{eq:hess}
+\end{equation}
+其中 $\nabla^2J=2J_v^\top MJ_v+2\sum_{a=1}^{10}(Mv_2)_aH_{v,a}$。
+\item 若 $H_{\mathbb{S}^3}(q^\star)\succ0$，则局部极小点在 $\theta$ 中局部 $C^\infty$，且
+\begin{align}
+\frac{\partial q^\star}{\partial\theta}&=-E H_{\mathbb{S}^3}^{-1}E^\top\Big(2J_v^\top\frac{\partial M}{\partial\theta}v_2\Big),\label{eq:dq}\\
+\frac{\partial t^\star}{\partial\theta}&=-G^{-1}\Big(\frac{\partial G}{\partial\theta}t^\star+\frac{\partial D}{\partial\theta}v_2+DJ_v\frac{\partial q^\star}{\partial\theta}\Big).\label{eq:dt}
+\end{align}
+\item 该映射具有对映不变性：$H_{\mathbb{S}^3}(-q^\star)=H_{\mathbb{S}^3}(q^\star)$，$\partial(-q^\star)/\partial\theta=-\partial q^\star/\partial\theta$，且 $\partial\,\mathrm{vec}(R(q^\star))/\partial\theta$ 对 $\pm q^\star$ 相同。
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[证明梗概]
+Euler 齐次性给出乘子。沿 $\delta q=E\delta\xi$ 对 $F=E^\top\nabla J=0$ 求导，并利用 $(\delta E)^\top q=-E^\top\delta q$，得到 Hessian \eqref{eq:hess}。隐式 Jacobian \eqref{eq:dq}--\eqref{eq:dt} 由对 $F(q^\star(\theta),\theta)=0$ 与 $t^\star=-G^{-1}Dv_2$ 求导得到，即约化驻点系统的隐函数定理 \cite{dontchev2009}。对映不变性来自 $v_2(-q)=v_2(q)$、$J_v(-q)=-J_v(q)$ 与 $E(-q)=-E(q)$。
+\end{proof}
+
+\textbf{因子约定。} 这些约定是实现之间产生分歧的常见来源。$\delta q=E\delta\xi$ 对应旋转向量 $2\delta\xi$，故 $H_\omega=\tfrac14H_{\mathbb{S}^3}$，同一协方差在两种约定下的特征值相差因子 16。QPEP 的协方差分析 \cite{wu2022qpep} 使用其自身参数化，比较应在此常数意义下进行。反向传播 \eqref{eq:dq} 对每个活跃模态是一次 $3\times3$ 正定求解，只通过固定的 $4\times10$ Jacobian $J_v$ 接触 $10\times10$ 数据矩阵。
+
+\subsection{可微性证书}\label{sec:cert}
+
+\begin{theorem}[充分条件]\label{thm:cert}
+设全局极小在 $q\leftrightarrow-q$ 意义下唯一，$G\succ0$，$H_{\mathbb{S}^3}(q^{(1)})\succ0$，且对次优的不同 $SO(3)$ 类有 $\Delta J=J(q^{(2)})-J(q^{(1)})>0$。则存在 $\theta$ 的邻域，使全局位姿映射在该邻域上 $C^\infty$，其导数由定理~\ref{thm:implicit} 给出。
+\end{theorem}
+
+\begin{proof}
+隐函数定理给出光滑局部极小；$\Delta J$ 的连续性使其保持全局最优；$G\succ0$ 使 $t^\star$ 唯一。
+\end{proof}
+
+\textbf{两个反例界定了该定理。} (i) $\Delta J=0$ 并不排除光滑的全局\emph{选择}：取 $J_1\equiv0$，$J_2(\theta)=(\theta-\theta_0)^2$，则分支 1 对所有 $\theta$ 都是光滑全局极小，尽管两分支在 $\theta_0$ 处打平。正确的命题关乎全局极小的唯一性，而非每个选择的可微性。(ii) $H_{\mathbb{S}^3}\succ0$ 不是必要条件：对 $J(x;\theta)=x^4+\theta^2x^2$，唯一极小 $x^\star(\theta)\equiv0$ 在 $\theta=0$ 处光滑，尽管 Hessian 消失。尖锐的必要条件是约化驻点系统存在一个在每个点都全局最优的可微单值选择；$H\succ0$ 是标准充分条件 \cite{dontchev2009}。
+
+\textbf{QPEP 特有的计数问题。} 朴素计数给出 $K\le27$ 个实极小，该数字没有文献来源，且对于有限根集与自由对映对称 $(q,\lambda)\mapsto(-q,\lambda)$ 不相容。已发布的 LibQPEP 求解器最多返回 40 个候选复根，全次数同伦在 $4/4$ 个实例上确认了 40 个复射影根（带 $\pm$ 双覆盖的 80 个仿射根，第~\ref{sec:rootcount}~节），实射影根数随实例而变。因此我们写“$K$ 个枚举实极小，已发布求解器至多 40 个候选”，把枚举完备性作为假设 (A2)，并以数值方式检验残差。
+
+\subsection{多模态 Laplace 平滑}\label{sec:laplace}
+
+\begin{theorem}\label{thm:laplace}
+设 $q^{(k)}$（$k=1,\dots,K$）为 $J_{\mathrm{red}}$ 在 $\mathbb{S}^3/\{\pm1\}$ 上枚举到的非退化局部极小，$H_k=H_{\mathbb{S}^3}(q^{(k)})\succ0$。对 Boltzmann 后验 $p_\theta(q,t)\propto e^{-J_\theta(q,t)/\tau}$：
+\begin{enumerate}
+\item \textbf{平移是精确的。} $\int_{\mathbb{R}^3}e^{-J_\theta(q,t)/\tau}dt=(\pi\tau)^{3/2}(\det G)^{-1/2}e^{-J_{\mathrm{red}}(q;\theta)/\tau}$。
+\item \textbf{旋转用 Laplace 近似。} 以 Haar 测度 $\int_{SO(3)}dR=8\pi^2$ \cite{chirikjian2012}，
+\begin{equation}
+\begin{split}
+&\int_{SO(3)}e^{-J_{\mathrm{red}}/\tau}dR\\
+&\quad=8(2\pi\tau)^{3/2}\sum_{k=1}^K\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}}\big(1+O(\tau)\big),
+\end{split}
+\label{eq:rotationint}
+\end{equation}
+模态权重为
+\begin{equation}
+w_k=\operatorname{softmax}_k\Big(-\frac{J_k}{\tau}-\frac12\log\det H_k\Big).
+\label{eq:weights}
+\end{equation}
+\item \textbf{梯度。} 对下游损失 $\ell$，
+\begin{equation}
+\begin{split}
+\nabla_\theta\bar\ell={}&\sum_kw_k\nabla_\theta\ell_k\\
+&+\operatorname{Cov}_w\Big(\ell_k,\ -\frac1\tau\nabla_\theta J_k\\
+&\qquad-\frac12\nabla_\theta\log\det H_k\Big),
+\end{split}
+\label{eq:smgrad}
+\end{equation}
+其中 $\nabla_\theta J_k=v_k^\top(\partial_\theta M)v_k$，且
+\begin{equation}
+\begin{split}
+\nabla_\theta\log\det H_k&=\operatorname{tr}\Big(H_k^{-1}\frac{dH_k}{d\theta}\Big),\\
+\frac{dH_k}{d\theta}&=\frac{\partial H}{\partial\theta}\Big|_{q^{(k)}}+\frac{\partial H}{\partial q}\Big|_{q^{(k)}}\frac{\partial q^{(k)}}{\partial\theta}.
+\end{split}
+\label{eq:dlogdet}
+\end{equation}
+第二项包含 $J$ 的三阶 $q$ 导数。
+\item \textbf{温度极限。} 当 $\tau\to0$ 且 $\Delta J>0$ 时，后验均值与软 argmin 收敛到确定性全局极小，其梯度收敛到定理~\ref{thm:implicit}。KL 损失本身 $\mathcal{L}_{\mathrm{KL}}=\tau^{-1}J_{\mathrm{gt}}+\log Z_{\mathrm{Laplace}}$ 的梯度按 $1/\tau$ 缩放，若不做 $\tau$ 重标定则不发散。重标定（退火）损失 $\tau\mathcal{L}_{\mathrm{KL}}=J_{\mathrm{gt}}+\tau\log Z_{\mathrm{Laplace}}$ 由定理~\ref{thm:annealed} 分析：其梯度在每个 $\tau>0$ 处有限，并在 $\tau\to0^+$ 时具有曲率加权的 Clarke 极限。
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[证明梗概]
+平移积分即引理~\ref{lem:translation}。对旋转，在每个 $q^{(k)}$ 附近的正规坐标 $q(u)=\mathrm{normalize}(q^{(k)}+E_ku)$ 中把 $J$ 展开到二阶；高斯积分给出 $(2\pi\tau)^{3/2}(\det H_k)^{-1/2}$。每个叶片的局部 Jacobian 为 $dR=8\,dq$；$\pm q$ 的两个叶片与双覆盖因子 $1/2$ 合起来给出每个 $SO(3)$ 模态的因子 $8$。标准 Laplace 展开给出相对误差 $O(\tau)$ \cite{bleistein1986,wong1989}。梯度公式是对 $J_k$ 用包络定理、对 $w_k$ 用 softmax Jacobian 的链式法则。附录~\ref{app:haar} 推导 Jacobian $dR=8\,du$、双覆盖抵消、$Z_{\mathrm{Lap}}$ 的绝对常数，以及下文用到的 $\log\det H_k$ 对 $\theta$ 的完整导数。
+\end{proof}
+
+\textbf{分支交叉处的光滑性。} \emph{精确} Boltzmann 后验对每个 $\tau>0$ 都是 $\theta$ 的 $C^\infty$ 函数，因为 $\mathbb{S}^3$ 紧且 $J_\theta$ 光滑（由控制收敛定理可得，无需 $\Delta J>0$）。\emph{Laplace 近似}在交叉处并非一致精确：当 $\Delta J\to0$、$H_k$ 的某个特征值趋于零时，两个 Gauss 分布重叠，$1/\sqrt{\det H_k}$ 权重发散，因此需要一致（Airy）展开，或在合并方向上做一维数值积分 \cite{bleistein1986}。故平滑层对每个 $\tau>0$ 都光滑，而 Laplace 实现仅在远离分岔处具有 $O(\tau)$ 精度。
+
+\textbf{归一化。} 常数影响 $Z$ 但在 $w_k$ 中相消。若 $SO(3)$ 上取概率 Haar 测度 $d\mu_{\mathrm{Haar}}=dR/(8\pi^2)$，绝对 Laplace 配分函数为
+\begin{equation}
+Z_{\mathrm{Lap}}(\theta)=\frac{2\sqrt2\,\pi\tau^3}{\sqrt{\det G}}\sum_{k=1}^K\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}},
+\label{eq:zlapabs}
+\end{equation}
+而若取未归一化测度 $dR$，则 \eqref{eq:zlapabs} 还要乘 $8\pi^2$。附录~\ref{app:haar} 从 $dR=8\,du$ 与双覆盖出发推导这两个常数，并说明两种约定给出相同的 $w_k$ 与相同的 $\theta$ 梯度。常用归一化 $Z_{\mathrm{Lap}}=(\pi\tau)^3(\det G)^{-1/2}\sum_ke^{-J_k/\tau}/\sqrt{\det H_k}$ 并不是上述任一绝对常数，故不应作为 $Z$ 引用；在 $\tau$ 固定时它与 \eqref{eq:zlapabs} 相差一个与 $\theta$ 无关的因子。若改用旋转向量坐标 $\omega=2\delta\xi$，则 $\det H_\omega=\det H_{\mathbb{S}^3}/64$，且必须在 \eqref{eq:weights}--\eqref{eq:dlogdet} 中一致地采用同一种约定。
+
+\begin{theorem}[退火 Laplace NLL：精确梯度与零温极限]\label{thm:annealed}
+设 $q^{(k)}(\theta)$（$k=1,\dots,K$）为定理~\ref{thm:laplace} 的非退化极小，$J_k=J_\theta(q^{(k)},t^\star(q^{(k)}))$，$H_k\succ0$，$G\succ0$，并令
+\begin{equation}
+\begin{split}
+Z_{\mathrm{Lap}}(\theta)={}&C(\tau)\,(\det G(\theta))^{-1/2}\\
+&\times\sum_{k=1}^K(\det H_k(\theta))^{-1/2}e^{-J_k(\theta)/\tau},
+\end{split}
+\label{eq:zlap}
+\end{equation}
+其中 $C(\tau)$ 与 $\theta$ 无关，且 $w_k=(\det H_k)^{-1/2}e^{-J_k/\tau}/\sum_j(\det H_j)^{-1/2}e^{-J_j/\tau}$。定义退火 Laplace 负对数似然
+\begin{equation}
+L_{\tau\text{-KL}}(\theta):=J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})+\tau\log Z_{\mathrm{Lap}}(\theta).
+\label{eq:annealed}
+\end{equation}
+则：
+\begin{enumerate}
+\item \textbf{（任意 $\tau>0$ 的有限光滑梯度）} 包括精确分支打平 $J_{k_1}=J_{k_2}$ 的情形，$L_{\tau\text{-KL}}$ 关于 $\theta$ 局部 $C^\infty$，且
+\begin{equation}
+\begin{split}
+\nabla_\theta L_{\tau\text{-KL}}={}&\nabla_\theta J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})\\
+&-\sum_{k=1}^Kw_k\Big(\nabla_\theta J_k+\frac{\tau}{2}\nabla_\theta\log\det H_k\Big)\\
+&-\frac{\tau}{2}\nabla_\theta\log\det G .
+\end{split}
+\label{eq:annealedgrad}
+\end{equation}
+外乘因子 $\tau$ 精确抵消 $\nabla_\theta z_k$ 中的 $1/\tau$，故与未退火的 KL 损失不同，梯度在 $\tau\to0$ 时保持有限。
+\item \textbf{（零温极限）} 记 $\mathcal{K}_{\min}=\arg\min_kJ_k$，曲率体积权重 $\bar w_k:=(\det H_k)^{-1/2}/\sum_{j\in\mathcal{K}_{\min}}(\det H_j)^{-1/2}$，则
+\begin{equation}
+\lim_{\tau\to0^+}\nabla_\theta L_{\tau\text{-KL}}
+=\nabla_\theta J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})
+-\sum_{k\in\mathcal{K}_{\min}}\bar w_k\,\nabla_\theta J_k,
+\label{eq:clarke}
+\end{equation}
+即 $J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})-\min_kJ_k(\theta)$ 的曲率加权 Clarke 次梯度。当极小唯一（$k^\star$）时退化为 $\nabla_\theta J_{\mathrm{gt}}-\nabla_\theta J_{k^\star}$。
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+记 $z_k=(\det H_k)^{-1/2}e^{-J_k/\tau}$，则 $\tau\log Z_{\mathrm{Lap}}=\tau\log C(\tau)-\frac{\tau}{2}\log\det G+\tau\log\sum_kz_k$。由 $H_k\succ0$，隐函数定理使每个分支与 $H_k$ 关于 $\theta$ 光滑；即便两个 $J_k$ 相等，各分支仍非退化，故 $\sum_kz_k>0$。利用 $\nabla_\theta z_k=z_k(-\tau^{-1}\nabla_\theta J_k-\frac12\nabla_\theta\log\det H_k)$ 与 $w_k=z_k/\sum_jz_j$ 即得 \eqref{eq:annealedgrad}；$\log Z$ 外的 $\tau$ 精确抵消 $\tau^{-1}$。对 \eqref{eq:clarke}，从 $z_k$ 中提出 $e^{-J_{\min}/\tau}$：在 $\mathcal{K}_{\min}$ 上 $w_k\to(\det H_k)^{-1/2}/\sum_{j\in\mathcal{K}_{\min}}(\det H_j)^{-1/2}$，其余 $w_k\to0$，因为每个 $j\notin\mathcal{K}_{\min}$ 有严格正间隙 $\Delta_j=J_j-J_{\min}>0$。项 $\frac{\tau}{2}\nabla_\theta\log\det H_k$ 与 $\frac{\tau}{2}\nabla_\theta\log\det G$ 消失，而 $\nabla_\theta J_k$ 与 $\tau$ 无关且有界。该极限是活跃分支梯度的凸组合，故属于最小值的 Clarke 次微分。包络恒等式 $\nabla_\theta J_k=v_2(q^{(k)})^\top(\partial_\theta M)v_2(q^{(k)})$ 与 $\log\det H_k$ 的完整导数见附录~\ref{app:haar}。
+\end{proof}
+
+\subsection{与已发布 \texorpdfstring{$13\times13$}{13x13} 松弛的关系}\label{sec:thirteen}
+
+$10\times10$ 旋转 SDP 与已发布 $13\times13$ SDP 的关系不是单一等式或不等式，而有三层：精确等价、不等式层级，以及严格的物理分离。
+
+\begin{theorem}[三段式 $10\times10$/$13\times13$ 关系]\label{thm:thirteen}
+令 $x_{13}=[x_R;t]$，$t\in\mathbb{R}^3$ 不受约束，$Q_{13}=\begin{bmatrix}Q_{RR}&Q_{Rt}\\Q_{Rt}^\top&G\end{bmatrix}$ 且 $G\succ0$，$Q_{10}=Q_{RR}-Q_{Rt}G^{-1}Q_{Rt}^\top$。记 $f^\star_{10,\mathrm{full}}$、$f^\star_{13,\mathrm{full}}$ 与 $f^\star_{13,\mathrm{up}}$ 分别为：(a) 完整 20 维理想下 $10\times10$ 的值；(b) 同一完整理想下 $13\times13$ 的值，即上游 24 条约束加三条行正交方程（27 条约束，20 维）；(c) 已发布 24 条约束下 $13\times13$ 的值，其张成空间为 17 维。则：
+\begin{enumerate}
+\item \textbf{完整 20 维等价（已证明）。} $\mathbb{S}^{13}$ 中 $SE(3)$ 的二次消没理想为 $\mathcal{I}_2(SE(3))=\mathcal{I}_2(SO(3))\oplus\mathbf{0}_{3\times3}$：维数 20，与 $t$ 无耦合。因此分块 Schur 补双射 $X^\star_{13,\mathrm{full}}=LX^\star_{10,\mathrm{full}}L^\top$（$L=[I_{10};\,-G^{-1}Q_{Rt}^\top]$ 满列秩）给出
+\begin{equation}
+\begin{split}
+f^\star_{13,\mathrm{full}}&\equiv f^\star_{10,\mathrm{full}},\\
+\operatorname{rank}\big(X^\star_{13,\mathrm{full}}\big)&\equiv\operatorname{rank}\big(X^\star_{10,\mathrm{full}}\big).
+\end{split}
+\label{eq:schur}
+\end{equation}
+这是代数恒等式，而非数值巧合。
+\item \textbf{上游 17 维实现更松，且在一般情况下严格更松（已证明）。} 已发布的 24 条约束只张成 20 维中的 17 维，故 $\mathcal{V}_{17}\subsetneq\mathcal{I}_2(SO(3))$，上游可行集严格包含完整 20 维可行集。因此对\emph{每个}实例，
+\begin{equation}
+f^\star_{13,\mathrm{up}}\;\le\;f^\star_{13,\mathrm{full}}=f^\star_{10,\mathrm{full}}\;\le\;f^\star_{\mathrm{QPEP}},
+\label{eq:hierarchy}
+\end{equation}
+最后一个不等式是定理~\ref{thm:sdp} 的松弛界。由于论证与实例无关，每个不紧的完整 20 维实例自动是已发布实现的非紧实例。
+\item \textbf{物理六点分离（已证明并独立复现）。} 第 (2) 层在一个真实的矩阵加权 3D--3D 代价上是严格的，该代价具有正权重与唯一真值旋转，即使完整 20 维 SDP 在秩一处恰好紧（表~\ref{tab:6point}）。由连续性，严格不等式在该实例的开邻域内保持，因此分离不是零测的病理情形。
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[证明梗概]
+(1) $\mathbb{S}^{13}$ 中 $SE(3)$ 的二次消没理想是 $x_R$ 块中 $SO(3)$ 的理想与自由的 $t$ 块的直和，故与 $t$ 无耦合；代价中的耦合是二次的，由 Schur 补完成，而该补正是映射 $L$。代入 $X_{13}=LX_{10}L^\top$ 使约束与目标不变，且 $G\succ0$ 使 $L$ 满列秩。(2) 当张成集缺少三个维度时，子空间包含是严格的；可行性对更大的可行集单调，\eqref{eq:hierarchy} 的最后一个不等式是标准松弛界。(3) 该实例在第~\ref{sec:results_sdp}~节分析；其精确解在完整理想最优点处满足 $r_1^\top r_2=0$，在上游最优点处满足 $r_1^\top r_2>0$，故包含在该处严格，而严格性是开条件。
+\end{proof}
+
+\textbf{约束的精确比较。} $10\times10$ SDP 的 21 条 $SO(3)$ 约束张成 20 维（定理~\ref{thm:ideal}）。$13\times13$ SDP 的 24 条上游约束只张成 17 维；把 21 条约束逐条投影到该 17 维张成空间，恰好留下三个非零残差——行正交方程 $r_1\cdot r_2=r_1\cdot r_3=r_2\cdot r_3=0$（残差 1.63--1.73；其余 18 条 $\le6.2\times10^{-16}$）。行范数 $\|r_i\|^2=h^2$ 已由九条范数约束与列正交性蕴含，因此行点积就是全部亏缺。$13\times13$ 约束生成元由已发布 SDPRLayers 实现逐行复刻，并与上游生成元逐元素比对：24 条约束全部一致（24/24），最大 $|\Delta|=0$，且在随机旋转上 $\max_i|x^\top A_i x|=1.4\times10^{-16}$。该复刻是对本文重实现的检验。度量后果见表~\ref{tab:13v10} 与表~\ref{tab:6point}。
+
+\subsection{算法与复杂度}\label{sec:algorithm}
+
+\begin{algorithm}[t]
+\caption{\textsc{Laplace-QPEPLayer} 的前向与反向（单个批元素）。}
+\label{alg:layer}
+\begin{algorithmic}[1]
+\State \textbf{前向：}
+\State 由 $\theta$ 构造 $M_0,D,G$；\ $M\gets M_0-D^\top G^{-1}D$
+\State 枚举 $\nabla J=4Jq$、$q^\top q=1$ 的全部实 KKT 根 $q^{(k)}$
+\State 保留满足 $H_k\succ0$ 的局部极小；按 $J_k$ 排序；按 \eqref{eq:weights} 计算 $w_k$
+\State \Return $(q^{(1)},t^\star(q^{(1)}))$ 和/或 $\{(q^{(k)},w_k)\}_{k=1}^{K}$
+\State \textbf{反向：}
+\For{每个活跃模态 $k$}
+  \State 按 \eqref{eq:hess} 构造 $H_k$，按 \eqref{eq:dlogdet} 构造 $dH_k/d\theta$
+  \State 解 $H_k\,x=E^\top\big(2J_v^\top(\partial_\theta M)v_2\big)$，并令 $\partial q^{(k)}/\partial\theta=-Ex$
+\EndFor
+\State 组装确定性 Jacobian \eqref{eq:dq}--\eqref{eq:dt} 或平滑梯度 \eqref{eq:smgrad}
+\end{algorithmic}
+\end{algorithm}
+
+非凸问题有 4 个变量与 1 条约束。每个模态的稠密线性代数为一个 $4\times10$ Jacobian、一个 $4\times4$ 欧氏 Hessian 与一次 $3\times3$ 求解。依赖数据的开销是构造 $M$（对对应点求和）与枚举根；二者都与 SDP 维数无关，也不随模态数增长。确定性情形下反向为每样本 $O(1)$。平滑情形下为 $O(K)$（$K$ 为活跃模态数），外加 \eqref{eq:dlogdet} 中 $\nabla\log\det H_k$ 的三阶导数缩并。根枚举而非 $3\times3$ 求解支配实际耗时（第~\ref{sec:compute}~节）。

@@ -1,0 +1,197 @@
+{
+  "protocol": {
+    "method": "SDPRLayers SDPPoseEstimator (13-dim QCQP), forward only",
+    "solver": "SCS",
+    "scs_eps": 1e-09,
+    "diff_qcqp": false,
+    "weights": "all ones (non-robust least squares)",
+    "n_points": [
+      20,
+      50,
+      100
+    ],
+    "trials": {
+      "20": 20,
+      "50": 12,
+      "100": 20
+    },
+    "p_list": [
+      0.0,
+      0.3,
+      0.5,
+      0.7
+    ],
+    "outlier_type": "random",
+    "success": "rot<5deg and trans<0.1m",
+    "sdpr_source": "/mnt/storage1/syk/third_party/sdprlayer/src/sdprlayers/__init__.py",
+    "sdpr_version": "unknown",
+    "torch_version": "2.5.1+cpu",
+    "scs_version": "3.3.1",
+    "wall_time_s": 3.4841363430023193,
+    "note": "failure = exception from forward (non-tight rank-1 recovery or SCS solver error); success computed on returned poses only, success_over_attempts also counts failures as misses"
+  },
+  "cells": {
+    "20": {
+      "0.0": {
+        "n_trials": 20,
+        "n_ok": 20,
+        "scs_failure_rate": 0.0,
+        "success": 1.0,
+        "success_over_attempts": 1.0,
+        "rot_median": 0.2321779580473079,
+        "rot_p90": 0.4242471251147344,
+        "trans_median": 0.003347953755158961,
+        "trans_p90": 0.005109309947443918,
+        "time_ms_p50": 11.534055694937706,
+        "time_ms_p95": 49.00974929332782
+      },
+      "0.3": {
+        "n_trials": 20,
+        "n_ok": 20,
+        "scs_failure_rate": 0.0,
+        "success": 0.0,
+        "success_over_attempts": 0.0,
+        "rot_median": 27.497562586697597,
+        "rot_p90": 51.00554330509421,
+        "trans_median": 0.289709580809803,
+        "trans_p90": 0.501044745652495,
+        "time_ms_p50": 11.264972854405642,
+        "time_ms_p95": 14.29808498360217
+      },
+      "0.5": {
+        "n_trials": 20,
+        "n_ok": 20,
+        "scs_failure_rate": 0.0,
+        "success": 0.0,
+        "success_over_attempts": 0.0,
+        "rot_median": 37.87654231888189,
+        "rot_p90": 76.75799118557754,
+        "trans_median": 0.47051500921030565,
+        "trans_p90": 0.6331892242382714,
+        "time_ms_p50": 12.798175914213061,
+        "time_ms_p95": 18.365025962702934
+      },
+      "0.7": {
+        "n_trials": 20,
+        "n_ok": 20,
+        "scs_failure_rate": 0.0,
+        "success": 0.0,
+        "success_over_attempts": 0.0,
+        "rot_median": 55.37907992131559,
+        "rot_p90": 115.12455310861625,
+        "trans_median": 0.4238713134214701,
+        "trans_p90": 0.7821924082209002,
+        "time_ms_p50": 12.525771744549274,
+        "time_ms_p95": 15.031315060332417
+      }
+    },
+    "50": {
+      "0.0": {
+        "n_trials": 12,
+        "n_ok": 12,
+        "scs_failure_rate": 0.0,
+        "success": 1.0,
+        "success_over_attempts": 1.0,
+        "rot_median": 0.16101534691026603,
+        "rot_p90": 0.29146196497111054,
+        "trans_median": 0.0019412874407696134,
+        "trans_p90": 0.0030871625192064275,
+        "time_ms_p50": 11.958296643570065,
+        "time_ms_p95": 12.64011855237186
+      },
+      "0.3": {
+        "n_trials": 12,
+        "n_ok": 12,
+        "scs_failure_rate": 0.0,
+        "success": 0.0,
+        "success_over_attempts": 0.0,
+        "rot_median": 12.962094797954885,
+        "rot_p90": 17.53118722431533,
+        "trans_median": 0.20725453409745564,
+        "trans_p90": 0.3418278364360225,
+        "time_ms_p50": 10.904411319643259,
+        "time_ms_p95": 14.392030634917317
+      },
+      "0.5": {
+        "n_trials": 12,
+        "n_ok": 12,
+        "scs_failure_rate": 0.0,
+        "success": 0.0,
+        "success_over_attempts": 0.0,
+        "rot_median": 24.696139606198496,
+        "rot_p90": 60.686974139671484,
+        "trans_median": 0.3647688052218603,
+        "trans_p90": 0.5176054688235866,
+        "time_ms_p50": 11.098178569227457,
+        "time_ms_p95": 25.910990545526133
+      },
+      "0.7": {
+        "n_trials": 12,
+        "n_ok": 12,
+        "scs_failure_rate": 0.0,
+        "success": 0.0,
+        "success_over_attempts": 0.0,
+        "rot_median": 48.692347328500205,
+        "rot_p90": 108.57645708050187,
+        "trans_median": 0.48145138593523246,
+        "trans_p90": 0.6012478253843506,
+        "time_ms_p50": 13.365179300308228,
+        "time_ms_p95": 15.22504596505314
+      }
+    },
+    "100": {
+      "0.0": {
+        "n_trials": 20,
+        "n_ok": 20,
+        "scs_failure_rate": 0.0,
+        "success": 1.0,
+        "success_over_attempts": 1.0,
+        "rot_median": 0.09071826874157732,
+        "rot_p90": 0.17176413919545408,
+        "trans_median": 0.0012857167264186996,
+        "trans_p90": 0.00234739767352119,
+        "time_ms_p50": 12.460605008527637,
+        "time_ms_p95": 18.797795870341364
+      },
+      "0.3": {
+        "n_trials": 20,
+        "n_ok": 20,
+        "scs_failure_rate": 0.0,
+        "success": 0.0,
+        "success_over_attempts": 0.0,
+        "rot_median": 9.512266947560336,
+        "rot_p90": 17.625027771903426,
+        "trans_median": 0.1584161314776955,
+        "trans_p90": 0.24315007648156434,
+        "time_ms_p50": 12.844897340983152,
+        "time_ms_p95": 18.875346635468308
+      },
+      "0.5": {
+        "n_trials": 20,
+        "n_ok": 20,
+        "scs_failure_rate": 0.0,
+        "success": 0.0,
+        "success_over_attempts": 0.0,
+        "rot_median": 21.633468091627677,
+        "rot_p90": 28.271086851026023,
+        "trans_median": 0.2581428813057921,
+        "trans_p90": 0.3982095618565387,
+        "time_ms_p50": 13.268714072182775,
+        "time_ms_p95": 21.887530502863243
+      },
+      "0.7": {
+        "n_trials": 20,
+        "n_ok": 20,
+        "scs_failure_rate": 0.0,
+        "success": 0.0,
+        "success_over_attempts": 0.0,
+        "rot_median": 31.381114418639456,
+        "rot_p90": 76.2685719602461,
+        "trans_median": 0.3451074272702412,
+        "trans_p90": 0.4764016530412689,
+        "time_ms_p50": 13.040360994637012,
+        "time_ms_p95": 20.4677822533995
+      }
+    }
+  }
+}

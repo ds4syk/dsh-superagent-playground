@@ -1,0 +1,66 @@
+=== Robust-QPEPLayer synthetic smoke / known-truth checks ===
+python=3.10.22 numpy=2.2.6
+
+[1] Kabsch on noiseless data (closed-form check)
+    max ||R-Rgt||_F = 2.611e-15; max translation error = 2.436e-16 m
+    arccos-based rotation error = 1.708e-06 deg (floor ~1e-6 deg from arccos precision near 1)
+    PASS: True
+
+[2] GNC at 0% outliers vs Kabsch (should be ~identical)
+    median rot err: Kabsch 0.1041 deg, GNC 0.0931 deg
+    median trans err: Kabsch 0.00145 m, GNC 0.00148 m
+    pose difference GNC-vs-Kabsch: rot p50 2.298e-02 deg, max 4.644e-02 deg; trans p50 2.589e-04 m, max 6.353e-04 m
+    max (F_gnc - F_kabsch) over 20 trials = -3.412e-06 (should be <= ~0)
+    max ||R_gnc - R_kabsch||_F = 1.146e-03
+    PASS: True
+
+[3] RANSAC on all-inlier data vs Kabsch
+    pose difference RANSAC-vs-Kabsch: ||dR||_F p50 0.000e+00, |dt| p50 0.000e+00 m
+    PASS: True
+
+[4] GNC mu-schedule and final first-order residual
+    p=0.0: mu0 1.13..1.88, n_mu 2..3, ||Phi|| p50 1.19e-07, w in [0.371,0.998], lambda_rob p50 +0.066
+    p=0.3: mu0 1.05e+04..1.63e+04, n_mu 29..30, ||Phi|| p50 1.12e-07, w in [2.9e-08,0.999], lambda_rob p50 +0.114
+    p=0.7: mu0 1.44e+04..1.78e+04, n_mu 30..31, ||Phi|| p50 5.86e-08, w in [1.86e-08,0.99], lambda_rob p50 +0.016
+    NOTE: solve_gnc uses 5 exact-kernel IRLS steps, so ||Phi|| ~1e-6;
+          the gradient experiments polish to 1e-13 with Newton.
+    PASS: weights in [0,1] and ||Phi|| < 1e-4
+
+[5] Coherent majority (70% outliers): which rigid transform wins?
+    GT-vs-outlier transform separation: rot p50 43.10 deg
+    RANSAC pose error: to GT p50 43.17 deg, to outlier transform p50 0.16 deg
+    picked outlier side in 20/20 trials; recovered outlier pose (<5 deg,<0.1 m) in 20/20
+    PASS: True
+
+[6] Exact H_rob vs geodesic FD Hessian of F_rob (N=30, boundary mix)
+    ||Phi|| after Newton = 4.85e-15 (2 Newton iters)
+    ||H_rob - H_fd||_F / ||H_fd||_F = 4.747e-07  (central FD, h=1e-5)
+    ||H_rob - H_fd||_F / ||H_fd||_F = 6.817e-09  (Richardson extrapolation)
+    eig(H_rob) = [ 24.5784  29.029   33.2686  76.0695 101.074  112.4331]  (lambda_min = +2.4578e+01)
+    PASS: True
+
+[6b] Same N=6 instance as verify/riemann_hessian_check.py, corrected build_A
+    lambda_rob = +1.032884
+    ||H_rob - H_fd||/||H_fd|| = 1.502e-06
+    ||H_doc - H_fd||/||H_fd|| = 2.587e-01  (missing -lambda)
+    max |lambda_i - 4u^T W r| = 7.105e-15
+    max |lambda_i - 4 e_i|    = 5.105e+01
+    PASS: True
+
+[7] lambda_i identity: q^T g_{i,q} = 4 u_i^T W_i r_i, not 4 e_i
+    max |lambda_i - 4 u_i^T W_i r_i| = 1.110e-16
+    max |lambda_i - 4 e_i|           = 3.863e-01
+    PASS: True
+
+[8] Exact IFT vs central FD vs naive (per-observation Jacobian dz*/dy_i)
+    inlier e<c^2/3           n=19  exact relerr p50 4.86e-08  cos p50 +1.000000 | naive relerr p50 2.14e-01  cos p50 +0.981143
+    boundary c^2/3..3c^2     n=10  exact relerr p50 4.08e-08  cos p50 +1.000000 | naive relerr p50 1.06e+00  cos p50 +0.313598
+    gross e>3c^2             n= 1  exact relerr p50 1.30e-08  cos p50 +1.000000 | naive relerr p50 1.19e+00  cos p50 -0.152697
+    PASS: True
+
+[9] Adaptive RANSAC: empirical success vs 1-(1-(1-p)^3)^k theory
+    p=0.1: success  100.0%  mean iters    6.0  theory  100.0%  (n=50)
+    p=0.5: success  100.0%  mean iters   52.1  theory   99.9%  (n=50)
+    p=0.7: success  100.0%  mean iters  253.4  theory   99.9%  (n=50)
+    p=0.8: success   98.0%  mean iters  863.8  theory   99.9%  (n=50)
+

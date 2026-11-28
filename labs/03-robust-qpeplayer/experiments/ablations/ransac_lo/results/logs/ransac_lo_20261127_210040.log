@@ -1,0 +1,54 @@
+srun: job 3140 queued and waiting for resources
+srun: job 3140 has been allocated resources
+{
+  "trials_random": 100,
+  "trials_coherent": 50,
+  "p_list": [
+    0.0,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7
+  ],
+  "n": 100,
+  "sigma": 0.01,
+  "c": 0.05,
+  "cap": 1000,
+  "confidence": 0.999,
+  "lo_rounds": 5,
+  "base_seed": 20261127,
+  "data_exp_id": 10,
+  "sampling_tag": 999,
+  "success_rot_deg": 5.0,
+  "success_trans": 0.1,
+  "python": "3.10.22",
+  "numpy": "2.2.6",
+  "threads": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "timestamp": "2026-11-27 21:01:09"
+}
+[random  ] p=0.0 done in 0.1s
+[random  ] p=0.1 done in 6.0s
+[random  ] p=0.2 done in 6.0s
+[random  ] p=0.3 done in 6.1s
+[random  ] p=0.4 done in 7.0s
+[random  ] p=0.5 done in 7.9s
+[random  ] p=0.6 done in 7.6s
+[random  ] p=0.7 done in 9.8s
+[coherent] p=0.0 done in 0.1s
+[coherent] p=0.1 done in 3.3s
+[coherent] p=0.2 done in 3.2s
+[coherent] p=0.3 done in 3.0s
+[coherent] p=0.4 done in 3.7s
+[coherent] p=0.5 done in 3.7s
+[coherent] p=0.6 done in 3.5s
+[coherent] p=0.7 done in 3.1s
+repro: {'available': True, 'n_compared': 3600, 'n_missing': 0, 'max_abs_drot_deg': 0.0, 'max_abs_dtrans_m': 0.0, 'success_mismatch': 0, 'iter_mismatch': 0, 'passed': True}
+wrote /mnt/storage1/syk/.superagent-work/wt-p3-ransac-lo/labs/03-robust-qpeplayer/experiments/ablations/ransac_lo/results/ransac_lo.{json,md,png} + raw.jsonl (4800 records) in 75.5s

@@ -1,0 +1,18 @@
+srun: job 3145 queued and waiting for resources
+srun: job 3145 has been allocated resources
+sigma=0.005 p=0.3 done
+sigma=0.005 p=0.5 done
+sigma=0.005 p=0.7 done
+sigma=0.01 p=0.3 done
+sigma=0.01 p=0.5 done
+sigma=0.01 p=0.7 done
+sigma=0.02 p=0.3 done
+sigma=0.02 p=0.5 done
+sigma=0.02 p=0.7 done
+sigma=0.03 p=0.3 done
+sigma=0.03 p=0.5 done
+sigma=0.03 p=0.7 done
+sigma=0.05 p=0.3 done
+sigma=0.05 p=0.5 done
+sigma=0.05 p=0.7 done
+wrote /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/ablations/noise/results

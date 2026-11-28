@@ -1,0 +1,24 @@
+[7-scenes-redkitchen] descriptor audit on 6 pairs
+  FPFH 7-scenes-redkitchen/51: 2274 pts in 0.1s
+  FPFH 7-scenes-redkitchen/52: 4453 pts in 0.1s
+  FPFH 7-scenes-redkitchen/50: 3860 pts in 0.1s
+  FPFH 7-scenes-redkitchen/13: 9568 pts in 0.2s
+  FPFH 7-scenes-redkitchen/14: 8682 pts in 0.2s
+  FPFH 7-scenes-redkitchen/47: 5139 pts in 0.1s
+  FPFH 7-scenes-redkitchen/48: 5229 pts in 0.1s
+  FPFH 7-scenes-redkitchen/49: 5275 pts in 0.1s
+[7-scenes-redkitchen] done
+[sun3d-home_at-home_at_scan1_2013_jan_1] descriptor audit on 6 pairs
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/31: 15311 pts in 0.3s
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/32: 11170 pts in 0.2s
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/14: 10306 pts in 0.2s
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/16: 8854 pts in 0.2s
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/24: 10781 pts in 0.2s
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/29: 12597 pts in 0.3s
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/1: 16938 pts in 0.4s
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/2: 16486 pts in 0.3s
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/21: 5579 pts in 0.1s
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/22: 8654 pts in 0.2s
+  FPFH sun3d-home_at-home_at_scan1_2013_jan_1/18: 7610 pts in 0.2s
+[sun3d-home_at-home_at_scan1_2013_jan_1] done
+wrote descriptor.json/md

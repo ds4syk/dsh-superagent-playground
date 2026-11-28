@@ -1,0 +1,21 @@
+[data] building the 15 real frames (same as run_two_mode PART A)
+[data] 15 frames (skipped 1)
+[data] flip-angle vs two_mode.json max abs diff: 0.00e+00 deg
+[verify] objective equality + FD Jacobian on 3 frames
+[grid] 000010/15: gt rot=1.47 id rot=179.97 rand gt=6/20 (4s)
+[grid] 000010/18: gt rot=0.51 id rot=91.90 rand gt=7/20 (4s)
+[grid] 000010/40: gt rot=2.20 id rot=69.08 rand gt=4/20 (5s)
+[grid] 000010/60: gt rot=0.96 id rot=104.05 rand gt=10/20 (5s)
+[grid] 000010/66: gt rot=2.29 id rot=2.29 rand gt=5/20 (5s)
+[grid] 000010/72: gt rot=3.84 id rot=178.82 rand gt=5/20 (6s)
+[grid] 000010/80: gt rot=1.08 id rot=180.00 rand gt=5/20 (6s)
+[grid] 000010/90: gt rot=3.49 id rot=179.84 rand gt=10/20 (7s)
+[grid] 000011/20: gt rot=8.14 id rot=69.14 rand gt=7/20 (7s)
+[grid] 000011/24: gt rot=1.37 id rot=179.94 rand gt=8/20 (7s)
+[grid] 000011/26: gt rot=2.06 id rot=179.81 rand gt=7/20 (7s)
+[grid] 000011/32: gt rot=1.78 id rot=179.82 rand gt=5/20 (8s)
+[grid] 000011/33: gt rot=1.62 id rot=179.75 rand gt=8/20 (8s)
+[grid] 000011/40: gt rot=2.77 id rot=106.01 rand gt=7/20 (8s)
+[grid] 000011/49: gt rot=4.95 id rot=83.71 rand gt=6/20 (9s)
+[multistart] 8 inits on 5 frames
+[done] 9.1s -> /tmp/p1-repro.20261127-223924.VDTXTe/labs/01-laplace-qpeplayer/experiments/real/linemod/results/theseus_baseline.md

@@ -1,0 +1,13 @@
+\section{相关工作}\label{sec:related}
+
+\textbf{可认证层与 SDP 路线。} SDPRLayers \cite{holmes2025sdpr} 将齐次 QCQP 提升为 $X\succeq0$，求解 Shor 松弛，并用一个容许多余约束的隐式选择定理对原 KKT 系统求导。其已发布的位姿估计器使用 $13$ 维向量 $x=[h;\mathrm{vec}(C);t]$ 与 24 条二次约束（6 条正交、9 条手性、9 条范数），其中后 18 条被标为冗余。本文工作有四点不同。(i) \emph{变量：}我们在 $q\in\mathbb{S}^3$ 上优化（四个变量、一条约束）并精确消去 $t$，因此非凸问题的维数恒定，与对应点数量无关。(ii) \emph{全局机制：}QPEP 枚举全部 KKT 根并比较目标值；没有凸松弛，因而没有紧性假设。(iii) \emph{反向：}我们对约化驻点系统求导，使用 $3\times3$ 黎曼 Hessian；SDPRLayers 在行约化后对含冗余行的 KKT 系统求导。(iv) \emph{歧义：}我们返回模态上的平滑后验；SDPRLayers 返回单一可认证解，在松弛不紧时没有定义良好的行为。本文的 $10\times10$ 分析适用于完整的 20 维理想，定理~\ref{thm:thirteen} 证明它与 $13\times13$ 松弛等价；已发布的 24 约束实现张成 17 维，将在第~\ref{sec:results_sdp}~节单独考察。
+
+\textbf{概率位姿估计。} EPro-PnP \cite{chen2022epropnp} 在 $SE(3)$ 上定义 Boltzmann 分布，并使用自适应多重重要性采样以 KL 损失训练。本文后验同样是 Boltzmann 分布，但支撑集是 $\mathbb{S}^3/\{\pm1\}$ 而非 $SE(3)$，平移被精确边缘化，旋转积分在穷举的模态列表上解析近似而非采样。这是以偏差换方差：EPro-PnP 渐近精确但方差大，而本文层是确定性的，但在远离分岔处存在 $O(\tau)$ 的 Laplace 偏差。本文的采样基线从离散模态权重中抽取，因此隔离出的是离散模态采样方差。
+
+\textbf{QPEP 求解器。} Wu 等 \cite{wu2022qpep} 将一大类位姿问题统一为单位四元数上的二次问题，消去平移，用 Gr\"obner 基求解所得多项式系统，并分析可解性、可观性与协方差。其求解器在已发布实现中最多返回 40 个候选复根（通用的 40 根数由第~\ref{sec:rootcount}~节的全次数同伦确认）；全局解通过比较目标值得到，而不是通过凸证书。QPEP 不提供对数据的导数。本文贡献正是缺失的可微层：闭式 Euler 乘子、$3\times3$ 隐式微分、对映不变性，以及枚举根上的 Laplace 后验。前向枚举依赖 QPEP，并把其完备性作为显式假设 (A2)。
+
+\textbf{局部求解器的隐式微分。} BPnP \cite{chen2020bpn} 通过对其最优性条件做隐式微分，反向传播穿过 PnP 求解器。该求解器是局部的，并由网络预测初始化；梯度是局部解的梯度，而非全局解的梯度。在分支交叉处，局部解可能是错误的，并且全局 argmin 的导数作为经典函数不存在。Theseus \cite{pineda2022theseus} 提供支持李群、稀疏求解器、批处理与隐式/直接损失最小化的可微非线性最小二乘库；它是通用局部优化器，不枚举全局模态，也不提供证书。本文层更窄（四元数上的四次代价），但更穷举，且具有规模恒定的闭式反向传播。
+
+\textbf{多项式优化、矩与平方和。} 本文分析的松弛是二次 Shor/Veronese 松弛，而不是完整的矩层级。Lasserre 层级 \cite{lasserre2001} 与 Laurent 的综述 \cite{laurent2009} 给出一般的矩/SOS 框架；Hilbert \cite{hilbert1888} 证明非负形式不必是平方和，Blekherman \cite{blekherman2006} 量化了非负形式比 SOS 形式多出多少。Choi--Lam 四次型 \cite{choi1977extremal,choi1980zeros} 是该间隙的标准显式见证，因此我们用它构造具有认证松弛间隙的实例；定理~\ref{thm:lift} 背后的 Veronese 簇代数几何是标准的 \cite{harris1992}。本文 SDP 是带单一迹局部化条件的二次 Veronese 松弛，而不是带球面局部化矩阵的教科书二阶 Lasserre 矩松弛，更高阶层级不在分析范围内。
+
+\textbf{Laplace 渐近与 $SO(3)$ 的几何。} Laplace 近似及其一致（Airy）对应物是经典的渐近展开结果 \cite{bleistein1986,wong1989}；第~\ref{sec:discussion}~节的分支合并分析涉及的正是标准展开不再一致的退化情形。旋转积分中的测度常数来自 $SO(3)$ 的 Haar 测度与双覆盖 $\mathbb{S}^3\to SO(3)$ \cite{chirikjian2012}。定理~\ref{thm:implicit}--\ref{thm:cert} 背后的隐函数理论来自 Dontchev 与 Rockafellar \cite{dontchev2009}，前向枚举的数值方法（阻尼 Newton、Levenberg--Marquardt、KKT 系统）是标准的 \cite{nocedal2006}。

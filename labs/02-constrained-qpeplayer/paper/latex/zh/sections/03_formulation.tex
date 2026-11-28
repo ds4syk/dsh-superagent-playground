@@ -1,0 +1,32 @@
+\section{问题表述与记号}\label{sec:formulation}
+
+\subsection{记号}\label{sec:notation}
+$\mathbf q=[q_0,q_1,q_2,q_3]^\top\in\mathbb{S}^3$ 是单位四元数，$\mathbf R(\mathbf q)\in SO(3)$ 是对应旋转。对三维向量 $\mathbf p$，定义提升单项式向量
+\begin{equation}
+\mathbf v_2(\mathbf q)=\big[q_0^2,q_1^2,q_2^2,q_3^2,\sqrt2 q_0q_1,\dots,\sqrt2 q_2q_3\big]^\top\in\mathbb{R}^{10},
+\label{eq:v2}
+\end{equation}
+于是对 $\mathbf q\in\mathbb{S}^3$ 有 $\|\mathbf v_2(\mathbf q)\|_2^2=\|\mathbf q\|_2^4=1$，且 $\mathbf e_{\rm tr}=[1,1,1,1,0,\dots,0]^\top$ 满足 $\mathbf e_{\rm tr}^\top\mathbf v_2(\mathbf q)=1$。
+
+\textbf{事实 3.1（仿射可表示性）。} 对任意 $\mathbf p\in\mathbb{R}^3$ 与 $a\in\{1,2,3\}$，存在 $\mathbf m_a(\mathbf p)\in\mathbb{R}^{10}$，使得对所有 $\mathbf q\in\mathbb{S}^3$ 有 $\mathbf e_a^\top\mathbf R(\mathbf q)\mathbf p=\mathbf m_a(\mathbf p)^\top\mathbf v_2(\mathbf q)$；这正是四类约束族都在 $(\mathbf v_2,\mathbf t)$ 中仿射的原因。
+
+\subsection{目标与约束}\label{sec:objective}
+\begin{equation}
+\begin{aligned}
+J_\theta(\mathbf q,\mathbf t)={}&\mathbf v_2(\mathbf q)^\top\mathbf M_0(\theta)\mathbf v_2(\mathbf q)+2\mathbf t^\top\mathbf D_0(\theta)\mathbf v_2(\mathbf q)\\
+&+\mathbf t^\top\mathbf G_0(\theta)\mathbf t .
+\end{aligned}
+\label{eq:objective}
+\end{equation}
+对 PnP 型残差 $\mathbf r_i(\mathbf q,\mathbf t)=\mathbf P_i(\mathbf R(\mathbf q)\mathbf p_i+\mathbf t)$，其中 $\mathbf P_i=\mathbf I-\mathbf u_i\mathbf u_i^\top/\|\mathbf u_i\|^2$ 为视线投影，\eqref{eq:objective} 成立，且 $\mathbf M_0=\sum_i\sum_{ab}P_{i,ab}\operatorname{sym}(\mathbf m_a(\mathbf p_i)\mathbf m_b(\mathbf p_i)^\top)$、$\mathbf D_0=\sum_i\mathbf P_i[\mathbf m_1;\mathbf m_2;\mathbf m_3]$、$\mathbf G_0=\sum_i\mathbf P_i$；这是 QPEP 的问题类在消去 $\mathbf t$ 之前的形式。所有约束都具有形式 $g_j(\mathbf q,\mathbf t)=\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)+\mathbf b_j^\top\mathbf t\le0$，即正深度、平面非穿透、视场与倾角锥四类（表~\ref{tab:families}）。
+
+两个视场不等式只有在 $\tau<\infty$ 且约束沿正确方向活跃时才蕴含 $z>0$，因此我们总是对每个观测点显式加入一个正深度约束，代价随点数线性增长。
+
+\subsection{问题（C-QPEP）}\label{sec:cqpep}
+\begin{equation}
+\min_{\mathbf q\in\mathbb{S}^3,\ \mathbf t\in\mathbb{R}^3}\ J_\theta(\mathbf q,\mathbf t)\quad\text{s.t.}\ g_j(\mathbf q,\mathbf t;\theta)\le0,\quad j=1,\dots,p. \tag{C-QPEP}
+\end{equation}
+\begin{assumption}\label{asm:main}
+$\mathbf M_0,\mathbf D_0,\mathbf G_0$ 关于 $\theta$ 连续可微，且 $\mathbf G_0\succ0$（或活跃的 $\mathbf b_j$ 张成 $\mathbb{R}^3$）。
+\end{assumption}
+该表述覆盖在 $(\mathbf v_2,\mathbf t)$ 中仿射、对 $\mathbf q$ 多项式的约束，且限于单个受约束最优解随 $\theta$ 连续变化的参数区域。

@@ -22,3 +22,12 @@ This sandbox is also used to test the agent running on the lab server.
 - **SDPR 前向网络与数据集**（2026-11）：
   [report](report/README-sdpr-forward-net.md) · [主报告](report/sdpr_forward_network_dataset.md) ·
   [DOCX](deliverables/SDPR_前向网络与数据集_2026-11.docx)
+
+## 论文工作区（labs，2026-11）
+
+从三个 QPEP 可微位姿层 prototype 并行推进为三篇论文：
+
+- [总览与共享骨架](labs/README.md) · [数学问题汇总](labs/MATH_QUESTIONS.md)
+- [P1 Laplace-QPEPLayer](labs/01-laplace-qpeplayer/)（歧义/分支交叉、多峰 Laplace 平滑）
+- [P2 Constrained-QPEPLayer](labs/02-constrained-qpeplayer/)（物理不等式约束、FB 约化隐微分）
+- [P3 Robust-QPEPLayer](labs/03-robust-qpeplayer/)（高外点、GNC + 曲率修正不动点微分）

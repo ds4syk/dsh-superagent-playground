@@ -1,0 +1,49 @@
+\section{Problem Formulation and Notation}
+\label{sec:formulation}
+
+Let $\mathcal{M}=\mathbb{S}^3\times\mathbb{R}^3$ with $z=(\mathbf{q},\mathbf{t})$ and
+$\mathbf{q}^\top\mathbf{q}=1$. For $i=1,\dots,N$ let $\mathbf{p}_i\in\mathbb{R}^3$ be a model
+point, $\mathbf{y}_i\in\mathbb{R}^3$ an observation, and $W_i\in\mathbb{S}^3_{++}$ a
+positive-definite weight. The 3D--3D residual and its squared weighted norm are
+\begin{equation}
+\begin{aligned}
+\mathbf{r}_i(z,\theta)&=R(\mathbf{q})\mathbf{p}_i+\mathbf{t}-\mathbf{y}_i,\\
+e_i(z,\theta)&=\|\mathbf{r}_i\|_{W_i}^2=\mathbf{r}_i^\top W_i\mathbf{r}_i\ge0,
+\end{aligned}
+\end{equation}
+where $\theta$ collects the parameters of the layer (correspondences, features, and optionally the
+weights). We write $\mathbf{u}_i=R(\mathbf{q})\mathbf{p}_i$ and
+$J_i=\partial\mathbf{u}_i/\partial\mathbf{q}\in\mathbb{R}^{3\times4}$; since $\mathbf{u}_i$ is
+homogeneous of degree two in $\mathbf{q}$, Euler's theorem gives $J_i\mathbf{q}=2\mathbf{u}_i$.
+
+The robust cost is $F_{\mathrm{rob}}(z;\theta)=\sum_{i=1}^N\rho(e_i(z;\theta))$, with the
+Geman--McClure kernel
+\begin{equation}
+\begin{aligned}
+\rho(e)&=\frac{c^2e}{c^2+e},\qquad
+\rho'(e)=\frac{c^4}{(c^2+e)^2},\\
+\rho''(e)&=-\frac{2c^4}{(c^2+e)^3}.
+\end{aligned}
+\end{equation}
+The GNC surrogate is $\rho_\mu(e)=\mu c^2e/(\mu c^2+e)$ for $\mu\ge1$. The BR dual variable is
+$w_i\in[0,1]$, with dual potential $\psi_\mu(w)=\mu c^2(\sqrt{w}-1)^2$. We write $g_i$ and $H_i$
+for the Riemannian gradient and Hessian \cite{absil2008} of $e_i$ on $\mathcal{M}$, and
+$g_i^E,H_i^E$ for their Euclidean counterparts in $\mathbb{R}^7$. $P=I_4-\mathbf{q}\mathbf{q}^\top$
+is the tangent projector at $\mathbf{q}$; $\Pi=\diag(P,I_3)$; $B=\diag(B_q,I_3)$ is an orthonormal
+tangent basis, with $B_q\in\mathbb{R}^{4\times3}$ spanning $\{\mathbf{q}\}^{\perp}$. The
+stationarity map is
+\begin{equation}
+\Phi(z,\theta)=\sum_i\rho'(e_i(z,\theta))\,g_i(z,\theta)\in T_z\mathcal{M}.
+\label{eq:phi}
+\end{equation}
+A GNC fixed point at $\mu=1$ satisfies $w_i=\rho'(e_i)$ and $\Phi=0$; the exact derivative is
+obtained from $H_{\mathrm{rob}}\,\mathrm{d}z+\partial_\theta\Phi\,\mathrm{d}\theta=0$.
+
+\noindent\textbf{Assumptions.} (A1) $e_i\in C^2$ and all derivatives are continuous; $W_i$ lies in a
+compact subset of $\mathbb{S}^3_{++}$. (A2) The weighted QPEP is solved globally by an algebraic
+solver that enumerates all KKT roots (QPEP-style)---an algebraic-global assumption, not a convex
+certificate. (A3) At the point of interest the weighted minimizer is unique and $H_{\mathrm{rob}}$ is
+invertible; for a strict local minimum we strengthen this to $H_{\mathrm{rob}}\succ0$. (A4)
+Parameters enter smoothly; the main derivations assume $W_i$ fixed, with the $W_i(\theta)$ extension
+in Appendix~\ref{app:proofs}. (A5) $N\ge3$, $\sum_iw_iW_i\succ0$, and the 3D points are not
+collinear.

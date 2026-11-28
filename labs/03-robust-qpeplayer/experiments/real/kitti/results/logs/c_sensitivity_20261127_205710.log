@@ -1,0 +1,14 @@
+10 base pairs
+c=0.15 p=0.0 done (1.6s)
+c=0.15 p=0.3 done (3.3s)
+c=0.15 p=0.5 done (4.6s)
+c=0.15 p=0.7 done (6.1s)
+c=0.25 p=0.0 done (7.3s)
+c=0.25 p=0.3 done (9.0s)
+c=0.25 p=0.5 done (11.6s)
+c=0.25 p=0.7 done (14.1s)
+c=0.35 p=0.0 done (16.5s)
+c=0.35 p=0.3 done (18.0s)
+c=0.35 p=0.5 done (19.4s)
+c=0.35 p=0.7 done (20.8s)
+wrote /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/real/kitti/results

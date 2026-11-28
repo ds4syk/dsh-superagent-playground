@@ -1,0 +1,42 @@
+\documentclass[conference]{IEEEtran}
+\input{preamble}
+\begin{document}
+
+\title{Robust-QPEPLayer: Curvature-Corrected Implicit Differentiation for RANSAC-Free Robust Pose Estimation}
+
+\author{\IEEEauthorblockN{First Author}
+\IEEEauthorblockA{Department, Institution\\
+City, Country\\
+Email address}}
+
+\maketitle
+
+\begin{abstract}
+\input{sections/00_abstract}
+\end{abstract}
+
+\begin{IEEEkeywords}
+robust pose estimation, differentiable optimization, Black--Rangarajan duality, graduated non-convexity, implicit differentiation.
+\end{IEEEkeywords}
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_formulation}
+\input{sections/04_method}
+\input{sections/05_experiments}
+\input{sections/06_discussion}
+\input{sections/07_conclusion}
+
+\balance
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+% ---------------------------------------------------------------- appendix
+% Not counted toward the seven-page main-text limit. The \newpage makes the
+% boundary explicit so the page number of the appendix start is the main-text
+% page count (checked with \pageref{app:start}).
+\newpage
+\appendix
+\input{sections/08_appendix}
+
+\end{document}

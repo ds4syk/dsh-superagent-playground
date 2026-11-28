@@ -1,0 +1,16 @@
+200->201 n=259 inl=61.4% depth=6.4m GNC rot=0.107 trans=0.005 fe=167ms
+201->202 n=265 inl=63.4% depth=6.7m GNC rot=0.077 trans=0.018 fe=159ms
+202->203 n=263 inl=65.4% depth=5.9m GNC rot=0.011 trans=0.007 fe=155ms
+203->204 n=274 inl=68.2% depth=5.8m GNC rot=0.153 trans=0.011 fe=155ms
+204->205 n=287 inl=68.6% depth=5.7m GNC rot=0.105 trans=0.009 fe=157ms
+205->206 n=265 inl=63.4% depth=7.6m GNC rot=0.122 trans=0.010 fe=159ms
+206->207 n=282 inl=62.8% depth=8.2m GNC rot=0.077 trans=0.017 fe=153ms
+207->208 n=285 inl=64.6% depth=7.7m GNC rot=0.112 trans=0.017 fe=158ms
+208->209 n=287 inl=67.6% depth=5.0m GNC rot=0.103 trans=0.007 fe=156ms
+209->210 n=268 inl=70.1% depth=5.3m GNC rot=0.170 trans=0.010 fe=159ms
+210->211 n=254 inl=66.9% depth=5.9m GNC rot=0.114 trans=0.013 fe=149ms
+211->212 n=273 inl=66.3% depth=6.4m GNC rot=0.083 trans=0.012 fe=150ms
+212->213 n=240 inl=66.7% depth=6.1m GNC rot=0.075 trans=0.010 fe=148ms
+213->214 n=254 inl=68.9% depth=5.4m GNC rot=0.049 trans=0.013 fe=147ms
+214->215 n=243 inl=67.5% depth=5.4m GNC rot=0.035 trans=0.023 fe=150ms
+wrote results/inthedark_sparse.json (15 pairs, 3.6s wall)

@@ -1,0 +1,62 @@
+\section{Introduction}
+
+Optimization layers are now standard in differentiable robotics and vision: a geometric problem is
+solved in the forward pass, and implicit differentiation of its optimality conditions provides
+gradients to an upstream network \cite{holmes2025sdpr,pineda2022theseus,chen2020bpn}. For pose
+estimation the difficulty is non-convexity: local solvers converge to \emph{a} stationary point
+whose gradient is generally not the gradient of the global pose. SDPRLayers
+\cite{holmes2025sdpr} solves a convex semidefinite relaxation, certifies rank-one optimality, and
+differentiates the original KKT system there; QPEP \cite{wu2022qpep} eliminates translation,
+enumerates all stationary points of a quartic system with a Gr\"obner basis, and returns the
+algebraically global optimum. Both are global in the forward pass, but neither is robust: SDPRLayers'
+real-data experiments wrap the layer in RANSAC \cite{fischler1981ransac} and train on clean samples,
+and a robust SDP with per-correspondence binary variables lifts a $10\times10$ matrix to
+$(10+9N)\times(10+9N)$ \cite{holmes2025sdpr}.
+
+This paper asks: \emph{can we obtain a differentiable pose layer that is robust to gross outliers,
+has constant dimension in the number of correspondences, and differentiates the robust estimator
+exactly rather than unrolling it or freezing its weights?} We answer with three ingredients:
+\textbf{Black--Rangarajan duality} \cite{black1996br}, which turns a redescending $M$-estimator
+into a joint optimization over the pose and one weight per correspondence; \textbf{graduated
+non-convexity} \cite{yang2020gnc,yang2020teaser}, which anneals a convex surrogate towards the
+redescending kernel; and \textbf{QPEP} \cite{wu2022qpep}, which solves each weighted subproblem
+globally in a fixed number of variables. The combination is not new in spirit---GNC with a weighted
+least-squares inner solver is standard in robust registration \cite{yang2020gnc,yang2020teaser}---but
+the \emph{differentiable} layer exposes a structure that, to our knowledge, has not been isolated:
+the exact derivative of the robust fixed point contains a \emph{redescending curvature correction}
+that is the Schur complement of the BR weight block, and on $\mathbb{S}^3$ it also contains a
+\emph{constraint-multiplier term} that the Euclidean formula misses. Dropping either term makes
+gradients wrong by a large factor, or even flips their sign for boundary outliers.
+
+\subsection{Contributions}
+
+\begin{enumerate}
+\item \textbf{A constant-dimension robust forward pass with an exact dual.} The BR dual of the
+  Geman--McClure (GM) kernel is exact for every weight and annealing parameter, the optimal weight
+  is the kernel derivative, and GNC-QPEP is a monotone block-coordinate descent whose limit points
+  are coordinate-wise stationary (Lemma~\ref{lem:brdual}, Theorem~\ref{thm:gnc}). The inner
+  weighted subproblem is solved globally; in the 3D--3D experiments it reduces to the closed-form
+  $4\times4$ specialization.
+\item \textbf{Exact fixed-point implicit differentiation with a curvature correction.} A GNC fixed
+  point is a stationary point of the robust cost (Lemma~\ref{lem:fixedpoint}); the redescending
+  correction is the eliminated weight block (Lemma~\ref{lem:schur}); and the exact Riemannian
+  Hessian contains $-\lambda_{\mathrm{rob}}\diag(I_3,0_3)$ with the 3D--3D constant
+  $\lambda_i=4\mathbf{u}_i^\top W_i\mathbf{r}_i$, \emph{not} $4e_i$ (Lemma~\ref{lem:hessian}).
+  Dropping it changes the spectrum by $O(1)$.
+\item \textbf{A rigorous sign-flip result and an $O(\|\mathbf{r}\|^{-4})$ gradient bound.} In a 1D
+  location model, at a strict minimum with $H_{\mathrm{rob}}>0$, the exact derivative is
+  $\lambda_\parallel(e_j)/H_{\mathrm{rob}}$ while the frozen-weight derivative is always positive;
+  for $e_j>c^2/3$ the signs are strictly opposite (Proposition~\ref{prop:signflip}), and such a
+  configuration exists for two well-separated observations (Proposition~\ref{prop:existence}). We
+  also prove a per-observation $\|\partial z^*/\partial\mathbf{y}_i\|=O(\|\mathbf{r}_i\|^{-4})$
+  bound under uniform invertibility, whereas the forward bias is only $O(\|\mathbf{r}_i\|^{-3})$
+  (Proposition~\ref{prop:bound}).
+\item \textbf{A unified kernel framework and an evaluation protocol.} We give the BR duals of
+  GM, Cauchy, Welsch, and TLS, with structurally identical forward and backward passes
+  (Appendix~\ref{app:kernel}), and evaluate on synthetic 3D--3D, ModelNet40/10, all eight official
+  3DMatch test scenes, two KITTI raw drives, all 11 KITTI odometry sequences 00--10 (33 selected
+  frames each), and four UTIAS In-The-Dark runs. Theseus and SDPRLayers serve as external baselines.
+\end{enumerate}
+
+The layer is complementary to Veronese-lifting and constrained-QPEP formulations: it uses neither
+the $O(10)$ Veronese isomorphism nor inequality constraints, and shares only the QPEP inner solver.

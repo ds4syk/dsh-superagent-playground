@@ -1,0 +1,258 @@
+[
+  {
+    "p": 0.0,
+    "method": "Kabsch",
+    "success": 1.0,
+    "rot_median": 0.14790157359782186,
+    "trans_median": 0.0011374568369860818,
+    "time_ms": 0.06830273196101189
+  },
+  {
+    "p": 0.0,
+    "method": "RANSAC+Kabsch",
+    "success": 1.0,
+    "rot_median": 0.14790157359782186,
+    "trans_median": 0.0011374568369860818,
+    "time_ms": 0.24980981834232807
+  },
+  {
+    "p": 0.0,
+    "method": "IRLS-GM",
+    "success": 1.0,
+    "rot_median": 0.15051226474295448,
+    "trans_median": 0.0011268801734893807,
+    "time_ms": 2.8738570399582386
+  },
+  {
+    "p": 0.0,
+    "method": "GNC-GM (ours)",
+    "success": 1.0,
+    "rot_median": 0.1505122626913508,
+    "trans_median": 0.0011268801585424372,
+    "time_ms": 0.6602420471608639
+  },
+  {
+    "p": 0.1,
+    "method": "Kabsch",
+    "success": 0.88,
+    "rot_median": 2.3606452307485934,
+    "trans_median": 0.04309493530337082,
+    "time_ms": 0.05874224007129669
+  },
+  {
+    "p": 0.1,
+    "method": "RANSAC+Kabsch",
+    "success": 1.0,
+    "rot_median": 0.1524064690251155,
+    "trans_median": 0.001247057681573069,
+    "time_ms": 56.12019798718393
+  },
+  {
+    "p": 0.1,
+    "method": "IRLS-GM",
+    "success": 1.0,
+    "rot_median": 0.15161477468556483,
+    "trans_median": 0.0013293845151346557,
+    "time_ms": 2.2583191748708487
+  },
+  {
+    "p": 0.1,
+    "method": "GNC-GM (ours)",
+    "success": 1.0,
+    "rot_median": 0.15161477828315645,
+    "trans_median": 0.0013293844661262598,
+    "time_ms": 1.824184088036418
+  },
+  {
+    "p": 0.2,
+    "method": "Kabsch",
+    "success": 0.48,
+    "rot_median": 4.671014102442117,
+    "trans_median": 0.06309142823563899,
+    "time_ms": 0.055458396673202515
+  },
+  {
+    "p": 0.2,
+    "method": "RANSAC+Kabsch",
+    "success": 1.0,
+    "rot_median": 0.16812698248318753,
+    "trans_median": 0.0011205874362440159,
+    "time_ms": 55.4124906193465
+  },
+  {
+    "p": 0.2,
+    "method": "IRLS-GM",
+    "success": 1.0,
+    "rot_median": 0.17273243773133284,
+    "trans_median": 0.0011380281036667268,
+    "time_ms": 2.2052908316254616
+  },
+  {
+    "p": 0.2,
+    "method": "GNC-GM (ours)",
+    "success": 1.0,
+    "rot_median": 0.17273243587628875,
+    "trans_median": 0.001138027920733935,
+    "time_ms": 1.7494026105850935
+  },
+  {
+    "p": 0.3,
+    "method": "Kabsch",
+    "success": 0.22,
+    "rot_median": 5.192372879888055,
+    "trans_median": 0.1000841833827614,
+    "time_ms": 0.05479133687913418
+  },
+  {
+    "p": 0.3,
+    "method": "RANSAC+Kabsch",
+    "success": 1.0,
+    "rot_median": 0.19750082036342934,
+    "trans_median": 0.0012103362702818967,
+    "time_ms": 55.10812532156706
+  },
+  {
+    "p": 0.3,
+    "method": "IRLS-GM",
+    "success": 1.0,
+    "rot_median": 0.19489385491037453,
+    "trans_median": 0.001247317503866613,
+    "time_ms": 2.113964641466737
+  },
+  {
+    "p": 0.3,
+    "method": "GNC-GM (ours)",
+    "success": 1.0,
+    "rot_median": 0.19489391364404984,
+    "trans_median": 0.0012473169143952289,
+    "time_ms": 1.75466388463974
+  },
+  {
+    "p": 0.4,
+    "method": "Kabsch",
+    "success": 0.04,
+    "rot_median": 8.84151362656317,
+    "trans_median": 0.12250216812716301,
+    "time_ms": 0.054921954870224
+  },
+  {
+    "p": 0.4,
+    "method": "RANSAC+Kabsch",
+    "success": 1.0,
+    "rot_median": 0.18591851092839534,
+    "trans_median": 0.001418837014943032,
+    "time_ms": 54.03535068035126
+  },
+  {
+    "p": 0.4,
+    "method": "IRLS-GM",
+    "success": 1.0,
+    "rot_median": 0.18444300259852023,
+    "trans_median": 0.0014587530174790812,
+    "time_ms": 2.1963876206427813
+  },
+  {
+    "p": 0.4,
+    "method": "GNC-GM (ours)",
+    "success": 1.0,
+    "rot_median": 0.18444298698531764,
+    "trans_median": 0.0014587528755000783,
+    "time_ms": 1.7976919189095497
+  },
+  {
+    "p": 0.5,
+    "method": "Kabsch",
+    "success": 0.0,
+    "rot_median": 12.285212371691461,
+    "trans_median": 0.15515112924505753,
+    "time_ms": 0.05511916242539883
+  },
+  {
+    "p": 0.5,
+    "method": "RANSAC+Kabsch",
+    "success": 1.0,
+    "rot_median": 0.2027724619813163,
+    "trans_median": 0.0014543323139490022,
+    "time_ms": 54.668423254042864
+  },
+  {
+    "p": 0.5,
+    "method": "IRLS-GM",
+    "success": 1.0,
+    "rot_median": 0.20985226751979558,
+    "trans_median": 0.0015389003772560018,
+    "time_ms": 2.210459439083934
+  },
+  {
+    "p": 0.5,
+    "method": "GNC-GM (ours)",
+    "success": 1.0,
+    "rot_median": 0.20985226189937295,
+    "trans_median": 0.0015389006067147069,
+    "time_ms": 1.7744079232215881
+  },
+  {
+    "p": 0.6,
+    "method": "Kabsch",
+    "success": 0.02,
+    "rot_median": 14.867762375569018,
+    "trans_median": 0.1733242817360922,
+    "time_ms": 0.05443301051855087
+  },
+  {
+    "p": 0.6,
+    "method": "RANSAC+Kabsch",
+    "success": 1.0,
+    "rot_median": 0.2026600017563178,
+    "trans_median": 0.0018741253599720469,
+    "time_ms": 53.70888067409396
+  },
+  {
+    "p": 0.6,
+    "method": "IRLS-GM",
+    "success": 1.0,
+    "rot_median": 0.21123993410826866,
+    "trans_median": 0.0018482126677589227,
+    "time_ms": 2.0808340050280094
+  },
+  {
+    "p": 0.6,
+    "method": "GNC-GM (ours)",
+    "success": 1.0,
+    "rot_median": 0.21123985246137394,
+    "trans_median": 0.0018482127559682846,
+    "time_ms": 1.709365053102374
+  },
+  {
+    "p": 0.7,
+    "method": "Kabsch",
+    "success": 0.0,
+    "rot_median": 24.940877835512005,
+    "trans_median": 0.20364792914349675,
+    "time_ms": 0.053892843425273895
+  },
+  {
+    "p": 0.7,
+    "method": "RANSAC+Kabsch",
+    "success": 1.0,
+    "rot_median": 0.2492899200560446,
+    "trans_median": 0.002025994103512012,
+    "time_ms": 53.52080287411809
+  },
+  {
+    "p": 0.7,
+    "method": "IRLS-GM",
+    "success": 0.98,
+    "rot_median": 0.2637804655664706,
+    "trans_median": 0.002104166398458095,
+    "time_ms": 2.0547781605273485
+  },
+  {
+    "p": 0.7,
+    "method": "GNC-GM (ours)",
+    "success": 1.0,
+    "rot_median": 0.2637804848311419,
+    "trans_median": 0.0020875894071571252,
+    "time_ms": 1.6949821729213
+  }
+]

@@ -1,0 +1,41 @@
+\section{Problem Formulation and Notation}\label{sec:formulation}
+
+Let $q=[q_0,q_1,q_2,q_3]^\top\in\mathbb{R}^4$ be a unit quaternion and $R(q)\in SO(3)$ the associated rotation. We use the homogeneous lift
+\begin{equation}
+x_R(q)=\big[\|q\|^2,\ \mathrm{vec}(R(q))^\top\big]^\top\in\mathbb{R}^{10},
+\label{eq:lift}
+\end{equation}
+and the Veronese vector
+\begin{equation}
+\begin{split}
+v_2(q)=\big[&q_0^2,\ q_1^2,\ q_2^2,\ q_3^2,\ \sqrt2q_0q_1,\ \sqrt2q_0q_2,\ \sqrt2q_0q_3,\\
+&\sqrt2q_1q_2,\ \sqrt2q_1q_3,\ \sqrt2q_2q_3\big]^\top\in\mathbb{R}^{10}.
+\end{split}
+\label{eq:veronese}
+\end{equation}
+The QPEP family of costs \cite{wu2022qpep} is
+\begin{equation}
+J_\theta(q,t)=v_2(q)^\top M_0(\theta)v_2(q)+2t^\top D(\theta)v_2(q)+t^\top G(\theta)t,
+\label{eq:cost}
+\end{equation}
+with $q^\top q=1$ and $G(\theta)\succ0$. Eliminating $t$ gives $t^\star(q)=-G^{-1}Dv_2(q)$ and
+\begin{equation}
+J_{\mathrm{red}}(q;\theta)=v_2(q)^\top M(\theta)v_2(q),\qquad M=M_0-D^\top G^{-1}D .
+\label{eq:reduced}
+\end{equation}
+The map $\theta\mapsto(M_0,D,G)$ is assumed $C^2$ (Theorem~\ref{thm:implicit}) or $C^3$ (Theorem~\ref{thm:laplace}). The optimisation variable is four-dimensional; the data enter only through the fixed-size $10\times10$ matrix $M$, which is a weighted Gram matrix assembled once per observation. Because $v_2$ is a basis of $\mathrm{Sym}^2(\mathbb{R}^4)$, every quartic that is quadratic in the entries of $R(q)$ can be written in the form \eqref{eq:reduced}; this is the class covered by the theory.
+
+At a stationary point $q^\star$ we have $\nabla J=\lambda q$ and, by Euler homogeneity, $\lambda=4J$ (Theorem~\ref{thm:implicit}). The tangent basis used throughout is
+\begin{equation}
+E(q)=\begin{bmatrix}-q_1&-q_2&-q_3\\ q_0&-q_3&q_2\\ q_3&q_0&-q_1\\ -q_2&q_1&q_0\end{bmatrix},\qquad q^\top E=0,\quad E^\top E=I_3,
+\label{eq:tangent}
+\end{equation}
+so that a tangent perturbation is $\delta q=E\,\delta\xi$. The corresponding rotation vector is $\omega=2\,\delta\xi$; consequently the Hessian in rotation-vector coordinates is $H_\omega=\tfrac14H_{\mathbb{S}^3}$, and a factor of four separates our curvature from a curvature expressed per unit rotation angle. QPEP's observability and covariance analysis is defined in its own parameterisation, and comparisons should be made up to this constant.
+
+\textbf{Assumptions.}
+\begin{enumerate}
+\item[(A1)] $G(\theta)\succ0$ and $M(\theta)\in\mathbb{S}^{10}$ for all $\theta$ in the domain considered. This makes $t^\star$ unique and the reduced cost a well-defined quartic on the sphere.
+\item[(A2)] The forward algebraic solver returns \emph{all} real KKT roots of $\nabla J=4Jq$, $q^\top q=1$, up to the sign pair $\pm q$. A2 is a property of the forward solver, not of the theory; Section~\ref{sec:rootcount} measures the generic complex count of the system, and Section~\ref{sec:enumeration} examines the enumerator used in the experiments.
+\end{enumerate}
+
+The layer returns either the deterministic global pose $(q^{(1)},t^\star(q^{(1)}))$, or the smoothed posterior over the enumerated minima $\{(q^{(k)},w_k)\}_{k=1}^{K}$ together with the corresponding pose estimate. We write $\phi=[\mathrm{vec}\,R(q);t^\star(q)]\in\mathbb{R}^{12}$ for the pose vector whose derivative is checked numerically, $\Delta J=J(q^{(2)})-J(q^{(1)})$ for the objective gap between the best and the next-best distinct $SO(3)$ class, and $K$ for the number of enumerated real local minima of $J_{\mathrm{red}}$ on $\mathbb{S}^3/\{\pm1\}$. All rotation errors in this paper are geodesic angles on a proper rotation, $\arccos((\operatorname{tr}(R_{\rm est}^\top R_{\rm gt})-1)/2)$, in degrees; all translation errors are Euclidean, in metres.

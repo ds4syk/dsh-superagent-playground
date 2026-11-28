@@ -1,0 +1,13 @@
+N=20 p=0.0: ok=20/20 succ=1.00 p50=11.5ms
+N=20 p=0.3: ok=20/20 succ=0.00 p50=11.3ms
+N=20 p=0.5: ok=20/20 succ=0.00 p50=12.8ms
+N=20 p=0.7: ok=20/20 succ=0.00 p50=12.5ms
+N=50 p=0.0: ok=12/12 succ=1.00 p50=12.0ms
+N=50 p=0.3: ok=12/12 succ=0.00 p50=10.9ms
+N=50 p=0.5: ok=12/12 succ=0.00 p50=11.1ms
+N=50 p=0.7: ok=12/12 succ=0.00 p50=13.4ms
+N=100 p=0.0: ok=20/20 succ=1.00 p50=12.5ms
+N=100 p=0.3: ok=20/20 succ=0.00 p50=12.8ms
+N=100 p=0.5: ok=20/20 succ=0.00 p50=13.3ms
+N=100 p=0.7: ok=20/20 succ=0.00 p50=13.0ms
+done in 3.5s -> /mnt/storage1/syk/.superagent-work/wt-p3b-baselines2/labs/03-robust-qpeplayer/experiments/baselines/results/sdpr_forward.json

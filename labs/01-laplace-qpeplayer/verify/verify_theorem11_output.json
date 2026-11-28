@@ -1,0 +1,57 @@
+{
+  "qstar": [
+    -0.41628351699653954,
+    0.43894282042614247,
+    -0.4805177334650908,
+    -0.6349330214273841
+  ],
+  "fstar": 1.4872648371290889,
+  "E_orthonormal_err": 1.1416098959999759e-16,
+  "E_orthogonal_to_q_err": 4.412148070834569e-18,
+  "E_antipodal_err": 0.0,
+  "projected_grad_norm": 2.0600219389786785e-10,
+  "euler_identity_abs_err": 5.329070518200751e-15,
+  "H_sphere_symmetric_err": 1.03578512786223e-14,
+  "H_sphere_eigs": [
+    31.125861653629116,
+    51.56134133691497,
+    78.36211457214519
+  ],
+  "H_fd_vs_analytic_relerr": 9.628274085328652e-08,
+  "H_fd_eigs": [
+    31.125860392372047,
+    51.56134299041711,
+    78.36212271449531
+  ],
+  "dq_implicit_vs_fd_rel": 1.5136190438207282e-07,
+  "dq_fd": [
+    -0.02269610026001123,
+    -0.011712078206993493,
+    -0.023528132016004122,
+    0.024589624321724735
+  ],
+  "dq_analytic": [
+    -0.02269610266976325,
+    -0.011712081822723647,
+    -0.023528136204010362,
+    0.024589626571107748
+  ],
+  "H_antipodal_rel_err": 0.0,
+  "dq_antipodal_relation_rel": 0.0,
+  "dR_antipodal_rel_err": 0.0,
+  "dt_implicit_vs_fd_rel": 4.581144972451769e-08,
+  "laplace_taus": [
+    0.2,
+    0.1,
+    0.05,
+    0.025
+  ],
+  "laplace_rel_errors": [
+    0.08255546462883179,
+    0.038127226494042876,
+    0.018556472760190124,
+    0.009247967690804382
+  ],
+  "laplace_error_order_slope": 1.0513365438815425,
+  "laplace_constant_note": "chart integral on S^3; local dR=8dq per sheet and the double cover give int_SO3 = 4 int_S3, i.e. a factor 8 per SO(3) mode"
+}

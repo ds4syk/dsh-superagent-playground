@@ -1,0 +1,38 @@
+srun: job 3133 queued and waiting for resources
+srun: job 3133 has been allocated resources
+loaded 20 clouds; sizes 0:30687, 1:30560, 7:30252, 8:29925, 14:28583, 15:27944, 21:27446, 22:27650, 28:27073, 29:27146, 35:26207, 36:26159, 42:26082, 43:25817, 49:25168, 50:25083, 56:27830, 57:28518, 63:26509, 64:26381
+pair (0, 1): base=1000, natural inlier=87.6%, |t|=1.32 m
+pair (7, 8): base=1000, natural inlier=84.1%, |t|=1.49 m
+pair (14, 15): base=1000, natural inlier=81.8%, |t|=1.53 m
+pair (21, 22): base=1000, natural inlier=87.5%, |t|=1.57 m
+pair (28, 29): base=1000, natural inlier=87.8%, |t|=1.49 m
+pair (35, 36): base=1000, natural inlier=89.1%, |t|=1.56 m
+pair (42, 43): base=1000, natural inlier=87.5%, |t|=1.79 m
+pair (49, 50): base=1000, natural inlier=88.2%, |t|=1.86 m
+pair (56, 57): base=1000, natural inlier=84.2%, |t|=1.74 m
+pair (63, 64): base=1000, natural inlier=85.1%, |t|=1.81 m
+random   p=0.0 done (1.7s)
+random   p=0.1 done (3.1s)
+random   p=0.2 done (4.6s)
+random   p=0.3 done (6.6s)
+random   p=0.4 done (9.4s)
+random   p=0.5 done (12.1s)
+random   p=0.6 done (15.1s)
+random   p=0.7 done (18.5s)
+coherent p=0.0 done (20.7s)
+coherent p=0.1 done (22.5s)
+coherent p=0.2 done (23.9s)
+coherent p=0.3 done (25.3s)
+coherent p=0.4 done (26.8s)
+coherent p=0.5 done (28.3s)
+coherent p=0.6 done (29.8s)
+coherent p=0.7 done (31.6s)
+boundary p=0.0 done (33.5s)
+boundary p=0.1 done (34.9s)
+boundary p=0.2 done (36.3s)
+boundary p=0.3 done (37.7s)
+boundary p=0.4 done (39.1s)
+boundary p=0.5 done (40.6s)
+boundary p=0.6 done (42.0s)
+boundary p=0.7 done (43.5s)
+wrote /mnt/storage1/syk/.superagent-work/wt-p3-kitti2/labs/03-robust-qpeplayer/experiments/real/kitti2/results/kitti2.json etc.

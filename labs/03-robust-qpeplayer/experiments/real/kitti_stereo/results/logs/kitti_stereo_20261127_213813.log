@@ -1,0 +1,150 @@
+[sparse/sift/c=0.5] adj:0->1     n= 239 inl=  16% d=23.7m GNC rot=0.019 trans=0.794 ok=False/False fe=0.53s
+[sparse/sift/c=0.5] adj:3->4     n= 239 inl=  16% d=21.3m GNC rot=0.017 trans=0.848 ok=False/False fe=0.44s
+[sparse/sift/c=0.5] adj:6->7     n= 207 inl=  29% d=25.2m GNC rot=0.055 trans=0.468 ok=False/False fe=0.48s
+[sparse/sift/c=0.5] adj:9->10    n= 203 inl=  13% d=25.2m GNC rot=0.068 trans=0.784 ok=False/False fe=0.44s
+[sparse/sift/c=0.5] adj:12->13   n= 223 inl=  33% d=25.6m GNC rot=0.028 trans=0.451 ok=False/False fe=0.44s
+[sparse/sift/c=0.5] adj:15->16   n= 242 inl=  18% d=28.4m GNC rot=0.047 trans=0.734 ok=False/False fe=0.44s
+[sparse/sift/c=0.5] adj:18->19   n= 233 inl=  33% d=24.3m GNC rot=0.071 trans=0.510 ok=False/False fe=0.43s
+[sparse/sift/c=0.5] adj:21->22   n= 238 inl=  25% d=24.2m GNC rot=0.026 trans=0.587 ok=False/False fe=0.49s
+[sparse/sift/c=0.5] adj:24->25   n= 210 inl=  35% d=21.6m GNC rot=0.032 trans=0.480 ok=False/False fe=0.44s
+[sparse/sift/c=0.5] adj:27->28   n= 225 inl=  33% d=21.2m GNC rot=0.031 trans=0.513 ok=False/False fe=0.53s
+[sparse/sift/c=0.5] adj:30->31   n= 245 inl=  27% d=23.4m GNC rot=0.047 trans=0.524 ok=False/False fe=0.49s
+[sparse/sift/c=0.5] adj:33->34   n= 260 inl=  21% d=29.1m GNC rot=0.025 trans=0.562 ok=False/False fe=0.46s
+[sparse/sift/c=0.5] adj:36->37   n= 251 inl=  21% d=28.0m GNC rot=0.083 trans=0.643 ok=False/False fe=0.46s
+[sparse/sift/c=0.5] adj:39->40   n= 298 inl=  16% d=26.1m GNC rot=0.025 trans=0.684 ok=False/False fe=0.46s
+[sparse/sift/c=0.5] adj:42->43   n= 277 inl=  18% d=25.3m GNC rot=0.029 trans=0.703 ok=False/False fe=0.52s
+[sparse/sift/c=0.5] adj:45->46   n= 283 inl=  17% d=25.0m GNC rot=0.023 trans=0.672 ok=False/False fe=0.52s
+[sparse/sift/c=0.5] adj:48->49   n= 308 inl=  20% d=26.4m GNC rot=0.029 trans=0.630 ok=False/False fe=0.45s
+[sparse/sift/c=0.5] adj:51->52   n= 300 inl=  29% d=25.1m GNC rot=0.035 trans=0.552 ok=False/False fe=0.47s
+[sparse/sift/c=0.5] adj:54->55   n= 306 inl=  35% d=26.4m GNC rot=0.046 trans=0.428 ok=False/False fe=0.49s
+[sparse/sift/c=0.5] adj:57->58   n= 324 inl=  18% d=24.6m GNC rot=0.017 trans=0.623 ok=False/False fe=0.50s
+[sparse/sift/c=0.5] gap3:0->3    n=  96 inl=   5% d=38.3m GNC rot=0.105 trans=2.006 ok=False/False fe=0.49s
+[sparse/sift/c=0.5] gap3:3->6    n=  74 inl=   0% d=38.6m GNC rot=0.048 trans=1.887 ok=False/False fe=0.52s
+[sparse/sift/c=0.5] gap3:6->9    n=  83 inl=   4% d=34.1m GNC rot=0.062 trans=1.879 ok=False/False fe=0.57s
+[sparse/sift/c=0.5] gap3:9->12   n=  93 inl=   2% d=37.9m GNC rot=0.084 trans=1.934 ok=False/False fe=0.52s
+[sparse/sift/c=0.5] gap3:12->15  n= 108 inl=   1% d=35.6m GNC rot=0.070 trans=1.678 ok=False/False fe=0.55s
+[sparse/sift/c=0.5] gap3:15->18  n=  89 inl=   0% d=31.9m GNC rot=0.084 trans=1.793 ok=False/False fe=0.47s
+[sparse/sift/c=0.5] gap3:18->21  n=  88 inl=   5% d=28.9m GNC rot=0.086 trans=1.626 ok=False/False fe=0.50s
+[sparse/sift/c=0.5] gap3:21->24  n=  93 inl=   1% d=29.7m GNC rot=0.050 trans=1.825 ok=False/False fe=0.50s
+[sparse/sift/c=0.5] gap3:24->27  n=  84 inl=   2% d=27.5m GNC rot=0.057 trans=1.828 ok=False/False fe=0.47s
+[sparse/sift/c=0.5] gap3:27->30  n=  99 inl=   3% d=32.8m GNC rot=0.072 trans=1.668 ok=False/False fe=0.58s
+[dense/sift/c=0.5] adj:0->1     n=1000 inl=  12% d=20.1m GNC rot=0.063 trans=0.818 ok=False/False fe=0.41s
+[dense/sift/c=0.5] adj:3->4     n= 922 inl=  10% d=18.4m GNC rot=0.059 trans=0.842 ok=False/False fe=0.36s
+[dense/sift/c=0.5] adj:6->7     n= 825 inl=  36% d=20.0m GNC rot=0.063 trans=0.507 ok=False/False fe=0.34s
+[dense/sift/c=0.5] adj:9->10    n= 784 inl=  13% d=20.0m GNC rot=0.038 trans=0.790 ok=False/False fe=0.39s
+[dense/sift/c=0.5] adj:12->13   n= 892 inl=  26% d=23.0m GNC rot=0.090 trans=0.589 ok=False/False fe=0.34s
+[dense/sift/c=0.5] adj:15->16   n= 887 inl=  19% d=22.8m GNC rot=0.055 trans=0.715 ok=False/False fe=0.35s
+[dense/sift/c=0.5] adj:18->19   n= 885 inl=  32% d=21.4m GNC rot=0.020 trans=0.552 ok=False/False fe=0.32s
+[dense/sift/c=0.5] adj:21->22   n= 902 inl=  33% d=20.0m GNC rot=0.029 trans=0.548 ok=False/False fe=0.39s
+[dense/sift/c=0.5] adj:24->25   n= 897 inl=  44% d=17.6m GNC rot=0.048 trans=0.479 ok=False/False fe=0.36s
+[dense/sift/c=0.5] adj:27->28   n= 871 inl=  35% d=19.2m GNC rot=0.068 trans=0.532 ok=False/False fe=0.36s
+[dense/sift/c=0.5] adj:30->31   n= 962 inl=  29% d=16.8m GNC rot=0.056 trans=0.547 ok=False/False fe=0.37s
+[dense/sift/c=0.5] adj:33->34   n= 991 inl=  32% d=23.9m GNC rot=0.007 trans=0.532 ok=False/False fe=0.33s
+[dense/sift/c=0.5] adj:36->37   n= 940 inl=  18% d=24.6m GNC rot=0.066 trans=0.694 ok=False/False fe=0.41s
+[dense/sift/c=0.5] adj:39->40   n=1020 inl=  17% d=23.1m GNC rot=0.027 trans=0.707 ok=False/False fe=0.33s
+[dense/sift/c=0.5] adj:42->43   n=1023 inl=  16% d=23.1m GNC rot=0.042 trans=0.702 ok=False/False fe=0.33s
+[dense/sift/c=0.5] adj:45->46   n= 927 inl=  19% d=22.8m GNC rot=0.027 trans=0.664 ok=False/False fe=0.34s
+[dense/sift/c=0.5] adj:48->49   n= 969 inl=  22% d=22.4m GNC rot=0.030 trans=0.634 ok=False/False fe=0.45s
+[dense/sift/c=0.5] adj:51->52   n= 997 inl=  31% d=22.9m GNC rot=0.045 trans=0.566 ok=False/False fe=0.33s
+[dense/sift/c=0.5] adj:54->55   n=1115 inl=  46% d=24.1m GNC rot=0.037 trans=0.458 ok=False/False fe=0.32s
+[dense/sift/c=0.5] adj:57->58   n=1123 inl=  21% d=23.3m GNC rot=0.035 trans=0.640 ok=False/False fe=0.40s
+[dense/sift/c=0.5] gap3:0->3    n= 358 inl=   2% d=29.6m GNC rot=0.156 trans=1.853 ok=False/False fe=0.36s
+[dense/sift/c=0.5] gap3:3->6    n= 278 inl=   2% d=39.8m GNC rot=0.151 trans=1.776 ok=False/False fe=0.37s
+[dense/sift/c=0.5] gap3:6->9    n= 288 inl=   2% d=27.3m GNC rot=0.042 trans=1.833 ok=False/False fe=0.32s
+[dense/sift/c=0.5] gap3:9->12   n= 334 inl=   1% d=32.0m GNC rot=0.076 trans=1.878 ok=False/False fe=0.41s
+[dense/sift/c=0.5] gap3:12->15  n= 330 inl=   2% d=34.0m GNC rot=0.102 trans=1.803 ok=False/False fe=0.33s
+[dense/sift/c=0.5] gap3:15->18  n= 320 inl=   2% d=29.9m GNC rot=0.161 trans=1.654 ok=False/False fe=0.34s
+[dense/sift/c=0.5] gap3:18->21  n= 331 inl=   2% d=27.5m GNC rot=0.061 trans=1.875 ok=False/False fe=0.32s
+[dense/sift/c=0.5] gap3:21->24  n= 324 inl=   1% d=26.7m GNC rot=0.033 trans=1.740 ok=False/False fe=0.35s
+[dense/sift/c=0.5] gap3:24->27  n= 317 inl=   2% d=24.0m GNC rot=0.095 trans=1.671 ok=False/False fe=0.31s
+[dense/sift/c=0.5] gap3:27->30  n= 293 inl=   3% d=23.9m GNC rot=0.037 trans=1.690 ok=False/False fe=0.34s
+[dense/orb/c=0.5] adj:0->1     n= 664 inl=  16% d=28.1m GNC rot=0.071 trans=0.780 ok=False/False fe=0.39s
+[dense/orb/c=0.5] adj:3->4     n= 624 inl=  11% d=41.6m GNC rot=0.081 trans=0.864 ok=False/False fe=0.27s
+[dense/orb/c=0.5] adj:6->7     n= 654 inl=  34% d=38.4m GNC rot=0.071 trans=0.398 ok=False/False fe=0.28s
+[dense/orb/c=0.5] adj:9->10    n= 622 inl=  20% d=35.7m GNC rot=0.081 trans=0.712 ok=False/False fe=0.27s
+[dense/orb/c=0.5] adj:12->13   n= 703 inl=  33% d=32.0m GNC rot=0.103 trans=0.532 ok=False/False fe=0.21s
+[dense/orb/c=0.5] adj:15->16   n= 577 inl=  21% d=32.0m GNC rot=0.036 trans=0.751 ok=False/False fe=0.21s
+[dense/orb/c=0.5] adj:18->19   n= 572 inl=  34% d=29.0m GNC rot=0.014 trans=0.527 ok=False/False fe=0.25s
+[dense/orb/c=0.5] adj:21->22   n= 498 inl=  37% d=27.4m GNC rot=0.087 trans=0.503 ok=False/False fe=0.23s
+[dense/orb/c=0.5] adj:24->25   n= 539 inl=  47% d=24.0m GNC rot=0.090 trans=0.417 ok=False/False fe=0.20s
+[dense/orb/c=0.5] adj:27->28   n= 521 inl=  32% d=24.2m GNC rot=0.030 trans=0.520 ok=False/False fe=0.20s
+[dense/orb/c=0.5] adj:30->31   n= 748 inl=  28% d=38.2m GNC rot=0.056 trans=0.556 ok=False/False fe=0.19s
+[dense/orb/c=0.5] adj:33->34   n= 824 inl=  29% d=38.4m GNC rot=0.032 trans=0.502 ok=False/False fe=0.27s
+[dense/orb/c=0.5] adj:36->37   n= 865 inl=  22% d=34.9m GNC rot=0.081 trans=0.727 ok=False/False fe=0.20s
+[dense/orb/c=0.5] adj:39->40   n= 809 inl=  19% d=37.7m GNC rot=0.060 trans=0.752 ok=False/False fe=0.21s
+[dense/orb/c=0.5] adj:42->43   n= 771 inl=  15% d=38.9m GNC rot=0.069 trans=0.773 ok=False/False fe=0.21s
+[dense/orb/c=0.5] adj:45->46   n= 715 inl=  25% d=36.8m GNC rot=0.117 trans=0.634 ok=False/False fe=0.25s
+[dense/orb/c=0.5] adj:48->49   n= 682 inl=  28% d=32.5m GNC rot=0.131 trans=0.613 ok=False/False fe=0.20s
+[dense/orb/c=0.5] adj:51->52   n= 644 inl=  31% d=29.6m GNC rot=0.104 trans=0.561 ok=False/False fe=0.20s
+[dense/orb/c=0.5] adj:54->55   n= 728 inl=  35% d=34.3m GNC rot=0.040 trans=0.471 ok=False/False fe=0.20s
+[dense/orb/c=0.5] adj:57->58   n= 742 inl=  23% d=38.6m GNC rot=0.037 trans=0.636 ok=False/False fe=0.20s
+[dense/orb/c=0.5] gap3:0->3    n= 141 inl=   4% d=48.0m GNC rot=0.515 trans=1.567 ok=False/False fe=0.20s
+[dense/orb/c=0.5] gap3:3->6    n= 142 inl=   3% d=47.9m GNC rot=0.153 trans=1.550 ok=False/False fe=0.21s
+[dense/orb/c=0.5] gap3:6->9    n= 127 inl=   7% d=45.2m GNC rot=0.284 trans=1.467 ok=False/False fe=0.20s
+[dense/orb/c=0.5] gap3:9->12   n= 146 inl=   1% d=43.2m GNC rot=0.321 trans=1.997 ok=False/False fe=0.22s
+[dense/orb/c=0.5] gap3:12->15  n= 147 inl=   3% d=36.8m GNC rot=0.224 trans=1.649 ok=False/False fe=0.21s
+[dense/orb/c=0.5] gap3:15->18  n= 163 inl=   2% d=34.9m GNC rot=0.633 trans=1.621 ok=False/False fe=0.24s
+[dense/orb/c=0.5] gap3:18->21  n= 125 inl=   2% d=31.9m GNC rot=0.147 trans=1.614 ok=False/False fe=0.28s
+[dense/orb/c=0.5] gap3:21->24  n= 138 inl=   4% d=37.5m GNC rot=0.115 trans=1.577 ok=False/False fe=0.24s
+[dense/orb/c=0.5] gap3:24->27  n= 142 inl=   3% d=39.4m GNC rot=0.080 trans=1.647 ok=False/False fe=0.21s
+[dense/orb/c=0.5] gap3:27->30  n= 155 inl=   6% d=42.4m GNC rot=0.205 trans=1.605 ok=False/False fe=0.21s
+[dense/sift/c=0.3] adj:0->1     n=1000 inl=   3% d=20.1m GNC rot=0.075 trans=0.816 ok=False/False fe=0.41s
+[dense/sift/c=0.3] adj:3->4     n= 922 inl=   3% d=18.4m GNC rot=0.058 trans=0.835 ok=False/False fe=0.36s
+[dense/sift/c=0.3] adj:6->7     n= 825 inl=  10% d=20.0m GNC rot=0.061 trans=0.524 ok=False/False fe=0.34s
+[dense/sift/c=0.3] adj:9->10    n= 784 inl=   4% d=20.0m GNC rot=0.040 trans=0.786 ok=False/False fe=0.39s
+[dense/sift/c=0.3] adj:12->13   n= 892 inl=   8% d=23.0m GNC rot=0.087 trans=0.583 ok=False/False fe=0.34s
+[dense/sift/c=0.3] adj:15->16   n= 887 inl=   6% d=22.8m GNC rot=0.053 trans=0.733 ok=False/False fe=0.35s
+[dense/sift/c=0.3] adj:18->19   n= 885 inl=  10% d=21.4m GNC rot=0.027 trans=0.551 ok=False/False fe=0.32s
+[dense/sift/c=0.3] adj:21->22   n= 902 inl=  11% d=20.0m GNC rot=0.032 trans=0.544 ok=False/False fe=0.39s
+[dense/sift/c=0.3] adj:24->25   n= 897 inl=  14% d=17.6m GNC rot=0.045 trans=0.490 ok=False/False fe=0.36s
+[dense/sift/c=0.3] adj:27->28   n= 871 inl=  13% d=19.2m GNC rot=0.065 trans=0.538 ok=False/False fe=0.36s
+[dense/sift/c=0.3] adj:30->31   n= 962 inl=   9% d=16.8m GNC rot=0.065 trans=0.550 ok=False/False fe=0.37s
+[dense/sift/c=0.3] adj:33->34   n= 991 inl=  11% d=23.9m GNC rot=0.003 trans=0.533 ok=False/False fe=0.33s
+[dense/sift/c=0.3] adj:36->37   n= 940 inl=   7% d=24.6m GNC rot=0.061 trans=0.691 ok=False/False fe=0.41s
+[dense/sift/c=0.3] adj:39->40   n=1020 inl=   6% d=23.1m GNC rot=0.030 trans=0.705 ok=False/False fe=0.33s
+[dense/sift/c=0.3] adj:42->43   n=1023 inl=   5% d=23.1m GNC rot=0.037 trans=0.695 ok=False/False fe=0.33s
+[dense/sift/c=0.3] adj:45->46   n= 927 inl=   6% d=22.8m GNC rot=0.029 trans=0.665 ok=False/False fe=0.34s
+[dense/sift/c=0.3] adj:48->49   n= 969 inl=   7% d=22.4m GNC rot=0.032 trans=0.636 ok=False/False fe=0.45s
+[dense/sift/c=0.3] adj:51->52   n= 997 inl=   9% d=22.9m GNC rot=0.050 trans=0.587 ok=False/False fe=0.33s
+[dense/sift/c=0.3] adj:54->55   n=1115 inl=  15% d=24.1m GNC rot=0.046 trans=0.460 ok=False/False fe=0.32s
+[dense/sift/c=0.3] adj:57->58   n=1123 inl=   7% d=23.3m GNC rot=0.023 trans=0.628 ok=False/False fe=0.40s
+[dense/sift/c=0.3] gap3:0->3    n= 358 inl=   1% d=29.6m GNC rot=0.060 trans=1.915 ok=False/False fe=0.36s
+[dense/sift/c=0.3] gap3:3->6    n= 278 inl=   0% d=39.8m GNC rot=0.169 trans=1.800 ok=False/False fe=0.37s
+[dense/sift/c=0.3] gap3:6->9    n= 288 inl=   1% d=27.3m GNC rot=0.053 trans=1.875 ok=False/False fe=0.32s
+[dense/sift/c=0.3] gap3:9->12   n= 334 inl=   0% d=32.0m GNC rot=0.046 trans=1.879 ok=False/False fe=0.41s
+[dense/sift/c=0.3] gap3:12->15  n= 330 inl=   1% d=34.0m GNC rot=0.090 trans=1.810 ok=False/False fe=0.33s
+[dense/sift/c=0.3] gap3:15->18  n= 320 inl=   1% d=29.9m GNC rot=0.136 trans=1.701 ok=False/False fe=0.34s
+[dense/sift/c=0.3] gap3:18->21  n= 331 inl=   1% d=27.5m GNC rot=0.034 trans=1.893 ok=False/False fe=0.32s
+[dense/sift/c=0.3] gap3:21->24  n= 324 inl=   0% d=26.7m GNC rot=0.036 trans=1.765 ok=False/False fe=0.35s
+[dense/sift/c=0.3] gap3:24->27  n= 317 inl=   1% d=24.0m GNC rot=0.110 trans=1.712 ok=False/False fe=0.31s
+[dense/sift/c=0.3] gap3:27->30  n= 293 inl=   0% d=23.9m GNC rot=0.050 trans=1.688 ok=False/False fe=0.34s
+[dense/sift/c=1.0] adj:0->1     n=1000 inl=  64% d=20.1m GNC rot=0.058 trans=0.828 ok=False/False fe=0.41s
+[dense/sift/c=1.0] adj:3->4     n= 922 inl=  64% d=18.4m GNC rot=0.071 trans=0.861 ok=False/False fe=0.36s
+[dense/sift/c=1.0] adj:6->7     n= 825 inl=  76% d=20.0m GNC rot=0.047 trans=0.466 ok=False/False fe=0.34s
+[dense/sift/c=1.0] adj:9->10    n= 784 inl=  66% d=20.0m GNC rot=0.029 trans=0.794 ok=False/False fe=0.39s
+[dense/sift/c=1.0] adj:12->13   n= 892 inl=  71% d=23.0m GNC rot=0.081 trans=0.592 ok=False/False fe=0.34s
+[dense/sift/c=1.0] adj:15->16   n= 887 inl=  74% d=22.8m GNC rot=0.065 trans=0.687 ok=False/False fe=0.35s
+[dense/sift/c=1.0] adj:18->19   n= 885 inl=  77% d=21.4m GNC rot=0.018 trans=0.560 ok=False/False fe=0.32s
+[dense/sift/c=1.0] adj:21->22   n= 902 inl=  76% d=20.0m GNC rot=0.024 trans=0.567 ok=False/False fe=0.39s
+[dense/sift/c=1.0] adj:24->25   n= 897 inl=  79% d=17.6m GNC rot=0.082 trans=0.470 ok=False/False fe=0.36s
+[dense/sift/c=1.0] adj:27->28   n= 871 inl=  84% d=19.2m GNC rot=0.074 trans=0.525 ok=False/False fe=0.36s
+[dense/sift/c=1.0] adj:30->31   n= 962 inl=  78% d=16.8m GNC rot=0.052 trans=0.540 ok=False/False fe=0.37s
+[dense/sift/c=1.0] adj:33->34   n= 991 inl=  73% d=23.9m GNC rot=0.022 trans=0.549 ok=False/False fe=0.33s
+[dense/sift/c=1.0] adj:36->37   n= 940 inl=  69% d=24.6m GNC rot=0.071 trans=0.698 ok=False/False fe=0.41s
+[dense/sift/c=1.0] adj:39->40   n=1020 inl=  70% d=23.1m GNC rot=0.031 trans=0.713 ok=False/False fe=0.33s
+[dense/sift/c=1.0] adj:42->43   n=1023 inl=  67% d=23.1m GNC rot=0.059 trans=0.724 ok=False/False fe=0.33s
+[dense/sift/c=1.0] adj:45->46   n= 927 inl=  73% d=22.8m GNC rot=0.018 trans=0.657 ok=False/False fe=0.34s
+[dense/sift/c=1.0] adj:48->49   n= 969 inl=  74% d=22.4m GNC rot=0.029 trans=0.631 ok=False/False fe=0.45s
+[dense/sift/c=1.0] adj:51->52   n= 997 inl=  78% d=22.9m GNC rot=0.033 trans=0.526 ok=False/False fe=0.33s
+[dense/sift/c=1.0] adj:54->55   n=1115 inl=  74% d=24.1m GNC rot=0.044 trans=0.462 ok=False/False fe=0.32s
+[dense/sift/c=1.0] adj:57->58   n=1123 inl=  70% d=23.3m GNC rot=0.045 trans=0.665 ok=False/False fe=0.40s
+[dense/sift/c=1.0] gap3:0->3    n= 358 inl=  16% d=29.6m GNC rot=0.215 trans=1.723 ok=False/False fe=0.36s
+[dense/sift/c=1.0] gap3:3->6    n= 278 inl=  14% d=39.8m GNC rot=0.175 trans=1.787 ok=False/False fe=0.37s
+[dense/sift/c=1.0] gap3:6->9    n= 288 inl=  17% d=27.3m GNC rot=0.078 trans=1.732 ok=False/False fe=0.32s
+[dense/sift/c=1.0] gap3:9->12   n= 334 inl=   7% d=32.0m GNC rot=0.131 trans=1.882 ok=False/False fe=0.41s
+[dense/sift/c=1.0] gap3:12->15  n= 330 inl=  11% d=34.0m GNC rot=0.123 trans=1.772 ok=False/False fe=0.33s
+[dense/sift/c=1.0] gap3:15->18  n= 320 inl=  15% d=29.9m GNC rot=0.192 trans=1.603 ok=False/False fe=0.34s
+[dense/sift/c=1.0] gap3:18->21  n= 331 inl=  11% d=27.5m GNC rot=0.150 trans=1.844 ok=False/False fe=0.32s
+[dense/sift/c=1.0] gap3:21->24  n= 324 inl=  11% d=26.7m GNC rot=0.094 trans=1.705 ok=False/False fe=0.35s
+[dense/sift/c=1.0] gap3:24->27  n= 317 inl=   9% d=24.0m GNC rot=0.106 trans=1.646 ok=False/False fe=0.31s
+[dense/sift/c=1.0] gap3:27->30  n= 293 inl=  12% d=23.9m GNC rot=0.078 trans=1.697 ok=False/False fe=0.34s

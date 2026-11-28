@@ -1,0 +1,103 @@
+\section{讨论与局限性}\label{sec:discussion}
+
+本文评估是层级的：它度量固定代价的前向与反向映射，覆盖合成交叉、一维标准型，以及 $15$ 帧真实 LINEMOD 上的受控双模态构造，而不是感知系统的精度。检测器级 ADD(-S)/ADD-S AUC、学习式前端与端到端训练不在研究范围内，因此这些数字刻画的是层而非已部署流水线。前向的全局性来自枚举器，实根枚举的完备性在报告运行中是假设 (A2)：全次数同伦认证的是代数系统的通用复根数，而不是多起点 Newton 的漏检率。在真实近打平处，Laplace 后验均值被拉向竞争模态，而硬 argmin 是准确的，因此平滑以位姿精度换取定义良好的梯度。构造的 Choi--Lam 代价是合法的对称矩阵，但其作为实际对应集 Gram 矩阵的可实现性仍然开放。
+
+\subsection{折叠行为与连续性}
+
+Laplace 近似的 $O(\tau)$ 误差在鞍结（折叠）处非一致。该处模态数改变，仅用实根的 Laplace 和甚至不连续。精确平滑后验对每个 $\tau>0$ 都光滑（第~\ref{sec:laplace}~节）；对 Laplace 实现，精度与连续性结论只在远离折叠时成立。第~\ref{sec:fold6d}~节度量了两面：$\theta=0$ 处 Laplace 映射光滑（其跳变线性衰减，FD 斜率 $\approx502$，而硬映射跳变保持 $2.86$），但 $\theta_f\approx1.31\times10^{-3}$ 处存在真实折叠，极小在该处消失，其权重达到 $0.122$，$\|d\phi\|$ 峰值 $3529$，位姿映射跳变 $0.31$。更小的 $\tau$ 或更多起点不能消除该跳变；$\det(H+\tau^{1/3}I)$ 正则化把导数尖峰降低因子 24，近折叠梯度误差从 $2.9\times10^{-1}$ 降到 $1.2\times10^{-2}$，但数值跳变只减半（$0.309\to0.107$）。两个结果解释了原因。
+
+\begin{proposition}[实根代理必然跳变]\label{prop:q5b}
+设 $J_\theta$ 在 $\theta_f$ 处经历标准余维一折叠（$A_2$）：在存在的一侧（$\theta\to\theta_f^+$），次实极小 $q_+$ 与邻近鞍点 $q_-$ 合并为 $q_0$（一个 Hessian 特征值 $\lambda_1(q_+)\to0^+$，横向 Hessian $H_\perp(q_0)\succ0$，别处有更深极小且 $J_0=J_{\theta_f}(q_0)>J_{\rm glob}$），另一侧实极小消失，故 $K\to K-1$。则任何只对实局部极小求和、并给合并模态正的正则化下限权重的代理
+\begin{equation}
+\tilde w_+^{\rm reg}(\theta_f^+)=\frac{(2\pi\tau)^{3/2}}{\sqrt{\det(H_++\eta(\tau)I_3)}}\,e^{-J_0/\tau},
+\label{eq:floorweight}
+\end{equation}
+在尺度匹配的下限 $\eta(\tau)=c_0\tau^{1/3}$ 下，迫使平滑损失 $\bar\ell_{\rm reg}$ 在 $\theta_f$ 处跳变（$Z_{\rm rest}$ 为其余模态的 Laplace 配分）：
+\begin{equation}
+\begin{split}
+&\lim_{\theta\to\theta_f^+}\bar\ell_{\rm reg}-\lim_{\theta\to\theta_f^-}\bar\ell_{\rm reg}\\
+&\quad=\frac{\tilde w_+^{\rm reg}(\theta_f^+)}{\tilde w_+^{\rm reg}(\theta_f^+)+Z_{\rm rest}(\theta_f)}\big(\ell(q_0)-\bar\ell_{\rm rest}(\theta_f)\big)\neq0,
+\end{split}
+\label{eq:jump}
+\end{equation}
+且当 $\eta=c_0\tau^{1/3}$ 时正则化地板权重为 $\Theta\big(\tau^{4/3}e^{-(J_0-J_{\rm glob})/\tau}\big)$，而其余模态配分为 $\Theta\big(\tau^{3/2}e^{-J_{\rm glob}/\tau}\big)$；故跳变分数为 $\Theta\big(\tau^{-1/6}e^{-(J_0-J_{\rm glob})/\tau}\big)$（上限为 1）。
+\end{proposition}
+
+只有当 $J_0-J_{\rm glob}\gg\tau$ 时该分数才指数小；当 $J_0-J_{\rm glob}=O(\tau)$ 时为 $O(1)$，在任何有限 $\tau$ 下跳变都非零。这是关于实根代理的必然性结论，也是 $0.309\to0.107$ 不趋于零的原因。
+
+\begin{proposition}[共轭复根与 Scorer 延拓]\label{prop:q5c}
+40 根作用矩阵求解器以共轭复对的形式把合并对带过折叠。在标准型
+\begin{equation}
+J_\theta(u,v)=J_0(\theta)+\tfrac12v^\top H_\perp(\theta)v+\tfrac{c_3(\theta)}{6}u^3-\alpha(\theta)u
+\label{eq:normalform}
+\end{equation}
+中，$c_3>0$，$\alpha(\theta_f)=0$，$\alpha'(\theta_f)>0$（Gromoll--Meyer 分裂）。定义不变量 $J_0=(J(q_+)+J(q_-))/2$、无量纲折叠变量
+\begin{equation}
+\zeta(\theta,\tau)=\alpha(\theta)\Big(\frac{2}{c_3(\theta)}\Big)^{1/3}\tau^{-2/3},
+\label{eq:zeta}
+\end{equation}
+它关于 $\alpha$ 是\emph{线性}的，故在 $\alpha=0$ 处不取 $\alpha^{1/3}$ 分支；以及半直线 Airy（Scorer）积分
+\begin{equation}
+\mathcal{S}(\zeta)=\int_0^{+\infty}e^{-s^3/3+\zeta s}\,ds,
+\label{eq:scorer}
+\end{equation}
+它整函数，且 $\mathcal{S}(0)=\Gamma(1/3)/3^{2/3}\approx1.2879$。作代换 $u=(2\tau/c_3)^{1/3}s$，则 $du=\tau^{1/3}(2/c_3)^{1/3}ds$（$\tau$ 的幂在\emph{分子}）；结合横向高斯积分 $\int_{\mathbb{R}^2}e^{-v^\top H_\perp v/(2\tau)}dv=2\pi\tau/\sqrt{\det H_\perp}$（行列式在\emph{分母}），该延拓恰等于半射线局部配分积分 $\int_{\mathbb{R}^2}\int_0^{+\infty}e^{-J_\theta(u,v)/\tau}\,du\,dv$。把两个实根权重替换为这一单一延拓
+\begin{equation}
+\begin{split}
+\tilde w_{\rm fold}(\theta,\tau)={}&\frac{2\pi\tau}{\sqrt{\det H_\perp(\theta)}}\,\tau^{1/3}\Big(\frac{2}{c_3(\theta)}\Big)^{1/3}\\
+&\times e^{-J_0(\theta)/\tau}\,\mathcal{S}\big(\zeta(\theta,\tau)\big),
+\end{split}
+\label{eq:foldweight}
+\end{equation}
+得到的映射在 $\theta_f$ 处 $C^\infty$ 且数值跳变为零，因为 $(J_0,\alpha,c_3,H_\perp)$ 是特征多项式的对称函数，且 $\mathcal{S}$ 整函数。当 $\zeta\gg1$ 时它退化为幸存极小的普通 3D Laplace 权重，$\tilde w_{\rm fold}=\tilde w_{\rm Lap}(q_+)\big(1+O(\tau/\Delta J_{\rm bar})\big)$；当 $\zeta\ll-1$ 时平滑衰减，$\mathcal{S}(\zeta)=|\zeta|^{-1}\big(1+O(|\zeta|^{-3})\big)$。
+\end{proposition}
+
+\textbf{不变量层面的延拓。} 对 $\theta_f=1.3185\times10^{-3}$ 处的 6D 折叠在两侧跟踪（实极小/鞍点对与共轭复对），四个不变量 $(J_0,\alpha,c_3,H_\perp)$ 与 $\mathcal{S}(\zeta)$ 跨折叠连续，实测位姿跳变为 $1.21\times10^{-2}$，而标准映射为 $3.04\times10^{-1}$、$\tau^{1/3}$ 正则化为 $1.07\times10^{-1}$，即处于光滑映射的导数尺度（$|d\phi|\sim6\times10^2$，跳变/步长为 $6.0\times10^2$ 对 $1.5\times10^4$）。实测不变量与标准型的对应是领头阶的（四次型的四阶系数约为 $8.3$），且该 6D 折叠较浅（$\Delta J\sim10^{-6}\ll\tau$），故在折叠处 Scorer 权重远离其 3D Laplace 极限。主表报告的是仅实根层，其跳变正是命题~\ref{prop:q5b} 所预测的。
+
+\begin{table}[t]
+\centering
+\caption{6D 折叠处（$\theta_f=1.3185\times10^{-3}$，$\tau=0.01$，网格 $\theta_f\pm10^{-4}$，步长 $2\times10^{-5}$）Scorer 延拓与实根代理的对比。\emph{跳变} 为最大相邻位姿差；真实阶跃在网格加密下使 \emph{跳变/步长} 持续增长，光滑映射的 \emph{跳变/步长} 处于 $|d{\rm pose}|$ 尺度（$\sim6\times10^2$）。一维三方检验以 $\le1.6\times10^{-4}$ 复现 $0.867/0.497/0.3391$。}
+\label{tab:scorer}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l l l l@{}}
+\toprule
+变体 & 最大跳变 & 跳变 / 步长 & 网格上的 $K$\\
+\midrule
+标准实根 Laplace & 3.04e-01 & 1.52e+04 & 3--4\\
+$\det(H+\tau^{1/3}I)$ 正则化 & 1.07e-01 & 5.34e+03 & 3--4\\
+Scorer 延拓 & 1.21e-02 & 6.03e+02 & 4\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.80\textwidth]{scorer_fold.png}
+\caption{折叠处的 Scorer 延拓。\textbf{左：} 一维标准型 $x^3/3-\alpha x$，$\tau=0.02$；标准 Laplace 和的折叠模态权重份额不连续，$\tau^{1/3}$ 正则化体积因子使其从 $0.4959$ 跳到 $0$，而 Scorer 延拓连续（$0.33838\to0.33834$）。\textbf{中：} $\theta_f=1.3185\times10^{-3}$ 处的 6D 折叠；不变量 $\alpha$ 穿过折叠被跟踪，在实对/复对切换处连续。\textbf{右：} 最大相邻后验位姿跳变对 $\theta-\theta_f$ 的关系：标准映射尖峰到 $3.04\times10^{-1}$，正则化到 $1.07\times10^{-1}$，Scorer 延拓峰值 $1.21\times10^{-2}$，处于光滑映射导数尺度。}
+\label{fig:scorer}
+\end{figure*}
+
+连续性结论用网格加密检验（交错网格，半宽 $10^{-4}$，步长 $d\in\{4\times10^{-5},\ldots,2.5\times10^{-6}\}$）：Scorer 的 \emph{跳变/d} 在 $d$ 的 $16\times$ 范围内保持 $404.3,404.2,404.0,403.7,403.3$（$d=2.5\times10^{-6}$ 处无数值地板），而标准映射的 \emph{跳变/d} 从 $7.6\times10^{3}$ 增至 $2.1\times10^{5}$，正则化变体从 $2.7\times10^{3}$ 增至 $4.4\times10^{4}$（常数阶跃）。因此折叠邻域需要 Scorer 延拓，或对合并对做局部数值积分，才能给出连续性结论。
+
+\subsection{弦均值不是 \texorpdfstring{$180^\circ$}{180 deg} 处的光滑读出}\label{sec:chordal}
+
+Laplace 均值对每个 $\tau>0$ 都在 $\theta$ 中连续，但在近打平处偏向竞争模态（第~\ref{sec:real}~节）。一个自然替代是投影加权弦均值 $\Proj_{SO(3)}(\sum_kw_kR_k)$，即弦模态平均的确定性极限。它并不能消除不连续：在 $180^\circ$ 双模态打平处，任何单值选择都会跳变。
+
+\begin{proposition}[$SO(3)$ 弦均值的 $180^\circ$ 奇异性]\label{prop:chordal}
+设 $R_1,R_2\in SO(3)$ 的相对测地转角为绕单位轴 $n$ 的 $\pi$，故 $R_1^\top R_2=2nn^\top-I_3$；令 $M(w)=wR_1+(1-w)R_2$，$\Proj_{SO(3)}(M)=\arg\max_{R\in SO(3)}\operatorname{tr}(M^\top R)$。则：
+\begin{enumerate}
+\item 在 $w=\frac12$ 处，$\bar M=M(\frac12)=\frac12(R_1+R_2)=(R_1n)n^\top$ 的奇异值为 $(1,0,0)$，且 $\Proj_{SO(3)}(\bar M)$ 是一个一维圆周 $S^1\subset SO(3)$，故不唯一；
+\item 对每个 $\delta\in(0,\frac12]$，$\Proj_{SO(3)}(M(\frac12+\delta))=R_1$，$\Proj_{SO(3)}(M(\frac12-\delta))=R_2$；故任何单值选择在 $w=\frac12$ 处跳变 $\pi$，且在该点不可微。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+由 $R_1^\top R_2=2nn^\top-I_3$ 的特征值为 $1,-1,-1$ 且行列式为 $+1$，得 $\bar M=\frac12R_1(I_3+R_1^\top R_2)=(R_1n)n^\top$，秩为 1，奇异值为 $(1,0,0)$。对任意 $R\in SO(3)$，$\operatorname{tr}(\bar M^\top R)=n^\top R_1^\top Rn\le1$，取等当且仅当 $Rn=R_1n$；最大化集是在 $n$ 上一致的旋转构成的圆周，故投影不唯一。对 $w=\frac12+\delta$，$M=R_1\big(nn^\top+2\delta(I_3-nn^\top)\big)$，其对称因子正定，极分解给出唯一投影 $R_1$。对 $w=\frac12-\delta$，利用 $I_3-nn^\top=-(2nn^\top-I_3)(I_3-nn^\top)$ 写成 $M=R_2\big(nn^\top+2\delta(I_3-nn^\top)\big)$，其投影为 $R_2$。两个单侧极限的测地距离为 $\pi$。
+\end{proof}
+
+因此三种读出无法同时连续且无偏：硬 argmin 在能量打平处跳变，投影弦均值在 $180^\circ$ 旋转打平处跳变，而 Laplace 均值连续但在任何有限 $\tau$ 下都有 $O(\tau)$ 偏差。本文报告 Laplace 均值，因为它的值不连续对每个 $\tau>0$ 都被消除（对 Boltzmann 后验精确成立；对 Laplace 和则在远离折叠处成立），代价是第~\ref{sec:real}~节度量的偏差。该命题也解释了为何投影均值基线不能作为多模态平滑所针对的 Necker 型打平处的光滑参照。
+
+\subsection{未来工作}
+
+将评估扩展到学习式前端、LINEMOD/LINEMOD-Occlusion 上的检测器级 ADD(-S)/ADD-S AUC 与 UTIAS In-The-Dark，并与 SDPR、EPro-PnP 比较，留待未来工作。逐实例认证实根数、根枚举的 GPU 批量前向、学习式温度标定以及完整 Laplace KL 的三阶导数缩并，是算法层面的下一步。

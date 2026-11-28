@@ -1,0 +1,15 @@
+[phase robust]
+  robust PSD p=8 seed=0 proj=40 fallback=False gap=-4.74e-18
+  robust PSD p=8 seed=1 proj=40 fallback=False gap=-9.87e-18
+  robust PSD p=16 seed=0 proj=40 fallback=False gap=-4.93e-18
+  robust PSD p=16 seed=1 proj=40 fallback=False gap=-9.87e-18
+  robust ALM seed=0 act=3 proj=40 fallback=False gap=-7.81e-18
+  robust ALM seed=1 act=9 proj=39 fallback=True gap=-2.60e-17
+  robust ALM seed=2 act=1 proj=38 fallback=True gap=-7.81e-18
+  robust synthetic rank1_diag proj=40 fallback=False degenerate=False
+  robust synthetic zero proj=73 fallback=True degenerate=True
+  robust synthetic rank1_random proj=37 fallback=True degenerate=False
+[phase alm]
+  ALM trial=0 Jms=0.0049217860 Jex=0.0049217860 dJ=-1.69e-13 t_ms=0.36s t_ex=9.42s ratio=26.1 fb=0/17
+  ALM trial=1 Jms=0.0039420457 Jex=0.0039420457 dJ=-3.44e-14 t_ms=0.21s t_ex=7.24s ratio=34.7 fb=4/9
+  ALM trial=2 Jms=0.0024492094 Jex=0.0024492094 dJ=-1.42e-14 t_ms=0.15s t_ex=7.20s ratio=48.2 fb=4/12

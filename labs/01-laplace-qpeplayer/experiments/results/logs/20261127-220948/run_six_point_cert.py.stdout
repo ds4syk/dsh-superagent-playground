@@ -1,0 +1,6 @@
+10       primal=5.4150000000 dual_mu=5.4150000000 Zmin=-5.87e-12 interval=[5.41499990, 5.41500000] rank=1
+13_full  primal=5.4150000000 dual_mu=5.4150000000 Zmin=+7.08e-13 interval=[5.41499990, 5.41500000] rank=1
+13_up    primal=3.5943137329 dual_mu=3.5943137329 Zmin=-4.96e-12 interval=[3.59431363, 3.59431383] rank=4
+wrote /tmp/p1-repro.20261127-220948.V48Lok/work/sdp/results/six_point_cert.json
+wrote /tmp/p1-repro.20261127-220948.V48Lok/work/sdp/results/six_point_cert.md
+runtime 0.48s

@@ -1,0 +1,19 @@
+[7-scenes-redkitchen] 4 pairs, base sizes [1500, 1500, 1500, 1500]
+[7-scenes-redkitchen] n=50 p=0.3 done (5.0s)
+[7-scenes-redkitchen] n=50 p=0.7 done (6.4s)
+[7-scenes-redkitchen] n=100 p=0.3 done (7.6s)
+[7-scenes-redkitchen] n=100 p=0.7 done (9.0s)
+[7-scenes-redkitchen] n=300 p=0.3 done (10.5s)
+[7-scenes-redkitchen] n=300 p=0.7 done (11.9s)
+[7-scenes-redkitchen] n=1000 p=0.3 done (13.8s)
+[7-scenes-redkitchen] n=1000 p=0.7 done (15.7s)
+[sun3d-home_at-home_at_scan1_2013_jan_1] 4 pairs, base sizes [1500, 1500, 1500, 1500]
+[sun3d-home_at-home_at_scan1_2013_jan_1] n=50 p=0.3 done (18.3s)
+[sun3d-home_at-home_at_scan1_2013_jan_1] n=50 p=0.7 done (19.5s)
+[sun3d-home_at-home_at_scan1_2013_jan_1] n=100 p=0.3 done (20.7s)
+[sun3d-home_at-home_at_scan1_2013_jan_1] n=100 p=0.7 done (21.9s)
+[sun3d-home_at-home_at_scan1_2013_jan_1] n=300 p=0.3 done (23.4s)
+[sun3d-home_at-home_at_scan1_2013_jan_1] n=300 p=0.7 done (24.8s)
+[sun3d-home_at-home_at_scan1_2013_jan_1] n=1000 p=0.3 done (26.6s)
+[sun3d-home_at-home_at_scan1_2013_jan_1] n=1000 p=0.7 done (28.5s)
+wrote /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/real/threedmatch/results

@@ -1,0 +1,10 @@
+/mnt/storage1/syk/venvs/theseus/lib/python3.10/site-packages/theseus/optimizer/autograd/cholmod_sparse_autograd.py:14: UserWarning: Couldn't import skparse.cholmod. Cholmod solver won't work.
+  warnings.warn("Couldn't import skparse.cholmod. Cholmod solver won't work.")
+/mnt/storage1/syk/venvs/theseus/lib/python3.10/site-packages/theseus/optimizer/linear/cholmod_sparse_solver.py:19: UserWarning: Couldn't import skparse.cholmod. Cholmod solver won't work.
+  warnings.warn("Couldn't import skparse.cholmod. Cholmod solver won't work.")
+self-check: {'jac_rel_err': 1.0932118482992638e-10, 'cost_rel_err': 0.0, 'cost_theseus': 0.04991106427965817, 'cost_numpy': 0.04991106427965817}
+p=0.0: gt succ=1.00 med=127ms | rand succ=1.00 med=358ms
+p=0.3: gt succ=1.00 med=118ms | rand succ=0.80 med=402ms
+p=0.5: gt succ=1.00 med=122ms | rand succ=0.55 med=665ms
+p=0.7: gt succ=1.00 med=121ms | rand succ=0.25 med=670ms
+done in 58.8s -> /mnt/storage1/syk/.superagent-work/wt-p3b-baselines2/labs/03-robust-qpeplayer/experiments/baselines/results/theseus.json

@@ -1,0 +1,36 @@
+loaded 20 clouds; sizes 0:35594, 1:35945, 4:36688, 5:37329, 8:37641, 9:37790, 12:37944, 13:37808, 16:37406, 17:37149, 20:37259, 21:36978, 24:36301, 25:36412, 28:36882, 29:36892, 32:36602, 33:36653, 36:36645, 37:36974
+pair (0, 1): base=1000, natural inlier=86.8%, |t|=2.20 m
+pair (4, 5): base=1000, natural inlier=86.5%, |t|=1.97 m
+pair (8, 9): base=1000, natural inlier=87.2%, |t|=1.93 m
+pair (12, 13): base=1000, natural inlier=86.3%, |t|=1.87 m
+pair (16, 17): base=1000, natural inlier=85.2%, |t|=1.82 m
+pair (20, 21): base=1000, natural inlier=84.8%, |t|=1.80 m
+pair (24, 25): base=1000, natural inlier=86.3%, |t|=1.78 m
+pair (28, 29): base=1000, natural inlier=86.4%, |t|=1.75 m
+pair (32, 33): base=1000, natural inlier=84.9%, |t|=1.91 m
+pair (36, 37): base=1000, natural inlier=85.3%, |t|=1.88 m
+random   p=0.0 done (1.6s)
+random   p=0.1 done (3.1s)
+random   p=0.2 done (4.6s)
+random   p=0.3 done (6.0s)
+random   p=0.4 done (7.4s)
+random   p=0.5 done (8.9s)
+random   p=0.6 done (10.5s)
+random   p=0.7 done (12.4s)
+coherent p=0.0 done (13.8s)
+coherent p=0.1 done (15.2s)
+coherent p=0.2 done (16.6s)
+coherent p=0.3 done (18.1s)
+coherent p=0.4 done (19.6s)
+coherent p=0.5 done (21.2s)
+coherent p=0.6 done (22.7s)
+coherent p=0.7 done (24.2s)
+boundary p=0.0 done (25.6s)
+boundary p=0.1 done (27.1s)
+boundary p=0.2 done (28.5s)
+boundary p=0.3 done (29.9s)
+boundary p=0.4 done (31.3s)
+boundary p=0.5 done (32.7s)
+boundary p=0.6 done (34.2s)
+boundary p=0.7 done (35.7s)
+wrote /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/real/kitti/results/kitti.json etc.

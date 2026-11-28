@@ -1,0 +1,225 @@
+{
+  "rounds": [
+    {
+      "round": 1,
+      "title": "Overlap estimator saturated at 4x and clipped to 1.0",
+      "hypothesis": "The parent helper returns at most N correspondences but divides by a 4N probe count, so reported overlap is min(1, 4*true_overlap); pairing a low/mid/high study on it would label almost every pair high.",
+      "change": "Added an uncapped overlap_fraction() to full_common.py and used it for all-pair scanning; the parent loader is untouched.",
+      "command": "/home/syk/miniconda3/envs/WM/bin/python run_overlap_bins.py  # scan phase",
+      "before": {
+        "legacy_metric": "min(1, 4*overlap)",
+        "frac_pairs_at_1_0": 0.9975354282193469,
+        "redkitchen_at_1_0": "504/506",
+        "redkitchen_bins": {
+          "low": 0,
+          "mid": 1,
+          "high": 506
+        }
+      },
+      "after": {
+        "uncapped_median": 0.5485,
+        "uncapped_p10": 0.3815,
+        "uncapped_p90": 0.788,
+        "bins_over_all_scenes": {
+          "low": 606,
+          "mid": 876,
+          "high": 141
+        },
+        "n_pairs": 1623
+      },
+      "keep": true,
+      "rationale": "The uncapped estimator spreads pairs over the full range, so the three bins are populated in every scene.",
+      "artifact": "results/overlap_scan.json"
+    },
+    {
+      "round": 2,
+      "title": "gt.log direction verified on the four new scenes",
+      "hypothesis": "The stored 4x4 maps id2->id1 on the four new scenes exactly as on the four existing scenes, so the runner's inversion is correct.",
+      "change": "Re-ran the direction check for all eight scenes, not just the original four.",
+      "command": "/home/syk/miniconda3/envs/WM/bin/python verify_gt_direction_full.py",
+      "before": {
+        "verified_scenes": 4
+      },
+      "after": {
+        "verified_scenes": 8,
+        "frac_pairs_j_to_i": 1.0,
+        "new_scene_forward_median_m": {
+          "sun3d-hotel_umd-maryland_hotel1": 0.4253757566170945,
+          "sun3d-hotel_umd-maryland_hotel3": 0.6312712854950535,
+          "sun3d-mit_76_studyroom-76-1studyroom2": 0.5186083924864344,
+          "sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika": 0.7453766057270158
+        },
+        "new_scene_inverse_median_m": {
+          "sun3d-hotel_umd-maryland_hotel1": 0.04964201891649205,
+          "sun3d-hotel_umd-maryland_hotel3": 0.052701823126300056,
+          "sun3d-mit_76_studyroom-76-1studyroom2": 0.04654504215854342,
+          "sun3d-mit_lab_hj-lab_hj_tea_nov_2_2012_scan1_erika": 0.05967790131455379
+        }
+      },
+      "keep": true,
+      "rationale": "Forward median is 6-12x the inverse median and 100% of pairs agree.",
+      "artifact": "results/verify_gt_direction_full.json"
+    },
+    {
+      "round": 3,
+      "title": "High-overlap pair selection uses the uncapped overlap",
+      "hypothesis": "Fixing the overlap metric changes which 8 pairs are called 'high overlap', so the full table should not silently inherit the old capped-metric selection.",
+      "change": "run_full_scenes.select_pairs ranks pairs by uncapped overlap (2000 probes).",
+      "command": "/home/syk/miniconda3/envs/WM/bin/python run_full_scenes.py",
+      "before": {
+        "selection": "capped-overlap ranking (parent)",
+        "parent_pair_sets": {
+          "redkitchen": 8,
+          "sun3d-home_at": 8,
+          "sun3d-hotel_uc": 8,
+          "sun3d-home_md": 8
+        }
+      },
+      "after": {
+        "selection": "uncapped-overlap ranking",
+        "jaccard_vs_parent": {
+          "redkitchen": {
+            "intersection": 2,
+            "union": 14,
+            "old_n": 8,
+            "new_n": 8,
+            "jaccard": 0.14285714285714285
+          },
+          "sun3d-home_at": {
+            "intersection": 2,
+            "union": 14,
+            "old_n": 8,
+            "new_n": 8,
+            "jaccard": 0.14285714285714285
+          },
+          "sun3d-hotel_uc": {
+            "intersection": 0,
+            "union": 16,
+            "old_n": 8,
+            "new_n": 8,
+            "jaccard": 0.0
+          },
+          "sun3d-home_md": {
+            "intersection": 1,
+            "union": 15,
+            "old_n": 8,
+            "new_n": 8,
+            "jaccard": 0.06666666666666667
+          }
+        },
+        "selected_overlap_median": 0.89525,
+        "selected_overlap_min": 0.8245
+      },
+      "keep": true,
+      "rationale": "All selected pairs have high uncapped overlap; the change is documented so the full table is not mistaken for a byte-identical rerun of the parent.",
+      "artifact": "results/full_scenes.json#selected_pairs"
+    },
+    {
+      "round": 4,
+      "title": "Eight-scene high-overlap table",
+      "hypothesis": "The parent two-scene conclusion (GNC matches RANSAC success at 0-70% random outliers while being ~30x faster) holds on the full official set.",
+      "change": "Ran the identical protocol on all eight official scene-fragment sets.",
+      "command": "/home/syk/miniconda3/envs/WM/bin/python run_full_scenes.py",
+      "before": {
+        "parent_scenes": 4,
+        "gnc_random_p07": 1.0,
+        "ransac_random_p07": 1.0
+      },
+      "after": {
+        "scenes": 8,
+        "gnc_random_p07": 1.0,
+        "ransac_random_p07": 1.0,
+        "gnc_rot_p07": 0.24975443959216592,
+        "gnc_speedup_p07": 27.672210561904965,
+        "gnc_coherent_p06": 0.0,
+        "gnc_p05_random_per_scene": {
+          "redkitchen": 1.0,
+          "sun3d-home_at": 1.0,
+          "sun3d-hotel_uc": 1.0,
+          "sun3d-home_md": 1.0,
+          "sun3d-hotel1": 1.0,
+          "sun3d-hotel3": 1.0,
+          "sun3d-studyroom": 1.0,
+          "sun3d-mit_lab_hj": 1.0
+        }
+      },
+      "keep": true,
+      "rationale": "Success and speedup are stable on the four unseen scenes; coherent outliers at 60% defeat every method as predicted by identifiability.",
+      "artifact": "results/full_scenes.json"
+    },
+    {
+      "round": 5,
+      "title": "Clean geometry degrades at low overlap",
+      "hypothesis": "Lower-overlap pairs have more boundary/noisy GT-NN pairs, so the fraction of base pairs inside c and the clean registration accuracy should fall with overlap.",
+      "change": "Measured base inlier fraction and clean pose error by overlap bin.",
+      "command": "/home/syk/miniconda3/envs/WM/bin/python run_overlap_bins.py",
+      "before": {
+        "overlap_dependence_of_clean_geometry": "not measured"
+      },
+      "after": {
+        "pairs_per_bin": {
+          "low": 24,
+          "mid": 21,
+          "high": 20
+        },
+        "base_inlier_by_bin": {
+          "low": 0.9478298611111112,
+          "mid": 0.9631770833333334,
+          "high": 0.9823015873015873
+        },
+        "clean_rot_median_by_bin": {
+          "low": 0.5200460848204367,
+          "mid": 0.2445058971242987,
+          "high": 0.18113459990585506
+        },
+        "clean_success_by_bin": {
+          "low": 1.0,
+          "mid": 1.0,
+          "high": 1.0
+        }
+      },
+      "keep": true,
+      "rationale": "Reported with the caveat that base matches are oracle GT-NN, so this captures real residual composition rather than front-end failure.",
+      "artifact": "results/overlap_bins.json#tables"
+    },
+    {
+      "round": 6,
+      "title": "Is the GNC advantage overlap-dependent?",
+      "hypothesis": "If GNC's advantage comes from its robust kernel, it should shrink at low overlap where base residuals are larger and closer to c.",
+      "change": "Compared GNC vs RANSAC-1000 success and runtime in each overlap bin.",
+      "command": "/home/syk/miniconda3/envs/WM/bin/python run_overlap_bins.py",
+      "before": {
+        "overlap_dependence": "unknown"
+      },
+      "after": {
+        "delta_success_gnc_minus_ransac_p05": {
+          "low": 0.0,
+          "mid": 0.0,
+          "high": 0.0
+        },
+        "speedup_p05": {
+          "low": 30.410657726704283,
+          "mid": 27.775756222096334,
+          "high": 27.91102937368009
+        },
+        "delta_success_gnc_minus_ransac_p07": {
+          "low": 0.0,
+          "mid": 0.0,
+          "high": 0.0
+        },
+        "spearman_gnc_success_vs_overlap": [
+          NaN,
+          NaN
+        ],
+        "spearman_ransac_success_vs_overlap": [
+          NaN,
+          NaN
+        ],
+        "paired_test_05": null
+      },
+      "keep": true,
+      "rationale": "Success is at or near saturation in all bins for both methods, so the measured overlap dependence is in rotation error/runtime rather than success; the exact McNemar counts and the low-vs-high interaction CI are in results/overlap_dependence.json.",
+      "artifact": "results/overlap_bins.json#advantage; results/overlap_dependence.json"
+    }
+  ]
+}

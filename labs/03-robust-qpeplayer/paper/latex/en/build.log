@@ -1,0 +1,47 @@
+note: "version 2" Tectonic command-line interface activated
+note: Running TeX ...
+warning: algorithm.sty:11: 
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+warning: sections/04_method:33: Underfull \hbox (badness 5696) in paragraph at lines 28--33
+warning: sections/04_method:33: Underfull \hbox (badness 5133) in paragraph at lines 28--33
+warning: sections/04_method:85: Underfull \hbox (badness 1484) in paragraph at lines 82--85
+warning: sections/05_experiments:23: Underfull \hbox (badness 2799) in paragraph at lines 19--23
+warning: sections/05_experiments:44: Overfull \hbox (2.7601pt too wide) in paragraph at lines 33--44
+warning: sections/05_experiments:199: Underfull \hbox (badness 3138) in paragraph at lines 192--199
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 35--39
+warning: sections/08_appendix:96: Overfull \hbox (1.96008pt too wide) in paragraph at lines 86--96
+warning: sections/08_appendix:303: Underfull \hbox (badness 10000) in paragraph at lines 296--303
+warning: sections/08_appendix:335: Overfull \vbox (1.65303pt too high) has occurred while \output is active
+note: Running BibTeX on main.aux ...
+note: Rerunning TeX because bibtex was run ...
+warning: algorithm.sty:11: 
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+warning: sections/04_method:33: Underfull \hbox (badness 5696) in paragraph at lines 28--33
+warning: sections/04_method:33: Underfull \hbox (badness 5133) in paragraph at lines 28--33
+warning: sections/04_method:85: Underfull \hbox (badness 1484) in paragraph at lines 82--85
+warning: sections/05_experiments:23: Underfull \hbox (badness 2799) in paragraph at lines 19--23
+warning: sections/05_experiments:44: Overfull \hbox (2.7601pt too wide) in paragraph at lines 33--44
+warning: sections/05_experiments:199: Underfull \hbox (badness 3138) in paragraph at lines 192--199
+warning: main.bbl:77: Underfull \hbox (badness 1490) in paragraph at lines 73--77
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 35--39
+warning: sections/08_appendix:96: Overfull \hbox (1.96008pt too wide) in paragraph at lines 86--96
+warning: sections/08_appendix:303: Underfull \hbox (badness 10000) in paragraph at lines 296--303
+warning: sections/08_appendix:335: Overfull \vbox (1.65303pt too high) has occurred while \output is active
+note: Rerunning TeX because "main.aux" changed ...
+warning: algorithm.sty:11: 
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+warning: sections/04_method:33: Underfull \hbox (badness 5696) in paragraph at lines 28--33
+warning: sections/04_method:33: Underfull \hbox (badness 5133) in paragraph at lines 28--33
+warning: sections/04_method:85: Underfull \hbox (badness 1484) in paragraph at lines 82--85
+warning: sections/05_experiments:23: Underfull \hbox (badness 2799) in paragraph at lines 19--23
+warning: sections/05_experiments:44: Overfull \hbox (2.7601pt too wide) in paragraph at lines 33--44
+warning: sections/05_experiments:199: Underfull \hbox (badness 3138) in paragraph at lines 192--199
+warning: main.bbl:77: Underfull \hbox (badness 1490) in paragraph at lines 73--77
+warning: sections/08_appendix:39: Underfull \hbox (badness 10000) in paragraph at lines 35--39
+warning: sections/08_appendix:96: Overfull \hbox (1.96008pt too wide) in paragraph at lines 86--96
+warning: sections/08_appendix:303: Underfull \hbox (badness 10000) in paragraph at lines 296--303
+warning: sections/08_appendix:335: Overfull \vbox (1.65303pt too high) has occurred while \output is active
+warning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details.
+note: Running xdvipdfmx ...
+note: Writing `main.pdf` (608.3330078125 KiB)
+note: Skipped writing 3 intermediate files (use --keep-intermediates to keep them)

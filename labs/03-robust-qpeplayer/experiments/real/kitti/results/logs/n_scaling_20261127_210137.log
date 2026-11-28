@@ -1,0 +1,12 @@
+srun: job 3143 queued and waiting for resources
+srun: job 3143 has been allocated resources
+10 bases of size [2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000]
+n=50 p=0.3 done (1.5s)
+n=50 p=0.7 done (2.7s)
+n=100 p=0.3 done (4.1s)
+n=100 p=0.7 done (5.4s)
+n=300 p=0.3 done (6.9s)
+n=300 p=0.7 done (8.3s)
+n=1000 p=0.3 done (10.3s)
+n=1000 p=0.7 done (12.2s)
+wrote /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/real/kitti/results

@@ -1,0 +1,59 @@
+四脚桌接触 Jacobian J_A (4×3):
+[[ 1.    0.15  0.1 ]
+ [ 1.    0.15 -0.1 ]
+ [ 1.   -0.15  0.1 ]
+ [ 1.   -0.15 -0.1 ]]
+rank(J_A) = 3 < 4 ; singular values = [2.  0.3 0.2] ; cond = 1.00e+01
+
+=== 表 A：ε → 0 时鞍点条件数（四脚桌，4 约束 / 3 未知） ===
+  eps=1e-01  D_a=4.963e-03  cond(S)=5.158e+02
+  eps=1e-02  D_a=5.000e-05  cond(S)=5.123e+04
+  eps=1e-03  D_a=5.000e-07  cond(S)=5.123e+06
+  eps=1e-04  D_a=5.000e-09  cond(S)=5.123e+08
+  eps=1e-05  D_a=5.000e-11  cond(S)=5.123e+10
+  eps=1e-06  D_a=5.000e-13  cond(S)=5.123e+12
+  log(cond) vs log(eps) 斜率 = -2.00（定理 2.3(iv): κ ≍ 1/ε²）
+
+=== 表 B：相容情形 w = J_A v（真方向导数存在） ===
+  eps=1e-01  ||dz - v||=5.902e-02  ||dmu||=2.562e+00
+  eps=1e-02  ||dz - v||=6.625e-04  ||dmu||=2.834e+00
+  eps=1e-03  ||dz - v||=6.633e-06  ||dmu||=2.837e+00
+  eps=1e-04  ||dz - v||=6.633e-08  ||dmu||=2.837e+00
+  eps=1e-05  ||dz - v||=6.633e-10  ||dmu||=2.837e+00
+  eps=1e-06  ||dz - v||=6.634e-12  ||dmu||=2.837e+00
+  D_a ∝ [1. 1. 1. 1.]       ||dz-v||=6.633e-08  ||dmu||=2.84e+00
+  D_a ∝ [ 1.  2.  5. 10.]   ||dz-v||=4.013e-08  ||dmu||=3.08e+00
+  D_a ∝ [1.e-04 1.e+00 1.e+00 1.e+00]  ||dz-v||=7.920e-08  ||dmu||=2.87e+00
+
+=== 表 C：exact(FB) vs naive(D_a=0, 硬活跃集) vs StopGrad(dz=0) ===
+  compatible exact FB (eps=1e-6)      dz_err=6.634e-12 dmu=2.84e+00 rank(S)=7/7
+  compatible naive D_a=0 + pinv       dz_err=1.696e-15 dmu=2.84e+00 rank(S)=6/7
+  compatible StopGrad (dz=0)          dz_err=7.071e-01 dmu=0.00e+00 rank(S)=7/7
+  不相容性：||(I - J_A J_A^+) w|| = 1.000e-02 > 0
+  incompatible exact FB (eps=1e-6)      ||dz||=7.071e-01 dmu=2.00e+10 rank(S)=7/7
+  incompatible naive D_a=0 + pinv       ||dz||=7.071e-01 dmu=2.84e+00 rank(S)=6/7
+  incompatible StopGrad (dz=0)          ||dz||=0.000e+00 dmu=0.00e+00 rank(S)=7/7
+
+  非各向同性 H = diag(1,1,10) + rank(J)=2（null 维 1）：FB 极限 vs 欧氏 pinv
+    rank(J)=2 ; H-加权闭式 = [1.1667 2.1667 0.3333] ; 欧氏 pinv = [0.1667 1.1667 1.3333] ; 差 = 1.732e+00 ; FB 解误差 = 3.523e-13
+
+=== 表 D：2D kink（a=0）exact FB vs StopGrad vs 单侧导数 ===
+  eps=1e-01: exact FB dz/da=0.5000000000 ; StopGrad=0 ; 单侧真导数=1 ; Clarke=[0,1]
+  eps=1e-02: exact FB dz/da=0.5000000000 ; StopGrad=0 ; 单侧真导数=1 ; Clarke=[0,1]
+  eps=1e-04: exact FB dz/da=0.5000000000 ; StopGrad=0 ; 单侧真导数=1 ; Clarke=[0,1]
+  eps=1e-06: exact FB dz/da=0.5000000000 ; StopGrad=0 ; 单侧真导数=1 ; Clarke=[0,1]
+    a=-1e+00: exact FB dz/da=0.000000 (真: 0)
+    a=-1e-02: exact FB dz/da=0.000000 (真: 0)
+    a=+0e+00: exact FB dz/da=0.500000 (真: 0)
+    a=+1e-02: exact FB dz/da=1.000000 (真: 1)
+/mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/02-constrained-qpeplayer/experiments/code/run_fb_table.py:187: RuntimeWarning: divide by zero encountered in scalar divide
+  D = a_j / b_j
+    a=+1e+00: exact FB dz/da=1.000000 (真: 1)
+
+=== 表 E：真实桌面 PnP 实例的活跃集秩（p=8/16/32/64） ===
+  p= 8 |A|= 3 rank(J_A)= 2 LICQ FAIL  viol=2.2e-11
+  p=16 |A|= 3 rank(J_A)= 2 LICQ FAIL  viol=8.5e-11
+  p=32 |A|= 3 rank(J_A)= 2 LICQ FAIL  viol=3.3e-11
+  p=64 |A|= 6 rank(J_A)= 2 LICQ FAIL  viol=1.8e-11
+
+已写出 results/fb_table.json / results/fb_table.md

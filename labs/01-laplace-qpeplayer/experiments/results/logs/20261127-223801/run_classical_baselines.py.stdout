@@ -1,0 +1,19 @@
+frames: 15 (+1 dropped for K<2:
+  dropped 000011/11: K_phys=1 n_plane=358
+  000010/15: n_plane=558 reproj=0.99px | EPnP 1.41deg 5.8mm | ITER 1.60deg | IPPE n=2 1.4deg | LM(id) mirror (z<=0) 180.0deg | LM(gt) 1.47deg
+  000010/18: n_plane=474 reproj=1.10px | EPnP 0.51deg 10.0mm | ITER 0.65deg | IPPE n=2 0.4deg | LM(id) mirror (z<=0) 179.9deg | LM(gt) 0.51deg
+  000010/40: n_plane=482 reproj=1.43px | EPnP 2.34deg 16.1mm | ITER 2.21deg | IPPE n=2 2.3deg | LM(id) true 2.2deg | LM(gt) 2.20deg
+  000010/60: n_plane=452 reproj=1.32px | EPnP 1.01deg 5.8mm | ITER 1.02deg | IPPE n=2 0.5deg | LM(id) flip 104.0deg | LM(gt) 0.96deg
+  000010/66: n_plane=460 reproj=1.81px | EPnP 94.96deg 46.1mm | ITER 2.50deg | IPPE n=2 1.9deg | LM(id) true 2.3deg | LM(gt) 2.29deg
+  000010/72: n_plane=501 reproj=1.30px | EPnP 44.34deg 25.9mm | ITER 43.99deg | IPPE n=2 4.1deg | LM(id) mirror (z<=0) 178.8deg | LM(gt) 3.84deg
+  000010/80: n_plane=508 reproj=1.25px | EPnP 1.23deg 10.0mm | ITER 1.17deg | IPPE n=2 1.6deg | LM(id) flip 54.7deg | LM(gt) 1.08deg
+  000010/90: n_plane=474 reproj=1.66px | EPnP 3.71deg 11.6mm | ITER 3.54deg | IPPE n=2 4.4deg | LM(id) true 3.5deg | LM(gt) 3.49deg
+  000011/20: n_plane=413 reproj=1.86px | EPnP 10.37deg 78.4mm | ITER 10.00deg | IPPE n=2 8.3deg | LM(id) flip 69.1deg | LM(gt) 8.14deg
+  000011/24: n_plane=423 reproj=2.34px | EPnP 1.39deg 9.4mm | ITER 1.46deg | IPPE n=2 1.7deg | LM(id) mirror (z<=0) 179.9deg | LM(gt) 1.37deg
+  000011/26: n_plane=439 reproj=2.82px | EPnP 2.05deg 10.3mm | ITER 2.07deg | IPPE n=2 2.8deg | LM(id) mirror (z<=0) 179.8deg | LM(gt) 2.06deg
+  000011/32: n_plane=474 reproj=1.85px | EPnP 1.80deg 8.3mm | ITER 1.84deg | IPPE n=2 2.2deg | LM(id) mirror (z<=0) 179.8deg | LM(gt) 1.78deg
+  000011/33: n_plane=365 reproj=1.58px | EPnP 1.61deg 1.5mm | ITER 1.76deg | IPPE n=2 2.7deg | LM(id) mirror (z<=0) 179.7deg | LM(gt) 1.62deg
+  000011/40: n_plane=428 reproj=1.13px | EPnP 3.07deg 52.3mm | ITER 122.16deg | IPPE n=2 2.1deg | LM(id) flip 106.0deg | LM(gt) 2.77deg
+  000011/49: n_plane=347 reproj=1.47px | EPnP 6.58deg 85.0mm | ITER 178.97deg | IPPE n=2 7.5deg | LM(id) flip 83.7deg | LM(gt) 4.95deg
+wrote /tmp/p1-repro.20261127-223801.qSZPkq/labs/01-laplace-qpeplayer/experiments/real/linemod/results/classical_baselines.md
+wrote /tmp/p1-repro.20261127-223801.qSZPkq/labs/01-laplace-qpeplayer/experiments/real/linemod/results/classical_baselines.json (3.0s)

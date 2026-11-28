@@ -1,0 +1,1432 @@
+{
+ "config": {
+  "n": 18,
+  "p": [
+   8,
+   16,
+   32
+  ],
+  "eps": 1e-06,
+  "seed_map": {
+   "0": 8,
+   "1": 16,
+   "2": 32,
+   "3": 8,
+   "4": 16,
+   "5": 32,
+   "6": 8,
+   "7": 16,
+   "8": 32,
+   "9": 8,
+   "10": 16,
+   "11": 32,
+   "12": 8,
+   "13": 16,
+   "14": 32,
+   "15": 8,
+   "16": 16,
+   "17": 32
+  },
+  "note": "alm = physical ALM optimum (planar multi-contact); nd = lifted/perturbed LICQ point from find_grad_point"
+ },
+ "summary": {
+  "n": 18,
+  "groups": {
+   "licq_ok": {
+    "n": 7,
+    "n_rank_deficit": 0,
+    "cond_M_med": 482.0909528610892,
+    "n_act_med": 1.0,
+    "n_box_med": 0.0,
+    "rank_def_med": 0.0,
+    "blocks": {
+     "g": {
+      "n_rows": 7,
+      "rel_err_max": 2.691557315646117e-05,
+      "rel_err_med": 7.45307276865236e-09,
+      "n_counted_med": 6.0
+     },
+     "gval": {
+      "n_rows": 7,
+      "rel_err_max": 1.0,
+      "rel_err_med": 1.6001062179585817e-07,
+      "n_counted_med": 2.0
+     },
+     "Jg": {
+      "n_rows": 7,
+      "rel_err_max": 1.0,
+      "rel_err_med": 7.0315579177912134e-09,
+      "n_counted_med": 6.0
+     },
+     "H": {
+      "n_rows": 0,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN,
+      "n_counted_med": 0.0
+     }
+    }
+   },
+   "licq_fail": {
+    "n": 11,
+    "n_rank_deficit": 11,
+    "cond_M_med": 6.380102782998824e+18,
+    "n_act_med": 3.0,
+    "n_box_med": 0.0,
+    "rank_def_med": 1.0,
+    "blocks": {
+     "g": {
+      "n_rows": 11,
+      "rel_err_max": 18234.497950524456,
+      "rel_err_med": 4.393496513031035e-08,
+      "n_counted_med": 6.0
+     },
+     "gval": {
+      "n_rows": 3,
+      "rel_err_max": 1.0,
+      "rel_err_med": 1.0,
+      "n_counted_med": 0.0
+     },
+     "Jg": {
+      "n_rows": 11,
+      "rel_err_max": 20023712981077.566,
+      "rel_err_med": 0.009346465644009096,
+      "n_counted_med": 18.0
+     },
+     "H": {
+      "n_rows": 0,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN,
+      "n_counted_med": 0.0
+     }
+    }
+   }
+  },
+  "nd_points": {
+   "n": 0,
+   "n_licq": 0,
+   "cond_M_med": NaN,
+   "blocks": {
+    "g": {
+     "n_rows": 0,
+     "rel_err_max": NaN,
+     "rel_err_med": NaN
+    },
+    "gval": {
+     "n_rows": 0,
+     "rel_err_max": NaN,
+     "rel_err_med": NaN
+    },
+    "Jg": {
+     "n_rows": 0,
+     "rel_err_max": NaN,
+     "rel_err_med": NaN
+    },
+    "H": {
+     "n_rows": 0,
+     "rel_err_max": NaN,
+     "rel_err_med": NaN
+    }
+   }
+  },
+  "alm_singular": 0
+ },
+ "rows": [
+  {
+   "seed": 0,
+   "p": 8,
+   "unc_J": 0.0023336836875807393,
+   "alm_J": 0.004921785989718264,
+   "alm": {
+    "point": "alm",
+    "viol": 2.5058399799604558e-11,
+    "J": 0.004921785989718264,
+    "dn": 2.741626466215467e-10,
+    "n_act": 3,
+    "n_box": 0,
+    "rank_active": 2,
+    "rank_deficit": 1,
+    "licq": false,
+    "cond_M": 1.3586899550639332e+18,
+    "sing_min": 2.0517221803971833e-17,
+    "min_lam_act": 0.009914532800203067,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 1.2734154034982952e-08,
+      "rel_err_max": 9.10110883874495e-10,
+      "rel_err_med": 7.285877841424676e-10
+     },
+     "gval": {
+      "n_counted": 0,
+      "n_kink": 3,
+      "n_small": 5,
+      "abs_err_max": 1238430.2725341234,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     },
+     "Jg": {
+      "n_counted": 18,
+      "n_kink": 0,
+      "n_small": 30,
+      "abs_err_max": 0.0004972765196631959,
+      "rel_err_max": 0.08516714401977217,
+      "rel_err_med": 0.0006896016238091633
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 3.9211995375890575e-11,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "rand8",
+   "nd": {
+    "point": "rand8",
+    "viol": 0.0,
+    "J": 0.006477379370986497,
+    "dn": 0.06697012029335316,
+    "n_act": 1,
+    "n_box": 1,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 500.7247457875603,
+    "sing_min": 0.05567225736829656,
+    "min_lam_act": 0.048424580815736265,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 1,
+   "p": 16,
+   "unc_J": 0.002072058746801628,
+   "alm_J": 0.003942045658277604,
+   "alm": {
+    "point": "alm",
+    "viol": 7.223721620874812e-11,
+    "J": 0.003942045658277604,
+    "dn": 1.040621590502757e-09,
+    "n_act": 9,
+    "n_box": 0,
+    "rank_active": 3,
+    "rank_deficit": 6,
+    "licq": false,
+    "cond_M": 7.937223811706296e+18,
+    "sing_min": 3.510067829764916e-18,
+    "min_lam_act": 0.003924080207084981,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 3,
+      "n_kink": 0,
+      "n_small": 3,
+      "abs_err_max": 0.025480010210588967,
+      "rel_err_max": 0.29674562269881827,
+      "rel_err_med": 0.03330259493874425
+     },
+     "gval": {
+      "n_counted": 0,
+      "n_kink": 9,
+      "n_small": 7,
+      "abs_err_max": 179406839478898.2,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     },
+     "Jg": {
+      "n_counted": 31,
+      "n_kink": 0,
+      "n_small": 65,
+      "abs_err_max": 185532.72647587856,
+      "rel_err_max": 3844923.8901570947,
+      "rel_err_med": 230593.45684696542
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 1.9577506267936558e-10,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "lift60mm",
+   "nd": {
+    "point": "lift60mm",
+    "viol": 0.0,
+    "J": 0.007270494560425611,
+    "dn": 0.05014487280284862,
+    "n_act": 0,
+    "n_box": 1,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 425.62105757087636,
+    "sing_min": 0.06545737520986102,
+    "min_lam_act": Infinity,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 2,
+   "p": 32,
+   "unc_J": 0.0013213270458205528,
+   "alm_J": 0.0024492094114035856,
+   "alm": {
+    "point": "alm",
+    "viol": 4.374656192851489e-11,
+    "J": 0.0024492094114035856,
+    "dn": 3.0957123851327684e-10,
+    "n_act": 1,
+    "n_box": 0,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 501.6993902498739,
+    "sing_min": 0.055548767381252494,
+    "min_lam_act": 0.03002675231293481,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 5.870088201645295e-09,
+      "rel_err_max": 6.428180481766096e-10,
+      "rel_err_med": 2.1403465791955583e-10
+     },
+     "gval": {
+      "n_counted": 1,
+      "n_kink": 0,
+      "n_small": 31,
+      "abs_err_max": 6.249481303946969e-09,
+      "rel_err_max": 5.614989878140615e-09,
+      "rel_err_med": 5.614989878140615e-09
+     },
+     "Jg": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 186,
+      "abs_err_max": 2.3341929389309396e-10,
+      "rel_err_max": 5.90759494680415e-09,
+      "rel_err_med": 3.888541121032563e-10
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 1.6114423217050414e-10,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "lift60mm",
+   "nd": {
+    "point": "lift60mm",
+    "viol": 0.0,
+    "J": 0.005140446708364499,
+    "dn": 0.06836505396552946,
+    "n_act": 0,
+    "n_box": 1,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 461.8316695186188,
+    "sing_min": 0.06034402637939618,
+    "min_lam_act": Infinity,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 3,
+   "p": 8,
+   "unc_J": 0.002422640298986913,
+   "alm_J": 0.004911536912635989,
+   "alm": {
+    "point": "alm",
+    "viol": 0.0,
+    "J": 0.004911536912635989,
+    "dn": 1.7867929589235832e-10,
+    "n_act": 2,
+    "n_box": 0,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 465.5441888210521,
+    "sing_min": 0.05983434793959973,
+    "min_lam_act": 0.0022871078562221657,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 2.5828472684963804e-06,
+      "rel_err_max": 2.691557315646117e-05,
+      "rel_err_med": 6.903144561504564e-08
+     },
+     "gval": {
+      "n_counted": 2,
+      "n_kink": 0,
+      "n_small": 6,
+      "abs_err_max": 1.3659683883060527e-06,
+      "rel_err_max": 1.6358938907168358e-07,
+      "rel_err_med": 1.6001062179585817e-07
+     },
+     "Jg": {
+      "n_counted": 12,
+      "n_kink": 0,
+      "n_small": 36,
+      "abs_err_max": 1.1761712057195323e-07,
+      "rel_err_max": 2.8174644731517724e-05,
+      "rel_err_med": 9.490992010910192e-08
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 3.4177433349293947e-09,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "rand8",
+   "nd": {
+    "point": "rand8",
+    "viol": 0.0,
+    "J": 0.0057937565241703015,
+    "dn": 0.06852513255497657,
+    "n_act": 1,
+    "n_box": 1,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 381.3808157617184,
+    "sing_min": 0.07303863181571556,
+    "min_lam_act": 0.046068940581955146,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 4,
+   "p": 16,
+   "unc_J": 0.002355682025835798,
+   "alm_J": 0.006221305181457526,
+   "alm": {
+    "point": "alm",
+    "viol": 8.791078975889377e-12,
+    "J": 0.006221305181457526,
+    "dn": 3.1021391841564787e-10,
+    "n_act": 3,
+    "n_box": 0,
+    "rank_active": 2,
+    "rank_deficit": 1,
+    "licq": false,
+    "cond_M": 9.127274135561667e+18,
+    "sing_min": 3.053330516064896e-18,
+    "min_lam_act": 0.007062363861803047,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 1060.769201923116,
+      "rel_err_max": 18234.497950524456,
+      "rel_err_med": 148.46079693996893
+     },
+     "gval": {
+      "n_counted": 2,
+      "n_kink": 3,
+      "n_small": 11,
+      "abs_err_max": 5.478054955464978e+18,
+      "rel_err_max": 1.0,
+      "rel_err_med": 1.0
+     },
+     "Jg": {
+      "n_counted": 18,
+      "n_kink": 0,
+      "n_small": 78,
+      "abs_err_max": 2326418404.9902215,
+      "rel_err_max": 20023712981077.566,
+      "rel_err_med": 19871798475.156998
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 3.645853323080378e-07,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "lift60mm",
+   "nd": {
+    "point": "lift60mm",
+    "viol": 0.0,
+    "J": 0.010576527276368014,
+    "dn": 0.07422620762073097,
+    "n_act": 0,
+    "n_box": 2,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 456.6299622912818,
+    "sing_min": 0.0610309099703024,
+    "min_lam_act": Infinity,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 5,
+   "p": 32,
+   "unc_J": 0.0012153321515877497,
+   "alm_J": 0.0035739093491963247,
+   "alm": {
+    "point": "alm",
+    "viol": 6.097455873543822e-12,
+    "J": 0.0035739093491963247,
+    "dn": 2.541709617128736e-11,
+    "n_act": 1,
+    "n_box": 0,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 454.8481132561062,
+    "sing_min": 0.06124314201538166,
+    "min_lam_act": 0.04411541722545846,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 6.344364204670118e-09,
+      "rel_err_max": 5.84355394988696e-10,
+      "rel_err_med": 3.819648511649472e-10
+     },
+     "gval": {
+      "n_counted": 1,
+      "n_kink": 0,
+      "n_small": 31,
+      "abs_err_max": 4.043574202459008e-09,
+      "rel_err_max": 3.5196050293434564e-09,
+      "rel_err_med": 3.5196050293434564e-09
+     },
+     "Jg": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 186,
+      "abs_err_max": 4.205407923057825e-10,
+      "rel_err_max": 4.730884717109505e-09,
+      "rel_err_med": 6.033752479124442e-10
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 1.407797118771545e-10,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "rand8",
+   "nd": {
+    "point": "rand8",
+    "viol": 0.0,
+    "J": 0.004520183428983304,
+    "dn": 0.07427843311208611,
+    "n_act": 1,
+    "n_box": 1,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 365.29066451193415,
+    "sing_min": 0.07625797905754436,
+    "min_lam_act": 0.04432170560881177,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 6,
+   "p": 8,
+   "unc_J": 0.002119490053397099,
+   "alm_J": 0.004684065288119682,
+   "alm": {
+    "point": "alm",
+    "viol": 2.4806157128409723e-11,
+    "J": 0.004684065288119682,
+    "dn": 1.5591799021089552e-09,
+    "n_act": 2,
+    "n_box": 0,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 464.1419395303402,
+    "sing_min": 0.0600168246389395,
+    "min_lam_act": 0.0038406100773359098,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 2.764395059268345e-05,
+      "rel_err_max": 1.3311248872669079e-05,
+      "rel_err_med": 1.7779419837648029e-06
+     },
+     "gval": {
+      "n_counted": 5,
+      "n_kink": 0,
+      "n_small": 3,
+      "abs_err_max": 4.745544394393167e-06,
+      "rel_err_max": 1.0,
+      "rel_err_med": 1.0
+     },
+     "Jg": {
+      "n_counted": 14,
+      "n_kink": 0,
+      "n_small": 34,
+      "abs_err_max": 1.2441915705141617e-06,
+      "rel_err_max": 1.0,
+      "rel_err_med": 1.9925212116570358e-06
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 1.006509569819502e-08,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "lift60mm",
+   "nd": {
+    "point": "lift60mm",
+    "viol": 0.0,
+    "J": 0.008440842387271413,
+    "dn": 0.07904509537553693,
+    "n_act": 0,
+    "n_box": 2,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 421.7102614269389,
+    "sing_min": 0.0660556006303118,
+    "min_lam_act": Infinity,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 7,
+   "p": 16,
+   "unc_J": 0.002363869099316781,
+   "alm_J": 0.0035231421405412244,
+   "alm": {
+    "point": "alm",
+    "viol": 5.315103912550967e-11,
+    "J": 0.0035231421405412244,
+    "dn": 8.472152564750922e-10,
+    "n_act": 9,
+    "n_box": 0,
+    "rank_active": 3,
+    "rank_deficit": 6,
+    "licq": false,
+    "cond_M": 1.8179327135254422e+19,
+    "sing_min": 1.5329878151559394e-18,
+    "min_lam_act": 0.0005595372920510544,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 3,
+      "n_kink": 0,
+      "n_small": 3,
+      "abs_err_max": 0.22993202916371974,
+      "rel_err_max": 0.6935474991515054,
+      "rel_err_med": 0.49022648696612026
+     },
+     "gval": {
+      "n_counted": 0,
+      "n_kink": 9,
+      "n_small": 7,
+      "abs_err_max": 568431048198224.1,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     },
+     "Jg": {
+      "n_counted": 31,
+      "n_kink": 0,
+      "n_small": 65,
+      "abs_err_max": 379745.7949682834,
+      "rel_err_max": 114497342.12094769,
+      "rel_err_med": 1960523.3610912552
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 2.3547171076022467e-10,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "lift60mm",
+   "nd": {
+    "point": "lift60mm",
+    "viol": 0.0,
+    "J": 0.006217296437849795,
+    "dn": 0.05936341603220061,
+    "n_act": 0,
+    "n_box": 1,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 457.1156289200819,
+    "sing_min": 0.06096620069314761,
+    "min_lam_act": Infinity,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 8,
+   "p": 32,
+   "unc_J": 0.0018155534581966541,
+   "alm_J": 0.0035366183146174623,
+   "alm": {
+    "point": "alm",
+    "viol": 5.69320146581731e-11,
+    "J": 0.0035366183146174623,
+    "dn": 8.56071555913667e-10,
+    "n_act": 17,
+    "n_box": 0,
+    "rank_active": 3,
+    "rank_deficit": 14,
+    "licq": false,
+    "cond_M": 7.601709632492013e+20,
+    "sing_min": 3.6638062167196955e-20,
+    "min_lam_act": 0.0015049125934889225,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 3,
+      "n_kink": 0,
+      "n_small": 3,
+      "abs_err_max": 0.006585732357537721,
+      "rel_err_max": 0.15265526440294833,
+      "rel_err_med": 0.0032478142133454367
+     },
+     "gval": {
+      "n_counted": 0,
+      "n_kink": 17,
+      "n_small": 15,
+      "abs_err_max": 27216061944056.043,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     },
+     "Jg": {
+      "n_counted": 55,
+      "n_kink": 0,
+      "n_small": 137,
+      "abs_err_max": 23155.635808850628,
+      "rel_err_max": 1129695.2199551202,
+      "rel_err_med": 95447.27127999817
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 7.426982910846765e-10,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "lift60mm",
+   "nd": {
+    "point": "lift60mm",
+    "viol": 0.0,
+    "J": 0.006864381333846842,
+    "dn": 0.05154395778375722,
+    "n_act": 0,
+    "n_box": 1,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 413.665325482633,
+    "sing_min": 0.06732768459333768,
+    "min_lam_act": Infinity,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 9,
+   "p": 8,
+   "unc_J": 0.0024345916746188307,
+   "alm_J": 0.004587779168046924,
+   "alm": {
+    "point": "alm",
+    "viol": 5.1000648149113204e-11,
+    "J": 0.004587779168046924,
+    "dn": 8.913794224065354e-10,
+    "n_act": 5,
+    "n_box": 0,
+    "rank_active": 3,
+    "rank_deficit": 2,
+    "licq": false,
+    "cond_M": 6.380102782998824e+18,
+    "sing_min": 4.368932771149993e-18,
+    "min_lam_act": 0.0011181716295915526,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 5,
+      "n_kink": 0,
+      "n_small": 1,
+      "abs_err_max": 0.0001532526660911584,
+      "rel_err_max": 0.999999999999956,
+      "rel_err_med": 0.0021772608373182255
+     },
+     "gval": {
+      "n_counted": 1,
+      "n_kink": 5,
+      "n_small": 2,
+      "abs_err_max": 2039365521838.6648,
+      "rel_err_max": 1.0,
+      "rel_err_med": 1.0
+     },
+     "Jg": {
+      "n_counted": 21,
+      "n_kink": 0,
+      "n_small": 27,
+      "abs_err_max": 1730.9980053758313,
+      "rel_err_max": 2902122964.266952,
+      "rel_err_med": 1969.2995531943404
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 2.9794444174853985e-08,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "rand8",
+   "nd": {
+    "point": "rand8",
+    "viol": 0.0,
+    "J": 0.005887944393934752,
+    "dn": 0.07172356058202899,
+    "n_act": 2,
+    "n_box": 1,
+    "rank_active": 3,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 448.7715779591871,
+    "sing_min": 0.06211222437489378,
+    "min_lam_act": 0.0034247647869716587,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 10,
+   "p": 16,
+   "unc_J": 0.0022009472911698963,
+   "alm_J": 0.0030831356637819607,
+   "alm": {
+    "point": "alm",
+    "viol": 9.374545584250882e-11,
+    "J": 0.0030831356637819607,
+    "dn": 1.5186387462824603e-09,
+    "n_act": 1,
+    "n_box": 0,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 509.95983566510955,
+    "sing_min": 0.05462518842126189,
+    "min_lam_act": 0.024715384256086402,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 2.43091212838891e-07,
+      "rel_err_max": 1.480593624629771e-08,
+      "rel_err_med": 7.45307276865236e-09
+     },
+     "gval": {
+      "n_counted": 2,
+      "n_kink": 0,
+      "n_small": 14,
+      "abs_err_max": 1.242066709078863e-07,
+      "rel_err_max": 1.0,
+      "rel_err_med": 0.5000000468385825
+     },
+     "Jg": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 90,
+      "abs_err_max": 6.599529020679958e-09,
+      "rel_err_max": 1.6263431742603476e-08,
+      "rel_err_med": 7.0315579177912134e-09
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 5.068102047993004e-10,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "rand8",
+   "nd": {
+    "point": "rand8",
+    "viol": 0.0,
+    "J": 0.004455797698452252,
+    "dn": 0.07029694774072362,
+    "n_act": 1,
+    "n_box": 1,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 448.17324499369465,
+    "sing_min": 0.06215598838575136,
+    "min_lam_act": 0.022760779142900048,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 11,
+   "p": 32,
+   "unc_J": 0.0017416846654223065,
+   "alm_J": 0.0030724504511807915,
+   "alm": {
+    "point": "alm",
+    "viol": 3.043165719418539e-11,
+    "J": 0.0030724504511807915,
+    "dn": 5.130337250363732e-10,
+    "n_act": 3,
+    "n_box": 0,
+    "rank_active": 2,
+    "rank_deficit": 1,
+    "licq": false,
+    "cond_M": 2.8218027554210176e+18,
+    "sing_min": 9.875611920664361e-18,
+    "min_lam_act": 0.0035457685510425917,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 5.403173572293601e-07,
+      "rel_err_max": 6.767900903570801e-06,
+      "rel_err_med": 4.393496513031035e-08
+     },
+     "gval": {
+      "n_counted": 0,
+      "n_kink": 3,
+      "n_small": 29,
+      "abs_err_max": 2324534.7122121104,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     },
+     "Jg": {
+      "n_counted": 18,
+      "n_kink": 0,
+      "n_small": 174,
+      "abs_err_max": 0.0006586431519248783,
+      "rel_err_max": 4.1033477959276565,
+      "rel_err_med": 0.006634744759106371
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 3.062310416941519e-09,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "lift60mm",
+   "nd": {
+    "point": "lift60mm",
+    "viol": 0.0,
+    "J": 0.005888847421498172,
+    "dn": 0.06378419798075474,
+    "n_act": 0,
+    "n_box": 1,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 458.19485078022353,
+    "sing_min": 0.06081904766308506,
+    "min_lam_act": Infinity,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 12,
+   "p": 8,
+   "unc_J": 0.002610649176481204,
+   "alm_J": 0.003140533381351701,
+   "alm": {
+    "point": "alm",
+    "viol": 0.0,
+    "J": 0.003140533381351701,
+    "dn": 4.13105319908221e-11,
+    "n_act": 1,
+    "n_box": 0,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 562.9358162828282,
+    "sing_min": 0.049550100051696806,
+    "min_lam_act": 0.0194144401761438,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 2.7892920192703376e-07,
+      "rel_err_max": 2.1946034826863373e-08,
+      "rel_err_med": 1.179387925183802e-08
+     },
+     "gval": {
+      "n_counted": 2,
+      "n_kink": 0,
+      "n_small": 6,
+      "abs_err_max": 1.2185399494468018e-07,
+      "rel_err_max": 1.0,
+      "rel_err_med": 0.5000000354610454
+     },
+     "Jg": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 42,
+      "abs_err_max": 8.625498495313054e-09,
+      "rel_err_max": 1.676750306326861e-08,
+      "rel_err_med": 7.3147129846946515e-09
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 7.698530117706368e-09,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "rand10",
+   "nd": {
+    "point": "rand10",
+    "viol": 0.0,
+    "J": 0.005029989111270117,
+    "dn": 0.056488569126360105,
+    "n_act": 1,
+    "n_box": 1,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 428.17698089850524,
+    "sing_min": 0.06514485259033802,
+    "min_lam_act": 0.019750686641226266,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 13,
+   "p": 16,
+   "unc_J": 0.004309970172344343,
+   "alm_J": 0.006782854372388236,
+   "alm": {
+    "point": "alm",
+    "viol": 3.73371333850514e-11,
+    "J": 0.006782854372388236,
+    "dn": 2.8823438803155075e-09,
+    "n_act": 3,
+    "n_box": 0,
+    "rank_active": 2,
+    "rank_deficit": 1,
+    "licq": false,
+    "cond_M": 1.3363858010881808e+19,
+    "sing_min": 2.0834274905028597e-18,
+    "min_lam_act": 0.0024967791019283613,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 3.529483103407116e-07,
+      "rel_err_max": 1.0316179850220744e-06,
+      "rel_err_med": 2.1265304793850895e-08
+     },
+     "gval": {
+      "n_counted": 0,
+      "n_kink": 3,
+      "n_small": 13,
+      "abs_err_max": 971152.8102441102,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     },
+     "Jg": {
+      "n_counted": 18,
+      "n_kink": 0,
+      "n_small": 78,
+      "abs_err_max": 0.0028114818356666463,
+      "rel_err_max": 7.130403119291311,
+      "rel_err_med": 0.009346465644009096
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 1.3155082973575562e-09,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "lift60mm",
+   "nd": {
+    "point": "lift60mm",
+    "viol": 0.0,
+    "J": 0.0103497664746795,
+    "dn": 0.07761998349548506,
+    "n_act": 0,
+    "n_box": 2,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 405.40823300379895,
+    "sing_min": 0.06867793031572277,
+    "min_lam_act": Infinity,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 14,
+   "p": 32,
+   "unc_J": 0.0018067218974872682,
+   "alm_J": 0.003962111934238816,
+   "alm": {
+    "point": "alm",
+    "viol": 7.992051465066652e-11,
+    "J": 0.003962111934238816,
+    "dn": 1.1126020901724823e-09,
+    "n_act": 4,
+    "n_box": 0,
+    "rank_active": 2,
+    "rank_deficit": 2,
+    "licq": false,
+    "cond_M": 4.3281989973961805e+18,
+    "sing_min": 6.439645736413981e-18,
+    "min_lam_act": 0.007280751695725595,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 1.4914809004941214e-10,
+      "rel_err_max": 3.2375477179361614e-10,
+      "rel_err_med": 8.67620029674841e-11
+     },
+     "gval": {
+      "n_counted": 0,
+      "n_kink": 4,
+      "n_small": 28,
+      "abs_err_max": 24383.03019277258,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     },
+     "Jg": {
+      "n_counted": 24,
+      "n_kink": 0,
+      "n_small": 168,
+      "abs_err_max": 0.00010583010091966876,
+      "rel_err_max": 0.008693965045729867,
+      "rel_err_med": 0.00016883751256316045
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 1.602340308293675e-11,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "rand8",
+   "nd": {
+    "point": "rand8",
+    "viol": 0.0,
+    "J": 0.004976684448030816,
+    "dn": 0.07191104289085719,
+    "n_act": 1,
+    "n_box": 1,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 350.4979457646269,
+    "sing_min": 0.0795211337225082,
+    "min_lam_act": 0.042425779892131324,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 15,
+   "p": 8,
+   "unc_J": 0.001236137373841539,
+   "alm_J": 0.002386706062634636,
+   "alm": {
+    "point": "alm",
+    "viol": 1.1163292512605949e-11,
+    "J": 0.002386706062634636,
+    "dn": 4.2097691059241307e-10,
+    "n_act": 2,
+    "n_box": 0,
+    "rank_active": 2,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 482.0909528610892,
+    "sing_min": 0.05780871496280933,
+    "min_lam_act": 0.014564526356568106,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 4.466438369515402e-08,
+      "rel_err_max": 2.2430585577119406e-07,
+      "rel_err_med": 2.2006430546685053e-09
+     },
+     "gval": {
+      "n_counted": 2,
+      "n_kink": 0,
+      "n_small": 6,
+      "abs_err_max": 2.0552536844748145e-08,
+      "rel_err_max": 3.67680208582232e-09,
+      "rel_err_med": 1.93271310888234e-09
+     },
+     "Jg": {
+      "n_counted": 12,
+      "n_kink": 0,
+      "n_small": 36,
+      "abs_err_max": 9.75021354877703e-10,
+      "rel_err_max": 1.5324163298084693e-07,
+      "rel_err_med": 2.412885310087775e-09
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 6.162256536847394e-10,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "rand8",
+   "nd": {
+    "point": "rand8",
+    "viol": 0.0,
+    "J": 0.0031674537513258216,
+    "dn": 0.05209354649507298,
+    "n_act": 2,
+    "n_box": 1,
+    "rank_active": 3,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 283.5645184186817,
+    "sing_min": 0.09828118666344637,
+    "min_lam_act": 0.01483765268544214,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 16,
+   "p": 16,
+   "unc_J": 0.001401871765938482,
+   "alm_J": 0.003963004004424786,
+   "alm": {
+    "point": "alm",
+    "viol": 2.1250889936652584e-11,
+    "J": 0.003963004004424786,
+    "dn": 3.044200047391744e-10,
+    "n_act": 3,
+    "n_box": 0,
+    "rank_active": 2,
+    "rank_deficit": 1,
+    "licq": false,
+    "cond_M": 3.6383573695171574e+18,
+    "sing_min": 7.658223439644514e-18,
+    "min_lam_act": 0.013681860935817072,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 6.33478123521585e-08,
+      "rel_err_max": 2.0511366138383434e-07,
+      "rel_err_med": 4.0255119289231335e-09
+     },
+     "gval": {
+      "n_counted": 0,
+      "n_kink": 3,
+      "n_small": 13,
+      "abs_err_max": 9900913.742658112,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     },
+     "Jg": {
+      "n_counted": 18,
+      "n_kink": 0,
+      "n_small": 78,
+      "abs_err_max": 0.003076670616074613,
+      "rel_err_max": 2.0457899510332345,
+      "rel_err_med": 0.009200482261367233
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 6.237915390626199e-10,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "lift60mm",
+   "nd": {
+    "point": "lift60mm",
+    "viol": 0.0,
+    "J": 0.007758245655707846,
+    "dn": 0.06772555321165956,
+    "n_act": 0,
+    "n_box": 1,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 445.4062857346773,
+    "sing_min": 0.06255715242093046,
+    "min_lam_act": Infinity,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  },
+  {
+   "seed": 17,
+   "p": 32,
+   "unc_J": 0.0021179978283371067,
+   "alm_J": 0.0030279987434375932,
+   "alm": {
+    "point": "alm",
+    "viol": 3.222733191421412e-11,
+    "J": 0.0030279987434375932,
+    "dn": 4.4982981036423773e-10,
+    "n_act": 3,
+    "n_box": 0,
+    "rank_active": 2,
+    "rank_deficit": 1,
+    "licq": false,
+    "cond_M": 4.4939331078867727e+18,
+    "sing_min": 6.2010029739535236e-18,
+    "min_lam_act": 0.006439449647043724,
+    "status": "ok",
+    "blocks": {
+     "g": {
+      "n_counted": 6,
+      "n_kink": 0,
+      "n_small": 0,
+      "abs_err_max": 3.3238483680288255e-07,
+      "rel_err_max": 4.50021583397896e-06,
+      "rel_err_med": 2.389565331786666e-08
+     },
+     "gval": {
+      "n_counted": 1,
+      "n_kink": 3,
+      "n_small": 28,
+      "abs_err_max": 547283.290606872,
+      "rel_err_max": 1.0,
+      "rel_err_med": 1.0
+     },
+     "Jg": {
+      "n_counted": 18,
+      "n_kink": 0,
+      "n_small": 174,
+      "abs_err_max": 0.00022408654858972068,
+      "rel_err_max": 0.4052008784199814,
+      "rel_err_med": 0.0003608619350395246
+     },
+     "H": {
+      "n_counted": 0,
+      "n_kink": 0,
+      "n_small": 21,
+      "abs_err_max": 4.735210208500167e-09,
+      "rel_err_max": NaN,
+      "rel_err_med": NaN
+     }
+    }
+   },
+   "nd_tag": "lift60mm",
+   "nd": {
+    "point": "lift60mm",
+    "viol": 0.0,
+    "J": 0.005477637450475775,
+    "dn": 0.05749865964910885,
+    "n_act": 0,
+    "n_box": 1,
+    "rank_active": 1,
+    "rank_deficit": 0,
+    "licq": true,
+    "cond_M": 449.907891012689,
+    "sing_min": 0.06193907472966836,
+    "min_lam_act": Infinity,
+    "status": "check_failed",
+    "error": "Traceback (most recent call last):\n  File \"/mnt/storage1/syk/.superagent-work/wt-final-p2-dqp/labs/02-constrained-qpeplayer/experiments/code/grad_split_dqp.py\", line 79, in check\n    res = D.check_gradient(point[\"H\"], point[\"g\"], point[\"Jg\"], point[\"gv\"],\n                                                                ~~~~~^^^^^^\nKeyError: 'gv'\n"
+   }
+  }
+ ],
+ "elapsed_s": 38.14677045401186
+}

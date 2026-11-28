@@ -1,0 +1,116 @@
+# verify run_000002
+0->1 gt=0.25px inv=18.40 id=9.41 veh=14.07 dy=0.59 disp=18.7 |t|=0.20
+1->2 gt=1.32px inv=17.74 id=9.75 veh=17.61 dy=0.58 disp=18.5 |t|=0.24
+2->3 gt=0.81px inv=21.76 id=11.03 veh=17.52 dy=0.58 disp=18.7 |t|=0.26
+3->4 gt=0.73px inv=12.05 id=6.53 veh=20.68 dy=0.58 disp=18.7 |t|=0.24
+4->5 gt=0.57px inv=20.80 id=10.89 veh=26.53 dy=0.57 disp=19.9 |t|=0.32
+5->6 gt=0.55px inv=14.18 id=7.45 veh=22.53 dy=0.58 disp=19.3 |t|=0.25
+6->7 gt=0.27px inv=17.28 id=8.98 veh=24.66 dy=0.58 disp=20.3 |t|=0.28
+7->8 gt=0.92px inv=18.48 id=9.65 veh=22.26 dy=0.58 disp=19.8 |t|=0.27
+{
+  "checks": {
+    "documented_512x384": true,
+    "rows_aligned": true,
+    "gt_beats_inverse": true,
+    "gt_beats_identity": true,
+    "camera_conjugation_beats_vehicle": true,
+    "gt_reproj_under_2px": true
+  },
+  "protocol": {
+    "comp": {
+      "run": "run_000002",
+      "convention": "ba",
+      "n_vertices": 1087,
+      "n_spatial_rows": 1087,
+      "n_teach_links": 1115,
+      "multi_match": 0
+    },
+    "n_pairs": 1086,
+    "n_skipped": 0,
+    "camera_vehicle": [
+      [
+        0.000796327,
+        -1.0,
+        0.0,
+        0.119873
+      ],
+      [
+        -0.330472,
+        -0.000263164,
+        -0.943816,
+        1.49473
+      ],
+      [
+        0.943815,
+        0.000751586,
+        -0.330472,
+        0.354804
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "convention": "ba"
+  }
+}
+# verify run_000012
+101->102 gt=0.46px inv=21.20 id=11.03 veh=27.18 dy=0.56 disp=22.2 |t|=0.28
+102->103 gt=0.50px inv=24.87 id=13.24 veh=28.50 dy=0.57 disp=22.5 |t|=0.27
+103->104 gt=0.70px inv=26.85 id=14.19 veh=34.18 dy=0.56 disp=23.9 |t|=0.31
+104->105 gt=0.54px inv=21.68 id=11.61 veh=28.31 dy=0.56 disp=23.4 |t|=0.26
+105->106 gt=0.90px inv=28.94 id=15.42 veh=36.48 dy=0.57 disp=23.5 |t|=0.31
+106->107 gt=0.59px inv=30.02 id=16.13 veh=36.67 dy=0.55 disp=24.4 |t|=0.31
+107->108 gt=0.48px inv=31.97 id=17.20 veh=38.86 dy=0.55 disp=24.3 |t|=0.31
+108->109 gt=0.41px inv=29.02 id=15.25 veh=28.09 dy=0.56 disp=24.1 |t|=0.22
+{
+  "checks": {
+    "documented_512x384": true,
+    "rows_aligned": true,
+    "gt_beats_inverse": true,
+    "gt_beats_identity": true,
+    "camera_conjugation_beats_vehicle": true,
+    "gt_reproj_under_2px": true
+  },
+  "protocol": {
+    "comp": {
+      "run": "run_000012",
+      "convention": "ba",
+      "n_vertices": 859,
+      "n_spatial_rows": 859,
+      "n_teach_links": 1115,
+      "multi_match": 0
+    },
+    "n_pairs": 857,
+    "n_skipped": 1,
+    "camera_vehicle": [
+      [
+        0.000796327,
+        -1.0,
+        0.0,
+        0.119873
+      ],
+      [
+        -0.330472,
+        -0.000263164,
+        -0.943816,
+        1.49473
+      ],
+      [
+        0.943815,
+        0.000751586,
+        -0.330472,
+        0.354804
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "convention": "ba"
+  }
+}

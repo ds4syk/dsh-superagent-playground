@@ -1,0 +1,32 @@
+seq 00 0->1: |t|=0.86 m rot=0.140 deg  fwd=0.114 inv=0.236  PASS
+seq 00 906->907: |t|=0.94 m rot=0.058 deg  fwd=0.073 inv=0.313  PASS
+seq 00 1514->1515: |t|=1.25 m rot=0.159 deg  fwd=0.080 inv=0.199  PASS
+seq 00 2265->2266: |t|=0.55 m rot=0.565 deg  fwd=0.073 inv=0.326  PASS
+seq 00 3028->3029: |t|=1.07 m rot=0.145 deg  fwd=0.066 inv=0.232  PASS
+seq 00 4077->4078: |t|=1.25 m rot=0.330 deg  fwd=0.084 inv=0.229  PASS
+seq 05 0->1: |t|=0.57 m rot=0.157 deg  fwd=0.082 inv=0.218  PASS
+seq 05 550->551: |t|=0.43 m rot=1.194 deg  fwd=0.078 inv=0.289  PASS
+seq 05 921->922: |t|=0.67 m rot=0.960 deg  fwd=0.082 inv=0.298  PASS
+seq 05 1375->1376: |t|=0.94 m rot=0.109 deg  fwd=0.075 inv=0.314  PASS
+seq 05 1841->1842: |t|=0.36 m rot=1.730 deg  fwd=0.064 inv=0.213  PASS
+seq 05 2475->2476: |t|=1.10 m rot=0.245 deg  fwd=0.082 inv=0.258  PASS
+seq 07 0->1: |t|=0.09 m rot=0.367 deg  fwd=0.053 inv=0.104  PASS
+seq 07 218->219: |t|=0.81 m rot=0.327 deg  fwd=0.079 inv=0.286  PASS
+seq 07 368->369: |t|=0.94 m rot=0.247 deg  fwd=0.076 inv=0.203  PASS
+seq 07 545->546: |t|=0.85 m rot=2.011 deg  fwd=0.082 inv=0.430  PASS
+seq 07 735->736: |t|=0.15 m rot=1.234 deg  fwd=0.064 inv=0.207  PASS
+seq 07 981->982: |t|=0.60 m rot=0.121 deg  fwd=0.059 inv=0.196  PASS
+{
+  "n_pairs": 18,
+  "n_pass": 18,
+  "all_pass": true,
+  "fwd_range": [
+    0.053166927222864674,
+    0.11434344335195469
+  ],
+  "inv_range": [
+    0.1042765960185341,
+    0.4296068004541904
+  ],
+  "elapsed_s": 0.7
+}

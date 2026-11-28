@@ -1,0 +1,8 @@
+Jacobi Givens-sign bug: CPU in-process reproduction (no GPU)
+2026-11-27, /home/syk/miniconda3/envs/WM/bin/python, B=8 N=100 float64, p=0.3
+Method: monkeypatch gs.eigh4_jacobi with the original theta=0.5*atan2(2*apq, app-aqq),
+compare gs.solve_gnc_static(..., eigen="jacobi") with batch_gnc.batch_solve_gnc(method="eigh").
+Output:
+buggy static-jacobi: maxdR 1.7984974390940696 maxdT 0.936720777186268 nmu_match 0.5
+After the sign fix (theta=0.5*atan2(2*apq, aqq-app)) the full CPU grid gives:
+float64 max|dR|_F=1.64e-15, float32 max|dR|_F=8.34e-7, n_mu match=1.0, success=1.0.

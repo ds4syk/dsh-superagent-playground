@@ -1,0 +1,41 @@
+0->1 cam_ba=0.25px cam_ab=4.41px cam_ba_inv=18.16px cam_ab_inv=18.46px veh_ba=13.86px identity=9.35px
+1->2 cam_ba=1.32px cam_ab=3.20px cam_ba_inv=17.61px cam_ab_inv=19.07px veh_ba=17.23px identity=9.65px
+2->3 cam_ba=0.82px cam_ab=3.37px cam_ba_inv=21.51px cam_ab_inv=22.32px veh_ba=17.06px identity=10.90px
+3->4 cam_ba=0.72px cam_ab=2.66px cam_ba_inv=11.78px cam_ab_inv=13.17px veh_ba=19.91px identity=6.33px
+4->5 cam_ba=0.57px cam_ab=2.65px cam_ba_inv=20.26px cam_ab_inv=17.49px veh_ba=25.03px identity=10.53px
+5->6 cam_ba=0.55px cam_ab=4.59px cam_ba_inv=13.92px cam_ab_inv=17.66px veh_ba=21.94px identity=7.36px
+6->7 cam_ba=0.28px cam_ab=3.49px cam_ba_inv=16.06px cam_ab_inv=13.33px veh_ba=23.59px identity=8.55px
+7->8 cam_ba=0.93px cam_ab=8.22px cam_ba_inv=17.14px cam_ab_inv=10.01px veh_ba=19.85px identity=8.74px
+8->9 cam_ba=0.36px cam_ab=4.36px cam_ba_inv=17.54px cam_ab_inv=13.83px veh_ba=25.44px identity=9.23px
+9->10 cam_ba=0.58px cam_ab=8.87px cam_ba_inv=15.33px cam_ab_inv=22.14px veh_ba=21.83px identity=8.15px
+10->11 cam_ba=0.38px cam_ab=5.16px cam_ba_inv=15.87px cam_ab_inv=11.43px veh_ba=19.94px identity=8.21px
+11->12 cam_ba=0.31px cam_ab=5.46px cam_ba_inv=12.33px cam_ab_inv=16.26px veh_ba=11.88px identity=6.32px
+{
+  "summary": {
+    "cam_ba": {
+      "median_px": 0.5611129867505212,
+      "n": 12
+    },
+    "cam_ab": {
+      "median_px": 4.382048086843579,
+      "n": 12
+    },
+    "cam_ba_inv": {
+      "median_px": 16.59894485403199,
+      "n": 12
+    },
+    "cam_ab_inv": {
+      "median_px": 16.87688010657386,
+      "n": 12
+    },
+    "veh_ba": {
+      "median_px": 19.924547977307853,
+      "n": 12
+    },
+    "identity": {
+      "median_px": 8.644983165982264,
+      "n": 12
+    }
+  },
+  "winner": "cam_ba"
+}

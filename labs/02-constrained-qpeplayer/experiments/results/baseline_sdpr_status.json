@@ -1,0 +1,663 @@
+{
+ "generated": "2026-11-28 01:10:44",
+ "probe": [
+  {
+   "p": 8,
+   "expected_slack_psd": 22,
+   "unc": {
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 0,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 117.81495390459895,
+    "value": 0.002333683793327267
+   },
+   "hard": {
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 8,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 29.0527637116611,
+    "value": 0.004921785889910544
+   },
+   "slack": {
+    "psd": 22,
+    "n_eq": 47,
+    "n_ineq": 8,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 62.44292901828885,
+    "value": 0.004921785628737326,
+    "rank": 6,
+    "ratio": 0.21095483204526666
+   }
+  },
+  {
+   "p": 16,
+   "expected_slack_psd": 30,
+   "unc": {
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 0,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 114.25255984067917,
+    "value": 0.002333683793327267
+   },
+   "hard": {
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 16,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 29.778655152767897,
+    "value": 0.004921785784598769
+   },
+   "slack": {
+    "psd": 30,
+    "n_eq": 55,
+    "n_ineq": 16,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 166.53432976454496,
+    "value": 0.004921785959244031,
+    "rank": 7,
+    "ratio": 0.1475596587884897
+   }
+  },
+  {
+   "p": 32,
+   "expected_slack_psd": 46,
+   "unc": {
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 0,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 113.67250699549913,
+    "value": 0.002333683793327267
+   },
+   "hard": {
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 32,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 35.72686715051532,
+    "value": 0.0049217826120551925
+   },
+   "slack": {
+    "psd": 46,
+    "n_eq": 71,
+    "n_ineq": 32,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 418.5931417159736,
+    "value": 0.004921785646462992,
+    "rank": 9,
+    "ratio": 0.11585512743315662
+   }
+  },
+  {
+   "p": 64,
+   "expected_slack_psd": 78,
+   "unc": {
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 0,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 119.31440606713295,
+    "value": 0.002333683793327267
+   },
+   "hard": {
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 64,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 48.59256185591221,
+    "value": 0.004921786145105687
+   },
+   "slack": {
+    "psd": 78,
+    "n_eq": 103,
+    "n_ineq": 64,
+    "status": "optimal",
+    "solver_used": "SCS",
+    "attempts": 1,
+    "time_ms": 1372.4610367789865,
+    "value": 0.004921789634335727,
+    "rank": 10,
+    "ratio": 0.08657245075743057
+   }
+  }
+ ],
+ "synth": {
+  "p8": {
+   "n": 50,
+   "unc": {
+    "n": 50,
+    "psd": 14.0,
+    "n_eq": 39.0,
+    "n_ineq": 0.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 31.47847088985145,
+     "max": 151.8908767029643
+    }
+   },
+   "hard": {
+    "n": 50,
+    "psd": 14.0,
+    "n_eq": 39.0,
+    "n_ineq": 8.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 29.95516499504447,
+     "max": 49.96884288266301
+    }
+   },
+   "slack": {
+    "n": 50,
+    "psd": 22.0,
+    "n_eq": 47.0,
+    "n_ineq": 8.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 62.87119351327419,
+     "max": 114.09529391676188
+    }
+   },
+   "slack_value_minus_hard": {
+    "n": 50,
+    "med": 3.503697713902465e-10,
+    "max": 1.9899447341667487e-08,
+    "min": -7.11683414283959e-09,
+    "n_below_hard": 0,
+    "tol": 1e-06
+   }
+  },
+  "p16": {
+   "n": 50,
+   "unc": {
+    "n": 50,
+    "psd": 14.0,
+    "n_eq": 39.0,
+    "n_ineq": 0.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 29.870762955397367,
+     "max": 154.18812492862344
+    }
+   },
+   "hard": {
+    "n": 50,
+    "psd": 14.0,
+    "n_eq": 39.0,
+    "n_ineq": 16.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 33.007070422172546,
+     "max": 55.533889681100845
+    }
+   },
+   "slack": {
+    "n": 50,
+    "psd": 30.0,
+    "n_eq": 55.0,
+    "n_ineq": 16.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 178.30907250754535,
+     "max": 306.0102490708232
+    }
+   },
+   "slack_value_minus_hard": {
+    "n": 50,
+    "med": 2.064675626647916e-10,
+    "max": 1.6794763319644135e-08,
+    "min": -2.762319599534241e-08,
+    "n_below_hard": 0,
+    "tol": 1e-06
+   }
+  },
+  "p32": {
+   "n": 50,
+   "unc": {
+    "n": 50,
+    "psd": 14.0,
+    "n_eq": 39.0,
+    "n_ineq": 0.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 31.478529097512364,
+     "max": 265.03277104347944
+    }
+   },
+   "hard": {
+    "n": 50,
+    "psd": 14.0,
+    "n_eq": 39.0,
+    "n_ineq": 32.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 41.65975609794259,
+     "max": 391.6775262914598
+    }
+   },
+   "slack": {
+    "n": 50,
+    "psd": 46.0,
+    "n_eq": 71.0,
+    "n_ineq": 32.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 46,
+     "CLARABEL": 4
+    },
+    "n_retried": 4,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 532.4090169742703,
+     "max": 7840.556382201612
+    }
+   },
+   "slack_value_minus_hard": {
+    "n": 50,
+    "med": -2.4145763014883637e-10,
+    "max": 1.0089161396956148e-08,
+    "min": -2.3761643198200177e-08,
+    "n_below_hard": 0,
+    "tol": 1e-06
+   }
+  },
+  "p64": {
+   "n": 50,
+   "unc": {
+    "n": 50,
+    "psd": 14.0,
+    "n_eq": 39.0,
+    "n_ineq": 0.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 34.669340355321765,
+     "max": 215.81934532150626
+    }
+   },
+   "hard": {
+    "n": 50,
+    "psd": 14.0,
+    "n_eq": 39.0,
+    "n_ineq": 64.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 59.1327513102442,
+     "max": 150.33137379214168
+    }
+   },
+   "slack": {
+    "n": 50,
+    "psd": 78.0,
+    "n_eq": 103.0,
+    "n_ineq": 64.0,
+    "status": {
+     "optimal": 50
+    },
+    "solver_used": {
+     "SCS": 50
+    },
+    "n_retried": 0,
+    "n_valid": 50,
+    "n_inaccurate": 0,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 2405.0764536950737,
+     "max": 4915.439221076667
+    }
+   },
+   "slack_value_minus_hard": {
+    "n": 50,
+    "med": 7.6768134991273e-10,
+    "max": 1.4680118069938797e-08,
+    "min": -1.8604361511423417e-08,
+    "n_below_hard": 0,
+    "tol": 1e-06
+   }
+  }
+ },
+ "real": {
+  "lm": {
+   "n": 90,
+   "dataset": "lm",
+   "unc": {
+    "n": 90,
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 0,
+    "status": {
+     "optimal_inaccurate": 19,
+     "optimal": 71
+    },
+    "solver_used": {
+     "None": 90
+    },
+    "n_retried": 0,
+    "n_valid": 90,
+    "n_inaccurate": 19,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 197.71272200159729,
+     "max": 657.9629946500063
+    }
+   },
+   "hard": {
+    "n": 90,
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 16,
+    "status": {
+     "optimal_inaccurate": 72,
+     "optimal": 18
+    },
+    "solver_used": {
+     "None": 90
+    },
+    "n_retried": 0,
+    "n_valid": 90,
+    "n_inaccurate": 72,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 675.1330471597612,
+     "max": 1027.723227161914
+    }
+   },
+   "slack": {
+    "n": 90,
+    "psd": 30,
+    "n_eq": 55,
+    "n_ineq": 16,
+    "status": {
+     "optimal_inaccurate": 79,
+     "optimal": 11
+    },
+    "solver_used": {
+     "None": 90
+    },
+    "n_retried": 0,
+    "n_valid": 90,
+    "n_inaccurate": 79,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 3168.55150857009,
+     "max": 3969.0604228526354
+    }
+   },
+   "slack_value_minus_hard": {
+    "n": 90,
+    "med": 9.537973831593782e-06,
+    "max": 0.0002448768457289993,
+    "min": -2.3824560213245592e-05,
+    "n_below_hard": 13,
+    "tol": 1e-06
+   }
+  },
+  "lmo": {
+   "n": 72,
+   "dataset": "lmo",
+   "unc": {
+    "n": 72,
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 0,
+    "status": {
+     "optimal": 71,
+     "optimal_inaccurate": 1
+    },
+    "solver_used": {
+     "None": 72
+    },
+    "n_retried": 0,
+    "n_valid": 72,
+    "n_inaccurate": 1,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 132.13617075234652,
+     "max": 623.6713109537959
+    }
+   },
+   "hard": {
+    "n": 72,
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 16,
+    "status": {
+     "optimal_inaccurate": 64,
+     "optimal": 8
+    },
+    "solver_used": {
+     "None": 72
+    },
+    "n_retried": 0,
+    "n_valid": 72,
+    "n_inaccurate": 64,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 669.142829021439,
+     "max": 956.9172249175608
+    }
+   },
+   "slack": {
+    "n": 72,
+    "psd": 30,
+    "n_eq": 55,
+    "n_ineq": 16,
+    "status": {
+     "optimal": 18,
+     "optimal_inaccurate": 54
+    },
+    "solver_used": {
+     "None": 72
+    },
+    "n_retried": 0,
+    "n_valid": 72,
+    "n_inaccurate": 54,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 3149.8089826200157,
+     "max": 3778.274947311729
+    }
+   },
+   "slack_value_minus_hard": {
+    "n": 72,
+    "med": 1.49672537767149e-06,
+    "max": 0.0003567074483666464,
+    "min": -4.285843677922073e-05,
+    "n_below_hard": 11,
+    "tol": 1e-06
+   }
+  },
+  "ycbv": {
+   "n": 84,
+   "dataset": "ycbv",
+   "unc": {
+    "n": 84,
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 0,
+    "status": {
+     "optimal": 63,
+     "optimal_inaccurate": 21
+    },
+    "solver_used": {
+     "None": 84
+    },
+    "n_retried": 0,
+    "n_valid": 84,
+    "n_inaccurate": 21,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 238.3046532049775,
+     "max": 811.6102777421474
+    }
+   },
+   "hard": {
+    "n": 84,
+    "psd": 14,
+    "n_eq": 39,
+    "n_ineq": 16,
+    "status": {
+     "optimal": 20,
+     "optimal_inaccurate": 64
+    },
+    "solver_used": {
+     "None": 84
+    },
+    "n_retried": 0,
+    "n_valid": 84,
+    "n_inaccurate": 64,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 666.5027786511928,
+     "max": 852.0587598904967
+    }
+   },
+   "slack": {
+    "n": 84,
+    "psd": 30,
+    "n_eq": 55,
+    "n_ineq": 16,
+    "status": {
+     "optimal_inaccurate": 71,
+     "optimal": 13
+    },
+    "solver_used": {
+     "None": 84
+    },
+    "n_retried": 0,
+    "n_valid": 84,
+    "n_inaccurate": 71,
+    "n_fail": 0,
+    "time_ms": {
+     "med": 3185.089017264545,
+     "max": 4383.005613926798
+    }
+   },
+   "slack_value_minus_hard": {
+    "n": 84,
+    "med": 1.1866832136885133e-05,
+    "max": 0.0003105011330136078,
+    "min": -5.6814706560682156e-05,
+    "n_below_hard": 14,
+    "tol": 1e-06
+   }
+  }
+ }
+}

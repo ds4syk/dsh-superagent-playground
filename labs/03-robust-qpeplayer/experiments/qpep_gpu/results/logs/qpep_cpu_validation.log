@@ -1,0 +1,112 @@
+
+=== B=1 N=100 p=0.3
+  numpy-ref     3.06 ms  rot 0.2907 deg  succ 1.00
+  dynamic-eager    p50=   13.95 ms  maxdR=1.11e-15 maxdT=8.33e-17 nmu=1.00 succ=1.00
+  static-eigh      p50=   16.35 ms  maxdR=1.11e-15 maxdT=8.33e-17 nmu=1.00 succ=1.00
+  static-jacobi    p50=  100.19 ms  maxdR=3.89e-16 maxdT=5.55e-17 nmu=1.00 succ=1.00
+  dtype float64: stable=True
+  dynamic-eager    p50=   14.47 ms  maxdR=1.50e-07 maxdT=3.09e-08 nmu=1.00 succ=1.00
+  static-eigh      p50=   17.29 ms  maxdR=1.50e-07 maxdT=3.09e-08 nmu=1.00 succ=1.00
+  static-jacobi    p50=  104.67 ms  maxdR=2.82e-07 maxdT=3.54e-08 nmu=1.00 succ=1.00
+  dtype float32: stable=True
+
+=== B=8 N=100 p=0.3
+  numpy-ref     4.44 ms  rot 0.1788 deg  succ 1.00
+  dynamic-eager    p50=   24.64 ms  maxdR=9.71e-16 maxdT=3.33e-16 nmu=1.00 succ=1.00
+  static-eigh      p50=   28.14 ms  maxdR=9.71e-16 maxdT=3.33e-16 nmu=1.00 succ=1.00
+  static-jacobi    p50=  166.14 ms  maxdR=7.49e-16 maxdT=3.33e-16 nmu=1.00 succ=1.00
+  dtype float64: stable=True
+  dynamic-eager    p50=   25.09 ms  maxdR=2.81e-07 maxdT=1.15e-07 nmu=1.00 succ=1.00
+  static-eigh      p50=   28.76 ms  maxdR=2.81e-07 maxdT=1.15e-07 nmu=1.00 succ=1.00
+  static-jacobi    p50=  171.69 ms  maxdR=2.10e-07 maxdT=9.53e-08 nmu=1.00 succ=1.00
+  dtype float32: stable=True
+
+=== B=32 N=100 p=0.3
+  numpy-ref     8.04 ms  rot 0.1260 deg  succ 1.00
+  dynamic-eager    p50=   32.08 ms  maxdR=9.44e-16 maxdT=2.78e-16 nmu=1.00 succ=1.00
+  static-eigh      p50=   35.25 ms  maxdR=9.44e-16 maxdT=2.78e-16 nmu=1.00 succ=1.00
+  static-jacobi    p50=  186.70 ms  maxdR=9.99e-16 maxdT=4.44e-16 nmu=1.00 succ=1.00
+  dtype float64: stable=True
+  dynamic-eager    p50=   31.07 ms  maxdR=4.66e-07 maxdT=1.67e-07 nmu=1.00 succ=1.00
+  static-eigh      p50=   34.06 ms  maxdR=4.66e-07 maxdT=1.67e-07 nmu=1.00 succ=1.00
+  static-jacobi    p50=  192.38 ms  maxdR=2.59e-07 maxdT=2.09e-07 nmu=1.00 succ=1.00
+  dtype float32: stable=True
+
+=== B=128 N=100 p=0.3
+  numpy-ref    26.47 ms  rot 0.1328 deg  succ 1.00
+  dynamic-eager    p50=   49.72 ms  maxdR=1.28e-15 maxdT=5.55e-16 nmu=1.00 succ=1.00
+  static-eigh      p50=   56.33 ms  maxdR=1.28e-15 maxdT=5.55e-16 nmu=1.00 succ=1.00
+  static-jacobi    p50=  201.59 ms  maxdR=1.25e-15 maxdT=4.44e-16 nmu=1.00 succ=1.00
+  dtype float64: stable=True
+  dynamic-eager    p50=   34.86 ms  maxdR=4.34e-07 maxdT=2.01e-07 nmu=1.00 succ=1.00
+  static-eigh      p50=   51.66 ms  maxdR=4.34e-07 maxdT=2.01e-07 nmu=1.00 succ=1.00
+  static-jacobi    p50=  198.76 ms  maxdR=3.86e-07 maxdT=2.28e-07 nmu=1.00 succ=1.00
+  dtype float32: stable=True
+
+=== B=512 N=100 p=0.3
+  numpy-ref   158.17 ms  rot 0.1316 deg  succ 1.00
+  dynamic-eager    p50=   91.49 ms  maxdR=1.64e-15 maxdT=7.77e-16 nmu=1.00 succ=1.00
+  static-eigh      p50=  102.50 ms  maxdR=1.64e-15 maxdT=7.77e-16 nmu=1.00 succ=1.00
+  static-jacobi    p50=  472.64 ms  maxdR=1.44e-15 maxdT=5.00e-16 nmu=1.00 succ=1.00
+  dtype float64: stable=True
+  dynamic-eager    p50=   89.10 ms  maxdR=8.34e-07 maxdT=2.31e-07 nmu=1.00 succ=1.00
+  static-eigh      p50=  105.96 ms  maxdR=8.34e-07 maxdT=2.31e-07 nmu=1.00 succ=1.00
+  static-jacobi    p50=  460.68 ms  maxdR=4.13e-07 maxdT=2.29e-07 nmu=1.00 succ=1.00
+  dtype float32: stable=True
+
+=== B=1 N=500 p=0.3
+  numpy-ref     3.47 ms  rot 0.0700 deg  succ 1.00
+  dynamic-eager    p50=   15.08 ms  maxdR=7.22e-16 maxdT=1.11e-16 nmu=1.00 succ=1.00
+  static-eigh      p50=   16.77 ms  maxdR=7.22e-16 maxdT=1.11e-16 nmu=1.00 succ=1.00
+  static-jacobi    p50=  101.05 ms  maxdR=3.89e-16 maxdT=1.39e-17 nmu=1.00 succ=1.00
+  dtype float64: stable=True
+  dynamic-eager    p50=   15.47 ms  maxdR=1.60e-07 maxdT=4.22e-08 nmu=1.00 succ=1.00
+  static-eigh      p50=   17.36 ms  maxdR=1.60e-07 maxdT=4.22e-08 nmu=1.00 succ=1.00
+  static-jacobi    p50=  104.44 ms  maxdR=8.37e-08 maxdT=1.24e-08 nmu=1.00 succ=1.00
+  dtype float32: stable=True
+
+=== B=8 N=500 p=0.3
+  numpy-ref     6.74 ms  rot 0.0476 deg  succ 1.00
+  dynamic-eager    p50=   30.98 ms  maxdR=7.22e-16 maxdT=3.89e-16 nmu=1.00 succ=1.00
+  static-eigh      p50=   33.21 ms  maxdR=7.22e-16 maxdT=3.89e-16 nmu=1.00 succ=1.00
+  static-jacobi    p50=  172.15 ms  maxdR=7.77e-16 maxdT=2.50e-16 nmu=1.00 succ=1.00
+  dtype float64: stable=True
+  dynamic-eager    p50=   34.70 ms  maxdR=2.75e-07 maxdT=9.57e-08 nmu=1.00 succ=1.00
+  static-eigh      p50=   41.10 ms  maxdR=2.75e-07 maxdT=9.57e-08 nmu=1.00 succ=1.00
+  static-jacobi    p50=  118.39 ms  maxdR=2.16e-07 maxdT=1.61e-07 nmu=1.00 succ=1.00
+  dtype float32: stable=True
+
+=== B=32 N=500 p=0.3
+  numpy-ref    23.11 ms  rot 0.0595 deg  succ 1.00
+  dynamic-eager    p50=   33.47 ms  maxdR=9.99e-16 maxdT=3.33e-16 nmu=1.00 succ=1.00
+  static-eigh      p50=   37.64 ms  maxdR=9.99e-16 maxdT=3.33e-16 nmu=1.00 succ=1.00
+  static-jacobi    p50=  145.43 ms  maxdR=8.50e-16 maxdT=3.33e-16 nmu=1.00 succ=1.00
+  dtype float64: stable=True
+  dynamic-eager    p50=   30.14 ms  maxdR=4.28e-07 maxdT=1.31e-07 nmu=1.00 succ=1.00
+  static-eigh      p50=   32.29 ms  maxdR=4.28e-07 maxdT=1.31e-07 nmu=1.00 succ=1.00
+  static-jacobi    p50=  141.97 ms  maxdR=4.11e-07 maxdT=1.84e-07 nmu=1.00 succ=1.00
+  dtype float32: stable=True
+
+=== B=128 N=500 p=0.3
+  numpy-ref    87.48 ms  rot 0.0610 deg  succ 1.00
+  dynamic-eager    p50=   85.30 ms  maxdR=1.17e-15 maxdT=4.44e-16 nmu=1.00 succ=1.00
+  static-eigh      p50=   72.52 ms  maxdR=1.17e-15 maxdT=4.44e-16 nmu=1.00 succ=1.00
+  static-jacobi    p50=  239.45 ms  maxdR=1.17e-15 maxdT=4.44e-16 nmu=1.00 succ=1.00
+  dtype float64: stable=True
+  dynamic-eager    p50=   57.43 ms  maxdR=4.29e-07 maxdT=2.28e-07 nmu=1.00 succ=1.00
+  static-eigh      p50=   65.06 ms  maxdR=4.29e-07 maxdT=2.28e-07 nmu=1.00 succ=1.00
+  static-jacobi    p50=  221.01 ms  maxdR=3.34e-07 maxdT=1.84e-07 nmu=1.00 succ=1.00
+  dtype float32: stable=True
+
+=== B=512 N=500 p=0.3
+  numpy-ref   712.19 ms  rot 0.0589 deg  succ 1.00
+  dynamic-eager    p50=  257.07 ms  maxdR=1.53e-15 maxdT=5.55e-16 nmu=1.00 succ=1.00
+  static-eigh      p50=  219.55 ms  maxdR=1.53e-15 maxdT=5.55e-16 nmu=1.00 succ=1.00
+  static-jacobi    p50=  572.25 ms  maxdR=1.25e-15 maxdT=6.11e-16 nmu=1.00 succ=1.00
+  dtype float64: stable=True
+  dynamic-eager    p50=  120.23 ms  maxdR=8.16e-07 maxdT=2.61e-07 nmu=1.00 succ=1.00
+  static-eigh      p50=  132.01 ms  maxdR=8.16e-07 maxdT=2.61e-07 nmu=1.00 succ=1.00
+  static-jacobi    p50=  508.78 ms  maxdR=3.68e-07 maxdT=2.19e-07 nmu=1.00 succ=1.00
+  dtype float32: stable=True
+
+wrote results_cpu_validation/qpep_gpu.json / .md / .png

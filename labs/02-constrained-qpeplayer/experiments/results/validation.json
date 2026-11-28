@@ -1,0 +1,180 @@
+{
+  "checks": {
+    "V1a R(q)p = m(p)v2(q)\uff08\u7cbe\u786e\u516c\u5f0f\u4e0e lstsq \u90fd\u5bf9\uff09": true,
+    "V1b e_tr^T v2 = ||q||^2 = 1": true,
+    "V1c R(q) \u6b63\u4ea4 det=+1": true,
+    "V1d q_from_R(R(q)) \u8fd8\u539f v2": true,
+    "V2 depth/non-pen/FoV\u00d72/tilt \u4eff\u5c04\u4e8e (v2,t)": true,
+    "V3a GT \u7a7f\u900f = 0\uff08GT \u6070\u597d\u63a5\u89e6\u684c\u9762\uff09": true,
+    "V3b \u4e0b\u79fb 7.3mm \u21d2 pen = 7.3mm": true,
+    "V3c \u5bc6\u96c6\u7f51\u683c min_z = \u89d2\u70b9 min_z (tz=0.000)": true,
+    "V3c \u5bc6\u96c6\u7f51\u683c min_z = \u89d2\u70b9 min_z (tz=-0.013)": true,
+    "V3c \u5bc6\u96c6\u7f51\u683c min_z = \u89d2\u70b9 min_z (tz=0.020)": true,
+    "V3d \u4e0a\u79fb 2cm \u21d2 pen=0": true,
+    "V4a L_rho|_A = v2^T M_A v2 + 2t^T D_A v2 + t^T G_A t + kappa_A": true,
+    "V4b \u9519\u8bef\u5e38\u6570\u9879\uff08\u5168\u90e8\u7ea6\u675f\uff09\u786e\u5b9e\u5bf9\u4e0d\u4e0a \u21d2 \u8be5\u9879\u662f\u5b9e\u73b0\u7ea7 bug \u6e90": true,
+    "V4c \u9519\u8bef\u5e38\u6570\u9879\u8bef\u5dee = \u03a3_{A} \u03bc\u00b2/2\u03c1\uff08\u9010\u9879\u5bf9\u8d26\uff09": true,
+    "V5a G_A \u227b 0": true,
+    "V5b min_t L_rho = v2^T (M_A - D_A^T G_A^{-1} D_A) v2 + kappa": true,
+    "V6 \u5185\u5c42 8 \u8d77\u70b9 vs 200 \u8d77\u70b9\u5b9e\u4f8b 0\uff08\u0394f<=1e-9\uff09": true,
+    "V6 \u5185\u5c42 8 \u8d77\u70b9 vs 200 \u8d77\u70b9\u5b9e\u4f8b 1\uff08\u0394f<=1e-9\uff09": true,
+    "V6 \u5185\u5c42 8 \u8d77\u70b9 vs 200 \u8d77\u70b9\u5b9e\u4f8b 2\uff08\u0394f<=1e-9\uff09": true,
+    "V7a \u65e0\u566a\u65e0\u504f GT \u5904 J=0": true,
+    "V7b \u65e0\u7ea6\u675f\u89e3\u6062\u590d GT\uff08J<=1e-12, rot<=1e-3 deg, trans<=1e-3 mm\uff09": true,
+    "V7c \u684c\u9762\u653e\u4f4e 30cm \u21d2 ALM = \u65e0\u7ea6\u675f\u89e3\uff08\u0394J<=1e-9, \u7ea6\u675f\u4e0d\u6d3b\u8dc3\uff09": true,
+    "V8 ALM \u547d\u4e2d\u95ed\u5f0f\u6295\u5f71 t_z=h": true,
+    "V9a \u65e0\u7ea6\u675f\u503c\u590d\u73b0 verify\uff08|\u0394|<=1e-9\uff09": true,
+    "V9b ALM \u7ea6\u675f\u6700\u4f18\u590d\u73b0 verify\uff08|\u0394|<=1e-8\uff09": true,
+    "V9c 14\u00d714 Shor \u590d\u73b0 verify\uff08|\u0394|<=1e-8 \u4e14 tight\uff09": true,
+    "V9d \u4e0d\u52a0\u4e0d\u7b49\u5f0f\u7684 Shor \u590d\u73b0 verify \u65e0\u7ea6\u675f\u503c": true,
+    "V10a sound\uff1aShor <= J_ALM + 1e-7\uff088/8\uff09": true,
+    "V10b tight\uff1a\u03bb2/\u03bb1 <= 1e-6\uff088/8\uff09": true,
+    "V11a d(\u03bc) <= J*\uff084/4\uff0c\u5bb9\u5dee 1e-8\uff09": true,
+    "V12a \u03bc >= 0": true,
+    "V12b G_A \u227b 0\uff08\u672b\u7aef\u6d3b\u8dc3\u96c6\uff09": true,
+    "V12b2 200 \u7ec4\u968f\u673a (G0\u227b0,\u03c1,A) \u7684 G_A \u5747 \u227b 0": true,
+    "V12c \u65e0 NaN/Inf": true,
+    "V12d \u4e92\u8865\u677e\u5f1b max|\u03bc_j g_j| <= 1e-8": true,
+    "V12e KKT \u9a7b\u70b9\u6b8b\u5dee ||\u2207L0||_6 <= 1e-4": true,
+    "V12f \u672c\u5b9e\u4f8b\u6d3b\u8dc3\u96c6\u79e9\u4e8f\uff08LICQ \u5931\u6548\uff0c\u4e0e\u56db\u811a\u684c\u540c\u7ed3\u6784\uff09": true,
+    "V13a \u6295\u5f71\u8fd4\u56de\u53ef\u884c\u70b9\uff08viol<=1e-6\uff09": true,
+    "V13b \u7a7f\u900f\u968f \u03bb \u603b\u4f53\u4e0b\u964d\uff08\u672b\u9879 <= \u9996\u9879 + 0.5mm\uff09": true,
+    "V14 \u81f3\u5c11\u4e00\u534a\u5b9e\u4f8b LICQ \u5931\u6548\uff08rank<|A|\uff09": true
+  },
+  "numbers": {
+    "v1_m_err": 6.38378239159465e-15,
+    "v2_affine_err": 1.3322676295501878e-15,
+    "pen_gt": 0.0,
+    "pen_shift": 7.299999999999973,
+    "v4_err": 0.0,
+    "v4_wrong_err": 0.5711311861882109,
+    "v4_kappa": -0.0,
+    "v5_schur_err": 4.440892098500626e-15,
+    "v6_inner_gap": 3.686287386450715e-18,
+    "v7_Jgt": -1.6653345369377348e-16,
+    "v7_Ju": -1.5930427381862182e-16,
+    "v9_Jgt": 0.02360817876016008,
+    "v9_Ju": 0.003033472412276911,
+    "v9_Jalm": 0.06800693545504144,
+    "v9_shor": 0.06800693549978704,
+    "v9_shor_un": 0.003033469239951416,
+    "v11_delta": [
+      -5.885803996963368e-13,
+      -2.297034090714689e-14,
+      -2.0070447040443362e-13,
+      4.6650183715968296e-14
+    ],
+    "v12_comp": 2.0580012459280942e-12,
+    "v12_kkt": 1.240463750816925e-10,
+    "v12_rank": 2,
+    "v12_nact": 3,
+    "v13_pen_lam": [
+      10.53874681178668,
+      0.6831679415795211,
+      2.0583837706331654,
+      0.0
+    ],
+    "v14_ranks": [
+      [
+        8,
+        0,
+        3,
+        2
+      ],
+      [
+        8,
+        1,
+        5,
+        3
+      ],
+      [
+        8,
+        2,
+        1,
+        1
+      ],
+      [
+        8,
+        3,
+        2,
+        2
+      ],
+      [
+        16,
+        0,
+        3,
+        2
+      ],
+      [
+        16,
+        1,
+        9,
+        3
+      ],
+      [
+        16,
+        2,
+        1,
+        1
+      ],
+      [
+        16,
+        3,
+        2,
+        2
+      ],
+      [
+        32,
+        0,
+        3,
+        2
+      ],
+      [
+        32,
+        1,
+        17,
+        3
+      ],
+      [
+        32,
+        2,
+        1,
+        1
+      ],
+      [
+        32,
+        3,
+        2,
+        2
+      ],
+      [
+        64,
+        0,
+        6,
+        2
+      ],
+      [
+        64,
+        1,
+        33,
+        3
+      ],
+      [
+        64,
+        2,
+        1,
+        1
+      ],
+      [
+        64,
+        3,
+        2,
+        2
+      ]
+    ]
+  },
+  "summary": {
+    "n_pass": 40,
+    "n_total": 40
+  }
+}

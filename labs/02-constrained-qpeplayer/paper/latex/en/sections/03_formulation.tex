@@ -1,0 +1,33 @@
+\section{Problem Formulation and Notation}\label{sec:formulation}
+
+\subsection{Notation}\label{sec:notation}
+$\mathbf q=[q_0,q_1,q_2,q_3]^\top\in\mathbb{S}^3$ is a unit quaternion and $\mathbf R(\mathbf q)\in SO(3)$ the corresponding rotation. For a 3-vector $\mathbf p$, define the lifted monomial vector
+\begin{equation}
+\mathbf v_2(\mathbf q)=\big[q_0^2,q_1^2,q_2^2,q_3^2,\sqrt2 q_0q_1,\dots,\sqrt2 q_2q_3\big]^\top\in\mathbb{R}^{10},
+\label{eq:v2}
+\end{equation}
+so that $\|\mathbf v_2(\mathbf q)\|_2^2=\|\mathbf q\|_2^4=1$ for $\mathbf q\in\mathbb{S}^3$, and $\mathbf e_{\rm tr}=[1,1,1,1,0,\dots,0]^\top$ satisfies $\mathbf e_{\rm tr}^\top\mathbf v_2(\mathbf q)=1$.
+
+\textbf{Fact 3.1 (affine representability).} For every $\mathbf p\in\mathbb{R}^3$ and $a\in\{1,2,3\}$ there is $\mathbf m_a(\mathbf p)\in\mathbb{R}^{10}$ with $\mathbf e_a^\top\mathbf R(\mathbf q)\mathbf p=\mathbf m_a(\mathbf p)^\top\mathbf v_2(\mathbf q)$ for all $\mathbf q\in\mathbb{S}^3$; this is why all four constraint families are affine in $(\mathbf v_2,\mathbf t)$.
+
+\subsection{Objective and constraints}\label{sec:objective}
+\begin{equation}
+\begin{aligned}
+J_\theta(\mathbf q,\mathbf t)={}&\mathbf v_2(\mathbf q)^\top\mathbf M_0(\theta)\mathbf v_2(\mathbf q)+2\mathbf t^\top\mathbf D_0(\theta)\mathbf v_2(\mathbf q)\\
+&+\mathbf t^\top\mathbf G_0(\theta)\mathbf t .
+\end{aligned}
+\label{eq:objective}
+\end{equation}
+For PnP-type residuals $\mathbf r_i(\mathbf q,\mathbf t)=\mathbf P_i(\mathbf R(\mathbf q)\mathbf p_i+\mathbf t)$ with $\mathbf P_i=\mathbf I-\mathbf u_i\mathbf u_i^\top/\|\mathbf u_i\|^2$ the bearing projection, \eqref{eq:objective} holds with $\mathbf M_0=\sum_i\sum_{ab}P_{i,ab}\operatorname{sym}(\mathbf m_a(\mathbf p_i)\mathbf m_b(\mathbf p_i)^\top)$, $\mathbf D_0=\sum_i\mathbf P_i[\mathbf m_1;\mathbf m_2;\mathbf m_3]$ and $\mathbf G_0=\sum_i\mathbf P_i$; this is QPEP's problem class before the elimination of $\mathbf t$. All constraints take the form $g_j(\mathbf q,\mathbf t)=\tilde{\mathbf a}_j^\top\mathbf v_2(\mathbf q)+\mathbf b_j^\top\mathbf t\le0$: positive depth, planar non-penetration, field of view and tilt cone (Table~\ref{tab:families}).
+
+
+The two FoV inequalities imply $z>0$ only if $\tau<\infty$ and the constraint is active in the right direction, so we always add one explicit positive-depth constraint per observed point, at linear cost.
+
+\subsection{Problem (C-QPEP)}\label{sec:cqpep}
+\begin{equation}
+\min_{\mathbf q\in\mathbb{S}^3,\ \mathbf t\in\mathbb{R}^3}\ J_\theta(\mathbf q,\mathbf t)\quad\text{s.t.}\quad g_j(\mathbf q,\mathbf t;\theta)\le0,\quad j=1,\dots,p. \tag{C-QPEP}
+\end{equation}
+\begin{assumption}\label{asm:main}
+$\mathbf M_0,\mathbf D_0,\mathbf G_0$ are continuously differentiable in $\theta$, and $\mathbf G_0\succ0$ (or the active $\mathbf b_j$ span $\mathbb{R}^3$).
+\end{assumption}
+The formulation covers constraints that are affine in $(\mathbf v_2,\mathbf t)$ and polynomial in $\mathbf q$, in the parameter regime where a single constrained optimum persists as $\theta$ varies.

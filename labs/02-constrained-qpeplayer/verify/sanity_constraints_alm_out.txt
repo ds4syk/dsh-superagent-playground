@@ -1,0 +1,64 @@
+
+=== C1: R(q)p 线性于 v2(q)；四类约束对 (v2,t) 仿射 ===
+  v2-Vandermonde(12×10) rank=10 cond=2.96e+01
+  [PASS] C1a e_a^T R(q)p = m_a(p)^T v2(q)  max err 4.27e-15
+  [PASS] C1b depth/non-pen/FoV×2/tilt 仿射于 (v2,t)  max err 3.66e-15
+
+=== 实例：PnP 型 QPEP 目标 + 12 个仿射不等式 ===
+  bearing 偏差 = 0.100 m, 逐点噪声 sigma = 0.015 m, 桌面高度 = 0.7800
+  p = 12 ; M0(10, 10) D0(3, 10) G0(3, 3) ; lambda_min(M0)=0.0000 lambda_min(G0)=1.9115
+  [PASS] C0 M0 对称
+  GT 处: J=0.023608 (偏差下 >0)  max_j g_j=9.543e-02
+
+=== C2: 增广拉格朗日活跃集展开 ===
+  [PASS] C2  L_rho|_A = v2^T M_A v2 + 2t^T D_A v2 + t^T G_A t + const  err 3.55e-15, |A|=11
+
+=== C3: 消 t ⇒ v2 上二次型（q 上四次型） ===
+  [PASS] C3a G_A ≻ 0  lambda_min=1.052e+01
+  [PASS] C3b min_t L_rho = v2^T (M_A - D_A^T G_A^{-1} D_A) v2 + const  err 6.22e-15
+  [PASS] C3c 内层目标对 q 是四次齐次型  rel err 1.96e-16
+  ⇒ 内层 = 『v2 上二次型 + S^3』：与 QPEP 消 t 后同型，但系数为 M_A(μ,ρ)，非 M_0
+
+=== C4: p 增长时维数锁定 ===
+  [PASS] C4 尺寸恒为 (10,10)/(3,10)/(3,3)，装配 O(p)  p=4:5.77e-02ms, p=16:1.79e-01ms, p=64:7.03e-01ms, p=256:2.80e+00ms
+
+  无约束 QPEP（多起点参照）J=0.00303347  max_g=1.894e-01 (= 最大穿透 18.94 cm)
+  无约束姿态误差: rot=1.376 deg, trans=9.44 cm
+
+=== C6: ALM 前向（内层用多起点代替 QPEP 全局求解） ===
+  iter |        J        | max_g      |   ||mu||_1
+     0 | 0.02139131 | 1.294e-01 | 0.2374
+     6 | 0.06722844 | 1.342e-02 | 0.6384
+    12 | 0.06800694 | 2.080e-06 | 0.6873
+    18 | 0.06800694 | 1.276e-11 | 0.6873
+    24 | 0.06800694 | 0.000e+00 | 0.6873
+    29 | 0.06800694 | 2.430e-11 | 0.6873
+  终值 J(q*)=0.0680069355  max_g=2.430e-11 (= 最大穿透 2.43e-09 cm)  rho_final=125.0  time=9.05s
+  约束后姿态误差: rot=2.239 deg, trans=9.96 cm
+  [PASS] C6a ALM 返回近似可行点 (max_g<=1e-7)  viol=2.43e-11
+  [PASS] C6b 乘子非负
+
+=== C5: d(μ) 弱对偶下界 + 14×14 Shor-SDP sound 下界 ===
+  d(μ*) = min J + Σμ g = 0.0680069355   (多起点参照)
+  J(q*) - d(μ*) = -1.670e-11
+  [PASS] C5a 弱对偶 d(μ*) <= J*  (μ>=0)  gap=-1.670e-11
+  ! δ<0：与源文档 -1.40e-12 同类，纯数值误差 ⇒ 不能当严格证书
+  Shor(无对偶项, 无 Veronese)         = 0.0000000001   λ2/λ1=3.33e-01   [0.08s]
+  Shor(无对偶项, +Veronese)           = 0.0030334692   λ2/λ1=1.44e-09
+  Shor(无对偶项, +Veronese, +不等式)   = 0.0680069355   λ2/λ1=2.16e-12  (下界 for J*)
+  对照: 无约束数值最优 J_u=0.0030334724 ; 约束数值最优 J(q*)=0.0680069355
+  [PASS] C5b 14×14 Shor 下界 <= J* + 求解容差（sound）  slack=-2.305e-11 (SCS 容差量级)
+  [PASS] C5c 不等式 SDP 下界 >= 无约束最优（约束抬升目标）  0.0680069 >= 0.0030335 ; diff=6.497e-02
+  [PASS] C5d 不等式 SDP 在数值容差内 tight（λ2/λ1 <= 1e-6）  lambda2/lambda1 = 2.16e-12
+  Shor(d(μ*) 的下界, +Veronese)       = 0.0034784073
+  ⇒ sound gap 上界 J(q*) - SDP = 6.453e-02  (真 gap -1.670e-11)
+
+=== 结论 ===
+ 1) 四类约束确实对 (v2,t) 仿射；M_A/D_A/G_A 公式正确，且维数与 p 无关（C1–C4）。
+ 2) 消 t 后内层是 v2 上二次型 = q 上四次型（≠ q 上二次型），
+    『10×10 QPEP』只能理解为提升形式；KKT 为 4 三次+1 二次，Bézout 162（QPEP 模板 40 根）⇒ 模板复用需重验。
+ 3) δ = J(q*) - d(μ*) 在数值上可为负（-1.7e-11），不能作严格证书；
+    14×14 Shor 给出 sound 下界（真 gap 的上界），这才是可写进论文的认证语义。
+ 4) C5 的 SDP 结果决定论文能否主张『certifiable』——见输出数值。
+
+已写出 JSON: /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/02-constrained-qpeplayer/verify/sanity_constraints_alm_out.json

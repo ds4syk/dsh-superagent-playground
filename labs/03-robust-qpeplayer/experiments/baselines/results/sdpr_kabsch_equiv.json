@@ -1,0 +1,10 @@
+{
+ "n_pairs": 80,
+ "n": 100,
+ "max_abs_rot_diff_deg": 1.4804410210511598e-05,
+ "mean_abs_rot_diff_deg": 4.635907285243691e-07,
+ "p99_abs_rot_diff_deg": 4.334288618429077e-06,
+ "max_abs_trans_diff_m": 1.270603788849911e-09,
+ "mean_abs_trans_diff_m": 1.2891669343910276e-10,
+ "note": "SDPR W_i=I, weights=1 is the same LS objective as Kabsch; the differences are SCS solve tolerance, not a modelling gap."
+}

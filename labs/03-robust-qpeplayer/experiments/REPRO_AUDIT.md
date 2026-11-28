@@ -1,0 +1,207 @@
+# P3 reproducibility audit
+
+- Python 3.10.22 / NumPy 2.2.6 / SciPy 1.15.3
+- git HEAD `e796a9364f63521c195c6e2a56d5e0453b886dc9`
+- cwd `/mnt/storage1/syk/.superagent-work/wt-final-p3/labs/03-robust-qpeplayer/experiments`
+- mode: **default (gitignored regen artifacts optional)**
+- overall: **PASS**
+
+## Checks
+
+| file | status |
+|---|---|
+| `synthetic/results/main_table_extended.json` | ok |
+| `synthetic/results/gradient_table.json` | ok |
+| `synthetic/results/e2e_table.json` | ok |
+| `real/modelnet/results/main_table.json` | ok |
+| `real/modelnet10/results/main_table.json` | ok |
+| `real/modelnet10/results/meta.json` | ok |
+| `real/threedmatch/results/threedmatch.json` | ok |
+| `real/threedmatch/results/descriptor.json` | ok |
+| `real/threedmatch/results/n_scaling.json` | ok |
+| `real/threedmatch/results/verify_gt_direction.json` | ok |
+| `real/threedmatch_extra/results/extra_scenes.json` | ok |
+| `real/threedmatch_extra/results/verify_gt_direction_extra.json` | ok |
+| `real/kitti/results/kitti.json` | ok |
+| `real/kitti/results/c_sensitivity.json` | ok |
+| `real/kitti/results/n_scaling.json` | ok |
+| `real/kitti2/results/kitti2.json` | ok |
+| `real/kitti2/results/verify_kitti2.json` | ok |
+| `real/kitti2/results/kitti2_compare.json` | ok |
+| `e2e_torch/results/e2e_torch.json` | ok |
+| `e2e_torch/results/gradcheck.json` | ok |
+| `inner/results/inner_solver.json` | ok |
+| `systems/results/batch_gnc.json` | ok |
+| `ablations/kernels/results/kernel_ablation.json` | ok |
+| `ablations/gnc_schedule/results/gnc_schedule.json` | ok |
+| `ablations/anisotropic/results/anisotropic.json` | ok |
+| `ablations/breakdown/results/breakdown.json` | ok |
+| `ablations/noise/results/noise.json` | ok |
+| `ablations/ransac_lo/results/ransac_lo.json` | ok |
+| `real/kitti_stereo/results/kitti_stereo_main.json` | ok |
+| `real/kitti_odom/results/verify_kitti_odom.json` | ok |
+| `real/inthedark/results/inthedark_dense.json` | ok |
+| `real/inthedark/results/inthedark_sparse.json` | ok |
+| `real/inthedark/results/inthedark_run12_dense.json` | ok |
+| `real/inthedark/results/verify_run_000002.json` | ok |
+| `real/inthedark/results/verify_run_000012.json` | ok |
+| `real/inthedark/results/night17_dense_prefix.json` | ok |
+| `real/inthedark/results/night18_dense_prefix.json` | ok |
+| `real/inthedark/results/night_dense_run_000017.json` | ok |
+| `real/inthedark/results/night_dense_run_000018.json` | ok |
+| `real/inthedark/results/night_sparse_run_000017.json` | ok |
+| `real/inthedark/results/night_summary.json` | ok |
+| `real/kitti_more/results/kitti_more.json` | ok |
+| `real/threedmatch_low_overlap/results/low_overlap.json` | ok |
+| `real/theseus/results/theseus_real.json` | ok |
+| `phase5/anisotropic_grid/results/summary.json` | ok |
+| `results/p3_140_accepted_ledger.json` | ok |
+| `results/p3_extra_validation_630.json` | ok |
+| `../results/baselines.json` | ok |
+| `real/kitti_odom/results/raw_drive_motion.json` | ok |
+| `real/threedmatch_full/results/manifest.json` | ok |
+| `real/threedmatch_full/results/verify_gt_direction_full.json` | ok |
+| `real/threedmatch_full/results/pairs_redkitchen.json` | ok |
+| `real/threedmatch_full/results/pairs_sun3d-home_at.json` | ok |
+| `real/threedmatch_full/results/pairs_sun3d-home_md.json` | ok |
+| `real/threedmatch_full/results/pairs_sun3d-hotel_uc.json` | ok |
+| `qpep_gpu/results/qpep_gpu.json` | ok |
+| `real/kitti_odom/results/kitti_odom.json` | ok |
+| `real/threedmatch_full/results/full_scenes.json` | ok |
+| `real/threedmatch_full/results/overlap_bins.json` | ok |
+| `real/threedmatch_full/results/overlap_dependence.json` | ok |
+| `results/phase3_rounds.json` | ok |
+| `results/final_rounds.json` | ok |
+| `analysis/wilson.json` | ok |
+| `real/inthedark/results/inthedark_rounds.json` | ok |
+| `real/inthedark/results/convention_calib_r2.json` | ok |
+| `real/kitti_odom/results/rounds.json` | ok |
+| `real/threedmatch_full/results/rounds.json` | ok |
+| `baselines/results/theseus.json` | ok |
+| `baselines/results/sdpr_forward.json` | ok |
+| `baselines/results/sdpr_kabsch_equiv.json` | ok |
+| `baselines/results/theseus_selfcheck.json` | ok |
+| `baselines/results/reference_n20.json` | ok |
+| `synthetic/results/main_table_extended_raw.jsonl` | ok (14500 lines) |
+| `real/threedmatch/results/threedmatch_raw.jsonl` | ok (4800 lines) |
+| `real/threedmatch/results/descriptor_raw.jsonl` | ok (600 lines) |
+| `real/threedmatch/results/n_scaling_raw.jsonl` | ok (1280 lines) |
+| `real/threedmatch_extra/results/extra_scenes_raw.jsonl` | ok (4800 lines) |
+| `real/threedmatch_low_overlap/results/low_overlap_raw.jsonl` | ok (9200 lines) |
+| `phase5/anisotropic_grid/results/ledger.jsonl` | ok (550 lines) |
+| `results/p3_extra_validation_630.jsonl` | ok (630 lines) |
+| `real/kitti/results/kitti_raw.jsonl` | ok (2400 lines) |
+| `real/kitti/results/c_sensitivity_raw.jsonl` | ok (720 lines) |
+| `systems/results/batch_gnc_raw.jsonl` | ok (800 lines) |
+| `ablations/anisotropic/results/anisotropic_raw.jsonl` | ok (300 lines) |
+| `ablations/ransac_lo/results/ransac_lo_raw.jsonl` | ok (4800 lines) |
+| `real/kitti2/results/kitti2_raw.jsonl` | ok (2400 lines) |
+| `real/threedmatch_full/results/full_scenes_raw.jsonl` | ok (19200 lines) |
+| `real/threedmatch_full/results/overlap_bins_raw.jsonl` | ok (13800 lines) |
+| `qpep_gpu/results/logs/slurm_gpu_3184_state.txt` | ok (text) |
+| `real/threedmatch_full/results/full_scenes.md` | ok (text) |
+| `real/inthedark/results/inthedark_main.md` | ok (text) |
+
+## Ignored/regeneratable artifacts absent in this checkout
+
+- none
+
+These files are gitignored by design; the committed `summary` artifact (for example `real/threedmatch_full/results/full_scenes.md`) is what the paper cites. Re-run the corresponding `run_*.py` script on the data disk to regenerate them, or run this audit with `--strict` on that machine.
+
+## Large/cache files under experiments
+
+- none
+
+## SHA256 (key results)
+
+- `synthetic/results/main_table_extended.json`: `720e184548227ddaa96e85372d1a1c2459b74865e7119ce9cbb478508514b9eb`
+- `synthetic/results/gradient_table.json`: `667bfb7afbfddc29ecb26669876b02c9aa7471a61e6710ece05183799e680163`
+- `synthetic/results/e2e_table.json`: `76236f3bbf4c12182667803f703d96eae96f0b784b3b73cec7b1f0aa83adaecf`
+- `real/modelnet/results/main_table.json`: `aaae1bc95cef1f6b12b2411d41246758266ed3b3549b0fba3fdec7167a42567a`
+- `real/modelnet10/results/main_table.json`: `e0fe247b84b2324b5e842afb5958a1d547289fa2995868bce0490f0fa63a0414`
+- `real/modelnet10/results/meta.json`: `f2d75e74e964281bb2ca800eba73f571c164a55bab502b3e7ac880cfe99b553e`
+- `real/threedmatch/results/threedmatch.json`: `db0e15fab745d99cccd84b1580b44172096b275aa8064a4ac1bc836355262988`
+- `real/threedmatch/results/descriptor.json`: `45f65d98a5b709679fbcae18064f3d3b68c33bfaa437438574e0d759e0f05e87`
+- `real/threedmatch/results/n_scaling.json`: `05bf5d2247579b726dc6f8c91b5c931e34038262d87253b4d98ea6c16ef092ee`
+- `real/threedmatch/results/verify_gt_direction.json`: `0ba5a1eff97ef33692454b0c84ef46fa05d284a26c96fb10ce6528311a82e713`
+- `real/threedmatch_extra/results/extra_scenes.json`: `d46a7be8a4ff8e3022fe2efcd71022504101de2c894c0d1759960229fc34f1d9`
+- `real/threedmatch_extra/results/verify_gt_direction_extra.json`: `00caaca1995fbb2363e7c1136370613605e0e1138f2cc221f2903265aa1b430f`
+- `real/kitti/results/kitti.json`: `9dc41f337eb10e498f16d50c4a69d5aa314cd5112966fe77ae9e12b0660f24b5`
+- `real/kitti/results/c_sensitivity.json`: `25c1ef4b515a137550198141dfa5e9dcb6dfd8cb116e268fe8edafd009e36dfd`
+- `real/kitti/results/n_scaling.json`: `cb34c1e925c1df9bf02e40595d95f38edde87f184400c42e2d17b1c7cef33a78`
+- `real/kitti2/results/kitti2.json`: `60c534ce4367a582896c69b3cde9cfa0cb0e2a1be2f931fff709254bf685b817`
+- `real/kitti2/results/verify_kitti2.json`: `21df7103c8568490abf82b1c3437bf257a5ff2c4d3f05514a4c7fb1e91fa4cb7`
+- `real/kitti2/results/kitti2_compare.json`: `5e3a6d2360f8805b700e105b07ba03664380e016992bb9ed826962b675b813e4`
+- `e2e_torch/results/e2e_torch.json`: `ed9e3cf121f03803d2d296b25931c49995a7b4cc40a8c856458591e11f68d67d`
+- `e2e_torch/results/gradcheck.json`: `de7b5aaa9b0f8438eb939e91c8a7d16b00cb4639bc480c693e7a10e709a3453b`
+- `inner/results/inner_solver.json`: `8d9f20f2ebb31e7ad7ea3b1eb7113e2d9b40c6a32cd3ca5878be8140f6f020ba`
+- `systems/results/batch_gnc.json`: `18da0c46e4c78c5b30e36283d4b02c22f9541af1cddab83da661d84ca6d763be`
+- `ablations/kernels/results/kernel_ablation.json`: `ec63dc0a256d8aba89c3a50628c08a5bfe12760e33d86fd0e57c576bf106117a`
+- `ablations/gnc_schedule/results/gnc_schedule.json`: `3aa2c17fce38eab91f06e0b99123f337c3768c8f7e1d790acad72e96873ae326`
+- `ablations/anisotropic/results/anisotropic.json`: `0f7afb0b5b03c8955663b6da6eabe5b0da4a060ded22c2668661715046fb4700`
+- `ablations/breakdown/results/breakdown.json`: `dde3b09811a348d2bc13940deb5049d8e6c1ad16801f67ad53dc98b59bae3095`
+- `ablations/noise/results/noise.json`: `979aa63e96084013be11681447bead2c5f1f773abf38315b3941ef335982d4a2`
+- `ablations/ransac_lo/results/ransac_lo.json`: `a077cf5787ececb1b48d9e8d12b7877e65a6683d02d93b9c87fed89a2610e7b0`
+- `real/kitti_stereo/results/kitti_stereo_main.json`: `064214d10a3e6720de537a6ea72e580a8313ce383c598e39a37d1be93305063e`
+- `real/kitti_odom/results/verify_kitti_odom.json`: `51347d0cef7f6d0a3ad1f521032da22235853bf975bd44aa2e4b84392beb60cf`
+- `real/inthedark/results/inthedark_dense.json`: `d6a8163bd1056766fb4a17e3d903fd52340b77fe50f2bb92c70ed440fbb7dfa3`
+- `real/inthedark/results/inthedark_sparse.json`: `d848c8a7165e2a9be110a978e13e38f939469bf806dfc712beeb1b2433d5ed39`
+- `real/inthedark/results/inthedark_run12_dense.json`: `f9342c18ab8e4b6d3f6e2c4eaf95fcee373cd45201892928bae5816f7caf6e8d`
+- `real/inthedark/results/verify_run_000002.json`: `480012dc825511421ab8228e3c43bb4cb735bb852ef301aa4ee5f6ee0daaf05d`
+- `real/inthedark/results/verify_run_000012.json`: `72cd0bd9853c897db05dca7d53665d0408243762cfdcc20169d42b743e7d1352`
+- `real/inthedark/results/night17_dense_prefix.json`: `cdc2a42944053ab5033666b91e73182138b5350b2b051fea85071c024a53383a`
+- `real/inthedark/results/night18_dense_prefix.json`: `c0c3dbfe9e4ef42d199365d7d0b2d6504cd5f21d003a4e44cccbc2e6fdd37448`
+- `real/inthedark/results/night_dense_run_000017.json`: `8d057c7d82201698b1bfd0d5e964c3c639cea92918e8459c6c28607c9980160d`
+- `real/inthedark/results/night_dense_run_000018.json`: `e22cee895cbf7be0a7fd6632ed072ea30fb4643d3e4c4d4a1ae976f99866811d`
+- `real/inthedark/results/night_sparse_run_000017.json`: `6d1be52e2bad9302c23a8446b84957e754b4b2290be93a284c55009a2d7acbad`
+- `real/inthedark/results/night_summary.json`: `426de0de29ff380d161427308029cfbcd4d12910f859932274d50f0d4eb528bc`
+- `real/kitti_more/results/kitti_more.json`: `0b37e2d1db72950cbdde12e9e6f445ce3d158edb5aef39bc556eb5e7a2c0a541`
+- `real/threedmatch_low_overlap/results/low_overlap.json`: `57b6758ed27ba2b72917c9b059bd0cd1d8436be042f272b35c5d196099ba6812`
+- `real/theseus/results/theseus_real.json`: `4da983871fe7e5ceccabf8c3a1ad63452c7884e9e230057d5f859cc44a2c9e97`
+- `phase5/anisotropic_grid/results/summary.json`: `b581efb91575ce2c30449ea62d45e71282b2f4dd13bf1b7050c2bdff8efd2ac9`
+- `results/p3_140_accepted_ledger.json`: `0b21f97c7bfa7e3c05666e3921ee45dd70b4d81f8c6800517761b7122112fa53`
+- `results/p3_extra_validation_630.json`: `b99952fd2b93002d2f3d55ac75214e0e0bc3b56a309b3c05c67a1e722837548e`
+- `../results/baselines.json`: `a193173ac3880ffbba6afb91c87d4793a3b2713cd50ec16deefda2a5cd0b2c87`
+- `real/kitti_odom/results/raw_drive_motion.json`: `a49bc658ffa3ee0cead9d9c4987b02c3cc0def98340f17cd206b7918ad5d8623`
+- `real/threedmatch_full/results/manifest.json`: `a90be6c949dba835f32d1747c5f2ed282cc757449f33a5aeaa36cc5ccb67a11b`
+- `real/threedmatch_full/results/verify_gt_direction_full.json`: `3e36b4e73ccaa966fb97581ef919952d5581beaf09b2b12cf811ee36dc24c00f`
+- `real/threedmatch_full/results/pairs_redkitchen.json`: `cb628f4c4e063e4eac165b4088d11b35a8d4ef135f9721176e5bc565dd8521cb`
+- `real/threedmatch_full/results/pairs_sun3d-home_at.json`: `c8f2fe6c4478e213fef9d494fb93ac3f806981f998886d3cfb82a8c7020e4298`
+- `real/threedmatch_full/results/pairs_sun3d-home_md.json`: `bc418c6b6701968f0ddf561956da1999c411e3a68da6251423a09fcac88bdcfd`
+- `real/threedmatch_full/results/pairs_sun3d-hotel_uc.json`: `dc4a87661728d5ac630ae9e1b907e48315645bc09f8bc6eff5e9aad6e58ba936`
+- `qpep_gpu/results/qpep_gpu.json`: `5fc7ac638ec1ff92daaebe4252e4e832d74965ba767c89ebb84d36f3b913e992`
+- `real/kitti_odom/results/kitti_odom.json`: `f6a364569f7d7e07e06159328164daa393121c8be9cf8be89e42ecb2a31e5f2d`
+- `real/threedmatch_full/results/full_scenes.json`: `6a2a86040c1731750d72b1386d7d67fe7b56b5cbffc96e65ee2885cbfdf67a6d`
+- `real/threedmatch_full/results/overlap_bins.json`: `afa725aa336265a647e61c0bb710121143aaed342044bf6df6da3418b6fd8846`
+- `real/threedmatch_full/results/overlap_dependence.json`: `a17787d866275983d1956dc4b819b466901040bc7fed501d048bfcce1aa9a988`
+- `results/phase3_rounds.json`: `3cf7c1973a457d19fb51a4ea08ba78bbaeafcbe52b5bc22fb0a6fd1ace1019b1`
+- `results/final_rounds.json`: `eede21d50b4ded39f716bd15fdbad21e12675c6d3b182e165815ee531952534c`
+- `analysis/wilson.json`: `bdab5d9a45895228cba23e12044c5d34841a0609bfe352921e8f7a0917869dc9`
+- `real/inthedark/results/inthedark_rounds.json`: `8bf99cd169ed94c088c3a46cef3f3151834f18c01c5924a437c77d07f95d03f8`
+- `real/inthedark/results/convention_calib_r2.json`: `476f7346802489e694bb44b8600be398581bebb17553d708023e60f6a31b6581`
+- `real/kitti_odom/results/rounds.json`: `975b5cc9fc6b30cc5b81f5499662d9b20fa8763a7bfd5b20bd30496e5d536610`
+- `real/threedmatch_full/results/rounds.json`: `7c88c707374bca438cfd4cccd1d12c1218026be609882370749a385f5191ee87`
+- `baselines/results/theseus.json`: `d797991a50afa9713c39175a7175bf9b83c473be8b6c08baf270466727257840`
+- `baselines/results/sdpr_forward.json`: `47880621c49d5e3c2472ab5fb057db8b96ac3482bb5cf0eee79cd6ec9974fdb3`
+- `baselines/results/sdpr_kabsch_equiv.json`: `175c02da596e18a0bfc3e218e6d1e27f9c7c8445feff17736d8becde979cab8b`
+- `baselines/results/theseus_selfcheck.json`: `3343107ed06440757219260d796f238658ff55c86575b23ce8f12b51c46790f9`
+- `baselines/results/reference_n20.json`: `45fd479fb6eba341412019642fdc9e7145e6d1e7ab649ed5b4ea54c0377bc02c`
+- `synthetic/results/main_table_extended_raw.jsonl`: `ae2172a522e275a1ea350d6d478d45c6c1af0a167b17ac415b493309d042e7f4`
+- `real/threedmatch/results/threedmatch_raw.jsonl`: `fe1e5ca39296fb05d1f8113d0edb92c135dd819df4b638ee4608571b1a04a13c`
+- `real/threedmatch/results/descriptor_raw.jsonl`: `56b00219a996bea4855319e8908aa5ff1c5af0bb1114739f876fa78ebf930317`
+- `real/threedmatch/results/n_scaling_raw.jsonl`: `7a1353afb94de8178550bde0fd4c79948d136139d15e3526d7b7065d212ace0a`
+- `real/threedmatch_extra/results/extra_scenes_raw.jsonl`: `dad4f6d564c5ab24997068e81437dbdc3fce62abdb3a58bf51eac221cdd010d6`
+- `real/threedmatch_low_overlap/results/low_overlap_raw.jsonl`: `1ee961eb76a3fb49fdb0ee835a88747bd79ef459f30bcb6250fe2a777d19bf4e`
+- `phase5/anisotropic_grid/results/ledger.jsonl`: `afa2a5049041cee416b52b99ae6f21a23309286b3a157c5ddaba398a356f72f1`
+- `results/p3_extra_validation_630.jsonl`: `59d4f62b5903905360e6fcbcf0ee7910b199a96c401b95379278082f8f5b6025`
+- `real/kitti/results/kitti_raw.jsonl`: `92593d13cf86aa5d5b313e3ab76e8536c3fe639bfeef7a4e249127f95f83ff39`
+- `real/kitti/results/c_sensitivity_raw.jsonl`: `6d46758f95216a6f85f824a3c0c135dbc7d46c4d1745fea8e722d4bb454d2657`
+- `systems/results/batch_gnc_raw.jsonl`: `f54668856b49446f5871b24da8dd44bacbfa290eb10940dfa24998e9a52cf30f`
+- `ablations/anisotropic/results/anisotropic_raw.jsonl`: `ce1121b94188e184506a4d9c0e2f2730ef157b195bb4e19391bdfa7ac570fd0b`
+- `ablations/ransac_lo/results/ransac_lo_raw.jsonl`: `ae696edc10eed3988dfcc57387767ac04ffd955868695475c877c7e3d93eff6b`
+- `real/kitti2/results/kitti2_raw.jsonl`: `c5640abfa962b83aede49abbe7b8caae5450d50ce8c46b25595cda97e4fa53c8`
+- `real/threedmatch_full/results/full_scenes_raw.jsonl`: `4c5e8a9b51af2749095844a4fd59ec50ecf560edaba824ebfac55a2cb9631c95`
+- `real/threedmatch_full/results/overlap_bins_raw.jsonl`: `3db162beebfe1b767aa8a18a4d6d92c58acee0cb93a4ea7af73c8a6aefacfa30`
+- `qpep_gpu/results/logs/slurm_gpu_3184_state.txt`: `3ca7447c044bca9f13ff1c82e5a2933f8effea9f39277cd83feacfc3f6557e4e`
+- `real/threedmatch_full/results/full_scenes.md`: `c27395cf6469bac82873a4a712837694b819fb4a46289018c035b8086c9c8c6b`
+- `real/inthedark/results/inthedark_main.md`: `b32fb3853300e83797d6be671e9b41364a43a790730a17360cf18f91a14c5a89`

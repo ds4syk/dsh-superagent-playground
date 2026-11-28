@@ -1,0 +1,267 @@
+{
+  "title": "6-point physical 3D-3D counterexample: numerical dual certificate",
+  "label": "numerical certificate (float), not exact rational",
+  "generated_by": "sdp/run_six_point_cert.py",
+  "generated_at": "2026-11-27T22:19:45+08:00",
+  "runtime_s": 0.42,
+  "environment": {
+    "python": "3.10.22",
+    "numpy": "2.2.6",
+    "cvxpy": "1.7.5",
+    "solvers": {
+      "CLARABEL": "0.11.1",
+      "SCS": "3.3.1"
+    },
+    "platform": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35"
+  },
+  "instance": {
+    "description": "p_i = +-e1, +-e2, +-e3; y_i = 0.05 p_i; W = [[1,-0.6,0],[-0.6,1,0],[0,0,1]]; G = 6W; D = 0",
+    "eps": 0.05,
+    "f_at_R_eq_I": 5.414999999999999,
+    "exact_value_at_R_eq_I": "1083/200"
+  },
+  "margins": {
+    "psd_margin": 1e-08,
+    "value_safety": 1e-07,
+    "rank_tol_rel": 0.0001,
+    "psd_check": "min eig(Z) and Cholesky(Z + psd_margin*I)",
+    "why": "value_safety must exceed the observed solver tolerance (max |primal-dual| here ~2e-8); psd_margin must exceed the observed negative eigenvalue of the dual slack (~6e-10)"
+  },
+  "derived_intervals": {
+    "gap_f10_minus_f13up": {
+      "lower": 1.8206860671486655,
+      "upper": 1.8206863671211275,
+      "width": 2.9997246198121275e-07,
+      "label": "numerical certificate (float), not exact rational"
+    },
+    "f10_minus_f13full": {
+      "lower": -9.997650707305183e-08,
+      "upper": 1.0000292682832423e-07,
+      "label": "numerical certificate (float), not exact rational"
+    }
+  },
+  "problems": {
+    "10": {
+      "label": "10x10 (21 constraints, full 20D)",
+      "n": 10,
+      "n_constraints": 21,
+      "constraint_dim": 20,
+      "primal": {
+        "solver": "SCS",
+        "status": "optimal",
+        "value": 5.415000000000838,
+        "t_solve": 0.016155719757080078,
+        "min_eig_X": 1.231844900787973e-13,
+        "max_eig_X": 3.9999999999945737,
+        "max_constraint_residual": 9.880984919163893e-15,
+        "rank": 1
+      },
+      "primal_check": {
+        "solver": "CLARABEL",
+        "status": "optimal",
+        "value": 5.41500000252149,
+        "t_solve": 0.04062652587890625,
+        "min_eig_X": 3.5918435638272634e-10,
+        "max_eig_X": 3.999999981621621,
+        "max_constraint_residual": 6.7390537594747e-14,
+        "rank": 1
+      },
+      "dual": {
+        "solver": "CLARABEL",
+        "status": "optimal",
+        "mu": 5.415000000023493,
+        "t_solve": 0.006720304489135742,
+        "min_eig_Z": -5.87439990703442e-12,
+        "max_eig_Z": 0.30889058557622484,
+        "min_eig_shifted": 9.994125567069596e-09,
+        "cholesky_ok": true,
+        "psd_ok_with_margin": true
+      },
+      "exact_upper_witness": {
+        "x": [
+          1.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "max_abs_xTAx": 0.0,
+        "float_objective": 5.414999999999999,
+        "exact_rational_objective": "1083/200",
+        "exact_rational_objective_float": 5.415,
+        "gap_float_vs_exact": -8.881784197001252e-16,
+        "exactly_feasible": true,
+        "note": "x = [1, vec(I), 0] is rational; all constraint matrices have entries in {0, +-1/2, +-1}, so x^T A_i x = 0 exactly; J(I, 0) = 6(1-eps)^2 = 1083/200 by the construction's closed form"
+      },
+      "upper": {
+        "value": 5.415,
+        "kind": "exact rational 1083/200 at the exactly feasible rank-1 point X = x x^T, x = [1, vec(I), 0]"
+      },
+      "interval": {
+        "lower": 5.414999900023493,
+        "upper": 5.415,
+        "width": 9.997650707305183e-08,
+        "label": "numerical certificate (float), not exact rational"
+      },
+      "dual_gap_primal_minus_mu": -2.2655655129710794e-11,
+      "complementarity_trace_ZX": -2.26377547230449e-11
+    },
+    "13_full": {
+      "label": "13x13 full-20D (24 + 3 row-orth = 27 constraints)",
+      "n": 13,
+      "n_constraints": 27,
+      "constraint_dim": 20,
+      "primal": {
+        "solver": "SCS",
+        "status": "optimal",
+        "value": 5.4150000000003375,
+        "t_solve": 0.01546931266784668,
+        "min_eig_X": -8.049067865189026e-15,
+        "max_eig_X": 4.000000000000017,
+        "max_constraint_residual": 1.5543122344752192e-15,
+        "rank": 1
+      },
+      "primal_check": {
+        "solver": "CLARABEL",
+        "status": "optimal",
+        "value": 5.414999998893103,
+        "t_solve": 0.014495611190795898,
+        "min_eig_X": -2.127130025022865e-10,
+        "max_eig_X": 3.9999999853169546,
+        "max_constraint_residual": 3.0041161738873885e-14,
+        "rank": 1
+      },
+      "dual": {
+        "solver": "CLARABEL",
+        "status": "optimal",
+        "mu": 5.4149999999970735,
+        "t_solve": 0.007890939712524414,
+        "min_eig_Z": 7.077215906017287e-13,
+        "max_eig_Z": 9.6,
+        "min_eig_shifted": 1.0000707681957835e-08,
+        "cholesky_ok": true,
+        "psd_ok_with_margin": true
+      },
+      "exact_upper_witness": {
+        "x": [
+          1.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "max_abs_xTAx": 0.0,
+        "float_objective": 5.414999999999999,
+        "exact_rational_objective": "1083/200",
+        "exact_rational_objective_float": 5.415,
+        "gap_float_vs_exact": -8.881784197001252e-16,
+        "exactly_feasible": true,
+        "note": "x = [1, vec(I), 0] is rational; all constraint matrices have entries in {0, +-1/2, +-1}, so x^T A_i x = 0 exactly; J(I, 0) = 6(1-eps)^2 = 1083/200 by the construction's closed form"
+      },
+      "upper": {
+        "value": 5.415,
+        "kind": "exact rational 1083/200 at the exactly feasible rank-1 point X = x x^T, x = [1, vec(I), 0]"
+      },
+      "interval": {
+        "lower": 5.414999899997073,
+        "upper": 5.415,
+        "width": 1.0000292682832423e-07,
+        "label": "numerical certificate (float), not exact rational"
+      },
+      "dual_gap_primal_minus_mu": 3.2640556923979602e-12,
+      "complementarity_trace_ZX": 3.2616165002309534e-12
+    },
+    "13_up": {
+      "label": "13x13 upstream (24 constraints, 17D)",
+      "n": 13,
+      "n_constraints": 24,
+      "constraint_dim": 17,
+      "primal": {
+        "solver": "SCS",
+        "status": "optimal",
+        "value": 3.5943137328748276,
+        "t_solve": 0.01669764518737793,
+        "min_eig_X": -4.613275190960534e-13,
+        "max_eig_X": 1.1335756094360054,
+        "max_constraint_residual": 6.661338147750939e-16,
+        "rank": 4
+      },
+      "primal_check": {
+        "solver": "CLARABEL",
+        "status": "optimal",
+        "value": 3.5943137132968106,
+        "t_solve": 0.015820980072021484,
+        "min_eig_X": -3.0979422462691897e-09,
+        "max_eig_X": 1.133561916466193,
+        "max_constraint_residual": 2.220446049250313e-16,
+        "rank": 4
+      },
+      "dual": {
+        "solver": "CLARABEL",
+        "status": "optimal",
+        "mu": 3.5943137328788723,
+        "t_solve": 0.008998870849609375,
+        "min_eig_Z": -4.962110181118883e-12,
+        "max_eig_Z": 9.6,
+        "min_eig_shifted": 9.995037878750536e-09,
+        "cholesky_ok": true,
+        "psd_ok_with_margin": true
+      },
+      "exact_upper_witness": {
+        "x": [
+          1.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "max_abs_xTAx": 0.0,
+        "float_objective": 5.414999999999999,
+        "exact_rational_objective": "1083/200",
+        "exact_rational_objective_float": 5.415,
+        "gap_float_vs_exact": -8.881784197001252e-16,
+        "exactly_feasible": true,
+        "note": "x = [1, vec(I), 0] is rational; all constraint matrices have entries in {0, +-1/2, +-1}, so x^T A_i x = 0 exactly; J(I, 0) = 6(1-eps)^2 = 1083/200 by the construction's closed form"
+      },
+      "upper": {
+        "value": 3.5943138328748274,
+        "kind": "primal solver value + value safety margin (X numerically feasible)"
+      },
+      "interval": {
+        "lower": 3.5943136328788725,
+        "upper": 3.5943138328748274,
+        "width": 1.999959549081609e-07,
+        "label": "numerical certificate (float), not exact rational"
+      },
+      "dual_gap_primal_minus_mu": -4.04476452331437e-12,
+      "complementarity_trace_ZX": -4.046583158719291e-12
+    }
+  },
+  "caveats": [
+    "This is a floating-point certificate, not exact rational arithmetic: the dual multipliers and the slack matrix are stored as doubles, and the lower endpoint is the solver dual value minus the stated value safety margin.",
+    "The revised proof quotes f*_13up = 3.59430886; both CLARABEL and SCS give 3.59431373 (difference 4.9e-6, above solver tolerance), so that quoted value lies OUTSIDE the interval [3.59431363, 3.59431383]. The O(1) separation from f10 (gap ~1.82) is unaffected.",
+    "rank(X*_13up) = 4 at the stated 1e-4 relative threshold (four O(1) eigenvalues, then numerical dust at ~5e-6); it is 6 at a 1e-6 threshold, but the theorem only needs rank > 1.",
+    "For f10 and f13_full the upper endpoint is the exact rational 1083/200 at the exactly feasible X = x x^T; the float evaluation of the same point with the assembled float Q is 5.414999999999999. The solver primal values for f10/f13_full can sit up to ~3e-9 above 5.415 because the returned X is only numerically feasible; they are reported as a check only and are not used for the upper endpoint."
+  ]
+}

@@ -1,0 +1,18 @@
+Differentiable pose-estimation layers enable end-to-end learning through geometric optimization, but
+existing layers are fragile under gross outliers: they either wrap a non-differentiable RANSAC front
+end around a certifiable solver or differentiate a local robust $M$-estimator with frozen or unrolled
+weights. We present \textbf{Robust-QPEPLayer}, a RANSAC-free differentiable pose layer that combines
+Black--Rangarajan (BR) duality, graduated non-convexity (GNC), and a constant-size quaternion pose
+solver (QPEP). The forward pass alternates a closed-form outlier-weight update with a globally solved
+weighted QPEP, so the number of correspondences enters only through $O(N)$ accumulation; the backward
+pass differentiates the robust fixed point exactly with a $6\times6$ system and $O(1)$ memory in the
+GNC iterations, including the redescending curvature correction and the unit-quaternion multiplier
+term. We prove an exact BR dual for the Geman--McClure kernel, the Schur-complement identity for the
+curvature correction, and the exact Riemannian Hessian on $\mathbb{S}^3\times\mathbb{R}^3$. A
+one-dimensional proposition shows that frozen-weight differentiation can reverse the derivative
+sign, and a per-observation $O(\|\mathbf{r}_i\|^{-4})$ bound separates gradient decay from forward
+robustness. The exact Jacobian matches central differences to $3$--$5\times10^{-8}$, whereas frozen
+weights give a boundary relative error of $1.07$ and a cosine of $0.234$. GNC-GM matches fixed-1000
+RANSAC through $70\%$ random outliers at $22$--$32\times$ lower runtime and is evaluated on all eight
+official 3DMatch test scenes, all 11 KITTI odometry sequences 00--10, and four UTIAS In-The-Dark
+runs, where it reaches $0.078$--$0.150^\circ$ and $0.007$--$0.020$~m.

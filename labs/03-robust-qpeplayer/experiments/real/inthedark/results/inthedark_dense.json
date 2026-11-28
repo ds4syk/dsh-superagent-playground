@@ -1,0 +1,1840 @@
+{
+  "dataset": "UTIAS-In-The-Dark",
+  "run": "/mnt/storage1/syk/data/utias_in_the_dark/run_000002",
+  "teach": "/mnt/storage1/syk/data/utias_in_the_dark/teach_meta",
+  "protocol": {
+    "comp": {
+      "run": "run_000002",
+      "convention": "ba",
+      "n_vertices": 1087,
+      "n_spatial_rows": 1087,
+      "n_teach_links": 1115,
+      "multi_match": 0
+    },
+    "n_pairs": 1086,
+    "n_skipped": 0,
+    "camera_vehicle": [
+      [
+        0.000796327,
+        -1.0,
+        0.0,
+        0.119873
+      ],
+      [
+        -0.330472,
+        -0.000263164,
+        -0.943816,
+        1.49473
+      ],
+      [
+        0.943815,
+        0.000751586,
+        -0.330472,
+        0.354804
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "convention": "ba"
+  },
+  "c": 0.5,
+  "detector": "sift",
+  "fe": "dense",
+  "front_end": "hand-written SIFT + StereoSGBM/sparse stereo (stereo_vo.py)",
+  "pairs": [
+    {
+      "pair": "200->201",
+      "n": 394,
+      "inlier_rate": 0.7944162436548223,
+      "med_resid_inlier": 0.06535089587418616,
+      "med_resid_outlier": 1.6944894336334262,
+      "med_depth_m": 7.090388475707547,
+      "gt_rot_deg": 0.13217439855034618,
+      "gt_trans": 0.080477452638649,
+      "floor": {
+        "rot_deg": 0.11231116827107104,
+        "trans_m": 0.019184111852955515,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 156.63027111440897,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.29690850016112197,
+          "trans_m": 0.09793435393979083,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.2644350752234459
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.13211731382339995,
+          "trans_m": 0.005944546977965981,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 70.21637307479978
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.13211731382339995,
+          "trans_m": 0.005944546977965981,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.7579820230603218
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.11267756606405731,
+          "trans_m": 0.018992708171467042,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.9731271788477898
+        },
+        "GNC-GM": {
+          "rot_deg": 0.11267756625813229,
+          "trans_m": 0.01899270665139542,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.1573039703071117
+        }
+      }
+    },
+    {
+      "pair": "201->202",
+      "n": 431,
+      "inlier_rate": 0.8120649651972158,
+      "med_resid_inlier": 0.07740766800783452,
+      "med_resid_outlier": 1.7058768980352792,
+      "med_depth_m": 7.795007983664922,
+      "gt_rot_deg": 0.09957329671887684,
+      "gt_trans": 0.0989915765762519,
+      "floor": {
+        "rot_deg": 0.04114596482287185,
+        "trans_m": 0.021090313459175326,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 132.7929520048201,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.2794735715892577,
+          "trans_m": 0.06514259243751222,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.16206922009587288
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.037594093030673785,
+          "trans_m": 0.023676352035147723,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 66.07742700725794
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.03464544375637799,
+          "trans_m": 0.01963013209167778,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.7361322641372681
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.027374147693664686,
+          "trans_m": 0.029077825945156788,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.0055451206862926
+        },
+        "GNC-GM": {
+          "rot_deg": 0.027374147294238843,
+          "trans_m": 0.02907782419655617,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.580100204795599
+        }
+      }
+    },
+    {
+      "pair": "202->203",
+      "n": 468,
+      "inlier_rate": 0.7713675213675214,
+      "med_resid_inlier": 0.0819171707186551,
+      "med_resid_outlier": 1.7225472399407886,
+      "med_depth_m": 7.26266597502439,
+      "gt_rot_deg": 0.15018634720194726,
+      "gt_trans": 0.12283294303902688,
+      "floor": {
+        "rot_deg": 0.10866075173385568,
+        "trans_m": 0.016879410226451803,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 131.8214749917388,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.16735503724755083,
+          "trans_m": 0.2886537339846023,
+          "success": false,
+          "success_loose": false,
+          "time_ms": 0.16799801960587502
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.12634936462707647,
+          "trans_m": 0.007646919509244157,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 65.28310757130384
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.10866075173385568,
+          "trans_m": 0.016879410226451803,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.8733812719583511
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.06535987065408769,
+          "trans_m": 0.016193371232472248,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.1029009260237217
+        },
+        "GNC-GM": {
+          "rot_deg": 0.06535987150168192,
+          "trans_m": 0.01619333493713876,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.3397193290293217
+        }
+      }
+    },
+    {
+      "pair": "203->204",
+      "n": 433,
+      "inlier_rate": 0.8221709006928406,
+      "med_resid_inlier": 0.09130236317648817,
+      "med_resid_outlier": 1.7296676099079855,
+      "med_depth_m": 7.227410314951457,
+      "gt_rot_deg": 0.14787058898963687,
+      "gt_trans": 0.12466704609230606,
+      "floor": {
+        "rot_deg": 0.14766305391097773,
+        "trans_m": 0.017814320133051457,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 127.4920110590756,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.19212851391163502,
+          "trans_m": 0.1429156062208723,
+          "success": false,
+          "success_loose": true,
+          "time_ms": 0.1659509725868702
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.16795167161177277,
+          "trans_m": 0.01720615042273959,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 62.263287138193846
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.15823257091087306,
+          "trans_m": 0.019485199135476732,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.6923689506947994
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.15092600234347847,
+          "trans_m": 0.02388003032152925,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.0086273327469826
+        },
+        "GNC-GM": {
+          "rot_deg": 0.15092600030533676,
+          "trans_m": 0.023880005217026417,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.1087699569761753
+        }
+      }
+    },
+    {
+      "pair": "204->205",
+      "n": 439,
+      "inlier_rate": 0.8132118451025057,
+      "med_resid_inlier": 0.06787693899339087,
+      "med_resid_outlier": 1.7249048582785345,
+      "med_depth_m": 7.157915985000001,
+      "gt_rot_deg": 0.11106267079579593,
+      "gt_trans": 0.06906613851451975,
+      "floor": {
+        "rot_deg": 0.06341661640926984,
+        "trans_m": 0.010362862814312743,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 132.51320598646998,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.16976874753878052,
+          "trans_m": 0.07947355262183539,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.158797949552536
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.07351608949120389,
+          "trans_m": 0.0126040835292124,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 61.83894304558635
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.07462400820226592,
+          "trans_m": 0.012488959628624402,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.6044851616024971
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.059518186745069736,
+          "trans_m": 0.011949641410656886,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.893175929784775
+        },
+        "GNC-GM": {
+          "rot_deg": 0.05951818672057539,
+          "trans_m": 0.011949641482602346,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.193695865571499
+        }
+      }
+    },
+    {
+      "pair": "205->206",
+      "n": 432,
+      "inlier_rate": 0.8171296296296297,
+      "med_resid_inlier": 0.09593801534251659,
+      "med_resid_outlier": 1.6583850678337386,
+      "med_depth_m": 7.2984426547043135,
+      "gt_rot_deg": 0.1161926580386733,
+      "gt_trans": 0.12791415819142865,
+      "floor": {
+        "rot_deg": 0.1200984853224246,
+        "trans_m": 0.02082052467088036,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 150.56610573083162,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.08085823144423918,
+          "trans_m": 0.3375217845710554,
+          "success": false,
+          "success_loose": false,
+          "time_ms": 0.16606878489255905
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.08125664756120539,
+          "trans_m": 0.010666985770303884,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 63.70207201689482
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.09991677014858688,
+          "trans_m": 0.009472889985157948,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.660174060612917
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.10801352351825971,
+          "trans_m": 0.02082828845561944,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.9869680292904377
+        },
+        "GNC-GM": {
+          "rot_deg": 0.10801349606533535,
+          "trans_m": 0.020828149714736188,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.763269003480673
+        }
+      }
+    },
+    {
+      "pair": "206->207",
+      "n": 456,
+      "inlier_rate": 0.8070175438596491,
+      "med_resid_inlier": 0.0884197761268071,
+      "med_resid_outlier": 1.7486408408137861,
+      "med_depth_m": 7.50434297873851,
+      "gt_rot_deg": 0.020617852035120336,
+      "gt_trans": 0.17486983214235147,
+      "floor": {
+        "rot_deg": 0.061811396209157765,
+        "trans_m": 0.01979063155597442,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 126.98797369375825,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.23163171465490215,
+          "trans_m": 0.16104486874265703,
+          "success": false,
+          "success_loose": true,
+          "time_ms": 0.15531806275248528
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.061811396209157765,
+          "trans_m": 0.01979063155597442,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 87.85905502736568
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.0638917647629824,
+          "trans_m": 0.02098981279780399,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 1.0809637606143951
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.06109295192106191,
+          "trans_m": 0.020683724818999688,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 4.184615798294544
+        },
+        "GNC-GM": {
+          "rot_deg": 0.061092943437776215,
+          "trans_m": 0.020683696079991414,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.3409129828214645
+        }
+      }
+    },
+    {
+      "pair": "207->208",
+      "n": 445,
+      "inlier_rate": 0.7775280898876404,
+      "med_resid_inlier": 0.08317286441704012,
+      "med_resid_outlier": 1.7960814494232977,
+      "med_depth_m": 6.676441815605381,
+      "gt_rot_deg": 0.13472890387559083,
+      "gt_trans": 0.12554443022293757,
+      "floor": {
+        "rot_deg": 0.14915110066056905,
+        "trans_m": 0.011322242548526465,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 153.70152983814478,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.17085858495105163,
+          "trans_m": 0.1650525586323819,
+          "success": false,
+          "success_loose": true,
+          "time_ms": 3.1946422532200813
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.14966338220397354,
+          "trans_m": 0.012562898522557915,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 115.65539194270968
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.17380930707807293,
+          "trans_m": 0.013460087509552552,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.8160872384905815
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.15141489191755614,
+          "trans_m": 0.011737368726631154,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.07271396741271
+        },
+        "GNC-GM": {
+          "rot_deg": 0.15141489388171933,
+          "trans_m": 0.011737362741178276,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.4832161143422127
+        }
+      }
+    },
+    {
+      "pair": "208->209",
+      "n": 475,
+      "inlier_rate": 0.8421052631578947,
+      "med_resid_inlier": 0.07383113379360653,
+      "med_resid_outlier": 1.7015341495135998,
+      "med_depth_m": 6.282052847594937,
+      "gt_rot_deg": 0.06694794256641659,
+      "gt_trans": 0.07641437966285035,
+      "floor": {
+        "rot_deg": 0.07357700226749382,
+        "trans_m": 0.022983292825516272,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 211.78361400961876,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.2227160254277174,
+          "trans_m": 0.05141701758224784,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.17404090613126755
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.12266212051484959,
+          "trans_m": 0.04378417908673937,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 63.23398603126407
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.07393453079688381,
+          "trans_m": 0.024088711703360372,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.5960031412541866
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.0777707048482902,
+          "trans_m": 0.024835793704198066,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.1007882207632065
+        },
+        "GNC-GM": {
+          "rot_deg": 0.07777070501700069,
+          "trans_m": 0.02483579557226438,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.483927644789219
+        }
+      }
+    },
+    {
+      "pair": "209->210",
+      "n": 465,
+      "inlier_rate": 0.832258064516129,
+      "med_resid_inlier": 0.07039170906449385,
+      "med_resid_outlier": 1.718118332464892,
+      "med_depth_m": 5.908121130476191,
+      "gt_rot_deg": 0.1399515590542262,
+      "gt_trans": 0.07816458650727795,
+      "floor": {
+        "rot_deg": 0.14925969723666443,
+        "trans_m": 0.020918631995186933,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 129.3627959676087,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.1641919630693725,
+          "trans_m": 0.16503462998879662,
+          "success": false,
+          "success_loose": true,
+          "time_ms": 0.16217771917581558
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.14925969723666443,
+          "trans_m": 0.020918631995186933,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 63.382215332239866
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.1462697045982557,
+          "trans_m": 0.021878105924786735,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.6609079428017139
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.11466636722957967,
+          "trans_m": 0.014578478663525265,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.014031331986189
+        },
+        "GNC-GM": {
+          "rot_deg": 0.11466636361882428,
+          "trans_m": 0.014578470362749145,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.191227860748768
+        }
+      }
+    },
+    {
+      "pair": "210->211",
+      "n": 439,
+      "inlier_rate": 0.7630979498861048,
+      "med_resid_inlier": 0.08390159320659611,
+      "med_resid_outlier": 1.5751013673739505,
+      "med_depth_m": 6.829571215045872,
+      "gt_rot_deg": 0.05632256982672078,
+      "gt_trans": 0.1278345177298104,
+      "floor": {
+        "rot_deg": 0.07018286910310718,
+        "trans_m": 0.01689719808941646,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 135.14015031978488,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.2353465573674905,
+          "trans_m": 0.060784487596064314,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.16206223517656326
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.0686855487038343,
+          "trans_m": 0.022485844780669086,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 64.34003775939345
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.06676243788588836,
+          "trans_m": 0.0251448627166215,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 1.2134015560150146
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.07235725820423282,
+          "trans_m": 0.017960211058435534,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.4936610609292984
+        },
+        "GNC-GM": {
+          "rot_deg": 0.07235725726734744,
+          "trans_m": 0.017960204395585763,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.4447268806397915
+        }
+      }
+    },
+    {
+      "pair": "211->212",
+      "n": 454,
+      "inlier_rate": 0.7841409691629956,
+      "med_resid_inlier": 0.09472410103440876,
+      "med_resid_outlier": 1.4612593793945643,
+      "med_depth_m": 7.75440898375,
+      "gt_rot_deg": 0.09327774668272469,
+      "gt_trans": 0.15030213375218038,
+      "floor": {
+        "rot_deg": 0.08622181965135162,
+        "trans_m": 0.014067850572053293,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 127.86150816828012,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.15215147153433495,
+          "trans_m": 0.2179279641491729,
+          "success": false,
+          "success_loose": true,
+          "time_ms": 0.1655779778957367
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.09657967347685675,
+          "trans_m": 0.007403699937343678,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 65.05236681550741
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.07860275132200774,
+          "trans_m": 0.009893380856296128,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.8300822228193283
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.0462246557323562,
+          "trans_m": 0.016565215137014255,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.222924191504717
+        },
+        "GNC-GM": {
+          "rot_deg": 0.046224657246207015,
+          "trans_m": 0.01656513832348254,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.6228148490190506
+        }
+      }
+    },
+    {
+      "pair": "212->213",
+      "n": 414,
+      "inlier_rate": 0.7608695652173914,
+      "med_resid_inlier": 0.07754571212745676,
+      "med_resid_outlier": 1.5964272042991627,
+      "med_depth_m": 7.106706469864662,
+      "gt_rot_deg": 0.1476288063182684,
+      "gt_trans": 0.18176578403914898,
+      "floor": {
+        "rot_deg": 0.14775389728327917,
+        "trans_m": 0.02826513144581411,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 122.53494188189507,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.34338122603856036,
+          "trans_m": 0.17688184430803755,
+          "success": false,
+          "success_loose": true,
+          "time_ms": 0.15631504356861115
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.10463078843125483,
+          "trans_m": 0.007972283178234462,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 62.05770606175065
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.09090309496249088,
+          "trans_m": 0.02463993464007701,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.8786232210695744
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.13539771741014126,
+          "trans_m": 0.025615583935133912,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.3408161252737045
+        },
+        "GNC-GM": {
+          "rot_deg": 0.13539772247612938,
+          "trans_m": 0.02561554138589914,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.099839970469475
+        }
+      }
+    },
+    {
+      "pair": "213->214",
+      "n": 454,
+      "inlier_rate": 0.788546255506608,
+      "med_resid_inlier": 0.07844840215006484,
+      "med_resid_outlier": 1.664519320027855,
+      "med_depth_m": 6.767624030942788,
+      "gt_rot_deg": 0.048861301662299524,
+      "gt_trans": 0.0990505006439936,
+      "floor": {
+        "rot_deg": 0.12175213217782388,
+        "trans_m": 0.019239361947630297,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 125.39625028148293,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.13145749616427418,
+          "trans_m": 0.07515497469446014,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.17313286662101746
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.0892195250911788,
+          "trans_m": 0.0326305468916494,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 61.239462811499834
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.09551942707092705,
+          "trans_m": 0.011164791894136982,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.7267328910529613
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.09016816138930277,
+          "trans_m": 0.022343888214461274,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.98692611977458
+        },
+        "GNC-GM": {
+          "rot_deg": 0.0901681551726185,
+          "trans_m": 0.022343902639838598,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.196089830249548
+        }
+      }
+    },
+    {
+      "pair": "214->215",
+      "n": 459,
+      "inlier_rate": 0.7625272331154684,
+      "med_resid_inlier": 0.08531334891005782,
+      "med_resid_outlier": 1.4260178374126176,
+      "med_depth_m": 7.877494840634921,
+      "gt_rot_deg": 0.10712425729916124,
+      "gt_trans": 0.12279816992369327,
+      "floor": {
+        "rot_deg": 0.06008156537677516,
+        "trans_m": 0.01517775310224539,
+        "success": true,
+        "success_loose": true
+      },
+      "fe_ms": 133.89553874731064,
+      "methods": {
+        "Kabsch": {
+          "rot_deg": 0.04910147902896517,
+          "trans_m": 0.041495192113608824,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.17161713913083076
+        },
+        "RANSAC-1000": {
+          "rot_deg": 0.08120375058375409,
+          "trans_m": 0.02728681099346926,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 66.11319910734892
+        },
+        "RANSAC-adaptive": {
+          "rot_deg": 0.06024962620677071,
+          "trans_m": 0.021405758462631888,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 0.8917157538235188
+        },
+        "IRLS-GM": {
+          "rot_deg": 0.05705541565703583,
+          "trans_m": 0.01958180192278366,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 3.168330993503332
+        },
+        "GNC-GM": {
+          "rot_deg": 0.057055422300460366,
+          "trans_m": 0.01958176967841418,
+          "success": true,
+          "success_loose": true,
+          "time_ms": 2.530014142394066
+        }
+      }
+    }
+  ],
+  "records": [
+    {
+      "pair": "200->201",
+      "n": 394,
+      "inlier_rate": 0.7944162436548223,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.29690850016112197,
+      "trans_m": 0.09793435393979083,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.2644350752234459
+    },
+    {
+      "pair": "200->201",
+      "n": 394,
+      "inlier_rate": 0.7944162436548223,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.13211731382339995,
+      "trans_m": 0.005944546977965981,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 70.21637307479978
+    },
+    {
+      "pair": "200->201",
+      "n": 394,
+      "inlier_rate": 0.7944162436548223,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.13211731382339995,
+      "trans_m": 0.005944546977965981,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.7579820230603218
+    },
+    {
+      "pair": "200->201",
+      "n": 394,
+      "inlier_rate": 0.7944162436548223,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.11267756606405731,
+      "trans_m": 0.018992708171467042,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.9731271788477898
+    },
+    {
+      "pair": "200->201",
+      "n": 394,
+      "inlier_rate": 0.7944162436548223,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.11267756625813229,
+      "trans_m": 0.01899270665139542,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.1573039703071117
+    },
+    {
+      "pair": "201->202",
+      "n": 431,
+      "inlier_rate": 0.8120649651972158,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.2794735715892577,
+      "trans_m": 0.06514259243751222,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.16206922009587288
+    },
+    {
+      "pair": "201->202",
+      "n": 431,
+      "inlier_rate": 0.8120649651972158,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.037594093030673785,
+      "trans_m": 0.023676352035147723,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 66.07742700725794
+    },
+    {
+      "pair": "201->202",
+      "n": 431,
+      "inlier_rate": 0.8120649651972158,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.03464544375637799,
+      "trans_m": 0.01963013209167778,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.7361322641372681
+    },
+    {
+      "pair": "201->202",
+      "n": 431,
+      "inlier_rate": 0.8120649651972158,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.027374147693664686,
+      "trans_m": 0.029077825945156788,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.0055451206862926
+    },
+    {
+      "pair": "201->202",
+      "n": 431,
+      "inlier_rate": 0.8120649651972158,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.027374147294238843,
+      "trans_m": 0.02907782419655617,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.580100204795599
+    },
+    {
+      "pair": "202->203",
+      "n": 468,
+      "inlier_rate": 0.7713675213675214,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.16735503724755083,
+      "trans_m": 0.2886537339846023,
+      "success": false,
+      "success_loose": false,
+      "time_ms": 0.16799801960587502
+    },
+    {
+      "pair": "202->203",
+      "n": 468,
+      "inlier_rate": 0.7713675213675214,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.12634936462707647,
+      "trans_m": 0.007646919509244157,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 65.28310757130384
+    },
+    {
+      "pair": "202->203",
+      "n": 468,
+      "inlier_rate": 0.7713675213675214,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.10866075173385568,
+      "trans_m": 0.016879410226451803,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.8733812719583511
+    },
+    {
+      "pair": "202->203",
+      "n": 468,
+      "inlier_rate": 0.7713675213675214,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.06535987065408769,
+      "trans_m": 0.016193371232472248,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.1029009260237217
+    },
+    {
+      "pair": "202->203",
+      "n": 468,
+      "inlier_rate": 0.7713675213675214,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.06535987150168192,
+      "trans_m": 0.01619333493713876,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.3397193290293217
+    },
+    {
+      "pair": "203->204",
+      "n": 433,
+      "inlier_rate": 0.8221709006928406,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.19212851391163502,
+      "trans_m": 0.1429156062208723,
+      "success": false,
+      "success_loose": true,
+      "time_ms": 0.1659509725868702
+    },
+    {
+      "pair": "203->204",
+      "n": 433,
+      "inlier_rate": 0.8221709006928406,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.16795167161177277,
+      "trans_m": 0.01720615042273959,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 62.263287138193846
+    },
+    {
+      "pair": "203->204",
+      "n": 433,
+      "inlier_rate": 0.8221709006928406,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.15823257091087306,
+      "trans_m": 0.019485199135476732,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.6923689506947994
+    },
+    {
+      "pair": "203->204",
+      "n": 433,
+      "inlier_rate": 0.8221709006928406,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.15092600234347847,
+      "trans_m": 0.02388003032152925,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.0086273327469826
+    },
+    {
+      "pair": "203->204",
+      "n": 433,
+      "inlier_rate": 0.8221709006928406,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.15092600030533676,
+      "trans_m": 0.023880005217026417,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.1087699569761753
+    },
+    {
+      "pair": "204->205",
+      "n": 439,
+      "inlier_rate": 0.8132118451025057,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.16976874753878052,
+      "trans_m": 0.07947355262183539,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.158797949552536
+    },
+    {
+      "pair": "204->205",
+      "n": 439,
+      "inlier_rate": 0.8132118451025057,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.07351608949120389,
+      "trans_m": 0.0126040835292124,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 61.83894304558635
+    },
+    {
+      "pair": "204->205",
+      "n": 439,
+      "inlier_rate": 0.8132118451025057,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.07462400820226592,
+      "trans_m": 0.012488959628624402,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.6044851616024971
+    },
+    {
+      "pair": "204->205",
+      "n": 439,
+      "inlier_rate": 0.8132118451025057,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.059518186745069736,
+      "trans_m": 0.011949641410656886,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.893175929784775
+    },
+    {
+      "pair": "204->205",
+      "n": 439,
+      "inlier_rate": 0.8132118451025057,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.05951818672057539,
+      "trans_m": 0.011949641482602346,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.193695865571499
+    },
+    {
+      "pair": "205->206",
+      "n": 432,
+      "inlier_rate": 0.8171296296296297,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.08085823144423918,
+      "trans_m": 0.3375217845710554,
+      "success": false,
+      "success_loose": false,
+      "time_ms": 0.16606878489255905
+    },
+    {
+      "pair": "205->206",
+      "n": 432,
+      "inlier_rate": 0.8171296296296297,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.08125664756120539,
+      "trans_m": 0.010666985770303884,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 63.70207201689482
+    },
+    {
+      "pair": "205->206",
+      "n": 432,
+      "inlier_rate": 0.8171296296296297,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.09991677014858688,
+      "trans_m": 0.009472889985157948,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.660174060612917
+    },
+    {
+      "pair": "205->206",
+      "n": 432,
+      "inlier_rate": 0.8171296296296297,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.10801352351825971,
+      "trans_m": 0.02082828845561944,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.9869680292904377
+    },
+    {
+      "pair": "205->206",
+      "n": 432,
+      "inlier_rate": 0.8171296296296297,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.10801349606533535,
+      "trans_m": 0.020828149714736188,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.763269003480673
+    },
+    {
+      "pair": "206->207",
+      "n": 456,
+      "inlier_rate": 0.8070175438596491,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.23163171465490215,
+      "trans_m": 0.16104486874265703,
+      "success": false,
+      "success_loose": true,
+      "time_ms": 0.15531806275248528
+    },
+    {
+      "pair": "206->207",
+      "n": 456,
+      "inlier_rate": 0.8070175438596491,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.061811396209157765,
+      "trans_m": 0.01979063155597442,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 87.85905502736568
+    },
+    {
+      "pair": "206->207",
+      "n": 456,
+      "inlier_rate": 0.8070175438596491,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.0638917647629824,
+      "trans_m": 0.02098981279780399,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 1.0809637606143951
+    },
+    {
+      "pair": "206->207",
+      "n": 456,
+      "inlier_rate": 0.8070175438596491,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.06109295192106191,
+      "trans_m": 0.020683724818999688,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 4.184615798294544
+    },
+    {
+      "pair": "206->207",
+      "n": 456,
+      "inlier_rate": 0.8070175438596491,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.061092943437776215,
+      "trans_m": 0.020683696079991414,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.3409129828214645
+    },
+    {
+      "pair": "207->208",
+      "n": 445,
+      "inlier_rate": 0.7775280898876404,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.17085858495105163,
+      "trans_m": 0.1650525586323819,
+      "success": false,
+      "success_loose": true,
+      "time_ms": 3.1946422532200813
+    },
+    {
+      "pair": "207->208",
+      "n": 445,
+      "inlier_rate": 0.7775280898876404,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.14966338220397354,
+      "trans_m": 0.012562898522557915,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 115.65539194270968
+    },
+    {
+      "pair": "207->208",
+      "n": 445,
+      "inlier_rate": 0.7775280898876404,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.17380930707807293,
+      "trans_m": 0.013460087509552552,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.8160872384905815
+    },
+    {
+      "pair": "207->208",
+      "n": 445,
+      "inlier_rate": 0.7775280898876404,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.15141489191755614,
+      "trans_m": 0.011737368726631154,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.07271396741271
+    },
+    {
+      "pair": "207->208",
+      "n": 445,
+      "inlier_rate": 0.7775280898876404,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.15141489388171933,
+      "trans_m": 0.011737362741178276,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.4832161143422127
+    },
+    {
+      "pair": "208->209",
+      "n": 475,
+      "inlier_rate": 0.8421052631578947,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.2227160254277174,
+      "trans_m": 0.05141701758224784,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.17404090613126755
+    },
+    {
+      "pair": "208->209",
+      "n": 475,
+      "inlier_rate": 0.8421052631578947,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.12266212051484959,
+      "trans_m": 0.04378417908673937,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 63.23398603126407
+    },
+    {
+      "pair": "208->209",
+      "n": 475,
+      "inlier_rate": 0.8421052631578947,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.07393453079688381,
+      "trans_m": 0.024088711703360372,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.5960031412541866
+    },
+    {
+      "pair": "208->209",
+      "n": 475,
+      "inlier_rate": 0.8421052631578947,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.0777707048482902,
+      "trans_m": 0.024835793704198066,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.1007882207632065
+    },
+    {
+      "pair": "208->209",
+      "n": 475,
+      "inlier_rate": 0.8421052631578947,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.07777070501700069,
+      "trans_m": 0.02483579557226438,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.483927644789219
+    },
+    {
+      "pair": "209->210",
+      "n": 465,
+      "inlier_rate": 0.832258064516129,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.1641919630693725,
+      "trans_m": 0.16503462998879662,
+      "success": false,
+      "success_loose": true,
+      "time_ms": 0.16217771917581558
+    },
+    {
+      "pair": "209->210",
+      "n": 465,
+      "inlier_rate": 0.832258064516129,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.14925969723666443,
+      "trans_m": 0.020918631995186933,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 63.382215332239866
+    },
+    {
+      "pair": "209->210",
+      "n": 465,
+      "inlier_rate": 0.832258064516129,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.1462697045982557,
+      "trans_m": 0.021878105924786735,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.6609079428017139
+    },
+    {
+      "pair": "209->210",
+      "n": 465,
+      "inlier_rate": 0.832258064516129,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.11466636722957967,
+      "trans_m": 0.014578478663525265,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.014031331986189
+    },
+    {
+      "pair": "209->210",
+      "n": 465,
+      "inlier_rate": 0.832258064516129,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.11466636361882428,
+      "trans_m": 0.014578470362749145,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.191227860748768
+    },
+    {
+      "pair": "210->211",
+      "n": 439,
+      "inlier_rate": 0.7630979498861048,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.2353465573674905,
+      "trans_m": 0.060784487596064314,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.16206223517656326
+    },
+    {
+      "pair": "210->211",
+      "n": 439,
+      "inlier_rate": 0.7630979498861048,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.0686855487038343,
+      "trans_m": 0.022485844780669086,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 64.34003775939345
+    },
+    {
+      "pair": "210->211",
+      "n": 439,
+      "inlier_rate": 0.7630979498861048,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.06676243788588836,
+      "trans_m": 0.0251448627166215,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 1.2134015560150146
+    },
+    {
+      "pair": "210->211",
+      "n": 439,
+      "inlier_rate": 0.7630979498861048,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.07235725820423282,
+      "trans_m": 0.017960211058435534,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.4936610609292984
+    },
+    {
+      "pair": "210->211",
+      "n": 439,
+      "inlier_rate": 0.7630979498861048,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.07235725726734744,
+      "trans_m": 0.017960204395585763,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.4447268806397915
+    },
+    {
+      "pair": "211->212",
+      "n": 454,
+      "inlier_rate": 0.7841409691629956,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.15215147153433495,
+      "trans_m": 0.2179279641491729,
+      "success": false,
+      "success_loose": true,
+      "time_ms": 0.1655779778957367
+    },
+    {
+      "pair": "211->212",
+      "n": 454,
+      "inlier_rate": 0.7841409691629956,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.09657967347685675,
+      "trans_m": 0.007403699937343678,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 65.05236681550741
+    },
+    {
+      "pair": "211->212",
+      "n": 454,
+      "inlier_rate": 0.7841409691629956,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.07860275132200774,
+      "trans_m": 0.009893380856296128,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.8300822228193283
+    },
+    {
+      "pair": "211->212",
+      "n": 454,
+      "inlier_rate": 0.7841409691629956,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.0462246557323562,
+      "trans_m": 0.016565215137014255,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.222924191504717
+    },
+    {
+      "pair": "211->212",
+      "n": 454,
+      "inlier_rate": 0.7841409691629956,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.046224657246207015,
+      "trans_m": 0.01656513832348254,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.6228148490190506
+    },
+    {
+      "pair": "212->213",
+      "n": 414,
+      "inlier_rate": 0.7608695652173914,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.34338122603856036,
+      "trans_m": 0.17688184430803755,
+      "success": false,
+      "success_loose": true,
+      "time_ms": 0.15631504356861115
+    },
+    {
+      "pair": "212->213",
+      "n": 414,
+      "inlier_rate": 0.7608695652173914,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.10463078843125483,
+      "trans_m": 0.007972283178234462,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 62.05770606175065
+    },
+    {
+      "pair": "212->213",
+      "n": 414,
+      "inlier_rate": 0.7608695652173914,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.09090309496249088,
+      "trans_m": 0.02463993464007701,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.8786232210695744
+    },
+    {
+      "pair": "212->213",
+      "n": 414,
+      "inlier_rate": 0.7608695652173914,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.13539771741014126,
+      "trans_m": 0.025615583935133912,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.3408161252737045
+    },
+    {
+      "pair": "212->213",
+      "n": 414,
+      "inlier_rate": 0.7608695652173914,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.13539772247612938,
+      "trans_m": 0.02561554138589914,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.099839970469475
+    },
+    {
+      "pair": "213->214",
+      "n": 454,
+      "inlier_rate": 0.788546255506608,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.13145749616427418,
+      "trans_m": 0.07515497469446014,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.17313286662101746
+    },
+    {
+      "pair": "213->214",
+      "n": 454,
+      "inlier_rate": 0.788546255506608,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.0892195250911788,
+      "trans_m": 0.0326305468916494,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 61.239462811499834
+    },
+    {
+      "pair": "213->214",
+      "n": 454,
+      "inlier_rate": 0.788546255506608,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.09551942707092705,
+      "trans_m": 0.011164791894136982,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.7267328910529613
+    },
+    {
+      "pair": "213->214",
+      "n": 454,
+      "inlier_rate": 0.788546255506608,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.09016816138930277,
+      "trans_m": 0.022343888214461274,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.98692611977458
+    },
+    {
+      "pair": "213->214",
+      "n": 454,
+      "inlier_rate": 0.788546255506608,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.0901681551726185,
+      "trans_m": 0.022343902639838598,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.196089830249548
+    },
+    {
+      "pair": "214->215",
+      "n": 459,
+      "inlier_rate": 0.7625272331154684,
+      "method": "Kabsch",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.04910147902896517,
+      "trans_m": 0.041495192113608824,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.17161713913083076
+    },
+    {
+      "pair": "214->215",
+      "n": 459,
+      "inlier_rate": 0.7625272331154684,
+      "method": "RANSAC-1000",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.08120375058375409,
+      "trans_m": 0.02728681099346926,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 66.11319910734892
+    },
+    {
+      "pair": "214->215",
+      "n": 459,
+      "inlier_rate": 0.7625272331154684,
+      "method": "RANSAC-adaptive",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.06024962620677071,
+      "trans_m": 0.021405758462631888,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 0.8917157538235188
+    },
+    {
+      "pair": "214->215",
+      "n": 459,
+      "inlier_rate": 0.7625272331154684,
+      "method": "IRLS-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.05705541565703583,
+      "trans_m": 0.01958180192278366,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 3.168330993503332
+    },
+    {
+      "pair": "214->215",
+      "n": 459,
+      "inlier_rate": 0.7625272331154684,
+      "method": "GNC-GM",
+      "c": 0.5,
+      "fe": "dense",
+      "rot_deg": 0.057055422300460366,
+      "trans_m": 0.01958176967841418,
+      "success": true,
+      "success_loose": true,
+      "time_ms": 2.530014142394066
+    }
+  ],
+  "wall_s": 3.5039256252348423,
+  "n_pairs": 15,
+  "skipped_pairs": 0
+}

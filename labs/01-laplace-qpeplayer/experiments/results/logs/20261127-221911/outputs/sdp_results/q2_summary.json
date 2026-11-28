@@ -1,0 +1,199 @@
+{
+  "figure": "results/q2_summary.png",
+  "generated_by": "sdp/make_q2_summary.py",
+  "generated_at": "2026-11-27T22:19:46+08:00",
+  "runtime_s": 0.59,
+  "environment": {
+    "python": "3.10.22",
+    "numpy": "2.2.6",
+    "matplotlib": "3.10.9",
+    "platform": "Linux-6.8.0-107-generic-x86_64-with-glibc2.35"
+  },
+  "source_data": {
+    "sdp_check.json": {
+      "path": "results/sdp_check.json",
+      "mtime": "2026-11-27T21:36:14+08:00",
+      "n_instances": 10
+    },
+    "six_point.json": {
+      "path": "results/six_point.json",
+      "mtime": "2026-11-27T22:19:43+08:00",
+      "solver_scs_eps": 1e-11
+    }
+  },
+  "axes": {
+    "left": {
+      "x": "f*_10 (10x10, 21 constraints, full 20D)",
+      "y": "f*_13 upstream (13x13, 24 constraints, 17D)",
+      "diagonal": "f*_13_up = f*_10",
+      "instances": [
+        {
+          "name": "CL_exact",
+          "f10": 1.9658119658452384,
+          "f13_up": 1.965811965808517,
+          "gap": 3.672151471789675e-11,
+          "tight": true,
+          "rank10": 6,
+          "rank13_up": 6
+        },
+        {
+          "name": "CL_coupled",
+          "f10": 1.96581196584524,
+          "f13_up": 1.9658119658086628,
+          "gap": 3.657718572469548e-11,
+          "tight": true,
+          "rank10": 6,
+          "rank13_up": 6
+        },
+        {
+          "name": "CL_perm0",
+          "f10": 1.9528431023503494,
+          "f13_up": 1.943098331899271,
+          "gap": 0.009744770451078466,
+          "tight": false,
+          "rank10": 6,
+          "rank13_up": 4
+        },
+        {
+          "name": "CL_perm1",
+          "f10": 1.960359986616641,
+          "f13_up": 1.9434872518975255,
+          "gap": 0.016872734719115545,
+          "tight": false,
+          "rank10": 6,
+          "rank13_up": 4
+        },
+        {
+          "name": "CL_perm2",
+          "f10": 1.9594630502057169,
+          "f13_up": 1.9479218718584794,
+          "gap": 0.011541178347237446,
+          "tight": false,
+          "rank10": 6,
+          "rank13_up": 4
+        },
+        {
+          "name": "rand_psd",
+          "f10": 1.1022836201004569,
+          "f13_up": 1.102283620101103,
+          "gap": -6.461498003318411e-13,
+          "tight": true,
+          "rank10": 1,
+          "rank13_up": 1
+        },
+        {
+          "name": "rand_indef",
+          "f10": 1.4013677665097084,
+          "f13_up": 1.401367766509417,
+          "gap": 2.913225216616411e-13,
+          "tight": true,
+          "rank10": 1,
+          "rank13_up": 1
+        },
+        {
+          "name": "p6_data",
+          "f10": 0.2523261568031813,
+          "f13_up": 0.2523261570973116,
+          "gap": -2.941302756909181e-10,
+          "tight": true,
+          "rank10": 1,
+          "rank13_up": 1
+        },
+        {
+          "name": "rowdot",
+          "f10": 0.9999999999999976,
+          "f13_up": -1.0000000013509476,
+          "gap": 2.000000001350945,
+          "tight": false,
+          "rank10": 10,
+          "rank13_up": 7
+        },
+        {
+          "name": "rowdot_gen",
+          "f10": -0.06019241977033703,
+          "f13_up": -2.0292298328483827,
+          "gap": 1.9690374130780457,
+          "tight": false,
+          "rank10": 1,
+          "rank13_up": 4
+        }
+      ],
+      "six_point": {
+        "f10": 5.415000000000838,
+        "f13_up": 3.5943137328748276,
+        "f13_full": 5.4150000000003375,
+        "gap_up": 1.82068626712601,
+        "rank10": 1,
+        "rank13_up": 4,
+        "rank13_full": 1,
+        "marker": "star = upstream, diamond = full-20D (on y=x)"
+      },
+      "rowdot": {
+        "name": "rowdot",
+        "f10": 0.9999999999999976,
+        "f13_up": -1.0000000013509476,
+        "gap": 2.000000001350945,
+        "annotation": "rowdot counterexample, gap 2.0"
+      }
+    },
+    "right": {
+      "instance": "6-point physical 3D-3D counterexample",
+      "construction": "p_i=+-e1,+-e2,+-e3; y_i=0.05 p_i; W=[[1,-0.6,0],[-0.6,1,0],[0,0,1]]; G=6W; D=0",
+      "bars": [
+        {
+          "label": "QPEP nonconvex J(R=I,t=0)",
+          "value": 5.415,
+          "rank": 1,
+          "constraint_dim": 20,
+          "note": "exact 6(1-eps)^2, eps=0.05"
+        },
+        {
+          "label": "10x10",
+          "value": 5.415000000000838,
+          "rank": 1,
+          "n_constraints": 21,
+          "constraint_dim": 20
+        },
+        {
+          "label": "13x13 full (24+3 row-orthogonality)",
+          "value": 5.4150000000003375,
+          "rank": 1,
+          "n_constraints": 27,
+          "constraint_dim": 20
+        },
+        {
+          "label": "13x13 upstream",
+          "value": 3.5943137328748276,
+          "rank": 4,
+          "n_constraints": 24,
+          "constraint_dim": 17
+        }
+      ],
+      "gap_full_minus_upstream": 1.82068626712601,
+      "missing_constraints": [
+        "r1.r2=0",
+        "r1.r3=0",
+        "r2.r3=0"
+      ],
+      "annotation": "20 vs 17 independent constraint dimensions"
+    }
+  },
+  "confirmed_numbers": {
+    "f10": 5.415000000000838,
+    "f13_full": 5.4150000000003375,
+    "f13_up": 3.5943137328748276,
+    "f10_minus_f13_up": 1.82068626712601,
+    "f10_minus_f13_full": 5.000444502911705e-13,
+    "rank10": 1,
+    "rank13_full": 1,
+    "rank13_up": 4,
+    "perturbations_strict": 8,
+    "perturbations_total": 8,
+    "six_point_check_rerun": "run_6point_check.py re-run by the P1 phase-3 worker on 2026-11-27; values reproduced"
+  },
+  "caveats": [
+    "Numerical (SCS eps=1e-11 / CLARABEL) values; not exact rational.",
+    "The revised proof quotes f13_up = 3.59430886; the solvers agree on 3.59431373 (difference 4.9e-6, above solver tolerance). The figure and metadata use the measured 3.59431373; the O(1) separation (gap ~1.82) is unaffected.",
+    "13x13 full-20D equals 10x10 by the Schur bijection; only the 6-point f13_full value (5.4150000000003) is plotted as the green diamond."
+  ]
+}

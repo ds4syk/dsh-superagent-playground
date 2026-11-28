@@ -1,0 +1,18 @@
+{
+  "dataset": "lmo",
+  "frames": [
+    "000002"
+  ],
+  "max_img": 8,
+  "obj_ids": [
+    8,
+    12,
+    5
+  ],
+  "plane_calib": "always",
+  "seed": 20261127,
+  "n_rows": 288,
+  "n_poses": 24,
+  "wall_s": 27.72910732589662,
+  "source": "run_bop.py POSE_DUMP=1 (exact RNG replay, no cert)"
+}

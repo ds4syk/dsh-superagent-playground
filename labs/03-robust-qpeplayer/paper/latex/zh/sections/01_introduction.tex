@@ -1,0 +1,16 @@
+\section{引言}
+
+优化层已成为可微机器人与视觉中的标准构件：在前向中求解一个几何问题，再对其最优性条件做隐式微分，从而为上游网络提供梯度\cite{holmes2025sdpr,pineda2022theseus,chen2020bpn}。对位姿估计而言，困难在于非凸性：局部求解器收敛到\emph{某个}驻点，其梯度一般并不是全局位姿的梯度。SDPRLayers \cite{holmes2025sdpr}求解一个凸半定松弛，认证秩一最优性，并在该处对原始KKT系统求微分；QPEP \cite{wu2022qpep}消去平移，用Gr\"obner基枚举一个四次系统的全部驻点，返回代数意义下的全局最优解。二者前向都是全局的，但都不鲁棒：SDPRLayers的真实数据实验把该层包在RANSAC \cite{fischler1981ransac}中并在干净样本上训练，而带逐对应二值变量的鲁棒SDP会把$10\times10$矩阵提升为$(10+9N)\times(10+9N)$ \cite{holmes2025sdpr}。
+
+本文提出的问题是：\emph{能否得到一个可微位姿层，它对粗大外点鲁棒、维数关于对应数量恒定，并且精确微分鲁棒估计器，而不是展开迭代或冻结其权重？}我们以三个要素作答：\textbf{Black--Rangarajan对偶} \cite{black1996br}，它把重降$M$估计器转化为关于位姿与每个对应一个权重的联合优化；\textbf{渐进非凸} \cite{yang2020gnc,yang2020teaser}，它把凸代理逐步退火到重降核；以及\textbf{QPEP} \cite{wu2022qpep}，它在固定个数的变量中全局求解每个加权子问题。三者的组合在思想上并不新颖——以加权最小二乘为内层求解器的GNC在鲁棒配准中已是标准做法 \cite{yang2020gnc,yang2020teaser}——但\emph{可微}层暴露出一种据我们所知尚未被单独隔离的结构：鲁棒不动点的精确导数包含一个\emph{重降曲率修正}，它正是BR权重块的Schur补；在$\mathbb{S}^3$上它还包含一个\emph{约束乘子项}，这是欧氏公式所遗漏的。丢掉其中任何一项都会使梯度产生数量级错误，甚至对边界外点翻转其符号。
+
+\subsection{贡献}
+
+\begin{enumerate}
+\item \textbf{恒定维数的鲁棒前向过程与精确对偶。}Geman--McClure（GM）核的BR对偶对任意权重与退火参数都精确成立，最优权重即核的导数，GNC-QPEP是单调块坐标下降，其极限点是逐坐标驻点（引理~\ref{lem:brdual}、定理~\ref{thm:gnc}）。内层加权子问题被全局求解；在3D--3D实验中它化为闭式$4\times4$特化。
+\item \textbf{带曲率修正的精确不动点隐式微分。}GNC不动点是鲁棒代价的驻点（引理~\ref{lem:fixedpoint}）；重降修正就是被消去的权重块（引理~\ref{lem:schur}）；精确黎曼Hessian包含$-\lambda_{\mathrm{rob}}\diag(I_3,0_3)$，其中3D--3D常数为$\lambda_i=4\mathbf{u}_i^\top W_i\mathbf{r}_i$，\emph{不是}$4e_i$（引理~\ref{lem:hessian}）。丢掉它会使谱改变$O(1)$。
+\item \textbf{严格的符号翻转结果与$O(\|\mathbf{r}\|^{-4})$梯度界。}在一维位置模型中，于$H_{\mathrm{rob}}>0$的严格极小点处，精确导数为$\lambda_\parallel(e_j)/H_{\mathrm{rob}}$，而冻结权重导数恒为正；当$e_j>c^2/3$时二者符号严格相反（命题~\ref{prop:signflip}），且对两个充分分离的观测此构型确实存在（命题~\ref{prop:existence}）。我们还证明，在一致可逆性下逐观测有$\|\partial z^*/\partial\mathbf{y}_i\|=O(\|\mathbf{r}_i\|^{-4})$界，而前向偏差仅为$O(\|\mathbf{r}_i\|^{-3})$（命题~\ref{prop:bound}）。
+\item \textbf{统一的核框架与评测协议。}我们给出GM、Cauchy、Welsch与TLS的BR对偶，其前向与反向在结构上完全相同（附录~\ref{app:kernel}），并在合成3D--3D、ModelNet40/10、全部八个官方3DMatch测试场景、两次KITTI raw驾驶、全部11个KITTI odometry序列00--10（每个33个选定帧）以及四次UTIAS In-The-Dark运行上进行评测。Theseus与SDPRLayers作为外部基线。
+\end{enumerate}
+
+该层与Veronese提升及受约束QPEP形式互补：它既不使用$O(10)$的Veronese同构，也不使用不等式约束，只共用QPEP内层求解器。

@@ -1,0 +1,40 @@
+# P1 Laplace-QPEPLayer fast-suite reproduction
+timestamp : 20261127-220057
+host      : ls
+exp_dir   : /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/01-laplace-qpeplayer/experiments
+python    : /home/syk/miniconda3/envs/WM/bin/python
+workdir   : /tmp/p1-repro.20261127-220057.PvOAbf (throwaway copy; committed results untouched)
+flags     : with_linemod=0 with_sdp=1 with_sdp_upstream=0 compare=1
+== preflight ok: Python 3.10.22
+== log dir: /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/01-laplace-qpeplayer/experiments/results/logs/20261127-220057
+
+[run_main.py           ] rc=0  wall=14.999s  
+[run_ablation.py       ] rc=0  wall=4.119s  
+[run_unequal.py        ] rc=0  wall=1.224s  
+[run_uniform.py        ] rc=0  wall=8.683s  
+[run_fold.py           ] rc=0  wall=3.181s  
+[verify_q6.py          ] rc=0  wall=0.435s  
+[run_6point_check.py   ] rc=0  wall=1.566s  
+COMPARE results/main_table.json: OK (non-timing fields match committed)
+COMPARE results/raw_grid.json: OK (non-timing fields match committed)
+COMPARE results/ablation.json: OK (non-timing fields match committed)
+COMPARE theory/results/uniform_unequal.json: OK (non-timing fields match committed)
+COMPARE theory/results/uniform.json: OK (non-timing fields match committed)
+COMPARE theory/results/deltaJ_sweep.json: OK (non-timing fields match committed)
+COMPARE theory/results/fold.json: OK (non-timing fields match committed)
+COMPARE theory/results/q6_verify.json: OK (non-timing fields match committed)
+COMPARE sdp/results/six_point.json: OK (non-timing fields match committed)
+
+## summary (20261127-220057)
+| script | rc | wall (s) | note |
+|-|-|-|-|
+| code/run_main.py | 0 | 14.999 | ok |
+| code/run_ablation.py | 0 | 4.119 | ok |
+| theory/run_unequal.py | 0 | 1.224 | ok |
+| theory/run_uniform.py | 0 | 8.683 | ok |
+| theory/run_fold.py | 0 | 3.181 | ok |
+| theory/verify_q6.py | 0 | 0.435 | ok |
+| sdp/run_6point_check.py | 0 | 1.566 | ok |
+
+total wall: 34.307s | env: env.txt | fresh outputs: outputs/ | hashes: outputs.sha256
+RESULT: PASS (log: /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/01-laplace-qpeplayer/experiments/results/logs/20261127-220057/run.log)

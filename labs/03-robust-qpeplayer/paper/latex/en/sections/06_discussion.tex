@@ -1,0 +1,40 @@
+\section{Discussion and Limitations}
+\label{sec:discussion}
+
+\noindent\textbf{Limitations and future work.} The layer differentiates a local robust fixed point:
+the outer GNC is not a global solver, provides no breakdown-point guarantee, and a coherent
+majority of outliers can make the robust global optimum itself wrong. External baselines
+(Theseus-GM and SDPRLayers+SCS) are evaluated on synthetic 3D--3D data, the real-data front ends are
+hand-written (SIFT+StereoSGBM and FPFH), the night In-The-Dark evidence uses 10-pair windows, and no
+learned descriptors are used. Extending the evaluation to learned front ends, real-data external
+baselines, and full night sequences is the natural next step; a general 40-root QPEP inner solver
+and GPU batching are left to future work.
+
+\noindent\textbf{Model breakdown.} Even a perfect global solver for $F_{\mathrm{rob}}$ can return
+the wrong pose when coherent outliers outnumber inliers. A one-dimensional example with one inlier
+at $0$ and two coherent outliers at $M$ has $F(0)\to2c^2$ and $F(M)\to c^2$ as $M\to\infty$, so the
+global minimum is the outlier pose. This identifiability limit calls for a consensus check, an
+inlier-count diagnostic, or a prior on the outlier fraction.
+
+\noindent\textbf{Boundary residuals.} $\lambda_\parallel$ is most negative at $e=c^2$, not at
+$e\to\infty$. Gross outliers are suppressed at $O(\|\mathbf{r}\|^{-4})$, but a point just beyond the
+redescending threshold has the largest gradient influence, so boundary residuals are both the most
+sensitive part of training and the regime where the curvature correction matters most.
+
+\noindent\textbf{Runtime against RANSAC.} RANSAC is a strong, well-tuned baseline, and the layer
+removes its non-differentiable wrapper at the cost of a local robust estimator. Against fixed-budget
+RANSAC the speedup is $22$--$32\times$; against adaptive-budget RANSAC the layer is slower at low
+outlier fractions, at parity near $40\%$, and about $8\times$ faster at $70\%$; LO-RANSAC ties
+accuracy but is $1.03$--$1.52\times$ slower than adaptive RANSAC, so the comparison is meaningful
+only with the iteration budget stated.
+
+\noindent\textbf{Kernel scale and residual model.} The framework covers GM, Cauchy, Welsch, and TLS,
+but the scale $c$ is critical: a fixed $c$ may fail under varying noise, and a learned $c$ requires
+a normalization such as $\det W_i=1$. The derivations are exact for residuals affine in
+$\mathbf{t}$ and quadratic in the lifted quaternion; reprojection error is not polynomial and QPEP
+uses an algebraic surrogate.
+
+\noindent\textbf{Practical scope.} The layer fits when matches contain gross outliers, end-to-end
+gradients through the pose are required, the outlier fraction is below the breakdown regime, and a
+$6\times6$ backward with a fixed-size algebraic forward fits the budget; certified global solvers
+remain preferable when global optimality is the objective.

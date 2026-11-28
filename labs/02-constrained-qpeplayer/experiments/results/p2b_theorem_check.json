@@ -1,0 +1,122 @@
+{
+ "theorem": "P2-1b",
+ "n_gamma": 3,
+ "canonical": [
+  {
+   "rank_sigma": 0,
+   "n_projective": 4,
+   "n_affine": 8,
+   "n_real": 4,
+   "n_lost": 0,
+   "time_s": 4.542727395892143
+  },
+  {
+   "rank_sigma": 1,
+   "n_projective": 12,
+   "n_affine": 24,
+   "n_real": 8,
+   "n_lost": 0,
+   "time_s": 3.239166906103492
+  },
+  {
+   "rank_sigma": 2,
+   "n_projective": 16,
+   "n_affine": 32,
+   "n_real": 12,
+   "n_lost": 0,
+   "time_s": 3.0590099818073213
+  },
+  {
+   "rank_sigma": 3,
+   "n_projective": 16,
+   "n_affine": 32,
+   "n_real": 12,
+   "n_lost": 0,
+   "time_s": 3.178559153806418
+  }
+ ],
+ "canonical_two_normals": {
+  "n_projective": 16,
+  "n_affine": 32,
+  "n_real": 10,
+  "n_lost": 0,
+  "time_s": 4.217277979943901
+ },
+ "wmat_residual": 1.1102230246251565e-15,
+ "typeI": {
+  "rank9_alpha_0.00": {
+   "n_projective": 40,
+   "n_real": 20,
+   "lam_min": 2.4922076534419415,
+   "lam_max": 32.203095796295415
+  },
+  "rank9_alpha_0.05": {
+   "n_projective": 40,
+   "n_real": 20,
+   "lam_min": 2.5922076534419416,
+   "lam_max": 32.30309579629541
+  },
+  "rank9_q_mismatch": 1.0706603116298291e-15,
+  "rank9_lam_shift_observed": 0.10000000000000009,
+  "rank9_lam_shift_minus_2alpha": 8.326672684688674e-17,
+  "pnp_Mred": {
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 16,
+   "n_lost": 0,
+   "time_s": 1.9630481791682541
+  },
+  "pnp_eig_min": -1.3010476776720448e-17,
+  "horn_isotropic": {
+   "n_projective": 4,
+   "n_affine": 8,
+   "n_real": 4,
+   "n_lost": 0,
+   "time_s": 12.520434143953025
+  },
+  "horn_anisotropic": {
+   "n_projective": 40,
+   "n_affine": 80,
+   "n_real": 4,
+   "n_lost": 0,
+   "time_s": 2.6933254920877516
+  },
+  "naive_rho_plane_assembly": {
+   "k1": {
+    "n_projective": 12,
+    "n_affine": 24,
+    "n_real": 4,
+    "n_lost": 1,
+    "time_s": 5.1272886651568115
+   },
+   "k2": {
+    "n_projective": 12,
+    "n_affine": 24,
+    "n_real": 4,
+    "n_lost": 4,
+    "time_s": 4.617565879132599
+   },
+   "k3": {
+    "n_projective": 12,
+    "n_affine": 24,
+    "n_real": 4,
+    "n_lost": 0,
+    "time_s": 4.779859689064324
+   },
+   "k4": {
+    "n_projective": 14,
+    "n_affine": 28,
+    "n_real": 4,
+    "n_lost": 0,
+    "time_s": 4.426381596364081
+   },
+   "two_normals_2+2": {
+    "n_projective": 24,
+    "n_affine": 48,
+    "n_real": 4,
+    "n_lost": 0,
+    "time_s": 2.7712570861913264
+   }
+  }
+ }
+}

@@ -1,0 +1,64 @@
+{
+  "rows": [
+    {
+      "noise": 0.1,
+      "seed": 0,
+      "J": 0.90579,
+      "dual": 0.90579,
+      "schur": 0.90579,
+      "case": "A",
+      "J_dual": 2e-08,
+      "J_schur": 5.59e-12
+    },
+    {
+      "noise": 0.1,
+      "seed": 1,
+      "J": 0.685,
+      "dual": 0.685,
+      "schur": 0.685,
+      "case": "A",
+      "J_dual": 2e-08,
+      "J_schur": -6.69e-13
+    },
+    {
+      "noise": 0.1,
+      "seed": 2,
+      "J": 0.43643,
+      "dual": 0.43643,
+      "schur": 0.43643,
+      "case": "A",
+      "J_dual": 2e-08,
+      "J_schur": 5.31e-11
+    },
+    {
+      "noise": 0.2,
+      "seed": 0,
+      "J": 3.2392,
+      "dual": 3.2392,
+      "schur": 3.2392,
+      "case": "A",
+      "J_dual": 2.04e-08,
+      "J_schur": 4.22e-10
+    },
+    {
+      "noise": 0.2,
+      "seed": 1,
+      "J": 3.1128,
+      "dual": 3.1128,
+      "schur": 3.1128,
+      "case": "A",
+      "J_dual": 2e-08,
+      "J_schur": 3.81e-11
+    },
+    {
+      "noise": 0.2,
+      "seed": 2,
+      "J": 3.0309,
+      "dual": 3.0309,
+      "schur": 3.0309,
+      "case": "A",
+      "J_dual": 2.01e-08,
+      "J_schur": 6.21e-11
+    }
+  ]
+}

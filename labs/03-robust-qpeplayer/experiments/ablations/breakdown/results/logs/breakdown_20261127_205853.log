@@ -1,0 +1,13 @@
+srun: job 3137 queued and waiting for resources
+srun: job 3137 has been allocated resources
+random p=0.70 done in 7.7s: Kabsch=0%, RANSAC-1000=100%, RANSAC-adaptive=100%, IRLS-GM=95%, GNC-GM=100%
+random p=0.75 done in 8.6s: Kabsch=0%, RANSAC-1000=100%, RANSAC-adaptive=100%, IRLS-GM=81%, GNC-GM=99%
+random p=0.80 done in 11.0s: Kabsch=0%, RANSAC-1000=100%, RANSAC-adaptive=100%, IRLS-GM=76%, GNC-GM=89%
+random p=0.85 done in 11.8s: Kabsch=0%, RANSAC-1000=94%, RANSAC-adaptive=94%, IRLS-GM=64%, GNC-GM=86%
+random p=0.90 done in 11.9s: Kabsch=0%, RANSAC-1000=51%, RANSAC-adaptive=51%, IRLS-GM=32%, GNC-GM=62%
+coherent p=0.40 done in 14.7s: Kabsch=0%, RANSAC-1000=100%, RANSAC-adaptive=100%, IRLS-GM=100%, GNC-GM=100%
+coherent p=0.45 done in 13.8s: Kabsch=0%, RANSAC-1000=100%, RANSAC-adaptive=100%, IRLS-GM=98%, GNC-GM=98%
+coherent p=0.50 done in 13.1s: Kabsch=0%, RANSAC-1000=50%, RANSAC-adaptive=50%, IRLS-GM=40%, GNC-GM=52%
+coherent p=0.55 done in 13.6s: Kabsch=0%, RANSAC-1000=0%, RANSAC-adaptive=0%, IRLS-GM=0%, GNC-GM=2%
+coherent p=0.60 done in 12.5s: Kabsch=0%, RANSAC-1000=0%, RANSAC-adaptive=0%, IRLS-GM=0%, GNC-GM=0%
+wrote /mnt/storage1/syk/.superagent-work/three-paper-tracks-95244014fb3c/labs/03-robust-qpeplayer/experiments/ablations/breakdown/results

@@ -1,0 +1,50 @@
+\section{问题描述与符号}\label{sec:formulation}
+
+设 $q=[q_0,q_1,q_2,q_3]^\top\in\mathbb{R}^4$ 为单位四元数，$R(q)\in SO(3)$ 为对应旋转。我们使用齐次提升
+\begin{equation}
+x_R(q)=\big[\|q\|^2,\ \mathrm{vec}(R(q))^\top\big]^\top\in\mathbb{R}^{10},
+\label{eq:lift}
+\end{equation}
+以及 Veronese 向量
+\begin{equation}
+\begin{split}
+v_2(q)=\big[&q_0^2,\ q_1^2,\ q_2^2,\ q_3^2,\ \sqrt2q_0q_1,\ \sqrt2q_0q_2,\ \sqrt2q_0q_3,\\
+&\sqrt2q_1q_2,\ \sqrt2q_1q_3,\ \sqrt2q_2q_3\big]^\top\in\mathbb{R}^{10}.
+\end{split}
+\label{eq:veronese}
+\end{equation}
+QPEP 族代价 \cite{wu2022qpep} 为
+\begin{equation}
+\begin{split}
+J_\theta(q,t)={}&v_2(q)^\top M_0(\theta)v_2(q)\\
+&+2t^\top D(\theta)v_2(q)+t^\top G(\theta)t,
+\end{split}
+\label{eq:cost}
+\end{equation}
+其中 $q^\top q=1$，$G(\theta)\succ0$。消去 $t$ 得 $t^\star(q)=-G^{-1}Dv_2(q)$，以及
+\begin{equation}
+\begin{split}
+J_{\mathrm{red}}(q;\theta)&=v_2(q)^\top M(\theta)v_2(q),\\
+M&=M_0-D^\top G^{-1}D .
+\end{split}
+\label{eq:reduced}
+\end{equation}
+假定映射 $\theta\mapsto(M_0,D,G)$ 为 $C^2$（定理~\ref{thm:implicit}）或 $C^3$（定理~\ref{thm:laplace}）。优化变量是四维的；数据仅通过固定规模的 $10\times10$ 矩阵 $M$ 进入，该矩阵是每次观测组装一次的加权 Gram 矩阵。由于 $v_2$ 是 $\mathrm{Sym}^2(\mathbb{R}^4)$ 的一组基，任何关于 $R(q)$ 元素为二次的四次型都可写成 \eqref{eq:reduced} 的形式；这就是理论覆盖的函数类。
+
+在驻点 $q^\star$ 处有 $\nabla J=\lambda q$，并且由 Euler 齐次性有 $\lambda=4J$（定理~\ref{thm:implicit}）。全文使用的切基为
+\begin{equation}
+\begin{gathered}
+E(q)=\begin{bmatrix}-q_1&-q_2&-q_3\\ q_0&-q_3&q_2\\ q_3&q_0&-q_1\\ -q_2&q_1&q_0\end{bmatrix},\\
+q^\top E=0,\quad E^\top E=I_3,
+\end{gathered}
+\label{eq:tangent}
+\end{equation}
+于是切扰动为 $\delta q=E\,\delta\xi$。对应的旋转向量为 $\omega=2\,\delta\xi$；因此旋转向量坐标下的 Hessian 为 $H_\omega=\tfrac14H_{\mathbb{S}^3}$，即按单位旋转角表达的曲率与本文曲率相差因子四。QPEP 的可观性与协方差分析在其自身参数化下定义，比较应在此常数意义下进行。
+
+\textbf{假设。}
+\begin{enumerate}
+\item[(A1)] 对所考虑的 $\theta$ 定义域，$G(\theta)\succ0$ 且 $M(\theta)\in\mathbb{S}^{10}$。这使 $t^\star$ 唯一，并使约化代价成为球面上定义良好的四次型。
+\item[(A2)] 前向代数求解器返回 $\nabla J=4Jq$、$q^\top q=1$ 的\emph{全部}实 KKT 根（在符号对 $\pm q$ 的意义下）。A2 是前向求解器的性质，而不是理论的性质；第~\ref{sec:rootcount}~节度量系统的通用复根数，第~\ref{sec:enumeration}~节考察实验中使用的枚举器。
+\end{enumerate}
+
+该层返回确定性全局位姿 $(q^{(1)},t^\star(q^{(1)}))$，或枚举极小点上的平滑后验 $\{(q^{(k)},w_k)\}_{k=1}^{K}$ 及相应位姿估计。记 $\phi=[\mathrm{vec}\,R(q);t^\star(q)]\in\mathbb{R}^{12}$ 为以数值方式检验导数的位姿向量，$\Delta J=J(q^{(2)})-J(q^{(1)})$ 为最优与次优不同 $SO(3)$ 类之间的目标间隙，$K$ 为 $J_{\mathrm{red}}$ 在 $\mathbb{S}^3/\{\pm1\}$ 上枚举到的实局部极小个数。本文所有旋转误差均为真旋转上的测地角，$\arccos((\operatorname{tr}(R_{\rm est}^\top R_{\rm gt})-1)/2)$，单位为度；所有平移误差为欧氏距离，单位为米。

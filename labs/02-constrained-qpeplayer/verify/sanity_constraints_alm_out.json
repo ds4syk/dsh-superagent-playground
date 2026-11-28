@@ -1,0 +1,44 @@
+{
+  "checks": {
+    "C1a e_a^T R(q)p = m_a(p)^T v2(q)": true,
+    "C1b depth/non-pen/FoV\u00d72/tilt \u4eff\u5c04\u4e8e (v2,t)": true,
+    "C0 M0 \u5bf9\u79f0": true,
+    "C2  L_rho|_A = v2^T M_A v2 + 2t^T D_A v2 + t^T G_A t + const": true,
+    "C3a G_A \u227b 0": true,
+    "C3b min_t L_rho = v2^T (M_A - D_A^T G_A^{-1} D_A) v2 + const": true,
+    "C3c \u5185\u5c42\u76ee\u6807\u5bf9 q \u662f\u56db\u6b21\u9f50\u6b21\u578b": true,
+    "C4 \u5c3a\u5bf8\u6052\u4e3a (10,10)/(3,10)/(3,3)\uff0c\u88c5\u914d O(p)": true,
+    "C6a ALM \u8fd4\u56de\u8fd1\u4f3c\u53ef\u884c\u70b9 (max_g<=1e-7)": true,
+    "C6b \u4e58\u5b50\u975e\u8d1f": true,
+    "C5a \u5f31\u5bf9\u5076 d(\u03bc*) <= J*  (\u03bc>=0)": true,
+    "C5b 14\u00d714 Shor \u4e0b\u754c <= J* + \u6c42\u89e3\u5bb9\u5dee\uff08sound\uff09": true,
+    "C5c \u4e0d\u7b49\u5f0f SDP \u4e0b\u754c >= \u65e0\u7ea6\u675f\u6700\u4f18\uff08\u7ea6\u675f\u62ac\u5347\u76ee\u6807\uff09": true,
+    "C5d \u4e0d\u7b49\u5f0f SDP \u5728\u6570\u503c\u5bb9\u5dee\u5185 tight\uff08\u03bb2/\u03bb1 <= 1e-6\uff09": true
+  },
+  "numbers": {
+    "c1_err_affine": 3.6637359812630166e-15,
+    "c2_err_alm": 3.552713678800501e-15,
+    "c3_c4_coeff": 3.096399648212544,
+    "c4_assembly_ms": {
+      "4": 0.05873711779713631,
+      "16": 0.1772996038198471,
+      "64": 0.7178881205618382,
+      "256": 2.7905870229005814
+    },
+    "J_unc": 0.003033472412276823,
+    "J_star": 0.06800693547873005,
+    "viol": 2.4298341116946176e-11,
+    "act": 1,
+    "alm_time_s": 8.245150831062347,
+    "rho_final": 125.0,
+    "d": 0.06800693549542956,
+    "delta": -1.6699516769413947e-11,
+    "sdp_plain": 6.71705297097424e-11,
+    "sdp_veronese": 0.003033469239910035,
+    "sdp_ineq": 0.06800693550177556,
+    "sdp_ratio": 2.1592477150187113e-12,
+    "sdp_time_s": 0.07732270890846848,
+    "sdp_mu": 0.003478407275934625,
+    "delta_sound": 0.06452852820279542
+  }
+}
