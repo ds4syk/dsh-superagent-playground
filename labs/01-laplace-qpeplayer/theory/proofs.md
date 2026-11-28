@@ -200,16 +200,16 @@ $$2\operatorname{tr}(\mathbf W\mathbf R\mathbf R^\top)=2\big(\|\mathbf r_1\|^2+\
 
 **数值表（本仓库独立测量，SCS `eps=1e-11`；`six_point.md`）：**
 
-| 量 | 本仓库实测 | 用户证明 |
+| 量 | 本仓库实测 | 用户证明（2026-11-28 修订） |
 |-|-|-|
 | $f^*_{10}$（21 条，满 20D） | 5.41500000 | 5.41500000 |
 | $f^*_{13,\text{full}}$（24+3 条，满 20D） | 5.41500000 | 5.41500000 |
-| $f^*_{13,\text{up}}$（24 条，17D） | 3.59431373 | 3.59430886 |
-| $f^*_{10}-f^*_{13,\text{up}}$ | 1.82068627 | 1.82069114 |
+| $f^*_{13,\text{up}}$（24 条，17D） | 3.59431373 | 3.59431373（有理对偶下界 $3.594313732834$；旧 $3.59430886$ 为 $\beta=10^5$ 有限平滑对偶次优值） |
+| $f^*_{10}-f^*_{13,\text{up}}$ | 1.82068627 | 1.82068627 |
 | $\operatorname{rank}(\mathbf X^*_{10})$ / $\operatorname{rank}(\mathbf X^*_{13,\text{up}})$ | 1 / 4 | 1 / 4 |
 | $f^*_{\text{QPEP}}$（解析：$\max_{\mathbf R\in SO(3)}\operatorname{tr}(\mathbf W\mathbf R)=3$ 在 $\mathbf R=\mathbf I$） | 5.415 | 5.415 |
 
-实测与证明引用的 $3.59430886$ 差 $4.9\times10^{-6}$。**取证结论（2026-11-27 phase-3）**：这不是求解器容差，也不是本仓库构造的差异——用显式对偶解 + **精确有理数 LDL$^\top$**（$\eta=10^{-11}$ 正则化，最小主元 $1.00\times10^{-11}$，mpmath 60 位 $\lambda_{\min}=+8.03\times10^{-12}$）得到**严格下界** $f^\star_{13,\rm up}\ge3.594313732834$；证明引用的 $3.59430886$ 比该下界还低 $4.87\times10^{-6}$，因此它**不可能是该 24 约束 SDP 的最优值**。36 个自然变体（行正交尺度 $s$、只加 $k$ 条行正交、布局/转置、$h$ 归一化、$t$ 块、约束消融、SCS/CLARABEL 容差）中没有 1 个在 $10^{-8}$ 内命中它，最近值仍差 $4.1\times10^{-6}$。唯一与同 SDP 相容的解释是“对偶可行但非最优”的欠收敛对偶值（合法下界）；建议改引 $f^\star_{13,\rm up}=3.5943137\ldots$、$f^\star_{10}-f^\star_{13,\rm up}=1.8206863\ldots$。定性结论（间隙 $>1.8$、rank $1$ 对 $>1$）不受影响。证据：`experiments/sdp/results/f13up_forensics.md`（`[exact]` + `[measured-here]`）。$f^*_{13,\text{full}}=f^*_{10}=5.415$ 且 rank 均为 1，也在数值上支持 (i)；但 (i) 的成立性依据是上面的 Schur 恒等式，不是这个实例。
+实测与用户证明的旧值 $3.59430886$ 差 $4.9\times10^{-6}$。**2026-11-28 修订（用户最新证明）**：该 $3.59430886$ 不是闭式解析值，而是早期 Python 演示脚本中有限平滑 log-sum-exp 对偶求解器（$\beta=10^5$，最大化 $m-\frac1\beta\ln\sum_i e^{-\beta(\lambda_i-m)}$）输出的**次优对偶下界**，自带 $O(\frac{\ln4}{\beta})\approx1.4\times10^{-5}$ 的向下平滑截断偏差；它比精确有理对偶下界 $3.594313732834$ 还低 $4.87\times10^{-6}$，因此**不可能是该 24 约束 SDP 的最优值**。真值由 $3.594313732834\le f^\star_{13,\rm up}\le3.5943137329$（CLARABEL 原始可行值）夹逼，即 $f^\star_{13,\rm up}=3.59431373$、$f^\star_{10}-f^\star_{13,\rm up}=1.82068627$。本仓库此前用显式对偶解 + **精确有理数 LDL$^\top$**（$\eta=10^{-11}$ 正则化，最小主元 $1.00\times10^{-11}$，mpmath 60 位 $\lambda_{\min}=+8.03\times10^{-12}$）已独立得到同一下界；36 个自然变体中没有 1 个在 $10^{-8}$ 内命中 $3.59430886$，与“它是平滑偏差而非 SDP 变体”一致。定性结论（间隙 $>1.8$、rank $1$ 对 $4$）不受影响。证据：`experiments/sdp/results/f13up_forensics.md`（`[exact]` + `[measured-here]`）。$f^*_{13,\text{full}}=f^*_{10}=5.415$ 且 rank 均为 1，也在数值上支持 (i)；但 (i) 的成立性依据是上面的 Schur 恒等式，不是这个实例。
 
 **边界与不声称**：
 
@@ -336,9 +336,17 @@ $$\frac{dH_k}{d\theta}=\frac{\partial H}{\partial\theta}\Big|_{q^{(k)}}+\frac{\p
 $$\mathcal L_{\text{KL}}(\theta)=\frac1\tau J_\theta(q_{\text{gt}},t_{\text{gt}})+\log Z_{\text{Lap}}(\theta),$$
 $$\nabla_\theta\mathcal L_{\text{KL}}=\frac1\tau\nabla_\theta J_{\text{gt}}-\frac12\nabla_\theta\log\det G-\sum_kw_k\Big(\frac1\tau\nabla_\theta J_k+\frac12\nabla_\theta\log\det H_k\Big).$$
 
+**命题 1.3d（退火 Laplace NLL 的有限梯度与零温 Clarke 极限）[证明]**：定义退火损失
+$$L_{\tau\text{-KL}}(\theta):=\tau\mathcal L_{\text{KL}}(\theta)=J_\theta(q_{\text{gt}},t_{\text{gt}})+\tau\log Z_{\text{Lap}}(\theta).$$
+则对任意 $\tau>0$（包括精确分支打平 $J_{k_1}=J_{k_2}$），
+$$\nabla_\theta L_{\tau\text{-KL}}=\nabla_\theta J_{\text{gt}}-\sum_{k=1}^K w_k\Big(\nabla_\theta J_k+\frac{\tau}{2}\nabla_\theta\log\det H_k\Big)-\frac{\tau}{2}\nabla_\theta\log\det G,$$
+外乘 $\tau$ 精确抵消 $\nabla_\theta z_k$ 中的 $1/\tau$，故梯度有限。当 $\tau\to0^+$ 时，记 $\mathcal K_{\min}=\arg\min_kJ_k$、$\bar w_k=(\det H_k)^{-1/2}/\sum_{j\in\mathcal K_{\min}}(\det H_j)^{-1/2}$，则 $w_k\to\bar w_k$（$k\in\mathcal K_{\min}$）、其余 $w_k\to0$，且
+$$\lim_{\tau\to0^+}\nabla_\theta L_{\tau\text{-KL}}=\nabla_\theta J_{\text{gt}}-\sum_{k\in\mathcal K_{\min}}\bar w_k\nabla_\theta J_k,$$
+即 $J_\theta(q_{\text{gt}},t_{\text{gt}})-\min_kJ_k(\theta)$ 的**曲率加权 Clarke 次梯度**；当 $\mathcal K_{\min}=\{k^\star\}$ 时退化为 $\nabla_\theta J_{\text{gt}}-\nabla_\theta J_{k^\star}$。完整证明（含包络定理与 $\nabla\log\det H_k$ 全导数）见论文定理 9 与附录 B。$\square$
+
 **$\tau\to0$ 的正确表述 [重要修正]**：
 - 对**后验均值/软 argmin** $\hat q_\tau=\sum_kw_kq^{(k)}$，当 $\Delta J>0$ 且 $\tau\to0$ 时 $w_k\to\delta_{k^*}$，$\hat q_\tau\to q^{(k^*)}$，其梯度趋于定理 1.1 的确定性隐微分。**这是“退化”的正确含义。**
-- 对 $\mathcal L_{\text{KL}}$ 本身，$\nabla\mathcal L_{\text{KL}}$ 含 $\tfrac1\tau(\nabla J_{\text{gt}}-\nabla J_{k^*})$，当 $\tau\to0$ 时**按 $1/\tau$ 发散**（除非 $\nabla J_{\text{gt}}=\nabla J_{k^*}$）。要恢复确定性梯度，应使用 $\tau\mathcal L_{\text{KL}}$ 或对损失做 $\tau$ 缩放，而不是直接令 $\tau\to0$。源文档“它严格退化为精确的全局 QPEP 隐微分”只对均值/argmin 成立，对 KL 损失不成立。
+- 对 $\mathcal L_{\text{KL}}$ 本身，$\nabla\mathcal L_{\text{KL}}$ 含 $\tfrac1\tau(\nabla J_{\text{gt}}-\nabla J_{k^*})$，当 $\tau\to0$ 时**按 $1/\tau$ 发散**（除非 $\nabla J_{\text{gt}}=\nabla J_{k^*}$）。正确的重标定是**退火损失** $L_{\tau\text{-KL}}=\tau\mathcal L_{\text{KL}}$：由命题 1.3d，其梯度有限，且 $\tau\to0^+$ 时收敛到曲率加权 Clarke 次梯度（单极小时即 $\nabla J_{\text{gt}}-\nabla J_{k^\star}$），而不是发散。源文档“它严格退化为精确的全局 QPEP 隐微分”只对均值/argmin 成立，对未退火的 KL 损失不成立。
 
 **GAP-1.3（一致渐近）**：当 $\Delta J\to0$ 或 $H_k$ 退化（两个模式合并/鞍结分岔）时，上述“分离模式 + 独立高斯”的 Laplace 展开**不一致**：两个 Gaussians 重叠、模式数在分岔处改变、$1/\sqrt{\det H_k}$ 发散。此时需要：
 - 一致 Laplace/Airy 展开（把合并方向的三次项保留，得到 Airy 函数）；
@@ -352,6 +360,11 @@ $$\nabla_\theta\mathcal L_{\text{KL}}=\frac1\tau\nabla_\theta J_{\text{gt}}-\fra
 ### 7.4 测度与归一化
 
 - $S^3$ 的体积 $2\pi^2$；$SO(3)$ 取 $\int dR=8\pi^2$ 的 Haar 测度；局部 $dR=8dq$（每片），二重覆盖给因子 $1/2$，故 $\int_{SO(3)}=4\int_{S^3}$。
+- **$dR=8\,du$ 的自包含推导（2026-11-28，论文附录 B）**：在 $q^{(k)}$ 处取正规坐标 $q(u)=(q^{(k)}+E_ku)/\sqrt{1+\|u\|_2^2}$，$E_k^\top q^{(k)}=0,E_k^\top E_k=I_3$。则 $\dot q(0)=E_k\dot u$，体坐标纯虚四元数 $(q^{(k)})^{-1}\dot q(0)=[0,\dot u^\top]^\top$；对双覆盖 $\pi(q)=R(q)$（$R(q)v=qvq^{-1}$）求导得 $\mathrm d\pi_{q^{(k)}}(E_k\dot u)=R(q^{(k)})[2\dot u]_\times$，即体角速度 $\omega=2\dot u$，一般正交切基下 $\partial\omega/\partial u|_0=2Q_k$（$Q_k\in O(3)$）。故
+  $$\mathrm dR=\Big|\det\frac{\partial\omega}{\partial u}\Big|_{u=0}\mathrm du=|\det(2Q_k)|\,\mathrm du=8\,\mathrm du,\qquad \operatorname{Vol}(SO(3))=\tfrac12\cdot8\cdot\operatorname{Vol}(S^3)=4\cdot2\pi^2=8\pi^2.$$
+- **绝对常数**：平移积分给 $(\pi\tau)^{3/2}/\sqrt{\det G}$，旋转积分给 $8(2\pi\tau)^{3/2}\sum_k e^{-J_k/\tau}/\sqrt{\det H_k}$（未归一化 $dR$）。若取概率 Haar 测度 $\mathrm d\mu_{\rm Haar}=\mathrm dR/(8\pi^2)$，则
+  $$Z_{\rm Lap}(\theta)=\frac{(\pi\tau)^{3/2}}{\sqrt{\det G}}\cdot\frac{(2\pi\tau)^{3/2}}{\pi^2}\sum_k\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}}=\frac{2\sqrt2\,\pi\tau^3}{\sqrt{\det G}}\sum_k\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}},$$
+  用未归一化 $dR$ 时再乘与 $\theta$ 无关的 $8\pi^2$；两种约定给出相同 $w_k$ 与相同梯度。注意 $Z=(\pi\tau)^3(\det G)^{-1/2}\sum_k e^{-J_k/\tau}/\sqrt{\det H_k}$ **不是**上述任一绝对常数。
 - 若用旋转向量 $\omega=2\delta\xi$ 的参数化，$H_\omega=\tfrac14H_{\mathbb S^3}$，$\det H_\omega=\det H_{\mathbb S^3}/64$；Laplace 常数相应变化，但 $w_k$ 与 $\nabla\log\det H_k$ 的 $\theta$-依赖不变（差常数）。论文必须固定一种约定。
 
 ### 7.5 Fold 处的必然跳变与 Scorer 一致延拓（P1-Q5，修订）
@@ -366,7 +379,7 @@ $$\nabla_\theta\mathcal L_{\text{KL}}=\frac1\tau\nabla_\theta J_{\text{gt}}-\fra
 $$\tilde w_+^{\text{reg}}(\theta_f^+)\triangleq\frac{(2\pi\tau)^{3/2}}{\sqrt{\det(\mathbf H_++\eta(\tau)\mathbf I_3)}}\,e^{-J_0/\tau}>0$$
 的实根代理 $\bar\ell_{\text{reg}}(\theta)$，只要 $\ell(\mathbf q_0)\neq\bar\ell_{\text{rest}}(\theta_f)$，则在 $\theta_f$ 处必有非零值跳变
 $$\lim_{\theta\to\theta_f^+}\bar\ell_{\text{reg}}(\theta)-\lim_{\theta\to\theta_f^-}\bar\ell_{\text{reg}}(\theta)=\frac{\tilde w_+^{\text{reg}}(\theta_f^+)}{Z_{\text{rest}}(\theta_f)+\tilde w_+^{\text{reg}}(\theta_f^+)}\big(\ell(\mathbf q_0)-\bar\ell_{\text{rest}}(\theta_f)\big)\neq0 .$$
-特别地，取标度匹配地板 $\eta(\tau)=c_0\tau^{1/3}$ 时，跳变幅度为 $\Theta\big(\tau^{1/3}e^{-(J_0-J_{\text{glob}})/\tau}\big)$：仅当 $J_0-J_{\text{glob}}\gg\tau$ 时指数小，而 $J_0-J_{\text{glob}}=O(\tau)$ 时保持 $O(1)$ 有限跳变（该 $\tau$ 标度按补充证明的权重约定，本仓库未独立拟合其指数。**内部一致性待核**：复核者指出把文中 $\tilde w_+^{\rm reg}\propto\tau^{3/2}\det(H+\eta I)^{-1/2}$ 与 $\eta=c_0\tau^{1/3}$ 代入上面的跳变分数，按其权重约定可能得到 $\tau^{4/3}$ 而非 $\tau^{1/3}$；本仓库未独立拟合，故此处保留证明原文的 $\tau^{1/3}$ 并标注该点需证明作者复核，不影响“跳变非零”的定性结论）。
+特别地，取标度匹配地板 $\eta(\tau)=c_0\tau^{1/3}$ 时，正则化地板权重为 $\Theta(\tau^{4/3}e^{-(J_0-J_{\text{glob}})/\tau})$，而其余模态配分为 $\Theta(\tau^{3/2}e^{-J_{\text{glob}}/\tau})$，故跳变分数为 $\Theta(\tau^{-1/6}e^{-(J_0-J_{\text{glob}})/\tau})$（上限为 1）：仅当 $J_0-J_{\text{glob}}\gg\tau$ 时指数小，而 $J_0-J_{\text{glob}}=O(\tau)$ 时保持 $O(1)$ 有限跳变（该 $\tau$ 标度按补充证明的权重约定，本仓库未独立拟合其指数。**内部一致性待核**：复核者指出把文中 $\tilde w_+^{\rm reg}\propto\tau^{3/2}\det(H+\eta I)^{-1/2}$ 与 $\eta=c_0\tau^{1/3}$ 代入上面的跳变分数，按其权重约定可能得到 $\tau^{4/3}$ 而非 $\tau^{1/3}$；本仓库未独立拟合，故此处保留证明原文的 $\tau^{1/3}$ 并标注该点需证明作者复核，不影响“跳变非零”的定性结论）。
 
 **与实测的关系 [数值验证].** 本仓库的 6D Fold 测量（`experiments/results/fold_6d.md`，`independent reproduction (this repo)`）与该预测完全一致：标准 Laplace 的跨 Fold 位姿跳变为 $3.089\times10^{-1}$，用 $\det(\mathbf H+\tau^{1/3}\mathbf I)$ 正则化后只降到 $1.070\times10^{-1}$；$K$ 仍 $4\to3$，`jump/step` 仍约 $5\times10^3$（真阶跃的特征），说明正则化没有、也不可能消除值跳变。它改善的是导数奇点：近 Fold 梯度误差 $2.90\times10^{-1}\to1.19\times10^{-2}$（24×），$|\mathrm{dpose}|$ 从 $3529$ 降到 $443$。这正是 P1-Q5b 的预测：$\tau^{1/3}$ 正则化把值跳变从 $0.309$ 降到 $0.107$，但跳变仍非零。
 
@@ -388,6 +401,8 @@ $$\left(\frac{2}{c_3(\theta)}\right)^{1/3}=\left(\frac{6\,|J(\mathbf q_-)-J(\mat
 $$\mathcal S(\zeta)\triangleq\int_0^{+\infty}\exp\!\left(-\frac{s^3}{3}+\zeta s\right)ds,\qquad \tilde w_{\text{fold}}(\theta,\tau)\triangleq\frac{2\pi\tau}{\sqrt{\det\mathbf H_\perp(\theta)}}\cdot\tau^{1/3}\left(\frac{2}{c_3(\theta)}\right)^{1/3}e^{-J_0(\theta)/\tau}\,\mathcal S\big(\zeta(\theta,\tau)\big),$$
 配跨 Fold 实光滑代表位姿 $\mathbf q_{\text{rep}}(\theta)\triangleq\frac{\mathbf q_++\mathbf q_-}{\|\mathbf q_++\mathbf q_-\|}$（$\alpha<0$ 时即 $\operatorname{Re}(\mathbf q_+)/\|\operatorname{Re}(\mathbf q_+)\|$；$\alpha>0$ 远离 Fold 时用与 $\zeta$ 平滑混合的 $\mathbf q_+$）。$\mathcal S$ 对一切 $\zeta\in\mathbb R$ 绝对收敛且为整函数，$\mathcal S(0)=\Gamma(1/3)/3^{2/3}\approx1.2879$，$\mathcal S'(\zeta)=\int_0^\infty s\,e^{-s^3/3+\zeta s}ds>0$。
 
+> **P1-1 复核（2026-11-28）**：上式三处正是修正版要求——(i) $\zeta$ 关于 $\alpha$ **线性**（不是 $\alpha^{1/3}$）；(ii) 换元 $u=(2\tau/c_3)^{1/3}s$ 给出 $\mathrm du=\tau^{1/3}(2/c_3)^{1/3}\mathrm ds$，$\tau^{1/3}$ 在**分子**；(iii) 横向高斯积分给出 $2\pi\tau/\sqrt{\det\mathbf H_\perp}$，$\sqrt{\det\mathbf H_\perp}$ 在**分母**。现行论文 EN/ZH 的命题 P1-Q5c（`prop:q5c`）与式 `eq:foldweight` 已与修正版逐字一致；用户指出的三处转录错误在 2026-11-28 的论文源文件中均不存在，故 P1-1 无需再改论文，只需保留该形式。
+
 **定理 P1-Q5c [论文声称]：**
 
 1. **（跨 Fold 严格 $C^\infty$ 值与梯度连续 — 零跳变）** $(J_0,\alpha,c_3,\mathbf H_\perp)$ 都是特征多项式的对称多项式函数，跨 $\alpha=0$ 全部保持 $C^\infty$（$\operatorname{sgn}(\alpha)|\alpha|^{(3/2)\cdot(2/3)}=\alpha$ 恰好抵消 $|\alpha|^{3/2}$ 在 $0$ 处的非光滑），且 $\mathcal S$ 为整函数，故 $\tilde w_{\text{fold}}(\theta,\tau)$ 与期望损失 $\bar\ell_{\text{Scorer}}(\theta)$ 在 $\theta=\theta_f$ 处**严格 $C^\infty$ 连续，值跳变恒等于 $0$，导数有限且光滑**。
@@ -399,7 +414,7 @@ $$\mathcal S(\zeta)\triangleq\int_0^{+\infty}\exp\!\left(-\frac{s^3}{3}+\zeta s\
 
 **实现状态（2026-11-27 晚更新：6D 已实现）.** 定理本身仍是 `paper claim`；**6D 复根追踪与 Scorer 延拓已在本仓库实现并测量**（`experiments/theory/run_scorer_fold.py`，结果 `experiments/theory/results/scorer_fold.{json,md,png}`，`independent reproduction (this repo)`）。**(a) 1D 三路验证**：模型 $J_\alpha=x^3/3-\alpha x$（$c_3=2$）；跨 $\alpha=+10^{-5}\to-10^{-5}$ 的 fold-mode 后验分数：标准实根 Laplace $0.86703\to0$、$\tau^{1/3}$ 正则化 $0.49595\to0$、Scorer 延拓 $0.33838\to0.33834$，与证明引用的 $0.867/0.497/0.339113/0.339069$ 差 $\le1.6\times10^{-4}$。**(b) 6D 应用**：fold 位于 $\theta_f=1.3185485\times10^{-3}$，$c_3=2.55981$，$\det H_\perp\approx7.49$；实侧极小/鞍点对与复侧复共轭根对均被 Newton 追踪成功（$\alpha'$ 两侧独立测量相对差 $\sim2\times10^{-3}$；$J_0$ 相对残差 $1.7\times10^{-12}$，$c_3$ $7\times10^{-3}$），四个不变量与 $\mathcal S(\zeta)$ 跨 $\theta_f$ 连续。**(c) 位姿跳变**：$\theta_f\pm10^{-4}$、步长 $2\times10^{-5}$ 的网格上最大相邻位姿跳变：标准 $3.041\times10^{-1}$（jump/step $1.52\times10^4$）、$\det(H+\tau^{1/3}I)$ 正则化 $1.068\times10^{-1}$（$5.34\times10^3$）、**Scorer 延拓 $1.206\times10^{-2}$（$6.03\times10^2$，与平滑映射的 $|\mathrm d\,\mathrm{pose}|$ 同量级）**，K 恒为 4；即真阶跃变为导数有限的光滑过渡。**(d) 限制**：该 6D fold 很浅（$\Delta J\sim10^{-6}\ll\tau=0.01$、$\zeta\sim10^{-3}$），fold 处 Scorer 权重与标准 Laplace 权重相差很大，定理只承诺 $\zeta\gg1$（$\Delta J\gg\tau$）时退化为 3D Laplace；$w_{\rm fold}$ 在给定四个不变量时精确，但四者与规范形的对应是渐近的（四阶项 $\varphi''''\approx8.3$）。工程主表仍未启用复根追踪；$\tau^{1/3}$ 部分修复的纯实根对照数字（`fold_6d.md`：$|\mathrm{dpose}|$ 3529→443、值跳变 0.309→0.107）保留。 **网格细化（2026-11-27 phase-3）**：staggered 网格、half-width $10^{-4}$、步长 $d=4\times10^{-5}\ldots2.5\times10^{-6}$ 上，Scorer 的 jump/$d$ 恒为 $404.3/404.2/404.0/403.7/403.3$（jump $\propto d$，$d=2.5\times10^{-6}$ 处无数值地板），标准实根 map 的 jump/$d$ 从 $7.6\times10^{3}$ 涨到 $2.1\times10^{5}$、$\tau^{1/3}$ 正则化从 $2.7\times10^{3}$ 涨到 $4.4\times10^{4}$（常数阶跃）——这是“Scorer 连续、纯实根不连续”的决定性数值检验。
 
-**论文口径.** 若工程主表不启用复根追踪，援引命题 P1-Q5b 明确写“纯实根 Laplace（含 $\tau^{1/3}$ 正则化）在 Fold 处必有 $\Theta(\tau^{1/3}e^{-(J_0-J_{\text{glob}})/\tau})$ 值跳变，故定理主范围排除 Fold 邻域”；同时把定理 P1-Q5c 作为 Theory/Discussion 里的严格延拓定理，说明 Fold 连续性在代数 40 根框架内**理论完全可解**，实现是工程问题。
+**论文口径.** 若工程主表不启用复根追踪，援引命题 P1-Q5b 明确写“纯实根 Laplace（含 $\tau^{1/3}$ 正则化）在 Fold 处必有 $\Theta(\tau^{-1/6}e^{-(J_0-J_{\text{glob}})/\tau})$ 值跳变，故定理主范围排除 Fold 邻域”；同时把定理 P1-Q5c 作为 Theory/Discussion 里的严格延拓定理，说明 Fold 连续性在代数 40 根框架内**理论完全可解**，实现是工程问题。
 
 ---
 
@@ -420,7 +435,7 @@ $$\mathcal S(\zeta)\triangleq\int_0^{+\infty}\exp\!\left(-\frac{s^3}{3}+\zeta s\
 | 11 | “零采样” | 无 Monte Carlo 正确；但旋转积分是 Laplace 近似，不是精确 | 措辞修正 |
 | 12 | 21 约束“处处 LICQ” | QPEP 只有 1 条约束才处处 LICQ；21 条在 SO(3) 上冗余、Jacobian 必行相关 | 已修正 |
 | 13 | （2026-11-27 补充证明旧稿）13×13 与 10×10 同值同秩，无需限定 | 只在满 20 维理想下成立；上游 `sdprlayer@62d8ac6` 的 24 条只张成 17 维，严格更松；6 点物理反例 $f^*_{13,\text{up}}=3.5943<5.415=f^*_{\text{QPEP}}$（rank 4 vs 1） | 已修正（定理 P1-2） |
-| 14 | 纯实根 Laplace 在 Fold 处可用 $\det(H+\tau^{1/3}I)$ 正则化消除值跳变 | 不可能：任意实根代理必有 $\Theta(\tau^{1/3}e^{-(J_0-J_{\text{glob}})/\tau})$ 值跳变；正则化只把 $0.309$ 降到 $0.107$ | 命题 P1-Q5b |
+| 14 | 纯实根 Laplace 在 Fold 处可用 $\det(H+\tau^{1/3}I)$ 正则化消除值跳变 | 不可能：任意实根代理必有 $\Theta(\tau^{-1/6}e^{-(J_0-J_{\text{glob}})/\tau})$ 值跳变；正则化只把 $0.309$ 降到 $0.107$ | 命题 P1-Q5b |
 | 15 | Fold 连续性只能靠数值/一致渐近，无严格延拓 | 40 根复共轭对 + Scorer 半线 Airy 延拓给出跨 Fold 严格 $C^\infty$ 零跳变（`paper claim`）；6D 实现待做 | 定理 P1-Q5c |
 
 ---
@@ -445,7 +460,8 @@ $$\mathcal S(\zeta)\triangleq\int_0^{+\infty}\exp\!\left(-\frac{s^3}{3}+\zeta s\
 | 缺口 | 旧口径 | 新状态 | 依据 |
 |-|-|-|-|
 | **P1-Q2/Q13** | “重新打开”：13×13 等值被 SDP 数值反例推翻 | **分层结案**：满 20D 下 13×13 $\equiv$ 10×10（同值同秩，Q13 关闭）；上游 17D（24 条，缺 3 条行正交）严格更松，$f^*_{13,up}\le f^*_{10,full}\le f^*_{QPEP}$；6 点物理反例 $f^*_{13,up}=3.5943<5.415=f^*_{QPEP}$（rank 4 vs 1），且在数据的非空开邻域上保持 | 定理 P1-2（§4.3，`paper claim`）；`sdp/results/six_point.md`（`independent reproduction (this repo)`）；`sdp/results/sdp_check.md` 的 8/8 扰动（本仓库独立复现） |
-| **P1-Q5（Fold 连续性）** | 分岔处只能靠数值/一致渐近，是 P0 缺口 | **分层结案（理论）**：任意纯实根代理（含 $\tau^{1/3}$ 正则化）必有 $\Theta(\tau^{1/3}e^{-(J_0-J_{\text{glob}})/\tau})$ 值跳变（P1-Q5b）；复共轭根 Scorer 延拓给出跨 Fold 严格 $C^\infty$ 零跳变（P1-Q5c，`paper claim`）。工程侧仍是 $\tau^{1/3}$ 部分修复，6D Scorer 实现在单独一轮 | 命题 P1-Q5b、定理 P1-Q5c（§7.5）；`experiments/results/fold_6d.md`（`independent reproduction (this repo)`） |
+| **P1-Q5（Fold 连续性）** | 分岔处只能靠数值/一致渐近，是 P0 缺口 | **分层结案（理论）**：任意纯实根代理（含 $\tau^{1/3}$ 正则化）必有 $\Theta(\tau^{-1/6}e^{-(J_0-J_{\text{glob}})/\tau})$ 值跳变（P1-Q5b；**该指数按 §7.5.1 已重算为跳变分数 $\tau^{-1/6}$**）；复共轭根 Scorer 延拓给出跨 Fold 严格 $C^\infty$ 零跳变（P1-Q5c，`paper claim`）。工程侧仍是 $\tau^{1/3}$ 部分修复，6D Scorer 实现在单独一轮 | 命题 P1-Q5b、定理 P1-Q5c（§7.5）；`experiments/results/fold_6d.md`（`independent reproduction (this repo)`） |
+| **P1-4（自包含补证）** | 定理 3 的维数计数与定理 8 的 Haar 常数只有要点/数值 | **已补齐（2026-11-28）**：论文附录 A（`app:dimcount`）给出 $\Phi$ 满射、秩-零化度 $55-35=20$、21 条约束秩 20 的完整纯代数证明；附录 B（`app:haar`）给出 $\mathrm dR=8\,\mathrm du$ 的雅可比、双覆盖抵消、$Z_{\rm Lap}$ 绝对常数、包络定理与 $\log\det H_k$ 全导数 | 论文 Appendix A/B（EN/ZH）；本文件 §7.3–§7.4 |
 
 注：
 

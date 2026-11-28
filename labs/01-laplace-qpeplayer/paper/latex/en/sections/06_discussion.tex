@@ -20,10 +20,10 @@ with the scale-matched floor $\eta(\tau)=c_0\tau^{1/3}$, forces the smoothed los
 \end{split}
 \label{eq:jump}
 \end{equation}
-and for $\eta=c_0\tau^{1/3}$ the jump is $\Theta\big(\tau^{1/3}e^{-(J_0-J_{\rm glob})/\tau}\big)$.
+and for $\eta=c_0\tau^{1/3}$ the regularised floor weight scales as $\Theta\big(\tau^{4/3}e^{-(J_0-J_{\rm glob})/\tau}\big)$, while the rest partition is $\Theta\big(\tau^{3/2}e^{-J_{\rm glob}/\tau}\big)$; the jump fraction therefore scales as $\Theta\big(\tau^{-1/6}e^{-(J_0-J_{\rm glob})/\tau}\big)$ (capped at one).
 \end{proposition}
 
-The jump is exponentially small only when $J_0-J_{\rm glob}\gg\tau$, and stays $O(1)$ when $J_0-J_{\rm glob}=O(\tau)$; at any finite $\tau$ it is nonzero. This is a necessity statement about real-root proxies, and it is why $0.309\to0.107$ does not go to zero.
+The fraction is exponentially small only when $J_0-J_{\rm glob}\gg\tau$, and is $O(1)$ when $J_0-J_{\rm glob}=O(\tau)$; at any finite $\tau$ it is nonzero. This is a necessity statement about real-root proxies, and it is why $0.309\to0.107$ does not go to zero.
 
 \begin{proposition}[Complex-conjugate roots and the Scorer continuation]\label{prop:q5c}
 The 40-root action-matrix solver carries the merged pair through the fold as a complex-conjugate pair. In the normal form
@@ -31,12 +31,17 @@ The 40-root action-matrix solver carries the merged pair through the fold as a c
 J_\theta(u,v)=J_0(\theta)+\tfrac12v^\top H_\perp(\theta)v+\tfrac{c_3(\theta)}{6}u^3-\alpha(\theta)u
 \label{eq:normalform}
 \end{equation}
-with $c_3>0$, $\alpha(\theta_f)=0$ and $\alpha'(\theta_f)>0$ (Gromoll--Meyer splitting), define the invariants $J_0=(J(q_+)+J(q_-))/2$ and $\zeta(\theta,\tau)=\alpha(\theta)\big(2/c_3(\theta)\big)^{1/3}\tau^{-2/3}$, and the semi-line Airy (Scorer) integral
+with $c_3>0$, $\alpha(\theta_f)=0$ and $\alpha'(\theta_f)>0$ (Gromoll--Meyer splitting), define the invariants $J_0=(J(q_+)+J(q_-))/2$ and the dimensionless fold variable
+\begin{equation}
+\zeta(\theta,\tau)=\alpha(\theta)\Big(\frac{2}{c_3(\theta)}\Big)^{1/3}\tau^{-2/3},
+\label{eq:zeta}
+\end{equation}
+which is \emph{linear} in $\alpha$, so no branch of $\alpha^{1/3}$ is taken at $\alpha=0$, and the semi-line Airy (Scorer) integral
 \begin{equation}
 \mathcal{S}(\zeta)=\int_0^{+\infty}e^{-s^3/3+\zeta s}\,ds,
 \label{eq:scorer}
 \end{equation}
-which is entire with $\mathcal{S}(0)=\Gamma(1/3)/3^{2/3}\approx1.2879$. Replacing the two real-root weights by the single continuation
+which is entire with $\mathcal{S}(0)=\Gamma(1/3)/3^{2/3}\approx1.2879$. Substituting $u=(2\tau/c_3)^{1/3}s$, so that $du=\tau^{1/3}(2/c_3)^{1/3}ds$ (the power of $\tau$ is in the \emph{numerator}), together with the transverse Gaussian integral $\int_{\mathbb{R}^2}e^{-v^\top H_\perp v/(2\tau)}dv=2\pi\tau/\sqrt{\det H_\perp}$ (the determinant is in the \emph{denominator}), makes the continuation exactly the semi-line local partition integral $\int_{\mathbb{R}^2}\int_0^{+\infty}e^{-J_\theta(u,v)/\tau}\,du\,dv$. Replacing the two real-root weights by this single continuation
 \begin{equation}
 \begin{split}
 \tilde w_{\rm fold}(\theta,\tau)={}&\frac{2\pi\tau}{\sqrt{\det H_\perp(\theta)}}\,\tau^{1/3}\Big(\frac{2}{c_3(\theta)}\Big)^{1/3}\\
@@ -75,7 +80,23 @@ Scorer continuation & 1.21e-02 & 6.03e+02 & 4\\
 
 The continuity claim is tested by grid refinement (staggered grids, half-width $10^{-4}$, step $d\in\{4\times10^{-5},\ldots,2.5\times10^{-6}\}$): the Scorer \emph{jump/d} stays $404.3,404.2,404.0,403.7,403.3$ over a $16\times$ range of $d$ (no numerical floor at $d=2.5\times10^{-6}$), whereas the standard map's \emph{jump/d} grows from $7.6\times10^{3}$ to $2.1\times10^{5}$ and the regularised one from $2.7\times10^{3}$ to $4.4\times10^{4}$ (a constant step). The fold neighbourhood therefore requires the Scorer continuation, or a local numerical integral over the merging pair, for a continuity claim.
 
+\subsection{The chordal mean is not a smooth readout at \texorpdfstring{$180^\circ$}{180 deg}}\label{sec:chordal}
 
+The Laplace mean is continuous in $\theta$ for every $\tau>0$ but biased towards the competing mode at near-ties (Section~\ref{sec:real}). A natural alternative is the projected weighted chordal mean $\Proj_{SO(3)}(\sum_kw_kR_k)$, the deterministic limit of the chordal mode average. It is not a cure for discontinuity: at a $180^\circ$ two-mode tie every single-valued selection jumps.
+
+\begin{proposition}[$180^\circ$ singularity of the $SO(3)$ chordal mean]\label{prop:chordal}
+Let $R_1,R_2\in SO(3)$ have relative geodesic angle $\pi$ about the unit axis $n$, so that $R_1^\top R_2=2nn^\top-I_3$, and let $M(w)=wR_1+(1-w)R_2$ with $\Proj_{SO(3)}(M)=\arg\max_{R\in SO(3)}\operatorname{tr}(M^\top R)$. Then:
+\begin{enumerate}
+\item at $w=\frac12$, $\bar M=M(\frac12)=\frac12(R_1+R_2)=(R_1n)n^\top$ has singular values $(1,0,0)$ and $\Proj_{SO(3)}(\bar M)$ is a one-dimensional circle $S^1\subset SO(3)$, hence not unique;
+\item for every $\delta\in(0,\frac12]$, $\Proj_{SO(3)}(M(\frac12+\delta))=R_1$ and $\Proj_{SO(3)}(M(\frac12-\delta))=R_2$, so every single-valued selection jumps by $\pi$ at $w=\frac12$ and is not differentiable there.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Since $R_1^\top R_2=2nn^\top-I_3$ has eigenvalues $1,-1,-1$ and determinant $+1$, $\bar M=\frac12R_1(I_3+R_1^\top R_2)=(R_1n)n^\top$ has rank one and singular values $(1,0,0)$. For any $R\in SO(3)$, $\operatorname{tr}(\bar M^\top R)=n^\top R_1^\top Rn\le1$, with equality iff $Rn=R_1n$; the maximizing set is a circle of rotations that agree on $n$, so the projection is not unique. For $w=\frac12+\delta$, $M=R_1\big(nn^\top+2\delta(I_3-nn^\top)\big)$ with a positive-definite symmetric factor, so polar decomposition gives the unique projection $R_1$. For $w=\frac12-\delta$, use $I_3-nn^\top=-(2nn^\top-I_3)(I_3-nn^\top)$ to write $M=R_2\big(nn^\top+2\delta(I_3-nn^\top)\big)$, whose projection is $R_2$. The two one-sided limits are geodesically $\pi$ apart.
+\end{proof}
+
+Consequently none of the three readouts is both continuous and unbiased: the hard argmin jumps at energy ties, the projected chordal mean jumps at $180^\circ$ rotational ties, and the Laplace mean is continuous but $O(\tau)$-biased at any finite $\tau$. The layer reports the Laplace mean because its value discontinuity is removed for every $\tau>0$ (exactly for the Boltzmann posterior; for the Laplace sum away from folds), at the price of the bias measured in Section~\ref{sec:real}. The chordal proposition also explains why a projected-mean baseline is not a valid smooth reference at the Necker-type ties that motivate multi-modal smoothing.
 
 \subsection{Future work}
 

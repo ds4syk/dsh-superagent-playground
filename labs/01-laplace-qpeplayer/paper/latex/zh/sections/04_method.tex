@@ -50,7 +50,7 @@ $x_R$ 的每个元素都是 $q$ 的二次型，而 $v_2$ 是 $\mathrm{Sym}^2(\ma
 \end{theorem}
 
 \begin{proof}[证明梗概]
-每个 $A_i$ 在 $x_R(\mathbb{S}^3)$ 上为零；其拉回是球面上为零的齐次四次型，因而恒为零，故 $A_i$ 属于映射 $\phi:\mathbb{S}^{10}\to\mathbb{R}[q]_4$，$Q\mapsto Q(x_R(q))$ 的核。$\phi$ 是满射（$R_{ij}$ 的元素张成全部二次型，二次型之积张成全部四次型），故 $\dim\ker\phi=55-35=20$。精确有理秩计算给出 $\operatorname{rank}\{A_i\}=20$；唯一的线性相关是 $\operatorname{tr}(R^\top R)=\operatorname{tr}(RR^\top)$。20 维核中的 20 维子空间即该核。
+每个 $A_i$ 在 $x_R(\mathbb{S}^3)$ 上为零；其拉回是球面上为零的齐次四次型，因而恒为零，故 $A_i$ 属于映射 $\phi:\mathbb{S}^{10}\to\mathbb{R}[q]_4$，$Q\mapsto Q(x_R(q))$ 的核。$\phi$ 是满射（$R_{ij}$ 的元素张成全部二次型，二次型之积张成全部四次型），故 $\dim\ker\phi=55-35=20$。精确有理秩计算给出 $\operatorname{rank}\{A_i\}=20$；唯一的线性相关是 $\operatorname{tr}(R^\top R)=\operatorname{tr}(RR^\top)$。20 维核中的 20 维子空间即该核。满射性与维数计数的自包含论证（含精确秩步骤）见附录~\ref{app:dimcount}。
 \end{proof}
 
 \textbf{维数计数与秩计算。} 仅凭维数计数 $55-\binom74=20$ 是必要而不充分的，因为它不能说明 21 个约束矩阵达到该计数；仅凭秩计算也不能把张成空间等同于理想。二者结合才能做到。该计数对约束集敏感：仅六个非对角内积给出秩 15 而非 20，这正是已发布 24 约束实现的约束亏缺并非记账细节的原因。
@@ -171,17 +171,63 @@ w_k=\operatorname{softmax}_k\Big(-\frac{J_k}{\tau}-\frac12\log\det H_k\Big).
 \label{eq:dlogdet}
 \end{equation}
 第二项包含 $J$ 的三阶 $q$ 导数。
-\item \textbf{温度极限。} 当 $\tau\to0$ 且 $\Delta J>0$ 时，后验均值与软 argmin 收敛到确定性全局极小，其梯度收敛到定理~\ref{thm:implicit}。KL 损失本身 $\mathcal{L}_{\mathrm{KL}}=\tau^{-1}J_{\mathrm{gt}}+\log Z_{\mathrm{Laplace}}$ 的梯度按 $1/\tau$ 缩放，若不做 $\tau$ 重标定则不发散。
+\item \textbf{温度极限。} 当 $\tau\to0$ 且 $\Delta J>0$ 时，后验均值与软 argmin 收敛到确定性全局极小，其梯度收敛到定理~\ref{thm:implicit}。KL 损失本身 $\mathcal{L}_{\mathrm{KL}}=\tau^{-1}J_{\mathrm{gt}}+\log Z_{\mathrm{Laplace}}$ 的梯度按 $1/\tau$ 缩放，若不做 $\tau$ 重标定则不发散。重标定（退火）损失 $\tau\mathcal{L}_{\mathrm{KL}}=J_{\mathrm{gt}}+\tau\log Z_{\mathrm{Laplace}}$ 由定理~\ref{thm:annealed} 分析：其梯度在每个 $\tau>0$ 处有限，并在 $\tau\to0^+$ 时具有曲率加权的 Clarke 极限。
 \end{enumerate}
 \end{theorem}
 
 \begin{proof}[证明梗概]
-平移积分即引理~\ref{lem:translation}。对旋转，在每个 $q^{(k)}$ 附近的正规坐标 $q(u)=\mathrm{normalize}(q^{(k)}+E_ku)$ 中把 $J$ 展开到二阶；高斯积分给出 $(2\pi\tau)^{3/2}(\det H_k)^{-1/2}$。每个叶片的局部 Jacobian 为 $dR=8\,dq$；$\pm q$ 的两个叶片与双覆盖因子 $1/2$ 合起来给出每个 $SO(3)$ 模态的因子 $8$。标准 Laplace 展开给出相对误差 $O(\tau)$ \cite{bleistein1986,wong1989}。梯度公式是对 $J_k$ 用包络定理、对 $w_k$ 用 softmax Jacobian 的链式法则。
+平移积分即引理~\ref{lem:translation}。对旋转，在每个 $q^{(k)}$ 附近的正规坐标 $q(u)=\mathrm{normalize}(q^{(k)}+E_ku)$ 中把 $J$ 展开到二阶；高斯积分给出 $(2\pi\tau)^{3/2}(\det H_k)^{-1/2}$。每个叶片的局部 Jacobian 为 $dR=8\,dq$；$\pm q$ 的两个叶片与双覆盖因子 $1/2$ 合起来给出每个 $SO(3)$ 模态的因子 $8$。标准 Laplace 展开给出相对误差 $O(\tau)$ \cite{bleistein1986,wong1989}。梯度公式是对 $J_k$ 用包络定理、对 $w_k$ 用 softmax Jacobian 的链式法则。附录~\ref{app:haar} 推导 Jacobian $dR=8\,du$、双覆盖抵消、$Z_{\mathrm{Lap}}$ 的绝对常数，以及下文用到的 $\log\det H_k$ 对 $\theta$ 的完整导数。
 \end{proof}
 
 \textbf{分支交叉处的光滑性。} \emph{精确} Boltzmann 后验对每个 $\tau>0$ 都是 $\theta$ 的 $C^\infty$ 函数，因为 $\mathbb{S}^3$ 紧且 $J_\theta$ 光滑（由控制收敛定理可得，无需 $\Delta J>0$）。\emph{Laplace 近似}在交叉处并非一致精确：当 $\Delta J\to0$、$H_k$ 的某个特征值趋于零时，两个 Gauss 分布重叠，$1/\sqrt{\det H_k}$ 权重发散，因此需要一致（Airy）展开，或在合并方向上做一维数值积分 \cite{bleistein1986}。故平滑层对每个 $\tau>0$ 都光滑，而 Laplace 实现仅在远离分岔处具有 $O(\tau)$ 精度。
 
-\textbf{归一化。} 常数影响 $Z$ 但在 $w_k$ 中相消。常用归一化 $Z_{\mathrm{Lap}}=(\pi\tau)^3(\det G)^{-1/2}\sum_k e^{-J_k/\tau}/\sqrt{\det H_k}$ 遗漏了旋转积分的 $2^{3/2}$ 型因子；在 $\tau$ 固定时这是与 $\theta$ 无关的常数，不影响梯度。若改用旋转向量坐标 $\omega=2\delta\xi$，则 $\det H_\omega=\det H_{\mathbb{S}^3}/64$，且必须在 \eqref{eq:weights}--\eqref{eq:dlogdet} 中一致地采用同一种约定。
+\textbf{归一化。} 常数影响 $Z$ 但在 $w_k$ 中相消。若 $SO(3)$ 上取概率 Haar 测度 $d\mu_{\mathrm{Haar}}=dR/(8\pi^2)$，绝对 Laplace 配分函数为
+\begin{equation}
+Z_{\mathrm{Lap}}(\theta)=\frac{2\sqrt2\,\pi\tau^3}{\sqrt{\det G}}\sum_{k=1}^K\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}},
+\label{eq:zlapabs}
+\end{equation}
+而若取未归一化测度 $dR$，则 \eqref{eq:zlapabs} 还要乘 $8\pi^2$。附录~\ref{app:haar} 从 $dR=8\,du$ 与双覆盖出发推导这两个常数，并说明两种约定给出相同的 $w_k$ 与相同的 $\theta$ 梯度。常用归一化 $Z_{\mathrm{Lap}}=(\pi\tau)^3(\det G)^{-1/2}\sum_ke^{-J_k/\tau}/\sqrt{\det H_k}$ 并不是上述任一绝对常数，故不应作为 $Z$ 引用；在 $\tau$ 固定时它与 \eqref{eq:zlapabs} 相差一个与 $\theta$ 无关的因子。若改用旋转向量坐标 $\omega=2\delta\xi$，则 $\det H_\omega=\det H_{\mathbb{S}^3}/64$，且必须在 \eqref{eq:weights}--\eqref{eq:dlogdet} 中一致地采用同一种约定。
+
+\begin{theorem}[退火 Laplace NLL：精确梯度与零温极限]\label{thm:annealed}
+设 $q^{(k)}(\theta)$（$k=1,\dots,K$）为定理~\ref{thm:laplace} 的非退化极小，$J_k=J_\theta(q^{(k)},t^\star(q^{(k)}))$，$H_k\succ0$，$G\succ0$，并令
+\begin{equation}
+\begin{split}
+Z_{\mathrm{Lap}}(\theta)={}&C(\tau)\,(\det G(\theta))^{-1/2}\\
+&\times\sum_{k=1}^K(\det H_k(\theta))^{-1/2}e^{-J_k(\theta)/\tau},
+\end{split}
+\label{eq:zlap}
+\end{equation}
+其中 $C(\tau)$ 与 $\theta$ 无关，且 $w_k=(\det H_k)^{-1/2}e^{-J_k/\tau}/\sum_j(\det H_j)^{-1/2}e^{-J_j/\tau}$。定义退火 Laplace 负对数似然
+\begin{equation}
+L_{\tau\text{-KL}}(\theta):=J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})+\tau\log Z_{\mathrm{Lap}}(\theta).
+\label{eq:annealed}
+\end{equation}
+则：
+\begin{enumerate}
+\item \textbf{（任意 $\tau>0$ 的有限光滑梯度）} 包括精确分支打平 $J_{k_1}=J_{k_2}$ 的情形，$L_{\tau\text{-KL}}$ 关于 $\theta$ 局部 $C^\infty$，且
+\begin{equation}
+\begin{split}
+\nabla_\theta L_{\tau\text{-KL}}={}&\nabla_\theta J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})\\
+&-\sum_{k=1}^Kw_k\Big(\nabla_\theta J_k+\frac{\tau}{2}\nabla_\theta\log\det H_k\Big)\\
+&-\frac{\tau}{2}\nabla_\theta\log\det G .
+\end{split}
+\label{eq:annealedgrad}
+\end{equation}
+外乘因子 $\tau$ 精确抵消 $\nabla_\theta z_k$ 中的 $1/\tau$，故与未退火的 KL 损失不同，梯度在 $\tau\to0$ 时保持有限。
+\item \textbf{（零温极限）} 记 $\mathcal{K}_{\min}=\arg\min_kJ_k$，曲率体积权重 $\bar w_k:=(\det H_k)^{-1/2}/\sum_{j\in\mathcal{K}_{\min}}(\det H_j)^{-1/2}$，则
+\begin{equation}
+\lim_{\tau\to0^+}\nabla_\theta L_{\tau\text{-KL}}
+=\nabla_\theta J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})
+-\sum_{k\in\mathcal{K}_{\min}}\bar w_k\,\nabla_\theta J_k,
+\label{eq:clarke}
+\end{equation}
+即 $J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})-\min_kJ_k(\theta)$ 的曲率加权 Clarke 次梯度。当极小唯一（$k^\star$）时退化为 $\nabla_\theta J_{\mathrm{gt}}-\nabla_\theta J_{k^\star}$。
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+记 $z_k=(\det H_k)^{-1/2}e^{-J_k/\tau}$，则 $\tau\log Z_{\mathrm{Lap}}=\tau\log C(\tau)-\frac{\tau}{2}\log\det G+\tau\log\sum_kz_k$。由 $H_k\succ0$，隐函数定理使每个分支与 $H_k$ 关于 $\theta$ 光滑；即便两个 $J_k$ 相等，各分支仍非退化，故 $\sum_kz_k>0$。利用 $\nabla_\theta z_k=z_k(-\tau^{-1}\nabla_\theta J_k-\frac12\nabla_\theta\log\det H_k)$ 与 $w_k=z_k/\sum_jz_j$ 即得 \eqref{eq:annealedgrad}；$\log Z$ 外的 $\tau$ 精确抵消 $\tau^{-1}$。对 \eqref{eq:clarke}，从 $z_k$ 中提出 $e^{-J_{\min}/\tau}$：在 $\mathcal{K}_{\min}$ 上 $w_k\to(\det H_k)^{-1/2}/\sum_{j\in\mathcal{K}_{\min}}(\det H_j)^{-1/2}$，其余 $w_k\to0$，因为每个 $j\notin\mathcal{K}_{\min}$ 有严格正间隙 $\Delta_j=J_j-J_{\min}>0$。项 $\frac{\tau}{2}\nabla_\theta\log\det H_k$ 与 $\frac{\tau}{2}\nabla_\theta\log\det G$ 消失，而 $\nabla_\theta J_k$ 与 $\tau$ 无关且有界。该极限是活跃分支梯度的凸组合，故属于最小值的 Clarke 次微分。包络恒等式 $\nabla_\theta J_k=v_2(q^{(k)})^\top(\partial_\theta M)v_2(q^{(k)})$ 与 $\log\det H_k$ 的完整导数见附录~\ref{app:haar}。
+\end{proof}
 
 \subsection{与已发布 \texorpdfstring{$13\times13$}{13x13} 松弛的关系}\label{sec:thirteen}
 

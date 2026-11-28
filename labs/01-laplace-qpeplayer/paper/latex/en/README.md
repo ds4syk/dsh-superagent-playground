@@ -18,7 +18,7 @@
 | item | value |
 |---|---|
 | last compile | Tectonic exit 0, no undefined refs, no overfull boxes > 3 pt (see `build.log`) |
-| total pages | 16 (journal, two-column) |
+| total pages | 19 (journal, two-column; including Appendices A--B) |
 | tables / figures | 17 tables / 5 figures |
 | style | IEEE T-RO submission style; internal draft/status/evidence-level scaffolding removed (2026-11-28 rewrite) |
 

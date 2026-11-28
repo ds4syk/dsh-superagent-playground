@@ -18,7 +18,7 @@
 | item | value |
 |---|---|
 | last compile | Tectonic exit 0, 无未定义引用, 无 >3pt 的 overfull（见 `build.log`） |
-| total pages | 18（双栏） |
+| total pages | 21（双栏；含附录 A--B） |
 | tables / figures | 17 表 / 5 图 |
 | 说明 | 由英文终稿逐节人工翻译（非机器翻译），结构、公式、表格、数字与引用一一对应（2026-11-28） |
 

@@ -1,0 +1,135 @@
+\section{Completeness of the 21 quadratic constraints: the dimension count}\label{app:dimcount}
+
+Let $\nu_2:\mathbb{RP}^3\to\mathbb{RP}^9$ be the quadratic Veronese embedding $[q]\mapsto[v_2(q)]$, where $v_2(q)\in\mathbb{R}^{10}$ collects the ten quadratic monomials of $q=(q_0,q_1,q_2,q_3)$ with the normalisation used in Section~\ref{sec:lift}, and let
+\begin{equation}
+\begin{split}
+&\mathcal{I}_2\big(\nu_2(\mathbb{RP}^3)\big)\\
+&\quad=\Big\{M\in\operatorname{Sym}^2(\mathbb{R}^{10}):
+v_2(q)^\top Mv_2(q)\equiv0\ \ \forall q\in\mathbb{R}^4\Big\}.
+\end{split}
+\label{eq:app-ideal}
+\end{equation}
+Consider the linear evaluation map
+\begin{equation}
+\begin{split}
+&\Phi:\operatorname{Sym}^2(\mathbb{R}^{10})\longrightarrow\mathbb{R}[q_0,q_1,q_2,q_3]_4,\\
+&\Phi(M)(q):=v_2(q)^\top Mv_2(q).
+\end{split}
+\label{eq:app-phi}
+\end{equation}
+
+\textbf{(i) Kernel.} By \eqref{eq:app-ideal}, $\ker\Phi=\mathcal{I}_2(\nu_2(\mathbb{RP}^3))$.
+
+\textbf{(ii) Surjectivity.} The target is spanned by the quartics $q_0^{a_0}q_1^{a_1}q_2^{a_2}q_3^{a_3}$ with $a_0+a_1+a_2+a_3=4$. Every such monomial factors as $m_1(q)m_2(q)$ with $\deg m_1=\deg m_2=2$: choose integers $0\le b_i\le a_i$ with $\sum_ib_i=2$ (possible because $\sum_ia_i=4$) and set $m_1=\prod_iq_i^{b_i}$, $m_2=\prod_iq_i^{a_i-b_i}$. Each $m_\ell$ is, up to a constant, one coordinate of $v_2$; hence for some indices $r,s$ and constants $c_r,c_s$,
+\begin{equation}
+\begin{split}
+m_1(q)m_2(q)&=c_rc_s\,(v_2)_r(q)(v_2)_s(q)\\
+&=\Phi\!\left(\tfrac{c_rc_s}{2}(e_re_s^\top+e_se_r^\top)\right)(q).
+\end{split}
+\label{eq:app-monomial}
+\end{equation}
+Thus the image contains every basis monomial, so $\Phi$ is surjective.
+
+\textbf{(iii) The count.} The source and target dimensions are
+\begin{equation}
+\begin{split}
+\dim\operatorname{Sym}^2(\mathbb{R}^{10})&=\frac{10\cdot11}{2}=55,\\
+\dim\mathbb{R}[q_0,q_1,q_2,q_3]_4&=\binom{4+4-1}{4}=\binom74=35 .
+\end{split}
+\label{eq:app-dims}
+\end{equation}
+By rank--nullity and surjectivity,
+\begin{equation}
+\dim\mathcal{I}_2\big(\nu_2(\mathbb{RP}^3)\big)=\dim\ker\Phi=55-35=20 .
+\label{eq:app-20}
+\end{equation}
+This is a statement about the map $\Phi$; it is necessary but not sufficient for the 21 $SO(3)$ constraint matrices to be complete, because it does not yet show that they reach the count.
+
+\textbf{(iv) The 21 constraints reach 20.} Let $A_i\in\mathbb{S}^{10}$, $i=1,\dots,21$, be the matrices of the constraints of Theorem~\ref{thm:ideal} in the $x_R$ coordinates, and let $N_i:=(2U)^\top A_i(2U)$ be their pullbacks to the $v_2$ coordinates. Since $x_R=2Uv_2$ and $x_R(q)^\top A_ix_R(q)\equiv0$ on $\mathbb{S}^3$,
+\begin{equation}
+v_2(q)^\top N_iv_2(q)=x_R(q)^\top A_ix_R(q)\equiv0\quad\forall q\in\mathbb{R}^4,
+\label{eq:app-pullback}
+\end{equation}
+so $N_i\in\ker\Phi$. Exact rational Gaussian elimination on the 55 coefficient vectors of $N_1,\dots,N_{21}$ gives
+\begin{equation}
+\operatorname{rank}\{N_1,\dots,N_{21}\}=20 .
+\label{eq:app-rank}
+\end{equation}
+The only linear dependency is the trace identity
+\begin{equation}
+\begin{split}
+&\sum_{a=1}^{3}\big(\|c_a\|^2-x_0^2\big)-\sum_{a=1}^{3}\big(\|r_a\|^2-x_0^2\big)\\
+&\quad=\operatorname{tr}(R^\top R)-\operatorname{tr}(RR^\top)\equiv0 .
+\end{split}
+\label{eq:app-dependency}
+\end{equation}
+Hence $\operatorname{span}\{N_i\}$ is a 20-dimensional subspace of the 20-dimensional kernel \eqref{eq:app-20}, so it equals the kernel and the 21 constraints span the full degree-two vanishing ideal. The count is sensitive to the constraint set: the six off-diagonal inner products alone have rank $15$, which is why the constraint deficit of the released 24-constraint implementation is not a bookkeeping detail.
+
+\section{Haar measure, the double cover, and the Laplace constant}\label{app:haar}
+
+\subsection*{The local Jacobian \texorpdfstring{$dR=8\,du$}{dR=8du}}
+
+Let $q^{(k)}\in\mathbb{S}^3$ and let $E_k\in\mathbb{R}^{4\times3}$ satisfy $E_k^\top q^{(k)}=0$ and $E_k^\top E_k=I_3$. Use the normal chart
+\begin{equation}
+q(u)=\frac{q^{(k)}+E_ku}{\sqrt{1+\|u\|_2^2}},\qquad u\in\mathbb{R}^3 .
+\label{eq:app-chart}
+\end{equation}
+At $u=0$, $\dot q(0)=E_k\dot u$, and the body-frame pure-imaginary quaternion is $(q^{(k)})^{-1}\dot q(0)=[0,\dot u^\top]^\top$. Under the double cover $\pi:\mathbb{S}^3\to SO(3)$, $R(q)v=qvq^{-1}$, differentiation gives
+\begin{equation}
+\mathrm{d}\pi_{q^{(k)}}\big(E_k\dot u\big)=R(q^{(k)})\,[2\dot u]_\times ,
+\label{eq:app-dpi}
+\end{equation}
+so the body angular velocity is $\omega=2\dot u$. For a general orthonormal tangent basis $E_k=E_R(q^{(k)})Q_k$ with $Q_k\in O(3)$, $\partial\omega/\partial u|_{u=0}=2Q_k$. With the bi-invariant volume element $\mathrm{d}R=\mathrm{d}\omega_1\wedge\mathrm{d}\omega_2\wedge\mathrm{d}\omega_3$ corresponding to the Euclidean measure on the axis-angle vector,
+\begin{equation}
+\mathrm{d}R=\left|\det\frac{\partial\omega}{\partial u}\right|_{u=0}\mathrm{d}u
+=|\det(2Q_k)|\,\mathrm{d}u=8\,\mathrm{d}u,
+\label{eq:app-jac}
+\end{equation}
+and $\operatorname{Vol}(SO(3))=8\pi^2$.
+The global normalisation is consistent: $\int_{SO(3)}f\,\mathrm{d}R=\frac12\int_{\mathbb{S}^3}f(R(q))\,8\,\mathrm{d}\sigma(q)=4\int_{\mathbb{S}^3}f\,\mathrm{d}\sigma$, and at $f=1$ this gives $\frac12\cdot8\cdot2\pi^2=8\pi^2$.
+
+\subsection*{Double cover and the per-mode factor}
+
+Near a nondegenerate mode $q^{(k)}$, the Laplace integral over one sheet in the chart \eqref{eq:app-chart} is $\int e^{-J/\tau}\mathrm{d}u=(2\pi\tau)^{3/2}(\det H_k)^{-1/2}e^{-J_k/\tau}(1+O(\tau))$. Multiplying by the Jacobian \eqref{eq:app-jac} gives $8(2\pi\tau)^{3/2}(\det H_k)^{-1/2}e^{-J_k/\tau}$ per sheet. The two antipodal sheets $\pm q^{(k)}$ are distinct points of $\mathbb{S}^3$ with the same $J$ and $H$, and the double cover contributes the factor $1/2$; the two factors cancel exactly, so each $SO(3)$ mode contributes
+\begin{equation}
+8(2\pi\tau)^{3/2}\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}} .
+\label{eq:app-permode}
+\end{equation}
+Consequently, with the unnormalised measure $\mathrm{d}R$,
+\begin{equation}
+\int_{SO(3)}e^{-J_{\mathrm{red}}/\tau}\mathrm{d}R
+=8(2\pi\tau)^{3/2}\sum_{k=1}^K\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}}\big(1+O(\tau)\big),
+\label{eq:app-rotint}
+\end{equation}
+which is \eqref{eq:rotationint}. With the probability Haar measure $\mathrm{d}\mu_{\mathrm{Haar}}=\mathrm{d}R/(8\pi^2)$, the same integral is divided by $8\pi^2$.
+
+\subsection*{The absolute constant of \texorpdfstring{$Z_{\mathrm{Lap}}$}{Z\_Lap}}
+
+Combining \eqref{eq:app-rotint} with the exact translation integral \eqref{eq:gaussint} and using the probability Haar measure,
+\begin{equation}
+\begin{split}
+Z_{\mathrm{Lap}}(\theta)&=\frac{(\pi\tau)^{3/2}}{\sqrt{\det G}}\cdot\frac{(2\pi\tau)^{3/2}}{\pi^2}\sum_{k=1}^K\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}}\\
+&=\frac{2\sqrt2\,\pi\tau^3}{\sqrt{\det G}}\sum_{k=1}^K\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}} .
+\end{split}
+\label{eq:app-zlap}
+\end{equation}
+With the unnormalised measure $\mathrm{d}R$, the right-hand side is multiplied by the $\theta$-independent factor $8\pi^2$. Since that factor is constant at fixed $\tau$, it cancels in $w_k$ and in $\nabla_\theta L_{\tau\text{-KL}}$; only \eqref{eq:app-zlap} should be quoted as the absolute constant.
+
+\subsection*{Envelope theorem and the full derivative of \texorpdfstring{$\log\det H_k$}{log det H\_k}}
+
+Let $J_{\mathrm{red}}(q;\theta)=v_2(q)^\top M(\theta)v_2(q)$ and let $q^{(k)}(\theta)$ be a nondegenerate stationary point, $E_k^\top\nabla_qJ_{\mathrm{red}}=0$ and $H_k=E_k^\top(\nabla^2J_{\mathrm{red}}-4J_kI_4)E_k\succ0$. Since $\mathrm{d}q^{(k)}\in\operatorname{range}(E_k)$ and $\operatorname{range}(E_k)=(q^{(k)})^\perp$,
+\begin{equation}
+\nabla_\theta J_k=v_2(q^{(k)})^\top\big(\partial_\theta M\big)v_2(q^{(k)}) .
+\label{eq:app-envelope}
+\end{equation}
+Writing $\xi_k=-H_k^{-1}E_k^\top\partial_\theta\nabla_qJ_{\mathrm{red}}$, so that $\partial_\theta q^{(k)}=E_k\xi_k$, the chain rule gives
+\begin{equation}
+\begin{split}
+&\partial_\theta\log\det H_k\\
+&\quad=\operatorname{tr}\!\Big[H_k^{-1}E_k^\top\Big(\partial_\theta\nabla^2J_{\mathrm{red}}\\
+&\qquad+\mathrm{D}_q\big(\nabla^2J_{\mathrm{red}}\big)[E_k\xi_k]
+-4\,\partial_\theta J_k\,I_4\Big)E_k\Big].
+\end{split}
+\label{eq:app-dlogdet}
+\end{equation}
+Two simplifications are exact. The antisymmetric frame-rotation terms cancel in $\operatorname{tr}(H_k^{-1}\dot H_k)$ by cyclicity, because $\log\det H_k$ is invariant under an orthonormal change of the tangent basis. The normal bending term vanishes by Euler homogeneity: $\nabla^2J_{\mathrm{red}}q^{(k)}=3\nabla_qJ_{\mathrm{red}}(q^{(k)})$, hence $E_k^\top\nabla^2J_{\mathrm{red}}q^{(k)}=3E_k^\top\nabla_qJ_{\mathrm{red}}=0$. Finally, $J_{\mathrm{red}}$ is quartic, so $\mathrm{D}_q(\nabla^2J_{\mathrm{red}})[\delta q]$ is linear in $q$ and the contraction in \eqref{eq:app-dlogdet} costs $O(1)$ per mode. This is the full derivative behind the shorthand \eqref{eq:dlogdet} and the gradient \eqref{eq:annealedgrad}.

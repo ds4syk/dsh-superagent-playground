@@ -44,7 +44,7 @@ and this span is exactly the degree-two vanishing ideal $\mathcal{I}_2(\nu_2(\ma
 \end{theorem}
 
 \begin{proof}[Proof sketch]
-Each $A_i$ vanishes on $x_R(\mathbb{S}^3)$; the pullback is a homogeneous quartic vanishing on the sphere, hence identically zero, so $A_i$ lies in the kernel of $\phi:\mathbb{S}^{10}\to\mathbb{R}[q]_4$, $Q\mapsto Q(x_R(q))$. The map $\phi$ is surjective (the entries of $R_{ij}$ span all quadratics, and products of quadratics span all quartics), so $\dim\ker\phi=55-35=20$. An exact rational rank computation gives $\operatorname{rank}\{A_i\}=20$; the only linear dependency is $\operatorname{tr}(R^\top R)=\operatorname{tr}(RR^\top)$. A 20-dimensional subspace of a 20-dimensional kernel is the kernel.
+Each $A_i$ vanishes on $x_R(\mathbb{S}^3)$; the pullback is a homogeneous quartic vanishing on the sphere, hence identically zero, so $A_i$ lies in the kernel of $\phi:\mathbb{S}^{10}\to\mathbb{R}[q]_4$, $Q\mapsto Q(x_R(q))$. The map $\phi$ is surjective (the entries of $R_{ij}$ span all quadratics, and products of quadratics span all quartics), so $\dim\ker\phi=55-35=20$. An exact rational rank computation gives $\operatorname{rank}\{A_i\}=20$; the only linear dependency is $\operatorname{tr}(R^\top R)=\operatorname{tr}(RR^\top)$. A 20-dimensional subspace of a 20-dimensional kernel is the kernel. The self-contained surjectivity and dimension argument, including the exact rank step, is proved in Appendix~\ref{app:dimcount}.
 \end{proof}
 
 \textbf{Dimension count and rank computation.} A dimension count alone, $55-\binom74=20$, is necessary but not sufficient, since it does not show that the 21 constraint matrices reach the count; the rank computation alone does not identify the span with the ideal. Together they do. The count is also sensitive to the constraint set: six off-diagonal inner products alone give rank 15, not 20, which is why the constraint deficit of the released 24-constraint implementation (Section~\ref{sec:thirteen}) is not a bookkeeping detail.
@@ -163,17 +163,63 @@ with $\nabla_\theta J_k=v_k^\top(\partial_\theta M)v_k$ and
 \label{eq:dlogdet}
 \end{equation}
 The second term contains third $q$-derivatives of $J$.
-\item \textbf{Temperature limit.} As $\tau\to0$ with $\Delta J>0$, the posterior mean and the soft argmin converge to the deterministic global minimiser, and their gradients converge to Theorem~\ref{thm:implicit}. The KL loss itself, $\mathcal{L}_{\mathrm{KL}}=\tau^{-1}J_{\mathrm{gt}}+\log Z_{\mathrm{Laplace}}$, has a gradient that scales as $1/\tau$ and does not converge without a $\tau$-rescaling.
+\item \textbf{Temperature limit.} As $\tau\to0$ with $\Delta J>0$, the posterior mean and the soft argmin converge to the deterministic global minimiser, and their gradients converge to Theorem~\ref{thm:implicit}. The KL loss itself, $\mathcal{L}_{\mathrm{KL}}=\tau^{-1}J_{\mathrm{gt}}+\log Z_{\mathrm{Laplace}}$, has a gradient that scales as $1/\tau$ and does not converge without a $\tau$-rescaling. The rescaled (annealed) loss $\tau\mathcal{L}_{\mathrm{KL}}=J_{\mathrm{gt}}+\tau\log Z_{\mathrm{Laplace}}$ is analysed in Theorem~\ref{thm:annealed}: its gradient is finite at every $\tau>0$ and has a curvature-weighted Clarke limit as $\tau\to0^+$.
 \end{enumerate}
 \end{theorem}
 
 \begin{proof}[Proof sketch]
-The translation integral is Lemma~\ref{lem:translation}. For rotation, expand $J$ to second order around each $q^{(k)}$ in the normal chart $q(u)=\mathrm{normalize}(q^{(k)}+E_ku)$; the Gaussian integral gives $(2\pi\tau)^{3/2}(\det H_k)^{-1/2}$. The local Jacobian is $dR=8\,dq$ per sheet; the two sheets of $\pm q$ and the double-cover factor $1/2$ combine to $8$ per $SO(3)$ mode. The standard Laplace expansion gives relative error $O(\tau)$ \cite{bleistein1986,wong1989}. The gradient formula is the chain rule with the envelope theorem for $J_k$ and the softmax Jacobian for $w_k$.
+The translation integral is Lemma~\ref{lem:translation}. For rotation, expand $J$ to second order around each $q^{(k)}$ in the normal chart $q(u)=\mathrm{normalize}(q^{(k)}+E_ku)$; the Gaussian integral gives $(2\pi\tau)^{3/2}(\det H_k)^{-1/2}$. The local Jacobian is $dR=8\,dq$ per sheet; the two sheets of $\pm q$ and the double-cover factor $1/2$ combine to $8$ per $SO(3)$ mode. The standard Laplace expansion gives relative error $O(\tau)$ \cite{bleistein1986,wong1989}. The gradient formula is the chain rule with the envelope theorem for $J_k$ and the softmax Jacobian for $w_k$. Appendix~\ref{app:haar} derives the Jacobian $dR=8\,du$, the double-cover cancellation, the absolute constant of $Z_{\mathrm{Lap}}$, and the full $\theta$-derivative of $\log\det H_k$ used below.
 \end{proof}
 
 \textbf{Smoothness at branch crossings.} The \emph{exact} Boltzmann posterior is $C^\infty$ in $\theta$ for every $\tau>0$, because $\mathbb{S}^3$ is compact and $J_\theta$ is smooth (by dominated convergence, without requiring $\Delta J>0$). The \emph{Laplace approximation} is not uniformly accurate at a crossing: as $\Delta J\to0$ and an eigenvalue of $H_k$ tends to zero, the Gaussians overlap and the $1/\sqrt{\det H_k}$ weights diverge, so a uniform (Airy) expansion or a one-dimensional numerical integral in the merging direction is required \cite{bleistein1986}. The smoothed layer is therefore smooth for every $\tau>0$, while the Laplace implementation is $O(\tau)$-accurate away from bifurcations.
 
-\textbf{Normalisation.} The constants matter for $Z$ but cancel in $w_k$. The common normalisation $Z_{\mathrm{Lap}}=(\pi\tau)^3(\det G)^{-1/2}\sum_k e^{-J_k/\tau}/\sqrt{\det H_k}$ omits the $2^{3/2}$-type factor of the rotation integral, a $\theta$-independent constant at fixed $\tau$ that does not affect gradients. If rotation-vector coordinates $\omega=2\delta\xi$ are used, $\det H_\omega=\det H_{\mathbb{S}^3}/64$, and one convention must be used consistently in \eqref{eq:weights}--\eqref{eq:dlogdet}.
+\textbf{Normalisation.} The constants matter for $Z$ but cancel in $w_k$. With the probability Haar measure $d\mu_{\mathrm{Haar}}=dR/(8\pi^2)$ on $SO(3)$, the absolute Laplace partition function is
+\begin{equation}
+Z_{\mathrm{Lap}}(\theta)=\frac{2\sqrt2\,\pi\tau^3}{\sqrt{\det G}}\sum_{k=1}^K\frac{e^{-J_k/\tau}}{\sqrt{\det H_k}},
+\label{eq:zlapabs}
+\end{equation}
+whereas the unnormalised measure $dR$ multiplies \eqref{eq:zlapabs} by $8\pi^2$. Appendix~\ref{app:haar} derives both constants from $dR=8\,du$ and the double cover, and shows that the two conventions give the same $w_k$ and the same $\theta$-gradient. The common normalisation $Z_{\mathrm{Lap}}=(\pi\tau)^3(\det G)^{-1/2}\sum_ke^{-J_k/\tau}/\sqrt{\det H_k}$ is neither of these absolute constants, so it should not be quoted as $Z$; it differs from \eqref{eq:zlapabs} by a $\theta$-independent factor at fixed $\tau$. If rotation-vector coordinates $\omega=2\delta\xi$ are used, $\det H_\omega=\det H_{\mathbb{S}^3}/64$, and one convention must be used consistently in \eqref{eq:weights}--\eqref{eq:dlogdet}.
+
+\begin{theorem}[Annealed Laplace NLL: exact gradient and zero-temperature limit]\label{thm:annealed}
+Let $q^{(k)}(\theta)$, $k=1,\dots,K$, be the nondegenerate minima of Theorem~\ref{thm:laplace}, with $J_k=J_\theta(q^{(k)},t^\star(q^{(k)}))$, $H_k\succ0$ and $G\succ0$, and let
+\begin{equation}
+\begin{split}
+Z_{\mathrm{Lap}}(\theta)={}&C(\tau)\,(\det G(\theta))^{-1/2}\\
+&\times\sum_{k=1}^K(\det H_k(\theta))^{-1/2}e^{-J_k(\theta)/\tau}
+\end{split}
+\label{eq:zlap}
+\end{equation}
+with $C(\tau)$ independent of $\theta$, and $w_k=(\det H_k)^{-1/2}e^{-J_k/\tau}/\sum_j(\det H_j)^{-1/2}e^{-J_j/\tau}$. Define the annealed Laplace NLL
+\begin{equation}
+L_{\tau\text{-KL}}(\theta):=J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})+\tau\log Z_{\mathrm{Lap}}(\theta).
+\label{eq:annealed}
+\end{equation}
+Then:
+\begin{enumerate}
+\item \textbf{(finite smooth gradient for every $\tau>0$)} including at exact branch ties $J_{k_1}=J_{k_2}$, $L_{\tau\text{-KL}}$ is locally $C^\infty$ in $\theta$ and
+\begin{equation}
+\begin{split}
+\nabla_\theta L_{\tau\text{-KL}}={}&\nabla_\theta J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})\\
+&-\sum_{k=1}^Kw_k\Big(\nabla_\theta J_k+\frac{\tau}{2}\nabla_\theta\log\det H_k\Big)\\
+&-\frac{\tau}{2}\nabla_\theta\log\det G .
+\end{split}
+\label{eq:annealedgrad}
+\end{equation}
+The outer factor $\tau$ cancels the $1/\tau$ in $\nabla_\theta z_k$ exactly, so the gradient stays finite as $\tau\to0$ instead of diverging like the unannealed KL loss.
+\item \textbf{(zero-temperature limit)} with $\mathcal{K}_{\min}=\arg\min_kJ_k$ and curvature-volume weights $\bar w_k:=(\det H_k)^{-1/2}/\sum_{j\in\mathcal{K}_{\min}}(\det H_j)^{-1/2}$,
+\begin{equation}
+\lim_{\tau\to0^+}\nabla_\theta L_{\tau\text{-KL}}
+=\nabla_\theta J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})
+-\sum_{k\in\mathcal{K}_{\min}}\bar w_k\,\nabla_\theta J_k,
+\label{eq:clarke}
+\end{equation}
+which is the curvature-weighted Clarke subgradient of $J_\theta(q_{\mathrm{gt}},t_{\mathrm{gt}})-\min_kJ_k(\theta)$. For a unique minimiser $k^\star$ it reduces to $\nabla_\theta J_{\mathrm{gt}}-\nabla_\theta J_{k^\star}$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Write $\tau\log Z_{\mathrm{Lap}}=\tau\log C(\tau)-\frac{\tau}{2}\log\det G+\tau\log\sum_kz_k$ with $z_k=(\det H_k)^{-1/2}e^{-J_k/\tau}$. Since $H_k\succ0$, the implicit-function theorem makes each branch and $H_k$ smooth in $\theta$, and $\sum_kz_k>0$ even when two $J_k$ coincide because the branches themselves stay nondegenerate. Using $\nabla_\theta z_k=z_k(-\tau^{-1}\nabla_\theta J_k-\frac12\nabla_\theta\log\det H_k)$ and $w_k=z_k/\sum_jz_j$ gives \eqref{eq:annealedgrad}; the $\tau$ in front of $\log Z$ cancels $\tau^{-1}$ exactly. For \eqref{eq:clarke}, factor $e^{-J_{\min}/\tau}$ out of $z_k$: $w_k\to(\det H_k)^{-1/2}/\sum_{j\in\mathcal{K}_{\min}}(\det H_j)^{-1/2}$ on $\mathcal{K}_{\min}$ and $w_k\to0$ elsewhere, because every $j\notin\mathcal{K}_{\min}$ has a strictly positive gap $\Delta_j=J_j-J_{\min}>0$. The terms $\frac{\tau}{2}\nabla_\theta\log\det H_k$ and $\frac{\tau}{2}\nabla_\theta\log\det G$ vanish, while $\nabla_\theta J_k$ is $\tau$-independent and bounded. The limit is a convex combination of the gradients of the active branches, hence lies in the Clarke subdifferential of the minimum. The envelope identity $\nabla_\theta J_k=v_2(q^{(k)})^\top(\partial_\theta M)v_2(q^{(k)})$ and the full derivative of $\log\det H_k$ are derived in Appendix~\ref{app:haar}.
+\end{proof}
 
 \subsection{Relation to the released \texorpdfstring{$13\times13$}{13x13} relaxation}\label{sec:thirteen}
 
